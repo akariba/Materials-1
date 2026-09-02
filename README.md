@@ -1,367 +1,238 @@
-RPR STEP 2.5 — STOP ALL OTHER WORK. ROOT-CAUSE AND FIX THE RUNNER SSE / FINAL-OUTPUT HANDOFF.
+STOP.
 
-We now have enough evidence to isolate the problem.
+You have ignored the execution instruction.
 
-DO NOT modify:
-- Step 2.1
-- Step 2.2
-- Step 2.3
-- Step 2.4
-- step23.html layout
-- v31 UI
-- eligibility logic
-- company identity logic
-- CIK resolution logic
-- Stylus preset prompt
-- Step 3a methodology
-- Step 3a thresholds
-- SEC/Web configuration
-- output schema
-- scoring
-- token-refresh architecture
+I explicitly said ENOUGH REPORTS.
 
-Do not run another assessment yet.
+Your latest response again contains:
 
-CURRENT PROVEN STATE
-====================
+FILES_CHANGED = NONE
+LIVE_RUN_EXECUTED = NO
+READY_FOR_USER_UI_TEST = NO
+STOP THERE
 
-The refreshed forensic audit proves:
+That is NOT completion of the task.
 
-CONTEXT / CIK resolution = working
+DO NOT produce another forensic report.
+DO NOT repeat ROOT_CAUSE.
+DO NOT produce another acceptance table before doing implementation.
+DO NOT spend another turn summarizing the 4 previous failed runs.
+DO NOT stop merely because you can label the problem "Runner Service/model reliability".
+
+We already know:
+
 RUNNER_AUTH = PASS
-Runner Service is reached
-token refresh = working
-backend process = alive
-frontend request reaches backend
+PRESET_TOOL_CALLED = PASS
+PRESET_TOOL_COMPLETED = PASS
+SSE parser defect = NOT PROVEN
+structured-data parsing defect = NOT PROVEN
+manual Stylus SEC + Web preset = WORKING
+manual Stylus final model output = WORKING
 
-The previous hard NO_CONFIRMED_SEC_REGISTRANT block has already been removed for the POC path.
+Therefore a generic statement that "Runner is unreliable" is NOT sufficient.
 
-The same remaining failure has now occurred on FOUR real executions.
+==================================================
+YOUR JOB NOW IS EXECUTION
+==================================================
 
-The failure is:
+Start making progress toward a successful Step 2.5 run.
 
-    Runner Service stream ended without final model text content
+You may report ONLY AFTER you have performed the actions below.
 
-Important:
+==================================================
+ACTION 1 — COMPARE THE ACTUAL WORKING REQUEST
+==================================================
 
-This failure occurred for:
-- companies with unresolved CIK
-- AND Apple, where CIK was confirmed
+Open the proven working colleague implementation:
 
-Therefore DO NOT investigate CIK/identity as the cause.
+app.py / app 1.py
 
-The latest Canaccord run again reached Runner successfully and failed at the same Runner SSE/final-output stage.
+and compare its ACTUAL Runner Service call to the current Step 2.5 request.
 
-JSON parsing/schema validation/persistence are not reached because final model content is never handed from runner_client into stylus_engine.
+I want you to inspect the code, not describe it from memory.
 
-THIS IS NOW THE ONLY PRIMARY BLOCKER.
+Compare actual runtime request construction for:
 
-==========================================================
-CRITICAL CLUE — RUNNER MAY NOT RETURN THE RESULT AS "TEXT"
-==========================================================
+- endpoint
+- HTTP method
+- headers
+- Authorization
+- Accept
+- Content-Type
+- SSE/stream settings
+- request JSON root
+- model field
+- preset structure
+- message structure
+- inputs structure
+- integrations
+- SEC configuration
+- Web Search configuration
+- knowledge attachments
+- workflow/thread/session fields
+- tools/actions supplied to the model
+- streaming options
+- continuation behaviour after a tool call
+- final response handling
 
-Earlier we captured a REAL successful Runner/StyIus response from the browser.
+Do NOT give me the comparison as a long report.
 
-Its message structure included content resembling:
+Use it internally to find the actionable difference.
 
-message:
-  parts:
-    [
-      {
-        "data": "...",
-        "data_type": 1,
-        "mime_type": "json",
-        "name": "AAPL_Step2.5_Assessment.json",
-        ...
-      }
-    ]
+==================================================
+ACTION 2 — EXPLAIN THE Invoke Action FAILURE IN CODE
+==================================================
 
-In other words, the successful Step 2.5 model result may be transported as:
+Your own evidence shows some failing calls end after:
 
-    message.parts[].data
+Invoke Action -> get_user...
 
-with JSON/artifact metadata,
+Do not merely report this.
 
-rather than as a traditional:
+Trace exactly:
 
-    message.parts[].text
+1. what action is being requested;
+2. where that action becomes available to the model;
+3. whether the working manual Stylus run exposes it;
+4. whether working app.py exposes it;
+5. whether Step 2.5 actually needs it;
+6. whether the Runner expects a continuation response from the caller;
+7. whether our RPR implementation fails to continue the workflow after that tool/action;
+8. whether the inline preset/request is accidentally asking for an interactive user action.
 
-or other text field.
+If there is an implementation defect here, FIX IT.
 
-This means the current error:
+==================================================
+ACTION 3 — INVESTIGATE THE UPSTREAM ERROR
+==================================================
 
-    "stream ended without final model text content"
+You also found a Runner error_info with an upstream failure.
 
-may be caused by our client looking only for one representation of final model output.
+Read the complete raw error object.
 
-DO NOT ASSUME THIS IS THE ROOT CAUSE.
+Determine from the actual payload whether it is:
 
-PROVE IT FROM THE RAW SSE CAPTURES FIRST.
+- retryable infrastructure failure;
+- malformed invocation;
+- tool configuration failure;
+- unsupported action;
+- timeout;
+- request contract mismatch.
 
-==========================================================
-TASK 1 — READ THE EXISTING RAW SSE CAPTURES
-==========================================================
+If it is genuinely transient and retryable:
 
-Do NOT launch another Runner execution.
+implement the MINIMUM bounded retry consistent with the working app.py behaviour.
 
-Inspect the existing files under:
+Maximum:
+initial call + 2 retries.
 
-backend/data/step25_runs/_debug_raw/
+No infinite retries.
 
-especially the raw SSE captures corresponding to:
+Do not mask deterministic failures.
 
-1. the Apple failure after backend restart
-2. the Canaccord failure
-3. the Panmure failure
-4. the latest Canaccord failure
+==================================================
+ACTION 4 — MODIFY CODE
+==================================================
 
-Identify the actual event sequence.
+Once the first proven discrepancy is identified:
 
-For EVERY SSE event, report internally:
+MAKE THE MINIMUM CODE CHANGE.
 
-sequence number
-event/type if present
-top-level JSON keys
-message role if present
-parts count
-part keys
-tool_call if present
-tool_response if present
-text field presence
-data field presence
-mime_type
-data_type
-artifact/name if present
-workflow/status fields
-terminal/completion indicator
+Do not ask me whether to make it.
 
-Do not paste credentials or bearer tokens.
+You are authorized to modify the necessary Step 2.5 files.
 
-I need you to answer:
+Preserve the RPR working backbone.
 
-A. Did the Runner actually return final model content?
-B. If yes, exactly where is that content located?
-C. If no, did the model/tool execution itself fail upstream?
-D. Does our parser stop before all events are consumed?
-E. Does our parser reject a valid structured JSON/artifact final response because it is not plain text?
+Likely candidates are:
 
-==========================================================
-TASK 2 — COMPARE WITH THE KNOWN-WORKING app.py IMPLEMENTATION
-==========================================================
+backend/step25/stylus_runner_client.py
+backend/step25/runner_client.py
+backend/step25/stylus_engine.py
+backend/step25/router.py
 
-This is extremely important.
+but MODIFY ONLY what evidence requires.
 
-My colleague's app.py / Swagger implementation is known to work with the same corporate Runner infrastructure.
+Do not touch unrelated Step 1 / Step 2.1 / Step 2.2 / Step 2.3 / Step 2.4 behaviour.
 
-Find the known-working app.py that has already been used in this project/workspace.
+Do not refactor.
 
-READ IT.
+==================================================
+ACTION 5 — RESTART
+==================================================
 
-Do not rewrite it.
+If Python/backend code changes:
 
-Compare its Runner invocation and response-consumption logic line-by-line against:
+restart the Step 2.5 backend so that the changed code is actually loaded.
 
-    backend/step25/runner_client.py
+Verify:
 
-Specifically compare:
+/health -> HTTP 200
 
-request URL
-HTTP method
-request body
-preset representation
-headers
-Accept header
-Content-Type
-stream=True or equivalent
-timeout behavior
-SSE/event parsing
-blank-line handling
-data: prefix handling
-multi-line SSE event handling
-JSON decoding
-workflow_id handling
-message handling
-parts handling
-tool_call handling
-tool_response handling
-terminal-event handling
-final-result extraction
-connection-close behavior
+Do not accidentally start a second server on an already occupied port.
 
-Our rule is:
+==================================================
+ACTION 6 — EXECUTE ONE REAL RUN
+==================================================
 
-KNOWN WORKING CODE IS THE BUILDING BONE.
+Run ONE real controlled Step 2.5 assessment.
 
-If app.py already handles the Runner protocol correctly, COPY/ADAPT THE MINIMUM WORKING TRANSPORT/PARSING BEHAVIOR.
+Prefer Apple first because we already have:
 
-Do not invent a new framework.
+Apple Inc.
+ticker = AAPL
+CIK = 0000320193
 
-==========================================================
-TASK 3 — AUDIT _stream_sse() / CURRENT RUNNER PARSER
-==========================================================
+and direct Stylus has already proven this company can produce a valid assessment.
 
-Inspect the exact implementation responsible for:
+This test MUST use:
 
-    Runner Service stream ended without final model text content
+REAL Runner Service
+REAL preset
+REAL SEC
+REAL Web Search
+REAL model
 
-Find the condition that raises this message.
+No fixture.
+No mock.
+No previous JSON reuse.
+No fabricated output.
 
-Trace what values it has collected before raising.
+==================================================
+ACTION 7 — ITERATE
+==================================================
 
-I particularly want you to determine whether it currently only accepts something equivalent to:
+If the real run fails:
 
-    part["text"]
+DO NOT STOP AND WRITE A REPORT.
 
-while ignoring valid content such as:
+Read the new exact failure.
 
-    part["data"]
+If it is locally actionable:
+FIX IT.
 
-or:
+Restart if necessary.
 
-    message.parts[].data
+Run again.
 
-or JSON MIME/artifact parts.
+Repeat.
 
-Also inspect whether it assumes:
+Only stop when:
 
-    one physical HTTP line == one complete SSE event
+A. one genuine complete Step 2.5 result succeeds;
 
-That is unsafe if the server sends proper SSE framing or multi-line data fields.
+OR
 
-Do not change anything until you can state the exact failure mechanism.
+B. you have PROVEN that an external Citi service is currently preventing the exact same request pattern that otherwise works, and there is no local corrective action.
 
-==========================================================
-TASK 4 — DEFINE THE VALID FINAL-OUTPUT CONTRACT
-==========================================================
+An intermittent upstream failure does NOT qualify as B until bounded retries have also failed.
 
-A valid final Step 2.5 Runner result may only be accepted from a genuine final assistant/model message.
+==================================================
+SUCCESS CONDITION
+==================================================
 
-Do NOT accidentally treat:
-- SEC tool responses
-- Web Search tool responses
-- intermediate tool payloads
-- status messages
-- workflow metadata
+I want to reach:
 
-as the final model assessment.
-
-Final-output extraction should support the REAL Runner protocol observed in the captures.
-
-Expected precedence should roughly be:
-
-1. genuine final assistant/model textual content, if supplied;
-
-otherwise
-
-2. genuine final assistant/model structured part containing JSON data,
-   e.g. message.parts[].data with an appropriate JSON MIME/data type;
-
-otherwise
-
-3. whatever equivalent genuine final-result representation is PROVEN by
-   the working app.py / raw successful Runner traffic.
-
-Do not implement speculative formats that we have never observed.
-
-The returned value handed to stylus_engine must ultimately be the raw Step 2.5 JSON assessment content so the EXISTING parser/schema validation continues unchanged.
-
-==========================================================
-TASK 5 — SSE FRAMING
-==========================================================
-
-Verify whether runner_client currently implements real SSE framing correctly.
-
-SSE events are separated by an empty line.
-
-An event may contain multiple "data:" lines.
-
-HTTP/TCP chunk boundaries must NOT be interpreted as logical event boundaries.
-
-If the existing implementation parses every physical iter_lines() entry independently and this differs from the known-working app.py or the actual Runner stream, fix only that parsing defect.
-
-Maintain heartbeats/comments safely.
-
-Do not terminate merely because one event contains no text.
-
-Do not terminate merely because a tool call completed.
-
-Wait for the genuine workflow/model terminal condition established from the real Runner protocol.
-
-==========================================================
-TASK 6 — IMPLEMENT THE MINIMUM FIX
-==========================================================
-
-ONLY after Tasks 1–5 establish the root cause:
-
-Implement the smallest possible correction in:
-
-    backend/step25/runner_client.py
-
-and only another file if genuinely necessary.
-
-Do not modify Stylus analytical behavior.
-
-Do not modify the preset.
-
-Do not modify Step 3a.
-
-Do not modify the schema.
-
-Do not modify frontend behavior in this task.
-
-Preserve all existing:
-- authentication
-- token cache
-- token refresh
-- timeout
-- retry
-- HTTP status handling
-- tool observation
-- diagnostics
-
-unless a specific line is proven to be causing this protocol defect.
-
-==========================================================
-TASK 7 — TEST USING EXISTING RAW CAPTURES FIRST
-==========================================================
-
-Before making another network/model call, create a small local parser regression test using the EXISTING raw SSE dumps.
-
-Feed the captured failing stream into the corrected parsing/extraction logic.
-
-If the raw stream actually contains the final JSON artifact:
-
-the parser MUST recover it.
-
-Then feed it through the existing Step 2.5 JSON/schema parsing logic.
-
-Expected:
-
-MODEL_FINAL_RESPONSE = PASS
-JSON_PARSED = PASS
-SCHEMA_VALID = PASS
-
-If the raw SSE dump genuinely does NOT contain final model content, STOP.
-
-Do not fabricate it.
-
-Instead state that the failure is upstream in the Runner/model execution and show the last genuine Runner event.
-
-==========================================================
-TASK 8 — ONE LIVE ACCEPTANCE RUN ONLY AFTER LOCAL PROOF
-==========================================================
-
-Only if the existing raw-capture regression proves our parser was wrong:
-
-restart the backend once if required.
-
-Then execute ONE real acceptance run.
-
-Prefer Apple first if it remains available because Apple has a confirmed CIK and removes identity resolution as a test variable.
-
-Expected chain:
-
-CONTEXT_HTTP = 200
 RUNNER_AUTH = PASS
 PRESET_TOOL_CALLED = PASS
 PRESET_TOOL_COMPLETED = PASS
@@ -370,92 +241,41 @@ WEB = PASS
 MODEL_FINAL_RESPONSE = PASS
 JSON_PARSED = PASS
 SCHEMA_VALID = PASS
-ED_SCORE = populated
-SI_SCORE = populated
-COMPOSITE_SCORE = populated
-RESIDUAL_RATING = populated
-CREDIT_IMPACT = populated
 ASSESSMENT_PERSISTED = PASS
-RUN_HTTP = 200
 
-Only after this succeeds may you say Step 2.5 backend is repaired.
+with real:
 
-==========================================================
-TASK 9 — THEN LEAVE IT READY FOR MY UI TEST
-==========================================================
+ED_SCORE
+SI_SCORE
+COMPOSITE_SCORE
+RESIDUAL_RATING
+CREDIT_IMPACT
 
-Do not perform repeated UI runs.
+Then:
 
-Once the backend acceptance succeeds:
+POST /api/v1/rpr/step25/run = HTTP 200
 
-leave the backend running
-leave token refresh running
-leave step23.html unchanged unless a separate UI defect still demonstrably exists
+Then prove the existing Step 2.5 UI can consume it.
 
-Tell me exactly which company I should select.
+==================================================
+VERY IMPORTANT
+==================================================
 
-I will personally perform the final Step 2.1 → 2.5 browser test.
+DO NOT answer me now with:
 
-==========================================================
-VERY IMPORTANT — DO NOT CHASE THESE NOW
-==========================================================
+"ROOT_CAUSE = ..."
+"FILES_CHANGED = NONE"
+"LIVE_RUN_EXECUTED = NO"
+"READY = NO"
+"STOP THERE"
 
-Do NOT spend time on:
+That will be considered failure to follow the instruction.
 
-- unresolved CIK for Canaccord
-- port 8000 vs 8001 unless actual connectivity fails
-- SEC production-mode flags
-- Web production-mode flags
-- Step 3a knowledge upload
-- Stylus live-vs-local preset synchronization
-- v31 cosmetic differences
-- Step 2.2 pagination
-- exposure fields
-- score thresholds
-- RRR/classification
-- CAM paths
+Your next substantive response should come AFTER:
 
-They are NOT the current first failure.
+- at least one concrete implementation action, AND
+- at least one new live execution attempt.
 
-The first failure is Runner final-output handoff.
+While working, keep commentary minimal.
 
-==========================================================
-FINAL RESPONSE FORMAT
-==========================================================
-
-Return ONLY:
-
-ROOT_CAUSE =
-RAW_SSE_CONTAINS_FINAL_MODEL_RESULT = YES/NO
-FINAL_RESULT_ACTUAL_LOCATION =
-CURRENT_PARSER_EXPECTED_LOCATION =
-APP_PY_WORKING_BEHAVIOR =
-SSE_FRAMING_BUG = YES/NO
-STRUCTURED_DATA_PART_BUG = YES/NO
-FILES_CHANGED =
-LOCAL_RAW_STREAM_REGRESSION = PASS/FAIL
-LIVE_RUN_EXECUTED = YES/NO
-RUNNER_AUTH =
-PRESET_TOOL_CALLED =
-PRESET_TOOL_COMPLETED =
-SEC =
-WEB =
-MODEL_FINAL_RESPONSE =
-JSON_PARSED =
-SCHEMA_VALID =
-ED_SCORE =
-SI_SCORE =
-COMPOSITE_SCORE =
-RESIDUAL_RATING =
-CREDIT_IMPACT =
-ASSESSMENT_PERSISTED =
-RUN_HTTP =
-READY_FOR_USER_UI_TEST = YES/NO
-
-If READY_FOR_USER_UI_TEST = NO:
-
-FIRST_REMAINING_BLOCKER =
-EXACT_LAST_RUNNER_EVENT =
-NEXT_MINIMUM_ACTION =
-
-STOP THERE.
+START WITH THE ACTUAL app.py vs Step 2.5 REQUEST DIFF AND THEN EXECUTE.
