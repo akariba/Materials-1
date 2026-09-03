@@ -1,939 +1,1121 @@
-IMPLEMENT NOW — RPR STEP 2.5 SEC + WEB END-TO-END COMPLETION
+RPR STEP 2.5 — EXACT V31 FRONTEND RECONSTRUCTION
+IMPLEMENTATION ONLY — NO REPORTS, NO APPROVAL QUESTIONS
 
-THIS IS AN IMPLEMENTATION TASK, NOT AN AUDIT, NOT A REPORT, NOT A DESIGN DISCUSSION.
+THIS IS NOT A DESIGN EXERCISE.
 
-A fresh Runner Service token has already been provided. Use it through the existing local token mechanism.
+THE REQUIRED RESULT IS:
 
-DO NOT ASK ME FOR APPROVAL.
-DO NOT ASK ME TO CHOOSE OPTIONS.
-DO NOT STOP TO PRESENT FINDINGS.
-DO NOT PRODUCE ANOTHER FORENSIC REPORT.
-DO NOT GIVE ME A PLAN AND WAIT.
-DO NOT ASK “SHOULD I PROCEED?”
-DO NOT ASK FOR CONFIRMATION BEFORE EDITING FILES.
+STEP 2.5 IN THE ACTIVE step23.html MUST LOOK AND BEHAVE AS CLOSE TO
+IDENTICAL TO v31 AS THE EXISTING SOURCE ALLOWS.
 
-Everything necessary within the scope below is PRE-APPROVED.
+DO NOT "IMPROVE" v31.
+DO NOT INTERPRET v31.
+DO NOT MAKE SOMETHING "INSPIRED BY" v31.
+DO NOT CREATE YOUR OWN UI.
 
-Make the necessary implementation decisions yourself, implement them, restart what is necessary, test them, fix failures, and continue until the complete requested UI flow is ready.
-
-Only stop if there is a GENUINE EXTERNAL blocker that cannot be solved from the repository/environment, such as:
-- Runner Service itself unavailable after retries;
-- enterprise authentication genuinely unavailable;
-- an external approved Citi service is down;
-- required source data literally does not exist anywhere accessible.
-
-A normal code bug, mapping problem, stale process, parser problem, timeout, input-field mismatch, frontend state bug, missing local wiring, or retry issue is NOT permission to stop. FIX IT.
+READ THE ACTUAL v31 HTML + CSS + JAVASCRIPT AND REUSE ITS STRUCTURE.
 
 ============================================================
-0. NON-NEGOTIABLE RPR BACKBONE RULE
+0. AUTONOMY / EXECUTION RULE
 ============================================================
 
-Project root:
+Do not ask me:
 
-C:\Users\ak54743\Downloads\OneDrive_2026-07-16\Rapid Portfolio Review_AI
+- whether you should proceed;
+- whether a CSS rule should be copied;
+- whether an existing Step 2.5 component should be replaced;
+- whether a small implementation decision is acceptable.
 
-This is a POC.
+Everything required by this scope is PRE-APPROVED.
 
-Preserve the existing working backbone.
+Proceed autonomously until the final manual-browser-test state is ready.
 
-Known-working code is an immutable building block.
+Do not stop for intermediate reports.
 
-DO NOT:
-- refactor unrelated working code;
-- redesign architecture;
-- create a new framework;
-- rebuild Steps 2.1–2.4;
-- replace established routes unnecessarily;
-- redesign the frontend;
-- replace v31 styling;
-- change working Step 1 behavior;
-- change working Step 2.1 behavior;
-- change working Step 2.2 behavior except mappings genuinely required for Step 2.5;
-- change working Step 2.3/2.4 generation logic unless a missing field required by the approved functional contract is proven;
-- alter CAM paths;
-- alter legacy Step 2.5 paths unless directly required for this Stylus POC;
-- weaken factual/evidence controls;
-- fabricate portfolio data;
-- invent CIK/ticker/RRR/classification/exposure values.
+Do not give me a design analysis before implementation.
 
-Changes must be MINIMUM and ADDITIVE wherever possible.
+You may inspect as much source as necessary, regardless of file size.
 
-Use the current:
-UI Design\step23.html
+The rule is:
 
-as the application being made runnable.
+READ FULL RELEVANT v31 IMPLEMENTATION
+→ UNDERSTAND EXACT STRUCTURE
+→ IMPLEMENT
+→ TEST
+→ FIX
+→ CONTINUE.
 
-Use:
-UI Design\icm-pm-rapid-portfolio-review-v31.html
-
-as the immutable visual/functional reference for Step 2.5 presentation.
-
-The final Step 2.5 should look and behave like v31, but show REAL backend results rather than demo/static data.
+Do not shortcut the source inspection because the file is large.
 
 ============================================================
-1. FINAL OBJECTIVE
+1. AUTHORITATIVE FILES
 ============================================================
 
-When this task finishes I must personally be able to open the frontend and test:
+ACTIVE APPLICATION:
 
-Step 2.1
-→ Step 2.2
-→ Step 2.3
-→ Step 2.4
-→ Step 2.5
-→ select SEC + Web
-→ click Run Assessment
-→ wait for the real Stylus execution
-→ receive a valid real assessment
-→ see the real Step 2.5 results populated in the v31-style table/details
-→ inspect ED factors
-→ inspect SI factors
-→ inspect scores
-→ inspect evidence
-→ inspect credit conclusion
-→ inspect RRR/classification information when supplied
-→ add analyst-owned fields where applicable
-→ confirm the assessment.
+UI Design/step23.html
 
-The final goal is NOT another successful terminal harness.
+and its existing associated files such as:
 
-The final goal is:
+UI Design/rpr_step25_append.js
+UI Design/rpr_step25_append.css
 
-READY_FOR_USER_UI_2_1_TO_2_5_SEC_WEB_TEST = YES
+or the actual current Step 2.5 JS/CSS files discovered in the project.
 
-Do not finish before this condition is achieved unless a genuine external service blocker remains.
+AUTHORITATIVE VISUAL/FUNCTIONAL REFERENCE:
 
-============================================================
-2. USE THE CURRENT APPROVED STEP 2.5 FUNCTIONAL CONTRACT
-============================================================
+UI Design/icm-pm-rapid-portfolio-review-v31.html
 
-The current approved Stylus Step 2.5 preset is conceptually correct.
+If v31 references external/local CSS or JS files, inspect those too.
 
-DO NOT redesign its methodology.
+Do not inspect only screenshots.
 
-The authoritative methodology remains:
+Before editing Step 2.5:
 
-“Factor Analysis — Financials” / Step 3a.
+READ the entire relevant v31 Step 2.5 DOM subtree.
 
-The current Step 2.5 contract already established includes:
+READ every CSS selector/classes/variables that affect that subtree.
 
-- exactly one company per individual assessment;
-- confirmed Step 2.1 scenario;
-- confirmed Step 2.3 Event-Driven factors;
-- confirmed Step 2.4 Sector-Inherent factors;
-- Step 2.2 company/portfolio data;
-- assessment cut-off date;
-- optional UserFeedback;
-- SEC evidence;
-- approved Web Search;
-- five-scale Step 3a financial methodology;
-- factor preservation;
-- evidence discipline;
-- ED score;
-- SI score;
-- 80% / 20% final composite;
-- residual rating;
-- credit impact rating;
-- credit conclusion;
-- RRR/classification recommendation logic;
-- machine-readable JSON only;
-- current Step 2.5 SEC+Web output schema.
+READ every JS function/event handler responsible for:
 
-Use the approved knowledge files already prepared.
+- Step 2.5 rendering;
+- row expansion;
+- Factor Assessment Commentary expansion;
+- Run Assessment;
+- assessment-type selection;
+- score/rating badges;
+- commentary controls;
+- impact override;
+- confirm assessment;
+- export;
+- filters/table behavior.
 
-DO NOT silently substitute an older Step25Assessment schema.
+Trace dependencies if the relevant functions live elsewhere in v31.
 
-The backend inline Stylus definition and attached knowledge must use the CURRENT approved Step 2.5 schema/field dictionary/Step 3a rules.
-
-If a local inline preset mirror is stale relative to the current approved files in preset_knowledge, update the local inline mirror to the approved current contract.
-
-Do NOT invent a new prompt.
+Do not begin visual implementation until this is understood.
 
 ============================================================
-3. MANAGER FUNCTIONAL REQUIREMENTS — THIS IS CRITICAL
+2. GOLDEN RULE — COPY v31, DO NOT RECREATE IT
 ============================================================
 
-The previous technical test proved communication to Stylus, but the functional test payload was too minimal.
+Where technically possible:
 
-This implementation must now provide the FULL information expected by the functional Step 2.5 methodology.
+REUSE THE ACTUAL v31:
 
-The manager explicitly confirmed that Step 2.5 requires FOUR substantial upstream input groups:
+- HTML hierarchy;
+- class names;
+- CSS declarations;
+- spacing;
+- padding;
+- borders;
+- font sizes;
+- font weights;
+- line heights;
+- table layout;
+- column widths;
+- header heights;
+- badge shapes;
+- border radii;
+- background colors;
+- text colors;
+- button sizes;
+- select/input styling;
+- expand/collapse styling;
+- hover states;
+- section labels;
+- alignment;
+- responsive/horizontal-scroll behavior.
 
-A. STEP 2.1 SCENARIO
+DO NOT eyeball values.
 
-Pass the complete confirmed scenario context available from Step 2.1, including where available:
+DO NOT invent approximations such as:
 
-- scenario/event title;
-- narrative;
-- scenario description;
-- critical assumptions;
-- scenario assumptions;
-- scenario metrics;
-- relevant dates;
-- scenario horizon;
-- any confirmed analyst-edited scenario content.
+"similar blue"
+"close green"
+"roughly 12px"
+"something like v31".
 
-Do not reduce Step 2.1 to a tiny one-line label if richer confirmed information exists.
+If v31 defines an exact value, COPY THAT VALUE.
 
-The JSON structure can differ from the historical Word document, but informational content must be equivalent.
+If v31 uses an existing CSS class, use that class or copy the exact rule
+into the current active stylesheet if required.
 
-------------------------------------------------------------
-B. STEP 2.3 EVENT-DRIVEN FACTORS
-------------------------------------------------------------
+No new color palette.
 
-Every CONFIRMED Event-Driven factor must be supplied.
+No new design tokens unless technically unavoidable.
 
-For each factor inspect the ACTUAL Step 2.3 confirmed payload and carry everything genuinely available and analytically relevant, including:
+No large decorative gradients.
 
-- factor_id;
-- factor name / label;
-- factor description;
-- source_step = 2.3;
-- weight;
-- narrative;
-- rationale;
-- metric/features;
-- vulnerability description;
-- buffer/mitigant information if present;
-- scoring guidance if present;
-- critical thresholds if present;
-- industry sensitivity if present;
-- industry sensitivity direction/effect if present;
-- confirmed analyst edits;
-- any structured supporting fields produced by Step 2.3.
+No giant colored status cards.
 
-DO NOT pass only:
-factor name + weight.
+No random green/blue panels.
 
-The manager specifically called out INDUSTRY SENSITIVITY.
-
-Inspect the real Step 2.3 models/payloads before deciding whether the field already exists under another name.
-
-Do not invent it if Step 2.3 does not produce it.
-
-If the functional Step 2.3 prompt generates industry sensitivity but the confirmed payload currently loses it during mapping/persistence, fix that mapping ADDITIVELY so the existing information reaches Step 2.5.
-
-Do not redesign Step 2.3 itself unless the field is genuinely being discarded.
-
-------------------------------------------------------------
-C. STEP 2.4 SECTOR-INHERENT FACTORS
-------------------------------------------------------------
-
-Every CONFIRMED Sector-Inherent factor must be supplied.
-
-For each factor pass all genuine available information equivalent to the manager's source material:
-
-- factor_id;
-- factor name / label;
-- source_step = 2.4;
-- weight;
-- narrative;
-- sector-specific rationale;
-- metrics/features;
-- vulnerability;
-- buffers/mitigants;
-- scoring guidance;
-- critical thresholds;
-- industry sensitivity or sector sensitivity where available;
-- confirmed analyst edits;
-- supporting structured fields.
-
-Again:
-
-DO NOT collapse the Step 2.4 input to a factor name and weight if richer confirmed information exists.
-
-------------------------------------------------------------
-D. STEP 2.2 CLIENT / PORTFOLIO INFORMATION
-------------------------------------------------------------
-
-This was another explicit manager requirement.
-
-Step 2.5 needs the real company/client context.
-
-Inspect the ACTUAL Step 2.2 data source and available columns.
-
-Do not rely on assumptions from old mappings.
-
-Map all genuinely available fields relevant to Step 2.5.
-
-At minimum inspect availability for:
-
-- CAGID;
-- legal/company name;
-- relationship/company name;
-- ticker;
-- CIK;
-- full country of risk name;
-- country code;
-- current Relationship Risk Rating / RRR;
-- current Credit Classification;
-- industry L1;
-- industry L2;
-- industry L3;
-- exposure;
-- MLE if present;
-- Total OSUC / OSUC Amt;
-- OSUC-P;
-- OSUC-PWL;
-- OSUC-SM;
-- OSUC-SS;
-- OSUC-D/L;
-- any other existing exposure/limit fields materially shown in v31.
-
-IMPORTANT:
-First inspect the real Step 2.2 source fields and map what ACTUALLY exists.
-
-Do not fabricate absent fields.
-
-If the underlying data already contains a full country name, do not discard it and show only a two-character country code.
-
-If the underlying data contains RRR/classification, propagate it to Step 2.5.
-
-If the underlying data contains OSUC/exposure fields, propagate them.
-
-If they genuinely do not exist for a row, retain null / explicit “not supplied by Step 2.2 portfolio source” behavior.
+No newly invented Step 2.5 visual language.
 
 ============================================================
-4. WEIGHTING — MUST BE MATHEMATICALLY CORRECT
+3. CURRENT step23 STEP 2.5 IS NOT THE BASELINE
 ============================================================
 
-This is specifically important from the manager discussion.
+The current Step 2.5 rendering has drifted significantly.
 
-Preserve each confirmed upstream factor weight.
+Do NOT preserve current UI merely because code already exists.
 
-DO NOT replace supplied weights with equal weights.
+Preserve the WORKING DATA/EXECUTION CONNECTIONS.
 
-DO NOT invent missing weights.
+The rendering structure may be replaced with the exact v31 structure.
 
-Before assessment, validate the factor sets.
+Separate:
 
-For Event-Driven factors:
-- include every confirmed Step 2.3 factor exactly once;
-- preserve every supplied weight;
-- calculate the Event-Driven weighted score from Step 2.3 factors ONLY.
+BACKEND / DATA WIRING = preserve.
 
-For Sector-Inherent factors:
-- include every confirmed Step 2.4 factor exactly once;
-- preserve every supplied weight;
-- calculate the Sector-Inherent weighted score from Step 2.4 factors ONLY.
+CURRENT STEP23 VISUAL STRUCTURE = not authoritative.
 
-Use normalized weighted averages:
+v31 VISUAL STRUCTURE = authoritative.
+
+============================================================
+4. REMOVE NON-v31 BUSINESS UI
+============================================================
+
+The following current inventions must NOT remain as primary Step 2.5
+workflow elements unless they actually exist in v31.
+
+A. COMPANY DROPDOWN
+
+The normal Step 2.5 workflow must NOT ask the analyst to choose one
+company again.
+
+Step 2.5 automatically inherits the CONFIRMED Step 2.2 portfolio.
+
+Do not require a second company selection.
+
+A company-specific developer/debug control may remain hidden behind
+technical diagnostics if genuinely necessary, but it must not appear as
+normal business workflow.
+
+B. QUICK SEC SCAN
+
+The visible "Quick SEC Scan" column/workflow was introduced as a token /
+execution workaround.
+
+It is NOT part of the v31 business design.
+
+Remove it from the normal Step 2.5 table/UI.
+
+If an identity/preflight check is technically useful, perform it
+internally in the backend/orchestration layer.
+
+The user should not have to understand or operate "Quick Scan."
+
+C. EXTRA STATUS CARDS / COLORFUL PANELS
+
+If they are not in v31, remove them from the normal Step 2.5 presentation.
+
+Technical diagnostics may remain collapsed and unobtrusive.
+
+============================================================
+5. PORTFOLIO WORKFLOW MUST MATCH THE ORIGINAL FUNCTIONAL DESIGN
+============================================================
+
+Step 2.2 determines the portfolio.
+
+Therefore:
+
+Step 2.2 confirmed portfolio
+→ same companies automatically appear in Step 2.5.
+
+No reselection.
+
+If Step 2.2 selected:
+
+7 companies
+
+Step 2.5 shows those same 7 companies.
+
+If Step 2.2 selected:
+
+27 companies
+
+Step 2.5 shows those same 27 companies.
+
+The user clicks ONE portfolio-level:
+
+RUN ASSESSMENT
+
+button as in v31.
+
+============================================================
+6. MAXIMUM 10-COMPANY RULE — INTERNAL EXECUTION ONLY
+============================================================
+
+Leslie's requirement:
+
+SEC assessment quality deteriorates if too many companies are handled
+together.
+
+Therefore the POC must process a MAXIMUM OF 10 companies per logical
+execution batch.
+
+This is NOT a UI portfolio limit.
+
+This is NOT a company-picker requirement.
+
+Example:
+
+27 selected companies:
+
+batch 1 = companies 1–10
+batch 2 = companies 11–20
+batch 3 = companies 21–27
+
+The Step 2.5 UI continues to display all 27 portfolio rows.
+
+Execution orchestration handles batching behind the scenes.
+
+Do not display a new "batch configuration" interface.
+
+A small non-intrusive running status may say:
+
+Assessing companies 1–10 of 27
+
+if useful.
+
+Do not transform the page around batching.
+
+============================================================
+7. MAIN STEP 2.5 COMPANY TABLE — USE v31 EXACTLY
+============================================================
+
+Locate the exact v31 Step 2.5 table.
+
+Reuse its:
+
+- table element/container;
+- header structure;
+- column sequence;
+- widths;
+- sticky/horizontal behavior;
+- filters;
+- row height;
+- company expansion control;
+- colors;
+- typography;
+- borders.
+
+Do NOT redesign the table.
+
+Populate it from REAL data.
+
+Use the EXACT v31 column names/order discovered from the source.
+
+The screenshots indicate fields equivalent to:
+
+COMPANY NAME
+CAGID
+TICKER / ID
+REL COUNTRY OF RISK
+LIMIT INDUSTRY L1
+LIMIT INDUSTRY L2
+LIMIT INDUSTRY L3
+TOTAL OSUC
+OSUC-P
+OSUC-PWL
+OSUC-SM
+OSUC-SS
+OSUC-D/L
+ED SCORE (80%)
+SI SCORE (20%)
+COMPOSITE SCORE
+RESIDUAL RATING
+CREDIT IMPACT RATING
+CURRENT RRR
+REC. RRR ACTION
+CURRENT CLASS
+REC. CLASS ACTION
+KEY RISK DRIVER
+IMPACT RATING OVERRIDE
+USER CREDIT COMMENTARY
+
+BUT:
+
+DO NOT use this list as authority if the actual v31 source differs.
+
+The ACTUAL v31 markup is authoritative.
+
+============================================================
+8. ED 80% AND SI 20% MUST BE VISIBLE EXACTLY LIKE v31
+============================================================
+
+This is currently badly represented in step23.
+
+Restore the v31 information hierarchy.
+
+Inside the expanded company row there must be a compact factor-summary
+area corresponding to:
+
+EVENT-DRIVEN FACTORS (80%)
+
+and
+
+SECTOR-INHERENT FACTORS (20%)
+
+These are separate factor families.
+
+Do NOT merge them.
+
+Do NOT hide the 80% / 20% meaning.
+
+Do NOT dump detailed narratives here.
+
+This layer should be compact.
+
+Each factor should show the information v31 shows at this level:
+
+- factor identifier/name;
+- compact score;
+- impact/risk indicator where v31 has one.
+
+Use the exact v31 design and classes.
+
+============================================================
+9. FACTOR WEIGHTING
+============================================================
+
+The business methodology is:
+
+Within EVENT-DRIVEN factors:
+
+preserve the confirmed Step 2.3 individual weights.
+
+Within SECTOR-INHERENT factors:
+
+preserve the confirmed Step 2.4 individual weights.
+
+Each complete factor family should normally represent its full 100%
+allocation according to the upstream methodology.
+
+Do not invent weights to force 100%.
+
+Use normalized weighted scoring if needed:
 
 ED_SCORE =
-SUM(EventDriven factor_score × supplied_weight)
+SUM(ED factor score × ED supplied weight)
 /
-SUM(EventDriven supplied_weight)
+SUM(ED supplied weights)
 
 SI_SCORE =
-SUM(SectorInherent factor_score × supplied_weight)
+SUM(SI factor score × SI supplied weight)
 /
-SUM(SectorInherent supplied_weight)
+SUM(SI supplied weights)
 
-This accommodates percentage weights represented as:
-20
-or
-0.20
-
-after correct normalization.
-
-Do not silently mix incompatible units.
-
-Inspect actual upstream representations and normalize deterministically.
-
-Where the complete upstream factor set is designed to total 100%, verify that it does.
-
-If the confirmed source itself does not total 100%, do NOT invent weights merely to force 100%.
-
-Record the upstream weight inconsistency and still use the mathematically normalized weighted-average formula if the weights are valid positive values.
-
-Only AFTER ED_SCORE and SI_SCORE have independently been produced:
+THEN:
 
 COMPOSITE_SCORE =
-(ED_SCORE × 0.80)
+ED_SCORE × 0.80
 +
-(SI_SCORE × 0.20)
+SI_SCORE × 0.20
 
-The 80/20 split belongs ONLY at final ED-vs-SI aggregation.
-
-Do NOT apply 80/20 inside the individual factor sets.
-
-Round only displayed aggregate values as required by the contract.
+Do NOT incorrectly treat all ED + SI individual factors as one combined
+100% factor basket.
 
 ============================================================
-5. STEP 3a METHODOLOGY GROUNDING
+10. OVERALL COMPOSITE SCORE DETAILS — RESTORE IT
 ============================================================
 
-Do not rely on generic LLM memory for the Step 3a thresholds/grids.
+This is an important v31 feature currently missing/wrong in step23.
 
-Use the approved Step 3a methodology knowledge already extracted from the authoritative “Factor Analysis — Financials” prompt/document.
+Find the exact v31 component/markup that displays the overall/composite
+assessment explanation.
 
-Ensure the active inline preset definition references/contains the current approved Step 3a methodology knowledge required for:
+Restore it EXACTLY.
 
-- 1–5 factor scoring;
-- vulnerability assessment;
-- buffer/mitigant assessment;
-- residual-risk determination;
-- residual rating;
-- credit-impact determination;
-- current RRR anchoring where supplied;
-- recommended RRR action;
-- current classification anchoring where supplied;
-- recommended classification action.
+Its job is to explain the combined Step 2.5 assessment at company level,
+including whatever v31 presents such as:
 
-Do NOT use Step 4 portfolio thresholds as Step 3a name-level thresholds.
+- Overall assessment;
+- Composite Score;
+- overall impact/rating;
+- concise synthesis;
+- key driver / why the final outcome is what it is.
 
-Step 3a and Step 4 thresholds are different.
+DO NOT replace this with generic raw:
 
-Do not reuse the unrelated/dead credit_anchoring path if it is not part of Step 2.5.
+Narrative
+Risk Direction
+Supporting Evidence
+Disconfirming Evidence
+Evidence Gaps
+Analyst Questions
 
-============================================================
-6. COMPANY IDENTITY / SEC BEHAVIOR
-============================================================
+cards.
 
-Do not substitute a different better-known company.
+Map the available real Step 2.5 fields into the exact v31 Overall /
+Composite Score Details presentation.
 
-Use the Step 2.2 selected legal/company name.
+If one model field has no exact v31 location:
 
-Identity hierarchy:
+do not invent a new large panel.
 
-1. supplied CIK;
-2. supplied ticker;
-3. existing CikResolver using the exact company/legal name;
-4. exact company name + country context for Web evidence.
-
-If CIK is unresolved:
-
-- do NOT fabricate a CIK;
-- do NOT replace the company;
-- do NOT hard-fail solely because the company is not a confirmed SEC registrant;
-- record the limitation;
-- allow the Web component to proceed for the exact supplied legal entity where appropriate.
-
-If there is literally no usable legal/company identity at all, fail that company explicitly.
-
-Preserve the already-approved distinction between:
-NO_COMPANY_IDENTITY_AVAILABLE
-
-and:
-NO_CONFIRMED_SEC_REGISTRANT.
-
-Do not reintroduce the previous false blanket 422 gate.
+Place it only in the most appropriate existing v31 commentary/evidence
+area.
 
 ============================================================
-7. RUNNER SERVICE — USE THE FRESH TOKEN AND COMPLETE THE FIX
+11. FACTOR ASSESSMENT COMMENTARY — COLLAPSED BY DEFAULT
 ============================================================
 
-A fresh Runner token has already been supplied.
+This is another critical v31 behavior.
 
-DO NOT ask me for another token unless an actual live response proves that this fresh token is expired/invalid.
+The detailed factor narratives must NOT be permanently dumped into the
+expanded company row.
 
-Use the existing secure local token-seeding/cache mechanism.
+Restore the exact v31:
 
-Never print the token.
+FACTOR ASSESSMENT COMMENTARY
 
-Never place it in source control.
+control.
 
-Never expose it in final chat output.
+By default:
 
-Keep the recently implemented bounded resilience behavior only if it is genuinely required:
+DETAILED FACTOR COMMENTARY IS COLLAPSED.
 
-- bounded retry for the proven upstream go-worker EOF / UPSTREAM_SERVER_ERROR class;
-- max 2 retries;
-- max 2 continuation nudges for the proven get_user_input stalled-model pattern;
-- no infinite retry;
-- no general retry framework;
-- no retry storm.
+The user clicks:
 
-Use the already proven app.py / Runner interaction behavior as the reference when useful.
+Factor Assessment Commentary
 
-Do NOT rewrite the parser unless raw evidence proves a parser defect.
+to expand it.
 
-If the Runner returns actual final model content, capture it robustly, parse it, validate it, persist it and render it.
+Use the exact v31:
 
-============================================================
-8. FIX THE FULL RUN ASSESSMENT PATH
-============================================================
+- label;
+- icon/chevron;
+- border;
+- background;
+- typography;
+- padding;
+- expand/collapse animation/behavior if present;
+- open/closed state styling.
 
-Trace and make the real frontend button work:
+Do not invent a new accordion.
 
-Run Assessment
-→ frontend request
-→ Step 2.5 /run
-→ correct company context
-→ Step 2.1 context
-→ Step 2.3 confirmed factors
-→ Step 2.4 confirmed factors
-→ assessment as-of date
-→ optional feedback
-→ Stylus inline preset
-→ SEC/Web tools
-→ final JSON
-→ backend Pydantic model
-→ persistence
-→ frontend polling/render
-→ completed assessment row.
-
-No fixture result may be presented as a successful real assessment.
-
-No hard-coded Apple result.
-
-No fake scores.
-
-No demo substitutions.
+Reuse v31.
 
 ============================================================
-9. FRONTEND TIMEOUT / LONG-RUN BEHAVIOR
+12. CONTENT INSIDE FACTOR ASSESSMENT COMMENTARY
 ============================================================
 
-Real SEC + Web + model runs can take several minutes.
+When expanded, reproduce the exact v31 hierarchy.
 
-The frontend must not falsely report:
-
-STEP25_BACKEND_UNAVAILABLE
-
-simply because a long assessment is still running.
-
-Retain/fix the long-running request handling already introduced.
-
-Requirements:
-
-- frontend timeout must be longer than legitimate backend Step 2.5 maximum;
-- timeout must produce STEP25_RUN_TIMEOUT, not BACKEND_UNAVAILABLE;
-- backend /health must distinguish actual backend outage;
-- Run Assessment button must enter a clear “assessment running” state;
-- duplicate clicks must be prevented;
-- existing page must remain responsive;
-- success must render when the result arrives;
-- a genuine failed assessment must render the real backend error;
-- do not leave rows permanently saying “assessment in progress” after a terminal failure.
-
-============================================================
-10. STEP 2.5 DATA MODEL — DO NOT DROP MODEL OUTPUT
-============================================================
-
-The backend persisted model must retain the complete Step 2.5 audit data required by the approved output schema.
-
-At minimum every factor assessment must retain:
-
-- factor_id;
-- factor_name;
-- source_step;
-- supplied weight;
-- score;
-- direction;
-- impact_rating;
-- rationale;
-- evidence_ids.
-
-Do not silently discard:
-weight,
-score,
-impact_rating,
-or other schema fields.
-
-Persist:
-
-scoring.ed_score
-scoring.si_score
-scoring.composite_score
-scoring.residual_rating
-scoring.credit_impact_rating
-
-All five are mandatory after a successful completed assessment.
-
-Persist:
-
-credit_conclusion.headline
-credit_conclusion.key_risk_driver
-credit_conclusion.current_rrr
-credit_conclusion.recommended_rrr_action
-credit_conclusion.current_class
-credit_conclusion.recommended_class_action
-credit_conclusion.confidence
-
-Persist:
-
-evidence[]
-evidence_gaps[]
-analyst_questions[]
-
-Do not put “Not available” into one of the five mandatory final scoring fields after successful factor assessment.
-
-============================================================
-11. RRR / CLASSIFICATION / CREDIT ACTION
-============================================================
-
-This was explicitly called out in the manager demo.
-
-If Step 2.2 supplies:
-
-current RRR
-and/or
-current classification,
-
-they MUST reach Step 2.5.
-
-The model must not manufacture them.
-
-Use Step 3a methodology to derive:
-
-recommended_rrr_action
-recommended_class_action
-
-when the required current anchor and evidence permit it.
-
-The UI must display the actual supplied current values and the model recommendation in the corresponding v31-style columns.
-
-Do not show a blank current RRR/classification merely because the Step 2.5 mapping forgot to carry Step 2.2 data.
-
-============================================================
-12. V31 STEP 2.5 OUTPUT / UI EXPECTATION
-============================================================
-
-Do not redesign Step 2.5.
-
-Use v31 as the visual baseline.
-
-The real Step 2.5 result must populate the equivalent v31 fields including where available:
-
-- Company Name
-- CAGID
-- Ticker / ID
-- Country of Risk
-- Industry L1
-- Industry L2
-- Industry L3
-- Total OSUC
-- OSUC-P
-- OSUC-PWL
-- OSUC-SM
-- OSUC-SS
-- OSUC-D/L
-- ED Score
-- SI Score
-- Composite Score
-- Residual Rating
-- Credit Impact Rating
-- Current RRR
-- Recommended RRR Action
-- Current Class
-- Recommended Class Action
-- Key Risk Driver
-- Impact Rating Override
-- User Credit Commentary
-
-Expanded row/details must show:
+First:
 
 EVENT-DRIVEN FACTORS
-with real factors, real weights and real Step 2.5 scores.
+
+Then:
 
 SECTOR-INHERENT FACTORS
-with real factors, real weights and real Step 2.5 scores.
 
-Also show the assessment commentary/evidence in the existing v31-style area.
+For each factor, render the detailed Step 2.5 content in the same pattern
+as v31.
 
-Analyst-owned fields:
-- Impact Rating Override
-- User Credit Commentary
+The screenshots show a structure similar to:
 
-must remain user/UI owned.
+RF / SI-RF factor name
+Score
+Impact
 
-The model must not fabricate them.
+Vulnerability:
+<detailed explanation>
 
-============================================================
-13. STEP 2.5 EXECUTION SCALE / MINI-BATCHING
-============================================================
+Buffer:
+<mitigants / strengths / offsetting factors>
 
-The manager clarified the target behavior.
+then compact status badges/labels where v31 provides them.
 
-The final portfolio may contain more than one company.
+DO NOT dump one giant JSON rationale string.
 
-Individual Step 2.5 analytical execution remains ONE COMPANY PER MODEL ASSESSMENT.
+Map the real Step 2.5 factor fields into:
 
-For the POC, process the selected confirmed portfolio as mini-batches.
+FACTOR TITLE
+SCORE
+IMPACT
+VULNERABILITY
+BUFFER / MITIGANT
+COMMENTARY / SUPPORTING DETAIL
 
-Maximum:
-10 companies per batch.
+according to the actual v31 source.
 
-If 1–10 companies:
-run those companies.
+If the current backend factor output does not separately provide
+Vulnerability and Buffer but the Step 3a methodology/prompt produces
+them inside structured assessment content:
 
-If >10:
-process:
-1–10
-then 11–20
-then 21–30
-etc.
+map them correctly.
 
-Do not create a single giant prompt containing the entire portfolio.
+If the current schema genuinely lacks required v31 fields:
 
-For each company:
-- use its own Step 2.2 context;
-- use the confirmed shared Step 2.1 scenario;
-- use the confirmed Step 2.3 factors;
-- use the confirmed Step 2.4 factors;
-- execute one company-level Step 2.5 assessment;
-- persist independently;
-- render that company's row when complete.
+make the MINIMUM additive backend/schema mapping necessary to preserve
+those already-produced model fields.
 
-One company failure must not erase already completed companies.
-
-For the first technical proof after this implementation:
-DO NOT begin by running 149 companies.
-
-Prove one known public-company assessment first.
-
-Then prove a second company.
-
-Then ensure the UI batching machinery is ready.
-
-The user's manual UI test can then exercise the desired portfolio.
+Do NOT redesign the analytical methodology.
 
 ============================================================
-14. INSPECT ACTUAL DATA — DO NOT ASSUME
+13. STEP 3a FINANCIAL FACTOR CONTENT
 ============================================================
 
-Before implementing mappings, inspect the actual structures returned by:
+The final Step 2.5 details should reflect the real original
+Factor Analysis — Financials methodology.
 
-Step 2.1 confirmed state
-Step 2.2 portfolio source
-Step 2.3 confirmed state
-Step 2.4 confirmed state
+Relevant categories observed in v31/demo include concepts such as:
 
-Search the existing code/models for every available field.
+- Earnings & Cash Flow Resilience;
+- Liquidity & Short-Term Funding;
+- Leverage & Debt Service Capacity;
+- Capital / tangible-equity resilience;
+- refinancing / maturity pressure;
+- other confirmed Event-Driven/Sector-Inherent factors.
 
-Especially inspect whether these exist under alternate names:
+Do NOT hardcode those example factor names.
 
-RRR
-relationship_risk_rating
-current_rrr
+Use the actual confirmed Step 2.3 and Step 2.4 factors.
 
-credit classification
-current_class
+The UI layout is static v31.
 
-country_name
-country_of_risk
-relationship_country
+The factor content is dynamic RPR data.
 
-OSUC
-OSUC Amt
-total_osuc
+============================================================
+14. COLORS — COPY v31 EXACTLY
+============================================================
+
+The current Step 2.5 color treatment is unacceptable.
+
+Do NOT manually pick colors based on interpretation.
+
+Read the actual v31 CSS.
+
+Identify exact styles for:
+
+- table header background;
+- table header text;
+- normal body text;
+- muted text;
+- row backgrounds;
+- expanded row;
+- section headings;
+- green / low badges;
+- amber / medium badges;
+- red / high badges;
+- score cells;
+- credit impact cells;
+- RRR action labels;
+- class action labels;
+- analyst override select;
+- buttons;
+- borders;
+- hover states;
+- disabled states;
+- commentary expansion.
+
+COPY those exact declarations.
+
+If v31 uses CSS variables, reuse them.
+
+If it uses hex/rgb values, copy them.
+
+Do not create:
+
+new teal
+new blue
+new bright green
+new gradients
+new shadows
+new badge palette.
+
+No visual experimentation.
+
+============================================================
+15. TYPOGRAPHY / SPACING — COPY v31
+============================================================
+
+Read exact v31 values for:
+
+font-family
+font-size
+font-weight
+line-height
+letter spacing if any
+text-transform
+padding
+margin
+row height
+section gap
+cell padding
+border widths
+radius
+button height
+select height.
+
+Use them.
+
+Do not estimate from screenshot.
+
+============================================================
+16. IMPACT RATING OVERRIDE
+============================================================
+
+Restore the exact v31 analyst control.
+
+The screenshots show options equivalent to:
+
+Low Impact
+Medium Impact
+High Impact
+
+Use the exact options/labels found in v31.
+
+This is ANALYST OWNED.
+
+Do not automatically overwrite this field with the model's
+credit_impact_rating.
+
+The model result may provide the AI assessment.
+
+Impact Rating Override remains human input.
+
+============================================================
+17. USER CREDIT COMMENTARY
+============================================================
+
+Restore the exact v31 field.
+
+Keep it editable by the analyst.
+
+Do not automatically replace analyst commentary with model narrative.
+
+Persist/reuse existing value according to the existing application logic.
+
+============================================================
+18. RRR / CLASSIFICATION / CREDIT ACTION
+============================================================
+
+Populate the corresponding v31 columns from REAL Step 2.2 + Step 2.5
+data.
+
+Where Step 2.2 supplies:
+
+Current RRR
+Current Class
+
+display them.
+
+Where Step 2.5 legitimately returns:
+
+Recommended RRR Action
+Recommended Class Action
+
+display them.
+
+Do not fabricate missing current values.
+
+Do not hide available values because current mapping forgot them.
+
+============================================================
+19. OSUC / PORTFOLIO INFORMATION
+============================================================
+
+Step 2.5 should retain the portfolio information the manager showed.
+
+Inspect actual Step 2.2 source fields.
+
+Map real available:
+
+CAGID
+company name
+country/full country name
+industry L1/L2/L3
+Total OSUC
 OSUC-P
-PWL
-SM
-SS
-D/L
+OSUC-PWL
+OSUC-SM
+OSUC-SS
+OSUC-D/L
+MLE if present
+RRR
+classification
+other real relevant fields.
 
-industry sensitivity
-sensitivity
-sector sensitivity
-industry impact
+Do not manufacture unavailable data.
 
-Do not create duplicate fields unnecessarily.
+Do not add huge textual "Not supplied by Step 2.2..." blocks that distort
+the table.
 
-Map actual upstream names into the Step 2.5 CompanyContextJSON / factor JSON payload.
-
-============================================================
-15. LIVE TESTING — REQUIRED, NOT OPTIONAL
-============================================================
-
-After implementation:
-
-A. Restart backend cleanly using the current working environment.
-
-B. Verify:
-/health = 200
-
-C. Verify token/preflight with the freshly supplied token.
-
-D. Run ONE real known public-company assessment.
-
-Use a company with reliable SEC identity such as the existing Apple test only for the initial integration proof.
-
-This must be a REAL Runner execution.
-
-Acceptance for that run:
-
-CONTEXT_HTTP = 200
-RUNNER_AUTH = PASS
-PRESET_TOOL_CALLED = PASS
-PRESET_TOOL_COMPLETED = PASS
-SEC = PASS or legitimate evidence-specific PARTIAL with explanation
-WEB = PASS
-MODEL_FINAL_RESPONSE = PASS
-JSON_PARSED = PASS
-SCHEMA_VALID = PASS
-ASSESSMENT_PERSISTED = PASS
-
-and:
-
-ED_SCORE = numeric 1.0–5.0
-SI_SCORE = numeric 1.0–5.0
-COMPOSITE_SCORE = numeric 1.0–5.0
-RESIDUAL_RATING = LOW | MEDIUM | HIGH
-CREDIT_IMPACT = LOW_IMPACT | MEDIUM_IMPACT | HIGH_IMPACT
-
-Also verify:
-
-- factor count matches confirmed upstream factors;
-- every factor appears exactly once;
-- factor IDs preserved;
-- weights preserved;
-- scores persisted;
-- impact ratings persisted;
-- evidence references point to returned evidence;
-- Step 2.1 scenario content is present;
-- Step 2.2 company data is present;
-- Step 2.3 full factor content is present;
-- Step 2.4 full factor content is present.
-
-E. Run a second real company to prove the solution is not Apple-specific.
-
-If it lacks a confirmed CIK, validate the graceful non-fabricating Web path.
-
-F. Verify frontend receives and renders the persisted results.
+Use the same compact blank/unavailable presentation convention as v31.
 
 ============================================================
-16. COMPLETE UI READINESS TEST
+20. RUN ASSESSMENT — EXACT USER EXPERIENCE
 ============================================================
 
-After backend live success, verify the CURRENT:
+There is ONE normal portfolio-level:
 
-UI Design\step23.html
+RUN ASSESSMENT
 
-can support the user's manual workflow.
+button in the v31 location.
 
-Do not replace it with another HTML file.
+No normal company dropdown.
 
-Confirm:
+No normal Quick Scan control.
 
-Step 2.1 = confirmed
-Step 2.2 = confirmed
-Step 2.3 = confirmed
-Step 2.4 = confirmed
-Step 2.5 = eligible
+Clicking Run Assessment:
 
-Company dropdown uses the confirmed Step 2.2 portfolio.
+1. reads confirmed Step 2.2 portfolio;
+2. validates confirmed 2.3/2.4;
+3. builds mini-batches max 10;
+4. executes the already-working company-level Step 2.5 unit;
+5. persists results independently;
+6. progressively populates the existing table rows;
+7. continues automatically until all selected companies are completed or
+   individually failed.
 
-SEC + Web can be selected.
+No user confirmation between companies/batches.
 
-Run Assessment is enabled when genuine prerequisites are satisfied.
+No approval prompts.
 
-Clicking Run Assessment invokes the REAL backend.
-
-The row shows running state.
-
-Successful result replaces running state.
-
-ED/SI factor details appear.
-
-The v31 columns populate from real persisted data.
-
-No fake demo scores remain in the real run path.
-
-Technical diagnostics can remain collapsed.
-
-Feedback input remains functional.
+No manual company reselection.
 
 ============================================================
-17. DO NOT BREAK THESE THINGS
+21. RUNNING STATE
 ============================================================
 
-Do not break:
+Do not transform the UI during execution.
 
-- Trigger 1;
-- Step 1;
-- AI Assist replacement theme;
-- feedback controls;
-- Step 2.1;
-- Step 2.2 confirmed portfolio;
-- Step 2.3 confirmed factors;
-- Step 2.4 confirmed factors;
-- v31 visual backbone;
-- legacy/non-Stylus Step 2.5 code paths;
-- CAM paths;
-- existing token cache behavior;
-- existing company-selection behavior.
+The table remains visible.
 
-Do not convert this POC into production architecture.
+Each company may show a compact v31-consistent state such as:
+
+Queued
+Running
+Complete
+Failed
+
+only if necessary and styled consistently with v31.
+
+Do NOT add huge progress cards.
+
+If showing batch status:
+
+keep it subtle.
+
+Example:
+
+Assessing 11–20 of 27
+
+No new visual workflow.
 
 ============================================================
-18. NO REPORTING LOOP
+22. PERFORMANCE — DO NOT SACRIFICE QUALITY
+============================================================
+
+Do not bring back a visible Quick Scan merely to avoid token expiry.
+
+The maximum-10 batching is the manager-approved quality control.
+
+Use existing bounded token/retry mechanisms invisibly.
+
+Do NOT lower SEC/Web evidence quality merely to make the page finish fast.
+
+But also do not unnecessarily serialize every internal operation if safe
+bounded concurrency already exists or can be implemented minimally.
+
+Any concurrency change must preserve:
+
+- one independent company assessment;
+- max-10 logical batch;
+- evidence quality;
+- Runner stability;
+- deterministic persistence.
+
+Do NOT make 10 uncontrolled concurrent Runner calls.
+
+For this POC, correctness and demonstrability come before aggressive
+performance optimization.
+
+============================================================
+23. PRESERVE ALL REAL STEP 2.5 RESULT DATA
+============================================================
+
+Do not throw away model output just because v31 displays it more compactly.
+
+Persist:
+
+factor assessments
+weights
+scores
+impact
+directions
+vulnerability/buffer content where available
+rationale
+evidence
+evidence gaps
+analyst questions
+credit conclusion
+ED/SI/composite
+ratings/actions.
+
+DISPLAY only according to the v31 hierarchy.
+
+Persistence richness != visual clutter.
+
+============================================================
+24. NO RAW MODEL-DUMP UI
+============================================================
+
+The following current pattern must disappear from the normal expanded row
+unless v31 explicitly places it there:
+
+NARRATIVE
+RISK DIRECTION
+SUPPORTING EVIDENCE
+DISCONFIRMING EVIDENCE
+EVIDENCE GAPS
+ANALYST QUESTIONS
+
+as giant always-visible blocks.
+
+Do not delete underlying data.
+
+Relocate it into the appropriate v31 commentary/detail/evidence section.
+
+============================================================
+25. STEP 2.4 VISUAL CONSISTENCY
+============================================================
+
+While touching shared styles, ensure Step 2.4 remains visually aligned with
+v31.
+
+Do NOT redesign Step 2.4.
+
+Do not spend this task rebuilding it.
+
+Only avoid introducing styles that make Step 2.4 diverge further.
+
+============================================================
+26. STRICT SOURCE-READ REQUIREMENT
+============================================================
+
+Before writing any Step 2.5 HTML/CSS/JS:
+
+you MUST have inspected the relevant v31 implementation.
+
+Do not write a replacement from memory.
+
+Do not rely only on screenshots.
+
+If an exact visual/detail question arises:
+
+ANSWER IT BY READING v31 SOURCE.
+
+Do not ask me.
+
+Do not guess.
+
+This includes tiny details such as:
+
+which border color
+which padding
+which text size
+whether a heading is uppercase
+where chevrons sit
+which side a score badge appears
+whether a section starts collapsed
+column widths
+alignment
+control heights
+hover states.
+
+READ THE SOURCE.
+
+============================================================
+27. IMPLEMENTATION STRATEGY
+============================================================
+
+Use this order:
+
+PHASE 1
+Read v31 Step 2.5 HTML/CSS/JS completely.
+
+PHASE 2
+Make a temporary internal structural map of:
+- table;
+- columns;
+- expanded row;
+- ED panel;
+- SI panel;
+- Overall Composite Details;
+- Factor Assessment Commentary;
+- detailed factors;
+- controls;
+- buttons.
+
+Do not report it to me.
+
+PHASE 3
+Replace/refactor ONLY the current Step 2.5 presentation renderer to use
+that v31 structure.
+
+PHASE 4
+Wire existing real backend Step 2.5 fields into it.
+
+PHASE 5
+Remove visible Quick Scan / company dropdown dependency.
+
+PHASE 6
+Connect portfolio-level Run Assessment batching.
+
+PHASE 7
+Test with static existing persisted assessment first to verify exact layout
+without spending Runner tokens.
+
+PHASE 8
+Then execute ONE real SEC+Web UI test.
+
+PHASE 9
+Fix any actual render/data defects.
+
+PHASE 10
+Leave application ready for my manual test.
+
+============================================================
+28. VISUAL ACCEPTANCE — SCREENSHOT COMPARISON
+============================================================
+
+Before declaring completion:
+
+open/render:
+
+A. v31 Step 2.5
+B. current step23 Step 2.5
+
+Compare them side-by-side.
+
+Check:
+
+section positioning
+table structure
+header styling
+column ordering
+ED/SI summary
+80/20 labels
+Overall Composite Score Details
+Factor Assessment Commentary
+collapsed state
+expanded state
+factor-detail hierarchy
+Vulnerability
+Buffer
+score badges
+credit impact badges
+RRR/classification/action controls
+override select
+commentary input
+Run Assessment
+Confirm Assessment
+Export
+feedback section
+spacing
+colors
+borders
+typography.
+
+If a meaningful difference remains and v31 source provides the solution:
+
+FIX IT.
+
+Do not declare "close enough".
+
+============================================================
+29. BACKEND RULE
+============================================================
+
+The existing working SEC+Web backend / Stylus execution remains the
+backbone.
+
+Do not redesign it merely to implement frontend parity.
+
+Only add mappings/fields where the real model already produces data needed
+by the v31 structure.
+
+No new assessment methodology.
+
+No fake output.
+
+============================================================
+30. NO REPORTING / NO APPROVAL
 ============================================================
 
 During implementation:
 
-DO NOT stop and tell me:
-“I found X.”
-“I need your confirmation.”
-“Would you like me to change Y?”
-“Here are 20 findings.”
-“Here is a forensic report.”
-“Which option do you want?”
+DO NOT stop for approval.
 
-You have approval for all bounded fixes required by this prompt.
+DO NOT send progress reports.
 
-Work autonomously.
+DO NOT produce design documents.
 
-If something differs from your expectation:
-inspect it,
-make the safest minimal decision consistent with this contract,
-implement it,
-test it,
-continue.
+DO NOT ask me which style I prefer.
+
+v31 answers the style question.
+
+Continue autonomously.
 
 ============================================================
-19. STOP CONDITION
+31. SUCCESS CONDITION
 ============================================================
 
-You may stop only when either:
+Do not stop until:
 
-A.
+STEP23_STEP25_STRUCTURE_MATCHES_V31 = PASS
+STEP23_STEP25_COLORS_MATCH_V31 = PASS
+STEP23_STEP25_TABLE_MATCHES_V31 = PASS
+ED_80_PANEL = PASS
+SI_20_PANEL = PASS
+OVERALL_COMPOSITE_DETAILS = PASS
+FACTOR_ASSESSMENT_COMMENTARY_COLLAPSED = PASS
+FACTOR_ASSESSMENT_COMMENTARY_EXPANDED = PASS
+VULNERABILITY_BUFFER_LAYOUT = PASS
+RRR_CLASSIFICATION_CONTROLS = PASS
+IMPACT_OVERRIDE = PASS
+USER_COMMENTARY = PASS
+NO_COMPANY_DROPDOWN_DEPENDENCY = PASS
+NO_VISIBLE_QUICK_SCAN_WORKFLOW = PASS
+PORTFOLIO_INHERITED_FROM_STEP22 = PASS
+MAX_10_INTERNAL_BATCHING = PASS
+REAL_STEP25_RESULT_RENDERING = PASS
+RUN_ASSESSMENT = PASS
 
-READY_FOR_USER_UI_2_1_TO_2_5_SEC_WEB_TEST = YES
+and:
 
-OR
-
-B.
-
-A genuinely external blocker remains that cannot be fixed in this repository/environment.
-
-If B occurs, do not give a huge report.
-
-Give only:
-EXTERNAL_BLOCKER=<exact blocker>
-LAST_SUCCESSFUL_STAGE=<stage>
-USER_ACTION_REQUIRED=<single action>
+READY_FOR_USER_UI_TEST = YES
 
 ============================================================
-20. FINAL RESPONSE — KEEP IT SHORT
+32. FINAL RESPONSE — MINIMAL ONLY
 ============================================================
 
-Do not give me another long report.
+When finished, do not write a long report.
 
-When complete, respond only with this compact format:
+Return only:
 
 IMPLEMENTATION = PASS/FAIL
-BACKEND = PASS/FAIL
-RUNNER_AUTH = PASS/FAIL
-REAL_SEC_WEB_RUN_1 = PASS/FAIL
-REAL_SEC_WEB_RUN_2 = PASS/FAIL
-JSON_SCHEMA = PASS/FAIL
-STEP22_FULL_CONTEXT = PASS/FAIL
-STEP23_FULL_FACTORS_WEIGHTS_SENSITIVITY = PASS/FAIL
-STEP24_FULL_FACTORS_WEIGHTS_SENSITIVITY = PASS/FAIL
-RRR_CLASSIFICATION_MAPPING = PASS/FAIL
-OSUC_EXPOSURE_MAPPING = PASS/FAIL
-V31_REAL_RESULT_RENDERING = PASS/FAIL
-MINI_BATCH_READY = PASS/FAIL
-READY_FOR_USER_UI_2_1_TO_2_5_SEC_WEB_TEST = YES/NO
-
-If YES:
-give me only the exact commands needed to start the backend and open the UI.
+V31_VISUAL_PARITY = PASS/FAIL
+ED_80_SI_20 = PASS/FAIL
+OVERALL_COMPOSITE_DETAILS = PASS/FAIL
+FACTOR_ASSESSMENT_COMMENTARY = PASS/FAIL
+PORTFOLIO_AUTO_INHERIT = PASS/FAIL
+QUICK_SCAN_REMOVED_FROM_UI = PASS/FAIL
+COMPANY_DROPDOWN_REMOVED = PASS/FAIL
+BATCHING_MAX_10 = PASS/FAIL
+REAL_RESULT_MAPPING = PASS/FAIL
+RUN_ASSESSMENT = PASS/FAIL
+READY_FOR_USER_UI_TEST = YES/NO
 
 If NO:
-give me only the single first remaining blocker.
+FIRST_REMAINING_BLOCKER=<one line>
 
-START IMPLEMENTING NOW.
-DO NOT ASK FOR APPROVAL.
-CONTINUE AUTONOMOUSLY UNTIL THE STOP CONDITION ABOVE IS MET.
+No additional report.
+
+START BY READING THE ACTUAL v31 STEP 2.5 SOURCE.
+DO NOT WRITE ANY UI CODE UNTIL THAT SOURCE INSPECTION IS COMPLETE.
