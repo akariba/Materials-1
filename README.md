@@ -1,21 +1,62 @@
-Do not change anything.
+DO NOT start another run.
 
-The Apple job is polling successfully but has remained at:
+Use the Apple job that is ALREADY RUNNING.
 
-phase = CIK_RESOLVED
+We have now proven:
 
-for several minutes.
+CIK resolved = YES
+Runner HTTP = 200
+Stream opened = YES
+First SSE event = YES
+Job/poll mechanism = working
+Current Apple Runner execution = >8 minutes and still running
 
-Tell me exactly which operation is currently executing AFTER
-CIK_RESOLVED and BEFORE the next job phase update.
+I want ONE answer now:
 
-Check the live backend logs for this exact Apple job.
+Determine whether the backend Apple invocation is materially the SAME
+request as the manual Stylus Apple run that completed in approximately
+2 minutes.
 
-Return only:
+Compare, without exposing secrets:
 
-CIK: 0000320193
-CURRENT OPERATION:
-RUNNER REQUEST STARTED: YES/NO
-RUNNER HTTP STATUS:
-STREAM OPEN: YES/NO
-LAST BACKEND CHECKPOINT:
+1. preset being invoked
+2. model
+3. CompanyContextJSON
+4. ScenarioContextJSON
+5. EventDrivenFactorsJSON
+6. SectorInherentFactorsJSON
+7. AssessmentAsOfDate
+8. additional SEC grounding/context supplied by backend
+9. additional instructions/prompts supplied by backend
+10. number of tool/search actions requested
+11. approximate input/context size
+
+DO NOT modify code.
+DO NOT stop the running Apple job.
+DO NOT start another Apple job.
+DO NOT work on Step 3.
+
+Also inspect the CURRENT live SSE stream and tell me whether:
+
+A. it is still genuinely producing new tool/model activity,
+
+or
+
+B. useful final assessment content has already appeared but the backend
+is waiting for the wrong completion marker.
+
+Return ONLY:
+
+MANUAL VS BACKEND PAYLOAD: SAME / DIFFERENT
+
+KEY DIFFERENCES:
+<short list>
+
+CURRENT RUNNER STATE:
+ACTIVE PROCESSING / FINAL CONTENT ALREADY PRESENT / NO NEW ACTIVITY
+
+LAST REAL RUNNER EVENT:
+<short description>
+
+MOST LIKELY REASON FOR 2-MIN VS 8+-MIN DIFFERENCE:
+<one concise explanation>
