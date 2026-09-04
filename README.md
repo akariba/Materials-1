@@ -1,31 +1,34 @@
-Step 2.2 has now been confirmed in the LIVE RPR UI.
+Step 2.3 has now been confirmed in the LIVE RPR UI.
 
 Do NOT modify code.
-Do NOT proceed to Step 2.3.
-Do NOT start Stylus.
+Do NOT regenerate factors.
+Do NOT use fixtures or synthetic factors.
+Do NOT proceed to Step 2.4.
 
 Check the authoritative backend persisted state NOW.
 
-The browser currently shows:
-
-Sector/L3: Banks - Major
-Matching companies: 2
-- COMMERZBANK AG
-- DEUTSCHE BANK AG
-
 Return only:
 
-STEP 2.2 LIVE PERSISTENCE: PASS / FAIL
-STEP22_CONFIRMED LOG RECEIVED: YES / NO
+STEP 2.3 LIVE PERSISTENCE: PASS / FAIL
+STEP23_CONFIRMED LOG RECEIVED: YES / NO
 
-SECTOR/L3:
-PORTFOLIO PRESENT: YES / NO
+STEP 2.3 CONFIRMED: YES / NO
+REAL STEP 2.3 FACTOR COUNT:
 
-PERSISTED COMPANY COUNT:
-PERSISTED COMPANY 1:
-PERSISTED COMPANY 1 ID:
-PERSISTED COMPANY 2:
-PERSISTED COMPANY 2 ID:
+FACTOR 1 ID:
+FACTOR 1 NAME:
 
-COMPANY NAMES PRESENT: YES / NO
-COMPANY IDS PRESENT: YES / NO
+FACTOR 2 ID:
+FACTOR 2 NAME:
+
+FACTOR 3 ID:
+FACTOR 3 NAME:
+
+FACTOR 4 ID:
+FACTOR 4 NAME:
+
+FACTOR 5 ID:
+FACTOR 5 NAME:
+
+FACTOR WEIGHTS TOTAL:
+REAL FACTORS ONLY: YES / NO
