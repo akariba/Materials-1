@@ -1,303 +1,320 @@
-STRICT FIX — APPLE ONLY — RUNNER INVOCATION
+STRICT FIX — STEP 2.5 JOB COMPLETION / POLLING
 
-We finally have a CLEAN reproducible failure.
+We now have definitive evidence.
 
-Verified:
+DO NOT investigate anything else.
 
-90-SECOND BACKEND IDLE TEST: PASS
-Unexpected requests: NONE
+VERIFIED:
 
-Then Apple alone was executed:
+- Runner invocation works.
+- Initial stale-token 401 is recovered automatically.
+- Retry returns HTTP 200.
+- Runner stream opens.
+- First SSE event arrives.
+- Genuine final Apple response is received.
+- Apple assessment JSON parses successfully.
+- The backend eventually completes the Apple assessment.
+- The diagnostic/client gives up after ~360 seconds BEFORE the backend
+  has finished returning the result.
 
-Company: Apple Inc.
-Ticker: AAPL
-CIK: 0000320193
+Therefore the remaining problem is NOT:
 
-Result:
+- SEC
+- Stylus preset
+- Runner connectivity
+- SSE stream opening
+- model execution
+- artifact parsing
+- Step 2.4
+- Step 3
+- UI styling.
 
-APPLE TEST: FAIL
-RUNNER TIME: >360s
-FINAL RESPONSE RECEIVED: NO
-ARTIFACT PARSED: NO
-EVIDENCE VALIDATED: NO
-SCORING CREATED: NO
-JOB COMPLETED: NO
+The problem is the Step 2.5 HTTP/job lifecycle.
 
-FAILURE POINT:
-RUNNER_STREAM_OPEN
-
-Therefore:
-
-DO NOT investigate SEC.
-DO NOT investigate evidence citations.
-DO NOT investigate scoring.
-DO NOT modify Step 2.5 UI.
-DO NOT modify Step 3.
-DO NOT modify Step 2.4.
-DO NOT modify the Stylus preset.
-DO NOT run 10 companies.
-
-None of those stages have been reached.
-
-Your task is now to FIX ONLY:
-
-Python backend
-→ Runner Service / Stylus invocation
-→ stream opens
-→ final response returns.
-
-Do not return another diagnostic-only report.
-
-Find the actual difference between a working Runner invocation and the
-currently failing stylus_engine.py invocation, fix it, and rerun Apple
-until it succeeds.
+FIX IT NOW.
 
 ============================================================
-1. USE THE KNOWN WORKING IMPLEMENTATIONS AS REFERENCE
+1. DO NOT KEEP /run OPEN FOR THE WHOLE STYLUS EXECUTION
 ============================================================
 
-Search the repository for every existing Runner invocation.
+Inspect the existing RPR job/poll infrastructure.
 
-In particular inspect:
+Reuse it.
 
-- the colleague's app.py / Swagger implementation that previously
-  demonstrated working Runner execution;
+Do NOT invent a new framework.
 
-- any direct_runner implementation;
+The intended behaviour must be:
 
-- any previous working Step 2.5 Runner test scripts;
+User clicks Run Assessment
+        ↓
+POST /api/v1/rpr/step25/run
+        ↓
+backend creates/starts Step 2.5 job
+        ↓
+POST returns quickly with job_id / accepted state
+        ↓
+Runner/Stylus continues in backend
+        ↓
+frontend polls existing job/status endpoint
+        ↓
+when real final response exists:
+artifact parsed
+evidence validated
+scores created
+job = COMPLETED
+        ↓
+frontend displays completed assessment.
 
-- the existing stylus_engine.py path;
-
-- runner_client / Runner service helpers;
-
-- any code that previously achieved:
-  RUNNER_STREAM = OPEN / HTTP 200.
-
-Do NOT create a new Runner framework.
-
-We already have working patterns in this repository.
-
-Compare the failing Stylus invocation against the known-working one
-field by field.
-
-============================================================
-2. COMPARE THE ACTUAL RUNNER REQUEST
-============================================================
-
-For the failing Apple request, inspect exactly what is sent to Runner.
-
-Compare with a known-working Runner call:
-
-ENDPOINT
-HTTP method
-authentication header
-content type
-accept header
-streaming flag
-request body shape
-preset representation
-model settings
-input/context field
-conversation/message structure
-timeout configuration.
-
-Do not print secrets.
-
-The objective is to find the concrete request-level discrepancy.
+The browser must NOT hold one request open for 6–10 minutes.
 
 ============================================================
-3. CHECK TOKEN AT THE MOMENT OF THE RUN
+2. REUSE EXISTING JOB INFRASTRUCTURE
 ============================================================
 
-The backend startup log shows Runner token initialization and the
-background token auto-refresher.
+Search the repository for the existing job/poll pattern already used by:
 
-Verify immediately before Apple execution:
+- Step 1 discovery/enrichment
+- other long-running RPR operations
+- existing Step 2.5 job storage/status functions.
 
-token exists
-token is not expired
-seconds_remaining is sufficient.
+Reuse the smallest working pattern.
 
-If the active request accidentally uses a stale cached token instead of
-the refreshed token:
+Do NOT add:
+Celery
+Redis
+queues
+new frameworks
+production architecture.
 
-FIX THAT.
-
-Do not build another token system.
-
-Use the existing refreshed credential source.
-
-============================================================
-4. DETERMINE WHETHER RUNNER ACTUALLY RECEIVES THE REQUEST
-============================================================
-
-Instrument the existing Runner call minimally.
-
-We need these checkpoints:
-
-RUNNER_REQUEST_START
-
-RUNNER_HTTP_STATUS
-
-RUNNER_STREAM_OPEN
-
-FIRST_SSE_EVENT
-
-FINAL_SSE_EVENT
-
-Do not dump all event bodies.
-
-If there is no RUNNER_HTTP_STATUS:
-the problem is connection/request establishment.
-
-If there is a non-200 status:
-fix the actual request/auth problem.
-
-If HTTP 200 occurs but no FIRST_SSE_EVENT:
-fix streaming/SSE consumption.
-
-If events arrive but final event is missed:
-fix final-response handling.
-
-But DO NOT stop merely to tell me which one it is.
-
-Fix it and rerun Apple.
+POC only.
 
 ============================================================
-5. REUSE THE WORKING app.py PATTERN IF IT IS THE DIFFERENCE
+3. BACKEND MUST OWN THE LONG RUN
 ============================================================
 
-The project previously had a colleague's app.py / Swagger path that
-successfully invoked the same enterprise Runner capability.
+Once the Step 2.5 job starts:
 
-If that implementation has the working:
+closing the original HTTP request must NOT kill the Runner execution.
 
-request construction
-authentication
-stream handling
-SSE parsing
+The backend job continues until:
 
-then reuse the MINIMUM working code pattern inside the existing
-stylus_engine.py.
+COMPLETED
+FAILED
+or bounded backend timeout.
 
-Do NOT rebuild the application around app.py.
-
-Do NOT create another server.
-
-Simply make the existing Step 2.5 Stylus path invoke Runner the same
-known-working way.
+The browser is only polling status.
 
 ============================================================
-6. CHECK THE PRESET INVOCATION FORMAT
+4. FIX THE STALE TOKEN FIRST-REQUEST ISSUE TOO
 ============================================================
 
-The approved RPR POC decision remains:
+The latest test showed:
 
-use the existing inline full preset definition / Runner path.
+first Runner request = 401
+because it used a stale in-memory token
 
-No preset UUID investigation.
+then token refresh
+then retry = HTTP 200.
 
-Do not change the manual Stylus preset.
+This wastes time and is unnecessary.
 
-However, confirm the backend Runner payload represents the preset in
-the format the working Runner API actually expects.
+Before every new Runner execution, obtain the CURRENT token from the
+existing canonical refreshed token source.
 
-If the failing code sends a different shape than the known-working
-Runner call:
+Do not use a stale token captured when the engine/client object was
+constructed.
 
-correct the serialization.
+Do NOT redesign auth.
 
-============================================================
-7. DO NOT MIX THIS WITH SEC GROUNDING YET
-============================================================
+Simply make the existing Runner request read the freshest token before
+sending.
 
-For this test, preserve the current Apple inputs and grounding exactly
-as they are.
+Acceptance:
 
-Do not redesign or expand them.
-
-The immediate acceptance criterion is simply:
-
-Runner receives the request
-→ stream opens
-→ final model response reaches Python.
-
-Only after that can parsing/evidence/scoring matter.
+first Apple Runner request should normally be HTTP 200 without an
+intentional stale-token 401/retry.
 
 ============================================================
-8. HARD TIMEOUT
+5. PRESERVE REAL RUNNER COMPLETION
 ============================================================
 
-Keep the 6-minute maximum.
+Do not change the successful Runner/SSE logic you just proved.
 
-No retries.
+We already know:
 
-If a fix does not work, terminate that Apple attempt, correct the
-identified Runner invocation issue, and rerun Apple.
-
-Do not leave another 20–40 minute process running.
-
-============================================================
-9. SUCCESS CONDITION
-============================================================
-
-Do not stop at:
-
-HTTP request built
-token valid
-syntax correct
-unit test passed.
-
-Success requires the REAL Apple backend call to reach:
-
-RUNNER_HTTP_STATUS = 200
-RUNNER_STREAM_OPEN = YES
+STREAM_OPENED = YES
 FIRST_SSE_EVENT = YES
 FINAL_RESPONSE_RECEIVED = YES
+ARTIFACT_PARSED = YES.
 
-Then continue through the existing pipeline:
+Preserve this.
+
+Do not rewrite Runner handling again.
+
+============================================================
+6. COMPLETE THE PIPELINE AFTER THE FINAL RESPONSE
+============================================================
+
+Once the Apple final assessment is parsed, the backend job must continue
+through the existing pipeline:
 
 ARTIFACT_PARSED
-EVIDENCE_VALIDATED
-SCORING_CREATED
-JOB_COMPLETED.
+        ↓
+EVIDENCE_VALIDATION
+        ↓
+SCORING
+        ↓
+NORMALIZED RESULT
+        ↓
+JOB COMPLETED.
 
-If a later stage fails AFTER Runner is fixed, report that exact next
-failure, but do not go back into broad architecture analysis.
+The job status endpoint must expose the completed result.
 
 ============================================================
-10. FINAL RESULT
+7. FAILURE MUST ALSO TERMINATE CLEANLY
 ============================================================
 
-Return only after the fix/retest:
+If a genuine backend failure occurs:
 
-APPLE RUNNER FIX: PASS / FAIL
+job = FAILED
 
-RUNNER HTTP STATUS:
-STREAM OPENED: YES / NO
-FIRST SSE EVENT: YES / NO
+with a bounded technical error.
+
+Do not leave:
+
+Running...
+
+forever.
+
+Do not convert technical failure into a credit judgment.
+
+============================================================
+8. FRONTEND POLLING
+============================================================
+
+Modify only the minimum Step 2.5 frontend execution logic necessary.
+
+On Run Assessment:
+
+1. submit job;
+2. receive job id;
+3. display Running;
+4. poll status at a reasonable interval;
+5. when COMPLETED:
+   render assessment;
+6. when FAILED:
+   stop polling and show controlled failure state.
+
+No duplicate /run submission while a job is active.
+
+No automatic restart.
+
+No 32-company test during this task.
+
+============================================================
+9. APPLE ONLY ACCEPTANCE TEST
+============================================================
+
+After implementation:
+
+clean backend.
+
+Run ONLY:
+
+Apple Inc.
+AAPL
+CIK 0000320193.
+
+Do not run another company.
+
+Verify:
+
+POST /run returns promptly with a job id.
+
+Then poll.
+
+Runner continues in backend.
+
+Final Apple response arrives.
+
+Artifact parses.
+
+Evidence validates.
+
+Scoring is created.
+
+Job becomes COMPLETED.
+
+UI/status endpoint retrieves the result.
+
+No 6-minute client timeout failure.
+
+============================================================
+10. DO NOT STOP AT "JOB STARTED"
+============================================================
+
+Success requires:
+
+RUN REQUEST RETURNED QUICKLY: YES
+JOB ID CREATED: YES
+RUNNER HTTP 200: YES
+STREAM OPENED: YES
+FINAL RESPONSE RECEIVED: YES
+ARTIFACT PARSED: YES
+EVIDENCE VALIDATED: YES
+SCORING CREATED: YES
+JOB STATUS COMPLETED: YES
+RESULT RETRIEVABLE: YES
+
+============================================================
+11. DO NOT WORK ON ANYTHING ELSE
+============================================================
+
+Do NOT:
+
+- run 10 companies
+- work on Step 3
+- change the Stylus preset
+- alter SEC logic
+- alter evidence validation rules
+- redesign Step 2.5
+- work on v31 CSS
+- revisit Step 2.4.
+
+Get ONE Apple assessment completely through the job/poll path first.
+
+============================================================
+12. FINAL RESPONSE ONLY
+============================================================
+
+Do not send another diagnostic essay.
+
+Return only:
+
+APPLE JOB/POLL FIX: PASS / FAIL
+
+POST /run RETURN TIME:
+JOB ID:
+FIRST RUNNER HTTP STATUS:
+RUNNER EXECUTION TIME:
 FINAL RESPONSE RECEIVED: YES / NO
-RUNNER TIME:
-
 ARTIFACT PARSED: YES / NO
 EVIDENCE VALIDATED: YES / NO
-SCORING CREATED: YES / NO
+ED SCORE:
+SI SCORE:
+COMPOSITE SCORE:
+RESIDUAL RATING:
+CREDIT IMPACT RATING:
 JOB COMPLETED: YES / NO
+RESULT RETRIEVABLE BY UI: YES / NO
 
 ROOT CAUSE:
-one sentence
-
-FIX:
 one sentence
 
 FILES CHANGED:
 exact paths
 
-NEXT FAILURE POINT:
-NONE
-or exact next checkpoint
+NEXT FAILURE:
+NONE or exact checkpoint
 
-Do not work on any other RPR component.
-
-FIX THE EXISTING RUNNER INVOCATION AND PROVE IT WITH APPLE.
+IMPLEMENT THE FIX AND TEST APPLE END TO END.
