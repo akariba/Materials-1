@@ -1,36 +1,140 @@
-Take ONE public company from the confirmed Step 2.2 Software population.
+STOP THE CURRENT BATCH TEST.
 
-I do NOT have CIK in Step 2.2 and I do not want to enter it manually.
+We now have a very important comparison:
 
-Use the identifiers already available in Step 2.2, such as:
+MANUAL STYLUS:
+- Apple Inc.
+- ticker AAPL
+- CIK 0000320193
+- preset completes in approximately 2 minutes
+- apple_step25_assessment.json is produced
 
-- company name
-- RIC
-- CUSIP
-- ISIN
-- SEDOL
-- country
-- internal company ID
+CURRENT UI:
+- shows 32 entities
+- 0 assessed / 32
+- visible population includes Banks / Banks-SPV
+- first assessment remains Running for 30+ minutes
 
-to identify the public issuer.
+These are NOT equivalent tests.
 
-Then use the existing cik_resolver.py / SEC company mapping logic to
-derive the REAL CIK automatically.
+Do ONE thing only now.
 
-Do NOT treat CUSIP, ISIN, SEDOL or RIC as a CIK.
+Do NOT modify:
+- Stylus preset
+- Step 2.4
+- Step 2.5 UI design
+- Step 3
+- scoring methodology
+- evidence validation
+- 10-company logic
 
-After resolving the CIK, verify it against SEC by checking that the
-returned SEC company name/ticker corresponds to the Step 2.2 company.
+Do NOT run 32 companies.
 
-DO NOT call Stylus.
-DO NOT retrieve Step 2.5 assessment yet.
+Take EXACTLY ONE company:
 
-Return only:
+Apple Inc.
+ticker = AAPL
+CIK = 0000320193
 
-STEP 2.2 COMPANY:
-IDENTIFIERS AVAILABLE:
-RESOLVED TICKER:
-RESOLVED CIK:
-SEC VERIFIED COMPANY NAME:
-MATCH: YES / NO
-RESULT: PASS / FAIL
+Use the same scenario / ED factors / SI factors that were used in the
+successful manual Stylus test.
+
+Now invoke Apple through the EXACT backend Step 2.5 route that the UI
+Run Assessment button uses.
+
+The purpose is to determine why:
+
+manual Stylus = ~2 minutes
+
+but
+
+UI/backend path = 30+ minutes.
+
+Use a HARD upper timeout of 6 minutes for this diagnostic.
+
+NO retries.
+NO second company.
+NO batch loop.
+
+Trace these exact checkpoints with timestamps:
+
+1. BACKEND_REQUEST_RECEIVED
+
+2. COMPANY_SELECTED
+   Confirm only Apple is being assessed.
+
+3. STYLUS_RUN_STARTED
+
+4. RUNNER_STREAM_OPEN
+
+5. STYLUS_FINAL_RESPONSE_RECEIVED
+
+6. ARTIFACT_PARSED
+
+7. EVIDENCE_VALIDATION_STARTED
+
+8. EVIDENCE_VALIDATION_FINISHED
+
+9. SCORING_CREATED
+
+10. JOB_STATUS_SET_COMPLETED
+
+11. HTTP_RESPONSE_RETURNED
+
+At each checkpoint print only elapsed seconds and safe status.
+
+Also compare the actual backend payload sent to Stylus with the manual
+Apple preset inputs.
+
+Confirm whether they are materially the same.
+
+IMPORTANT:
+
+The manual Apple artifact currently appears to contain SEC evidence
+entries where some fields show:
+
+url = null
+accession_number = null
+
+Do NOT hide this.
+
+If that causes backend evidence validation to reject the assessment,
+report exactly:
+
+EVIDENCE_VALIDATION_FAIL
+
+and identify which evidence IDs failed.
+
+Do NOT retry for 30 minutes.
+
+If the Runner sends its final answer but our backend fails to recognize
+it, report exactly:
+
+FINAL_HANDOFF_FAIL
+
+If the final answer is recognized but parsing fails, report:
+
+PARSE_FAIL
+
+If parsing succeeds but evidence validation fails, report:
+
+EVIDENCE_VALIDATION_FAIL
+
+If everything succeeds:
+
+ONE_COMPANY_UI_PATH_PASS
+
+Your final response must contain ONLY:
+
+COMPANY: Apple Inc.
+BACKEND POPULATION USED: <number>
+RUNNER TIME: <seconds>
+FINAL RESPONSE RECEIVED: YES/NO
+ARTIFACT PARSED: YES/NO
+EVIDENCE VALIDATED: YES/NO
+SCORING CREATED: YES/NO
+JOB COMPLETED: YES/NO
+TOTAL TIME: <seconds>
+FAILURE POINT: <exact checkpoint or NONE>
+
+Do not continue to another task.
