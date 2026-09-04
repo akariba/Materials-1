@@ -1,44 +1,45 @@
-LIVE STATE VERIFICATION AFTER REBUILD — NO CODE CHANGES
+STOP. Do not modify code.
 
-I have now completed the real workflow again after the backend restart:
+I am on the live Step 2.5 screen.
 
-- Step 2.1 confirmed
-- Step 2.2 Banks - Major portfolio confirmed
-- Step 2.3 real factors confirmed
-- Step 2.4 real factors confirmed
+Upstream state is already proven and must remain untouched:
+- Step 2.1 persisted
+- Step 2.2 persisted
+- Step 2.3 = 5 real factors
+- Step 2.4 = 5 real factors
 
-I am now at Step 2.5.
+The confirmed Step 2.2 portfolio contains exactly:
+1. COMMERZBANK AG
+2. DEUTSCHE BANK AG [DE FRANKFURT AM MAIN]
 
-Do NOT modify code.
-Do NOT start Stylus.
-Do NOT call /run.
-Do NOT change the preset.
-Do NOT touch Steps 2.1–2.4.
+On Step 2.5, Run Assessment is visibly disabled.
 
-Check ONLY the authoritative backend persisted state that resulted from
-this live browser workflow.
+I want to assess Deutsche Bank only, but the UI currently shows 2 Entities and
+I cannot see an obvious single-company selection state.
 
-Return only:
+DO NOT modify anything yet.
 
-STEP 2.1 SCENARIO PRESENT: YES / NO
+Inspect only the LIVE Step 2.5 frontend state and return:
 
-STEP 2.2 PORTFOLIO PRESENT: YES / NO
-STEP 2.2 SECTOR/L3:
-STEP 2.2 COMPANY COUNT:
-COMPANY 1:
-COMPANY 1 ID:
-COMPANY 2:
-COMPANY 2 ID:
+CURRENT S25 selectedCompanyId:
+CURRENT selected company name:
+CURRENT selected company count for /run:
 
-STEP 2.3 CONFIRMED: YES / NO
-REAL STEP 2.3 FACTOR COUNT:
-STEP 2.3 WEIGHTS TOTAL:
+RUN ASSESSMENT disabled: YES/NO
 
-STEP 2.4 CONFIRMED: YES / NO
-REAL STEP 2.4 FACTOR COUNT:
-STEP 2.4 WEIGHTS TOTAL:
+EXACT DISABLE REASON(S):
+1.
+2.
+3.
 
-AUTHORITATIVE UPSTREAM STATE READY FOR STEP 2.5: YES / NO
+IS THE DEUTSCHE BANK ROW SUPPOSED TO BE CLICKABLE FOR SELECTION: YES/NO
 
-Do not perform SEC retrieval or Runner authentication checks yet.
-Do not make any changes.
+IF YES:
+exact UI action that should select it:
+
+IF NO:
+what existing UI control is supposed to select exactly one company:
+
+Do not fix anything.
+Do not call /run.
+Do not start Stylus.
