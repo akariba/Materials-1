@@ -1,36 +1,56 @@
-STOP ALL TESTING.
+The backend is confirmed clean:
 
-The Apple 6-minute test is NOT conclusive because you confirmed the old
-32-company UI batch was still running concurrently on the same
-single-worker FastAPI backend.
+OLD 32-COMPANY BATCH: STOPPED
+ACTIVE OLD RUNNER CALLS: 0
+BACKEND HEALTH: PASS
+ACTIVE STEP 2.5 JOBS: 0
+READY FOR CLEAN APPLE TEST: YES
 
-I want a completely clean backend before any further diagnosis.
+NOW RUN THE CLEAN APPLE TEST.
 
-Do NOT modify code.
-Do NOT modify Stylus.
-Do NOT modify the preset.
-Do NOT start Apple.
-Do NOT run Step 2.5.
-Do NOT work on Step 3.
+Use exactly ONE company only:
 
-1. Stop/terminate all stale Step 2.5 test jobs and old in-flight Runner
-   calls from this local development session.
+Company: Apple Inc.
+Ticker: AAPL
+CIK: 0000320193
 
-2. Gracefully restart the existing local backend using the normal
-   project startup method if that is the safest way to clear them.
+Use the exact Step 2.5 backend route used by the real application.
 
-3. After restart, verify there are ZERO active Step 2.5 assessment
-   requests.
+IMPORTANT:
 
-4. Verify the backend is healthy.
+- Apple only.
+- Do NOT run the 32-company population.
+- Do NOT run another company.
+- Do NOT modify code before this test.
+- Do NOT modify the Stylus preset.
+- Do NOT work on Step 3.
+- No retries.
+- Hard maximum runtime: 6 minutes.
 
-Return ONLY:
+Trace these checkpoints:
 
-OLD 32-COMPANY BATCH: STOPPED / ACTIVE
-OLD RUNNER CALLS: 0 / <number>
-BACKEND RESTARTED: YES / NO
-BACKEND HEALTH: PASS / FAIL
-ACTIVE STEP 2.5 JOBS: <number>
-READY FOR CLEAN APPLE TEST: YES / NO
+1. BACKEND_REQUEST_RECEIVED
+2. COMPANY_SELECTED
+3. STYLUS_RUN_STARTED
+4. RUNNER_STREAM_OPEN
+5. FINAL_RESPONSE_RECEIVED
+6. ARTIFACT_PARSED
+7. EVIDENCE_VALIDATED
+8. SCORING_CREATED
+9. JOB_COMPLETED
 
-DO NOT start Apple yet.
+At the end return ONLY:
+
+APPLE TEST: PASS / FAIL
+
+RUNNER TIME:
+FINAL RESPONSE RECEIVED: YES / NO
+ARTIFACT PARSED: YES / NO
+EVIDENCE VALIDATED: YES / NO
+SCORING CREATED: YES / NO
+JOB COMPLETED: YES / NO
+
+FAILURE POINT:
+NONE or exact failed checkpoint
+
+Do not do anything else after this test.
