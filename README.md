@@ -1,231 +1,528 @@
-I need your help as the Stylus platform expert for a NON-PRODUCTION proof of concept.
+STOP THE CURRENT DIAGNOSTIC LOOP.
 
-Please treat this strictly as a local POC / demonstration environment.
+We now have an explicit Stylus POC integration recommendation from Stylus itself. Treat the following as the approved POC architecture and implement it end-to-end.
 
-IMPORTANT SCOPE:
-- This is NOT production.
-- Do NOT propose MCP.
-- Do NOT propose a production deployment architecture.
-- Do NOT propose production service accounts, enterprise production onboarding, Kubernetes, gateways, persistent orchestration infrastructure, or similar production engineering.
-- Do NOT redesign the application.
-- I need the smallest supported POC integration that allows my local Python application to invoke a Stylus preset, use the Stylus SEC Filings and Web Search integrations, receive the final structured response, and continue the workflow.
-- Real data only. No fabricated SEC evidence.
-- Windows local development environment.
-- I am allowed to use Stylus manually in my browser and I have access to the Runner/Workspace environment used by Stylus.
+DO NOT perform another broad audit.
+DO NOT restart investigation from first principles.
+DO NOT redesign Steps 2.1–2.4.
+DO NOT create another architecture.
+DO NOT fabricate test factors, SEC evidence, companies, scores, URLs, accession numbers, or Runner events.
+DO NOT modify the manually-created Stylus preset unless there is a genuinely unavoidable preset-side blocker; if one exists, report the exact manual preset change required instead of modifying Stylus yourself.
+DO NOT use MCP.
+DO NOT productionize this.
+This remains a Windows/local POC.
 
-I want you to analyze the exact situation below and tell me the simplest technically correct Stylus-supported solution.
+Proceed autonomously through the complete approved scope. Do not stop for confirmation between implementation steps. Stop only for a genuine external blocker requiring a user action such as interactive SSO/token acquisition or retrieval of a saved-preset identifier that cannot be obtained from the repository/environment.
 
 ============================================================
-1. BUSINESS / POC PURPOSE
+BUSINESS PURPOSE
 ============================================================
 
-The application is an AI-assisted Rapid Portfolio Review (RPR) proof of concept for credit-risk analysis.
+Step 2.5 is the ONE-COMPANY Name-Level Financial/Credit Assessment.
 
-The workflow is:
-
-Step 2.1
-Scenario and assumptions are generated and confirmed.
-
-Step 2.2
-A portfolio / sector and companies are selected and confirmed.
-
-Step 2.3
-Exactly 5 Event-Driven credit risk factors are generated and confirmed.
-
-Step 2.4
-Exactly 5 Sector-Inherent credit risk factors are generated and confirmed.
-
-Step 2.5
-For ONE selected company, perform a company-specific financial/credit assessment using:
+It must consume:
 
 - confirmed Step 2.1 scenario;
-- confirmed Step 2.2 company identity/context;
-- confirmed Step 2.3 Event-Driven factors;
-- confirmed Step 2.4 Sector-Inherent factors;
-- real SEC filing evidence;
-- real web evidence where needed.
+- exactly one company from confirmed Step 2.2;
+- exactly 5 REAL confirmed Step 2.3 Event-Driven factors;
+- exactly 5 REAL confirmed Step 2.4 Sector-Inherent factors;
+- assessment as-of date;
+- optional analyst feedback.
 
-Step 2.5 produces, among other things:
+The existing manually-created Stylus preset performs the financial analysis using:
 
-- Event-Driven weighted score;
-- Sector-Inherent weighted score;
-- composite score;
+- Claude Sonnet 5;
+- Stylus SEC Filings integration;
+- Stylus Web Search integration;
+- Step 2.5 field dictionary/methodology Knowledge;
+- Step 2.5 output-schema Knowledge.
+
+Expected Step 2.5 result includes:
+
+- factor assessments/evidence;
+- ED weighted score;
+- SI weighted score;
+- composite score = 80% ED + 20% SI;
 - residual-risk rating;
 - credit-impact rating;
-- factor-level vulnerability/buffer assessments;
-- evidence;
-- credit assessment commentary.
+- commentary;
+- schema-conformant JSON.
 
-The current product weighting is:
+The persisted Step 2.5 outputs feed Step 3 Portfolio Level Assessment.
 
-Composite Score =
-80% × Event-Driven score
+REAL DATA ONLY.
+FAIL CLOSED rather than fabricate.
+
+============================================================
+APPROVED POC ARCHITECTURE
+============================================================
+
+The approved path is now:
+
+confirmed Step 2.1
 +
-20% × Sector-Inherent score.
+confirmed Step 2.2 single company
++
+5 confirmed Step 2.3 factors
++
+5 confirmed Step 2.4 factors
 
-The completed Step 2.5 company results are later aggregated into Step 3 Portfolio Level Assessment.
+        ↓
 
-Therefore Step 2.5 must be:
-- deterministic with respect to supplied confirmed factors;
-- company-specific;
-- evidence grounded;
-- machine readable;
-- usable by downstream Step 3.
+compact Step 2.5 JSON payload
 
-============================================================
-2. CURRENT STYLUS PRESET
-============================================================
+        ↓
 
-I manually created a Stylus preset for Step 2.5.
+local FastAPI backend
 
-Conceptually it is:
+        ↓
 
-RPR Step 2.5 SEC + Web Financial Assessment
+SAVED Stylus Step 2.5 preset through Runner
 
-It uses Claude Sonnet 5.
+        ↓
 
-Enabled Stylus integrations:
+Stylus SEC Filings integration
++
+Stylus Web Search integration
 
-- SEC Filings
-- Web Search
+        ↓
 
-The preset currently receives approximately these input fields:
+Claude Sonnet 5 Step 2.5 analysis
 
-1. CompanyContextJSON
-2. ScenarioContextJSON
-3. EventDrivenFactorsJSON
-4. SectorInherentFactorsJSON
-5. AssessmentASOFDATE
-6. UserFeedback (optional)
+        ↓
 
-The preset also has Knowledge attachments containing:
+schema-conformant final JSON
 
-- the Step 2.5 field dictionary / methodology;
-- the required Step 2.5 output schema.
+        ↓
 
-The prompt explicitly requires:
+Runner completion/final output
 
-- exactly one company;
-- use the supplied confirmed ED factors;
-- use the supplied confirmed SI factors;
-- do not create/rewrite/remove factors;
-- preserve supplied factor weights;
-- obtain real evidence;
-- use SEC filings and Web Search;
-- no invented values;
-- unavailable evidence must be marked unavailable;
-- output JSON only;
-- output must conform to the attached schema;
-- calculate ED score;
-- calculate SI score;
-- calculate composite score;
-- derive residual risk / credit impact according to the supplied methodology;
-- return a structured assessment consumable by the RPR application.
+        ↓
+
+Python parsing + evidence validation
+
+        ↓
+
+persist Step 2.5 result
+
+        ↓
+
+Step 2.5 UI
+
+        ↓
+
+Step 3 aggregation
+
+CRITICAL:
+
+Python direct access to data.sec.gov / www.sec.gov is NOT the authoritative filing retrieval path for the Stylus engine.
+
+The Stylus SEC Filings integration is the authoritative SEC evidence path for the POC.
 
 ============================================================
-3. IMPORTANT FACT: MANUAL STYLUS EXECUTION WORKS
+1. REMOVE PYTHON SEC NETWORK AS A STYLUS GATE
 ============================================================
 
-When I manually run this preset INSIDE Stylus, it works much better.
+Inspect the current Step 2.5 stylus execution path.
 
-For example, I manually tested Apple.
+Find every check that makes successful Python access to:
 
-Stylus visibly executed:
+- data.sec.gov
+- www.sec.gov
+- SEC submissions JSON
+- direct EDGAR document download
 
-- SEC Filings
-- Web Search
+a mandatory prerequisite to running the Stylus Step 2.5 assessment.
 
-and generated a structured JSON artifact.
+For RPR_STEP25_ASSESSMENT_ENGINE=stylus:
 
-The manual execution took approximately 2 minutes.
+REMOVE/BYPASS ONLY THAT BLOCKING REQUIREMENT.
 
-The generated assessment contained:
+Do NOT delete useful modules from the repository unnecessarily.
 
-- company identity;
-- Event-Driven assessments;
-- Sector-Inherent assessments;
-- scores;
-- evidence;
-- commentary.
+The deterministic CIK/company resolver MAY remain as a NON-BLOCKING identity helper.
+
+Example desired company context:
+
+company_name
+internal company_id / CAGID
+ticker where legitimately available
+CIK where legitimately resolved
+SEC canonical name where legitimately resolved
+SEC registrant flag where known
+foreign-private-issuer flag where known
+
+But inability of Python itself to download SEC filing content MUST NOT prevent the Stylus preset from running.
+
+Do not duplicate filing retrieval by downloading SEC filings in Python and then also asking Stylus SEC Filings to retrieve them.
+
+============================================================
+2. KEEP THE REAL UPSTREAM STATE
+============================================================
+
+Do not change the now-working persistence architecture.
+
+We have already live-proven:
+
+Step 2.1 scenario persistence = PASS
+
+Step 2.2 portfolio persistence = PASS
+
+Step 2.3 confirmation persistence = PASS
+exactly 5 real confirmed factors
+weights total = 100%
+
+Step 2.4 confirmation persistence = PASS
+exactly 5 real confirmed factors
+weights total = 100%
+
+The Step 2.5 single-company selector is also required.
+
+Do not reintroduce the old 30/32-company batch execution.
+
+Exactly ONE company must be selected for an individual Step 2.5 run.
+
+============================================================
+3. USE THE SAVED STYLUS PRESET
+============================================================
+
+The manually-created saved preset is already demonstrated to work interactively.
+
+Prefer invoking the SAVED preset rather than transmitting/rebuilding the complete inline preset definition every run.
+
+Do NOT guess the saved-preset identifier or Runner parameter names.
+
+First inspect:
+
+- existing repository Runner code;
+- existing successful/recorded Runner requests if available;
+- browser/network/request capture artifacts if already present;
+- any existing application logs;
+- current YAML/configuration.
+
+If the exact saved-preset identifier/version and request shape can be determined from existing evidence, wire it.
+
+Potential terminology reported by Stylus documentation includes fields conceptually like:
+
+team_id
+team_version_id
+
+BUT DO NOT hardcode those names merely because this prompt mentions them.
+
+Use the ACTUAL contract used in this environment.
+
+If the exact saved preset identifier cannot be obtained without the user's browser interaction, STOP ONLY AT THAT EXTERNAL BLOCKER and report:
+
+SAVED_PRESET_IDENTIFIER_REQUIRED
+
+plus the exact minimum browser action the user needs to perform.
+
+Do not fall back to an invented identifier.
+
+Do not silently return to inline-preset execution unless the actual Runner contract proves saved-preset invocation is unavailable.
+
+============================================================
+4. COMPACT PAYLOAD ONLY
+============================================================
+
+Preserve the payload compaction already implemented.
+
+The Runner/model should receive ONLY information needed by the existing preset fields:
+
+CompanyContextJSON
+ScenarioContextJSON
+EventDrivenFactorsJSON
+SectorInherentFactorsJSON
+AssessmentASOFDATE
+UserFeedback
+
+Do NOT send:
+
+- the full 30+ company portfolio;
+- complete browser JS state;
+- unrelated Step 1 data;
+- duplicate SEC filing text;
+- giant backend objects;
+- unnecessary diagnostic metadata.
+
+Requirements:
+
+ONE company
+5 ED factors
+5 SI factors
+real scenario
+as-of date
+optional feedback
+
+Before sending, log only structural telemetry such as:
+
+company
+company_id
+CIK if available
+ED factor count
+SI factor count
+payload bytes/chars
+preset reference/version
+as-of date
+
+Never log bearer tokens.
+
+============================================================
+5. SEC EVIDENCE OWNERSHIP
+============================================================
+
+For the Stylus Step 2.5 path:
+
+STYLUS SEC FILINGS = AUTHORITATIVE SEC RETRIEVAL.
+
+Do NOT require accession_number or url to be non-null as a universal hard acceptance gate.
+
+Instead validate provenance using the strongest evidence actually exposed by Runner.
+
+At minimum, where technically observable, validate:
+
+A. genuine SEC integration/tool activity occurred during this run;
+
+B. SEC evidence corresponds to the same selected company/CIK/identity;
+
+C. filing type/date is internally consistent and does not violate AssessmentASOFDATE;
+
+D. substantive evidence was returned rather than the model merely claiming it consulted a filing.
+
+If accession_number / URL / document identifier is genuinely returned, preserve and validate it.
+
+If the actual SEC integration does not provide accession_number or URL for an otherwise genuine evidence item:
+
+- retain null/unavailable;
+- do NOT invent a value;
+- do NOT reject the entire evidence item solely for that reason.
+
+However:
+
+If the model asserts a specific SEC filing fact but there was NO observable SEC integration activity/support for it, fail that evidence item closed.
+
+============================================================
+6. WEB SEARCH
+============================================================
+
+Web Search remains enabled through the saved preset.
+
+It is supplementary evidence.
+
+Do not introduce a separate Python web-search requirement for Step 2.5.
+
+Preserve evidence provenance/source type distinctions between SEC and Web.
+
+============================================================
+7. AUTHENTICATION — REMOVE THE BAD REFRESH LOOP
+============================================================
+
+The Stylus response states that this POC uses a short-lived H2M authenticated-browser JWT, approximately 30 minutes.
+
+There is no documented long-lived refresh-token flow for the detached local POC client.
 
 Therefore:
 
-THE CORE PRESET + MODEL + STYLUS INTEGRATIONS ARE CAPABLE OF EXECUTING THE USE CASE.
+Remove/disable the current logic that repeatedly attempts an unsupported refresh endpoint and receives HTTP 400.
 
-The problem is primarily the integration between my local RPR backend and Stylus/Runner, not that Stylus is incapable of doing the assessment.
+Do NOT implement fake refresh-token derivation.
 
-============================================================
-4. CURRENT LOCAL RPR ARCHITECTURE
-============================================================
+Do NOT persist browser bearer tokens long term.
 
-The local application is:
+Use the existing current valid bearer token if present.
 
-Browser UI
-    ↓
-Local FastAPI Python backend
-    ↓
-Step 2.5 Runner client
-    ↓
-Stylus / Runner
-    ↓
-Stylus preset
-    ↓
-SEC Filings + Web Search
-    ↓
-structured final JSON
-    ↓
-FastAPI
-    ↓
-RPR Step 2.5 UI
-    ↓
-Step 3 aggregation
+On Runner HTTP 401:
 
-This is strictly a POC.
+1. mark the Step 2.5 request as AUTH_REQUIRED;
+2. do NOT retry repeatedly;
+3. do NOT spin a refresh loop;
+4. surface a clear message indicating that the authenticated Stylus browser session/token must be refreshed/re-obtained;
+5. preserve all Step 2.1–2.4 state so the analyst can retry Step 2.5 without rebuilding the workflow.
 
-I do NOT need production architecture.
+If an existing repo mechanism securely reads the manually-captured current token, preserve the smallest working mechanism.
+
+Never print the token.
 
 ============================================================
-5. WHAT ALREADY WORKS
+8. FIX RUNNER COMPLETION CORRECTLY
 ============================================================
 
-We have now verified that the upstream RPR workflow can persist server-side.
+This is critical.
 
-For a controlled live test we confirmed:
+Previous failures showed:
 
-Step 2.1:
-Scenario present = YES
+HTTP accepted
+Runner HTTP 200
+stream opens
+FIRST_SSE_EVENT received
+tool/model work continues
+but /run waits excessively or does not recognize final completion.
 
-Step 2.2:
-Portfolio present = YES
+Do not treat:
 
-Step 2.3:
-Confirmed = YES
-Real factor count = 5
-Weights total = 100%
+- HTTP 200;
+- STREAM_OPEN;
+- FIRST_SSE_EVENT;
+- first assistant-looking text;
+- first tool result;
 
-Step 2.4:
-Confirmed = YES
-Real factor count = 5
-Weights total = 100%
+as completion.
 
-Therefore the authoritative upstream state is ready for Step 2.5.
+Inspect the ACTUAL Runner event objects produced by this environment.
 
-We also implemented a SINGLE-COMPANY selector so that Step 2.5 does not accidentally run 30+ companies concurrently.
+Do not invent event names.
 
-The backend constructs a compact payload rather than sending enormous UI objects.
+Determine from actual payload fields how Runner signals:
+
+- workflow running;
+- tool execution;
+- assistant messages;
+- terminal/completed workflow;
+- failure.
+
+Stylus documentation referenced a conceptual workflow status including:
+
+NOT_STARTED_WORKFLOW
+RUNNING_WORKFLOW
+COMPLETED_WORKFLOW
+FAILED_WORKFLOW
+
+and task states such as WORKING_TASK / COMPLETED_TASK.
+
+Use these ONLY if they are actually present in the environment's returned payload.
+
+Authoritative completion must be based on the actual terminal Runner state.
+
+Continue buffering assistant/artifact content while the workflow remains active.
+
+After the terminal successful workflow state:
+
+- select/extract the final schema-conformant Step 2.5 JSON;
+- do not accidentally parse an intermediate tool payload as the assessment.
+
+If both conversational final output and artifact payload exist, inspect both and use the final schema-conformant assessment.
 
 ============================================================
-6. COMPANY IDENTITY / SEC RESOLUTION
+9. TIME BOUNDS
 ============================================================
 
-One of our controlled test companies is:
+Manual execution of the same preset is approximately 2 minutes.
 
-Deutsche Bank AG [DE Frankfurt am Main]
+For this POC use bounded execution.
 
-Internal company ID:
-9000008998
+Target:
 
-Our identity resolver successfully maps this to:
+connection / stream-establishment timeout:
+15–30 seconds
+
+total Runner execution budget:
+approximately 5 minutes
+
+final-output grace after the last real tool activity:
+approximately 60–90 seconds, provided the actual workflow has not already emitted a definitive terminal failure.
+
+Do NOT allow routine Step 2.5 calls to silently run for 20–40 minutes.
+
+On timeout:
+
+mark the request TIMEOUT/STALLED
+preserve upstream state
+do not fabricate a result
+do not automatically start another assessment
+do not retry indefinitely.
+
+If actual observed valid Runner behavior proves the 5-minute bound slightly insufficient, report the measured timing before changing it; do not simply return to a 40-minute timeout.
+
+============================================================
+10. JSON SCHEMA
+============================================================
+
+Keep the existing Step 2.5 output schema.
+
+The JSON schema is the contract between:
+
+Stylus/model result
+→ backend parser
+→ Step 2.5 UI
+→ Step 3.
+
+Do not weaken the schema merely to make a bad response pass.
+
+Validate the final object.
+
+A successful assessment must populate legitimate non-null values for at least:
+
+scoring.ed_score
+scoring.si_score
+scoring.composite_score
+scoring.residual_rating
+scoring.credit_impact_rating
+
+when sufficient factor evidence was successfully assessed according to the methodology.
+
+Composite must remain:
+
+0.80 * ED weighted score
++
+0.20 * SI weighted score
+
+Do not substitute Step 3/portfolio thresholds for Step 2.5 name-level thresholds.
+
+============================================================
+11. STEP 2.5 UI
+============================================================
+
+Do not redesign the UI.
+
+v31 remains the visual baseline.
+
+Once a valid persisted assessment is returned, populate the existing Step 2.5 table/detail presentation with:
+
+ED score
+SI score
+Composite score
+Residual rating
+Credit impact rating
+factor details
+evidence/commentary
+applicable RRR/classification recommendations where legitimately supported.
+
+Do not fill placeholders from partially completed Runner messages.
+
+Only completed validated Step 2.5 results populate the assessment columns.
+
+============================================================
+12. STEP 3 INTEGRATION
+============================================================
+
+Do not stop after making Step 2.5 display a JSON artifact.
+
+After one successful Step 2.5 assessment:
+
+verify that the persisted object is consumable by the existing Step 3 aggregation logic.
+
+Do NOT redesign Step 3.
+
+Do NOT fabricate missing company results.
+
+For the controlled one-company acceptance test, prove that the completed company can be consumed as a real assessed company by Step 3's existing aggregation contract.
+
+============================================================
+13. CONTROLLED ACCEPTANCE TEST
+============================================================
+
+Do ONE controlled live company only.
+
+Do not launch a portfolio batch.
+
+Use an actually selected company from the confirmed Step 2.2 portfolio.
+
+Prefer the currently prepared Deutsche Bank case if it is still the confirmed selected company:
+
+DEUTSCHE BANK AG [DE FRANKFURT AM MAIN]
+internal company id: 9000008998
+
+Identity previously resolved as:
 
 SEC canonical name:
 DEUTSCHE BANK AKTIENGESELLSCHAFT
@@ -239,432 +536,137 @@ YES
 Foreign Private Issuer:
 YES
 
-Relevant forms include:
-20-F
-6-K
+likely relevant forms:
+20-F / 6-K
 
-So company/CIK resolution itself is not the primary problem.
+Do not hardcode these as evidence; they are identity/context only.
 
-============================================================
-7. THE SEC PROBLEM
-============================================================
+Before Runner starts verify:
 
-Our Python backend contains a deterministic SEC lookup implementation which attempts to reach URLs such as:
+STEP21_PRESENT = YES
+STEP22_PORTFOLIO_PRESENT = YES
+SELECTED_COMPANY_COUNT = 1
+STEP23_CONFIRMED = YES
+STEP23_FACTOR_COUNT = 5
+STEP24_CONFIRMED = YES
+STEP24_FACTOR_COUNT = 5
+PAYLOAD_COMPACT = YES
+RUNNER_AUTH_READY = YES
+SAVED_PRESET_RESOLVED = YES
 
-https://data.sec.gov/submissions/CIK0001159508.json
-
-However, from this local corporate development environment, direct Python access to:
-
-data.sec.gov
-www.sec.gov
-
-is not reliably reachable.
-
-We have seen DNS/network/proxy related failures.
-
-Therefore a backend preflight that requires Python itself to successfully download SEC filings can block Step 2.5 even though the Stylus SEC Filings integration is available and works from inside Stylus.
-
-This creates the current architectural question.
-
-Should the POC architecture be:
-
-A)
-
-Python backend
-→ direct data.sec.gov
-→ obtain filings
-→ send filings to Stylus
-
-OR
-
-B)
-
-Python backend
-→ send company identity/context to Stylus
-→ Stylus SEC Filings integration retrieves the real filing evidence
-→ Stylus returns evidence + assessment
-
-For this POC, B appears much more appropriate because the approved Stylus SEC integration already works.
-
-Please explicitly confirm whether this is the correct supported POC pattern.
+Then execute ONE Step 2.5 assessment.
 
 ============================================================
-8. IMPORTANT DATA-INTEGRITY REQUIREMENT
+14. PASS CRITERIA
 ============================================================
 
-We absolutely do NOT want the model merely to SAY:
+The acceptance test is PASS only if ALL applicable conditions below hold:
 
-“According to the company's 20-F…”
+1. exactly one company sent;
+2. selected company identity is correct;
+3. Step 2.1 scenario included;
+4. exactly 5 real confirmed ED factors supplied;
+5. exactly 5 real confirmed SI factors supplied;
+6. compact payload used;
+7. saved manual Stylus Step 2.5 preset invoked;
+8. genuine Stylus SEC Filings activity occurs;
+9. SEC evidence belongs to the correct company;
+10. no post-as-of-date evidence is improperly used;
+11. Web Search is used only through Stylus where required;
+12. Runner reaches genuine terminal successful state;
+13. final Step 2.5 JSON is extracted;
+14. JSON conforms to the existing schema;
+15. evidence validation passes without demanding fields the SEC integration genuinely does not expose;
+16. ED score populated;
+17. SI score populated;
+18. composite score populated;
+19. residual rating populated;
+20. credit-impact rating populated;
+21. job marked complete;
+22. result persisted;
+23. Step 2.5 UI populated;
+24. persisted result can be consumed by Step 3.
 
-unless that filing genuinely came from the SEC Filings integration.
-
-Our backend previously attempted to validate evidence by looking for:
-
-- accession number;
-- filing URL;
-- SEC source reference;
-- tool-origin metadata.
-
-In some manual Stylus output, the model produced reasonable SEC-derived facts but fields such as:
-
-accession_number
-url
-
-were null.
-
-Therefore please explain:
-
-WHAT EXACTLY DOES THE STYLUS SEC FILINGS INTEGRATION RETURN TO THE MODEL/RUNNER?
-
-For example, does the tool result expose:
-
-- company/registrant?
-- CIK?
-- filing type?
-- filing date?
-- accession number?
-- SEC filing URL?
-- document URL?
-- filing text?
-- source identifier?
-- integration/tool-call metadata?
-
-Which fields can we reliably use to prove that evidence really came from the Stylus SEC Filings integration?
-
-If the SEC integration does not expose accession_number or URL for every result, we should NOT invent them.
-
-Please tell us the appropriate validation rule.
+NO fabricated values are permitted merely to achieve PASS.
 
 ============================================================
-9. RUNNER / SSE ISSUE
+15. WHAT MUST NOT BE CHANGED
 ============================================================
 
-The second problem is execution through Runner.
+Do NOT change:
 
-We have observed this pattern:
+- Step 1;
+- Step 2.1 business logic;
+- Step 2.2 portfolio-selection business logic except existing persistence fixes already implemented;
+- Step 2.3 factor methodology;
+- Step 2.4 factor methodology;
+- exactly-5 ED requirement;
+- exactly-5 SI requirement;
+- confirmed factor weights;
+- Step 2.5 financial-analysis methodology;
+- 80/20 weighting;
+- Step 2.5 output schema;
+- manually-created Stylus preset unless a genuine external/manual preset blocker is proved;
+- preset Knowledge attachments;
+- v31 visual baseline;
+- Step 3 aggregation methodology.
 
-HTTP request accepted
-→ Runner request starts
-→ HTTP 200
-→ SSE stream opens
-→ FIRST_SSE_EVENT received
-→ Stylus continues processing
-→ sometimes SEC/Web tool execution occurs
-→ backend continues waiting
-→ final model response sometimes arrives very late or is not recognized correctly.
-
-At times a manual Stylus execution finishes in approximately 2 minutes while the backend-driven execution can continue for 6, 10, 20 or even 30+ minutes.
-
-We have already found one major cause:
-
-Previously the backend supplied a much larger payload than the manual Stylus execution.
-
-We reduced this to a compact payload.
-
-The approximate compact payload is now only a few KB rather than a huge company/portfolio object.
-
-But I need to know the correct Runner completion contract.
-
-PLEASE EXPLAIN PRECISELY:
-
-When invoking Stylus through Runner/SSE:
-
-1. What event means the Runner request has been accepted?
-2. What event means model generation has started?
-3. How are integration/tool calls represented?
-4. How are SEC Filings tool results represented?
-5. How are Web Search tool results represented?
-6. What event represents the genuine FINAL assistant/model response?
-7. Is there a dedicated completion/end event?
-8. Is an artifact emitted separately from the assistant final message?
-9. Can an artifact arrive before/after the final assistant event?
-10. When is it safe for the Python client to close the SSE stream?
-11. Should the client continue reading after tool completion until a final model message is received?
-12. What is the recommended timeout for a POC?
-13. Is there a supported polling/job-status pattern that is better than holding one long HTTP request?
-
-We need the smallest robust client implementation.
+Do not introduce production frameworks or abstractions.
 
 ============================================================
-10. TOKEN / AUTHENTICATION ISSUE
+16. FINAL REPORT
 ============================================================
 
-We also periodically encounter Runner authentication expiration.
-
-Symptoms have included:
-
-HTTP 401
-expired token
-refresh attempt returning HTTP 400
-Runner auth not ready
-
-Our current POC has experimented with:
-
-- storing a current Runner bearer token locally;
-- refreshing cached credentials;
-- manually obtaining a new token from an authenticated browser session.
-
-This is becoming brittle.
-
-I need the SUPPORTED POC METHOD.
-
-Again:
-
-NO MCP.
-NO PRODUCTION TRACK.
-NO production service account design.
-
-For a developer running a local Python FastAPI POC while logged into Stylus in the browser:
-
-What is the simplest supported authentication mechanism for invoking Runner?
-
-Please answer specifically:
-
-1. Should a local POC use a bearer token?
-2. How is that bearer token supposed to be obtained?
-3. What is its normal lifetime?
-4. Is there a real supported refresh-token mechanism?
-5. If yes, what endpoint/workflow should refresh it?
-6. If no, should the user simply re-authenticate through SSO when expired?
-7. Is there a local developer/Runner SDK that manages authentication automatically?
-8. Is there a supported CLI login/session mechanism?
-9. Should we avoid copying browser network tokens entirely?
-10. Is there a standard POC example for local Python → Runner?
-
-Please distinguish clearly between:
-- what is officially supported;
-- what merely happens to work temporarily;
-- what we should NOT do.
-
-============================================================
-11. SAVED PRESET VS INLINE PRESET
-============================================================
-
-Another question:
-
-Our backend has experimented with supplying an inline preset definition to Runner.
-
-But the user also has the preset saved manually in Stylus.
-
-For this POC, which approach is simpler and more reliable?
-
-OPTION A
-Invoke the saved Stylus preset by an identifier/reference.
-
-OPTION B
-Send the entire inline preset definition from Python on every run.
-
-Please explain the supported pattern and trade-offs.
-
-If a saved preset can be invoked directly, tell us what identifier the backend needs and where the user can obtain it.
-
-Do not propose changing the preset unless actually necessary.
-
-============================================================
-12. DUPLICATE SEC RETRIEVAL
-============================================================
-
-We also identified an efficiency problem.
-
-If Python obtains deterministic SEC evidence first AND the Stylus preset independently executes SEC Filings again, we duplicate retrieval.
-
-That increases:
-
-- execution time;
-- context size;
-- tool calls;
-- complexity.
-
-For the POC I want ONE authoritative SEC retrieval path.
-
-My preference is:
-
-Stylus SEC Filings integration = authoritative filing retrieval.
-
-Python backend = orchestration + validation + persistence.
-
-Please tell me whether you agree.
-
-If so, the backend should NOT fail preflight simply because local Python cannot reach data.sec.gov.
-
-Instead:
-
-- verify company identity;
-- invoke Stylus;
-- require genuine SEC Filings tool activity/result where applicable;
-- validate the returned provenance;
-- reject fabricated SEC claims;
-- continue to scoring/UI.
-
-Is that the appropriate architecture?
-
-============================================================
-13. DESIRED MINIMAL POC ARCHITECTURE
-============================================================
-
-My preferred architecture is:
-
-CONFIRMED STEP 2.1
-+
-CONFIRMED STEP 2.2 COMPANY
-+
-5 CONFIRMED STEP 2.3 FACTORS
-+
-5 CONFIRMED STEP 2.4 FACTORS
-        ↓
-small JSON payload
-        ↓
-Runner
-        ↓
-existing Stylus Step 2.5 preset
-        ↓
-SEC Filings integration
-+
-Web Search integration
-        ↓
-Claude Sonnet assessment
-        ↓
-schema-conformant JSON
-        ↓
-Runner final response
-        ↓
-Python validation
-        ↓
-Step 2.5 score/UI
-        ↓
-Step 3 portfolio aggregation
-
-NOT:
-
-Python
-→ direct sec.gov requirement
-→ network blocked
-→ fail
-→ retry
-→ timeout
-→ restart
-→ repeat.
-
-============================================================
-14. WHAT I NEED FROM YOU
-============================================================
-
-Please act as the Stylus platform/integration expert and give me a concrete recommendation.
-
-Do NOT give me generic architecture advice.
-
-Do NOT recommend productionization.
-
-Do NOT recommend MCP.
-
-Do NOT recommend a redesign.
-
-Do NOT tell me merely to “check networking.”
-
-I want you to determine the smallest supported POC solution using capabilities already available in Stylus.
-
-Please answer in this exact structure:
-
-A. RECOMMENDED POC ARCHITECTURE
-
-Show the exact call flow.
-
-B. SEC FILINGS
-
-Explain who should retrieve the filing:
-Python or Stylus.
-
-Explain exactly how the model receives SEC evidence.
-
-Explain what evidence/provenance fields Runner exposes and what our backend should validate.
-
-C. PRESET INVOCATION
-
-Saved preset vs inline preset.
-
-Give the recommended option.
-
-If saved preset is supported, explain how to obtain/use its identifier.
-
-D. RUNNER REQUEST
-
-Describe the minimum request payload required.
-
-Do NOT ask us to send unnecessary portfolio data.
-
-E. RUNNER SSE RESPONSE
-
-List the exact event types/state transitions we should expect.
-
-Explain exactly how to identify the genuine final output.
-
-F. ARTIFACT HANDLING
-
-Explain whether the structured JSON artifact is available through Runner and how we retrieve it.
-
-G. AUTHENTICATION
-
-Give the simplest supported POC authentication procedure.
-
-Explain token acquisition, expiration and refresh/re-authentication.
-
-H. TIMEOUT
-
-Given that the exact preset finishes manually in approximately 2 minutes, recommend reasonable:
-- connection timeout;
-- total execution timeout;
-- final-response grace period.
-
-I. WHAT TO REMOVE FROM OUR CURRENT IMPLEMENTATION
-
-Identify only the things that should be removed/bypassed because they conflict with the proper Stylus POC integration.
-
-For example, whether local Python SEC preflight should be removed from the Stylus path.
-
-J. WHAT NOT TO CHANGE
-
-Identify the working pieces we should keep:
-- Step 2.1–2.4 confirmation;
-- 5 ED factors;
-- 5 SI factors;
-- single-company selection;
-- compact payload;
-- Step 2.5 methodology;
-- output JSON/schema;
-- Step 3 downstream aggregation.
-
-K. EXACT POC IMPLEMENTATION SEQUENCE
-
-Give us a short numbered implementation sequence that a Python developer can follow.
-
-L. ACCEPTANCE TEST
-
-Define ONE controlled end-to-end test for one company.
-
-The test succeeds only if:
-
-1. exactly one company is sent;
-2. the correct company identity is used;
-3. 5 real confirmed ED factors are supplied;
-4. 5 real confirmed SI factors are supplied;
-5. SEC Filings integration genuinely executes;
-6. real SEC evidence is returned;
-7. Web Search executes only as needed;
-8. the final model response is received;
-9. schema-conformant JSON is obtained;
-10. evidence provenance is validated;
-11. ED score is populated;
-12. SI score is populated;
-13. composite score is populated;
-14. residual rating is populated;
-15. credit-impact rating is populated;
-16. the Step 2.5 job completes;
-17. the output can be consumed by Step 3.
-
-If any of these are NOT possible through the current Stylus/Runner POC interface, say exactly which one and why.
-
-Most importantly:
-
-Please tell me whether we can solve this using the existing Stylus preset + SEC Filings + Web Search + Runner without relying on direct Python access to data.sec.gov.
-
-I want a POC solution, not a production solution.
+Do not give me a long narrative.
+
+After implementation/test return this exact concise report:
+
+STEP 2.5 POC ARCHITECTURE FIX: PASS / FAIL
+
+COMPANY:
+COMPANY ID:
+CIK:
+
+SAVED PRESET USED: YES / NO
+INLINE PRESET REMOVED FROM ACTIVE PATH: YES / NO
+PYTHON SEC HARD GATE REMOVED FROM STYLUS PATH: YES / NO
+CIK RESOLUTION RETAINED: YES / NO
+
+ONE COMPANY SENT: YES / NO
+STEP 2.1 PRESENT: YES / NO
+REAL ED FACTORS: <count>
+REAL SI FACTORS: <count>
+PAYLOAD SIZE:
+
+RUNNER AUTH: PASS / FAIL
+RUNNER REQUEST: PASS / FAIL
+STREAM OPEN: YES / NO
+SEC TOOL ACTIVITY: YES / NO
+WEB TOOL ACTIVITY: YES / NO / NOT REQUIRED
+TERMINAL WORKFLOW COMPLETION: YES / NO
+FINAL RESPONSE RECEIVED: YES / NO
+ARTIFACT/JSON PARSED: YES / NO
+SCHEMA VALID: YES / NO
+EVIDENCE VALIDATED: YES / NO
+
+ED SCORE:
+SI SCORE:
+COMPOSITE SCORE:
+RESIDUAL RATING:
+CREDIT IMPACT RATING:
+
+STEP 2.5 RESULT PERSISTED: YES / NO
+STEP 2.5 UI POPULATED: YES / NO
+STEP 3 CONSUMABLE: YES / NO
+
+TOTAL RUNNER TIME:
+TOTAL END-TO-END TIME:
+
+FILES CHANGED:
+- ...
+
+FAILURE POINT:
+NONE
+or exactly one concrete remaining external blocker.
+
+Do not continue to another task after this report.
