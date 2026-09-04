@@ -1,470 +1,129 @@
-TASK: STEP 2.4 — SECTOR-INHERENT RISK FACTORS
-V31 EXACT UI REPLICATION + PRESERVE / STRENGTHEN THE BUSINESS FUNCTION
+STEP 2.4 FINAL ACCEPTANCE PASS — LIVE EXECUTION + V31 VISUAL PARITY
 
-You are working on the existing RPR / AI-Assisted Rapid Portfolio Review POC.
+Continue from the Step 2.4 work you just completed.
 
-This task is ONLY for STEP 2.4 — SECTOR-INHERENT RISK FACTORS.
+DO NOT start another redesign.
+DO NOT refactor.
+DO NOT perform another broad audit.
+DO NOT change backend/business logic unless a live test proves a concrete defect.
 
-This is NOT a redesign.
-This is NOT a new architecture task.
-This is NOT permission to refactor working parts of the application.
+Your previous report is useful, but Step 2.4 is NOT yet accepted because you explicitly stated:
 
-The objective is:
+“Not yet exercised live in a browser…”
 
-1. Make the Step 2.4 UI replicate the approved v31 reference essentially exactly, including the smallest table/layout/framing details.
-2. Preserve the existing working Step 2.4 functionality.
-3. Preserve the correct business purpose and logical sequence of Step 2.4.
-4. Ensure Step 2.4 produces a high-quality structured sector-credit framework that Step 2.5 can use for name-level assessment.
-5. Fix only genuine discrepancies required to achieve the above.
+and you also identified at least one remaining potential v31 discrepancy:
 
-============================================================
-0. OPERATING PRINCIPLE — POC, NOT PRODUCTION REBUILD
-============================================================
+“scoring-logic rows remain read-only in Step 2.4 while v31/Step2.3 render them as editable inputs/textareas.”
 
-This application is a POC.
-
-Do NOT introduce:
-- new frameworks,
-- unnecessary abstractions,
-- production-style architecture,
-- broad component rewrites,
-- generic design systems,
-- new adapters,
-- speculative refactoring,
-- backend changes unrelated to Step 2.4,
-- CSS redesigns of other steps.
-
-Use the existing implementation and make the smallest changes necessary.
-
-Known-working functionality is an immutable building block.
-
-DO NOT break:
-- Step 1,
-- Step 2.1,
-- Step 2.2,
-- Step 2.3,
-- Step 2.5,
-- existing workflow state,
-- existing navigation,
-- feedback functionality,
-- existing backend endpoints,
-- existing persistence/state behavior.
-
-Proceed autonomously through the entire task.
-Do not stop for approval after every change.
-
-Stop only for a genuine external blocker that cannot be solved from the repository/environment.
+The purpose of this final pass is to EXECUTE the real workflow, compare the rendered Step 2.4 against the ACTUAL v31 Step 2.4 implementation, correct genuine visual discrepancies, and finish acceptance.
 
 ============================================================
-1. FIRST UNDERSTAND THE RPR SEQUENCE
+1. ACTUAL V31 STEP 2.4 IS THE ONLY VISUAL AUTHORITY
 ============================================================
 
-Before changing code, understand that Step 2.4 is part of this sequence:
+Do not use Step 2.3 as the visual authority.
 
-STEP 1
-Risk Narrative Intake
-        ↓
-STEP 2.1
-Scenario & Assumptions
-        ↓
-STEP 2.2
-Portfolio Selection
-        ↓
-STEP 2.3
-Event-Driven Risk Factors
-        ↓
-STEP 2.4
-Sector-Inherent Risk Factors
-        ↓
-STEP 2.5
-Name-Level Assessment
-        ↓
-STEP 3
-Portfolio-Level Assessment
+Do not infer behaviour from another step.
 
+Locate the actual v31 Step 2.4 code and compare CURRENT Step 2.4 against it directly.
 
-Each step has a different analytical purpose.
+The user requires replication at the smallest practical design-detail level.
 
-DO NOT blur them together.
+Therefore determine definitively whether v31 Step 2.4 scoring-logic cells are:
 
-------------------------------------------------------------
-STEP 2.3 ≠ STEP 2.4
-------------------------------------------------------------
+- editable inputs/textareas,
+or
+- read-only presentation.
 
-Step 2.3 asks:
+If v31 Step 2.4 uses editable controls, CURRENT Step 2.4 MUST use the same controls.
 
-“What credit-risk transmission channels arise from THIS EVENT /
-SCENARIO?”
-
-Those factors can change with the event.
-
-Example:
-- tariffs,
-- supply-chain disruption,
-- commodity shock,
-- regulatory announcement,
-- rate shock,
-- geopolitical disruption.
-
-Step 2.4 asks something fundamentally different:
-
-“What structural vulnerabilities are inherent to THIS SECTOR even
-before considering the particular event?”
-
-These should represent persistent sector characteristics.
-
-Examples for Software shown in v31 include concepts such as:
-
-- Structural Leverage Intensity in Sponsor-Backed Software
-- AI-Driven Technology Disruption and Obsolescence Risk
-- Capital Expenditure Intensity and Free Cash Flow Compression
-- Refinancing and Maturity Wall Concentration Risk
-- Customer and End-Market Demand Cyclicality
-
-The exact factors obviously depend on the sector.
-
-Therefore Step 2.4 must NOT simply repeat Step 2.3.
-
-============================================================
-2. DEEPEST BUSINESS PURPOSE OF STEP 2.4
-============================================================
-
-Step 2.4 establishes the SECTOR CREDIT RISK REFERENCE FRAMEWORK.
-
-Its function is to identify structural credit vulnerabilities that
-exist because of the economics, financing structure, operating model,
-competitive structure and cash-flow characteristics of the sector.
-
-Its job is NOT simply to produce five AI-generated labels.
-
-For each sector factor, Step 2.4 should define:
-
-A. WHAT THE STRUCTURAL CREDIT RISK IS
-   Factor Narrative
-
-B. WHY IT MATTERS FOR CREDIT
-   Factor Importance + Importance Justification
-
-C. WHAT INDICATORS WOULD SHOW VULNERABILITY
-   Vulnerability Metrics
-
-D. WHAT INDICATORS WOULD PROVIDE PROTECTION
-   Buffer Metrics
-
-E. HOW THE OBSERVATIONS MAP INTO A CREDIT SCORE
-   Scoring Logic 1–5
-
-F. WHAT THE RESULT MEANS FOR CREDIT
-   Credit Implication
-
-This structured framework is subsequently required by Step 2.5.
-
-Step 2.5 must eventually be able to ask:
-
-“For this particular company, where does it sit relative to the
-sector vulnerability/buffer framework established in Step 2.4?”
-
-Therefore Step 2.4 must be sufficiently specific, measurable,
-consistent and stable to support downstream company-level assessment.
-
-============================================================
-3. SECTOR-INHERENT FACTORS MUST BE STRUCTURAL
-============================================================
-
-The sector factors should represent persistent structural
-characteristics, rather than recent headlines.
-
-Appropriate categories can include, depending on sector:
-
-- capital structure / leverage,
-- refinancing dependence,
-- maturity profile,
-- cyclicality,
-- pricing power,
-- competitive intensity,
-- customer concentration,
-- supplier concentration,
-- technological disruption,
-- regulatory exposure,
-- recurring revenue quality,
-- capex intensity,
-- working-capital behaviour,
-- margin volatility,
-- commodity sensitivity,
-- liquidity dependence,
-- insurance coverage,
-- recovery characteristics,
-- asset quality,
-- contractual protections,
-- revenue concentration,
-- demand elasticity.
-
-Do NOT force these categories into sectors where they do not fit.
-
-The factor must be economically meaningful for the selected sector.
-
-============================================================
-4. DETERMINISTIC / REVIEWED SECTOR TAXONOMY CONCEPT
-============================================================
-
-The v31 UI explicitly communicates the principle:
-
-“Approved/reviewed sector taxonomy. Exact weights are deterministic;
-the LLM does not regenerate taxonomy on every run.”
-
-Preserve that concept visibly and functionally.
-
-Step 2.4 is not supposed to behave as:
-
-click generate →
-LLM randomly creates a different sector taxonomy →
-different factors next time.
-
-The POC should demonstrate a stable sector framework.
-
-If the current implementation already contains approved/generated
-sector factors and deterministic weights, preserve that mechanism.
-
-Do NOT replace working deterministic behaviour with free-form LLM
-generation.
-
-If generation/refinement functionality exists, it should enrich or
-create the sector framework in the intended controlled manner, not
-cause arbitrary drift on every application load.
-
-============================================================
-5. NUMBER OF FACTORS
-============================================================
-
-The v31 reference demonstrates FIVE sector-inherent risk factors.
-
-The Step 2.4 default/target should therefore remain:
-
-5 sector-inherent risk factors
-
-unless the existing approved implementation explicitly contains a
-different user-controlled rule.
-
-Do not arbitrarily produce 6, 7, 8 etc.
-
-The summary table should show RF1–RF5.
-
-The five factors should collectively provide sensible coverage of the
-sector without becoming overlapping variants of the same risk.
-
-============================================================
-6. IMPORTANCE, IMP SCORE AND WEIGHT
-============================================================
-
-The top summary table in v31 contains:
-
-RF
-Factor
-Importance
-Imp. Score
-Weight
-
-Example visual behaviour:
-
-HIGH
-Imp. Score 2
-
-MEDIUM
-Imp. Score 1
-
-Weights are displayed as percentages.
-
-The total sector-factor weight must reconcile to:
-
-100.0%
-
-Preserve the currently approved weighting rule.
-
-Do NOT invent an arbitrary weighting formula if one already exists.
-
-The important point is that:
-
-- weights must be deterministic,
-- importance must be economically justified,
-- total must equal 100%,
-- the same values shown in the summary table must agree with the
-  detailed factor panels.
-
-No inconsistent values between summary and detail.
-
-============================================================
-7. V31 IS THE VISUAL SOURCE OF TRUTH
-============================================================
-
-Use the existing v31 HTML/reference implementation in the repository
-as the PRIMARY visual specification.
-
-Do not approximate the screenshots by eye if v31 code is available.
-
-Inspect the actual v31:
-
-- HTML,
-- CSS,
-- classes,
-- component dimensions,
-- spacing,
-- typography,
-- borders,
-- colours,
-- table structure,
-- row heights,
-- panel structure,
-- accordion behaviour,
-- controls.
-
-Then reproduce those details in the current Step 2.4 implementation.
-
-IMPORTANT:
-
-DO NOT redesign v31 into what you think is “cleaner” or “more modern.”
-
-If v31 has a particular:
-- spacing,
-- narrow row,
-- pale background,
+Replicate:
+- control type,
+- height,
 - border,
-- header weight,
-- input framing,
-- table density,
-- accordion height,
-- colour band,
-
-replicate it.
-
-V31 wins over personal design preference.
-
-============================================================
-8. PAGE-LEVEL LAYOUT
-============================================================
-
-Step 2.4 must visually remain embedded in the existing v31
-Name-Level Assessment screen.
-
-Preserve the complete page hierarchy.
-
-TOP HEADER
-- Citi / application branding
-- “ICM PM — AI-assisted Rapid Portfolio Review”
-- beta/status controls where applicable
-- existing dark navy header
-
-ASSESSMENT JOURNEY BAR
-- Step 1 Risk Narrative Intake
-- Step 2 Name Level Assessment highlighted in blue
-- Step 3 Portfolio Level Assessment
-
-STEP 2 SUB-NAVIGATION
-- Step 2.1 Scenario & Assumption
-- Step 2.2 Portfolio Selection
-- Step 2.3 Event-driven Risk Factors
-- Step 2.4 Sector-Inherent Risk Factors
-- Step 2.5 Assessment
-
-Step 2.4 must have the exact selected/active treatment used in v31.
-
-RIGHT SIDE
-Keep the Workflow Status panel.
-
-Do not move it.
-Do not resize it arbitrarily.
-Do not redesign it.
-
-The central Step 2.4 content and the right workflow panel should retain
-the v31 proportions.
-
-============================================================
-9. SECTOR SELECTOR BAR
-============================================================
-
-Immediately under the Step 2 tabs, v31 contains the dark navy sector
-selector strip.
-
-Replicate it.
-
-It should include:
-
-SECTOR label
-
-and the selected sector dropdown.
-
-Examples shown in v31:
-- Software
-- Sub-Media, Telecommunications & Software
-
-depending on the dataset/version.
-
-Preserve the actual sector coming from Step 2.2/current application
-state.
-
-Do NOT hard-code Software just because Software appears in the
-reference screenshot.
-
-The selected sector must be derived from the actual workflow state.
-
-Visual details must follow v31:
-
-- dark navy background,
-- compact height,
-- label position,
-- dropdown framing,
-- dropdown width,
-- text size,
-- border radius,
 - padding,
-- vertical centering,
-- right-side factor count/status badge if currently present.
+- font,
+- width,
+- row height,
+- resize behaviour if applicable,
+- focus state where applicable.
+
+Do not leave the difference merely because data content is correct.
+
+If v31 itself is read-only, leave current behaviour unchanged.
 
 ============================================================
-10. STEP 2.4 SECTION HEADER
+2. VERIFY THE step23.html CHANGE
 ============================================================
 
-Below the selector:
+You reported changing:
 
-“Sector-Inherent Risk Factors”
+step23.html
+- corrected the Step 2.4 formula banner text.
 
-Use the same v31:
-- font size,
-- font weight,
-- spacing,
-- alignment,
-- border treatment.
+Verify why Step 2.4 requires this file modification.
 
-Immediately underneath is the informational note.
+If step23.html is genuinely the shared/current host containing the
+Step 2.4 markup, retain the smallest necessary change.
 
-In the reference this communicates:
+If the modification accidentally changes Step 2.3 or is unnecessary
+for Step 2.4:
+REVERT IT.
 
-Approved/reviewed sector taxonomy.
-Exact weights are deterministic.
-The LLM does not regenerate taxonomy on every run.
-
-Replicate the same visual structure:
-
-- narrow informational strip,
-- subtle background,
-- thin left blue accent,
-- compact font,
-- restrained padding.
+Do not create regression in another step just to achieve Step 2.4
+parity.
 
 ============================================================
-11. TOP FACTOR SUMMARY TABLE — EXACT V31 STRUCTURE
+3. RUN THE REAL APPLICATION
 ============================================================
 
-This is one of the most important visual sections.
+Now actually run the backend/frontend using the project's existing
+Windows execution method.
 
-Columns must be:
+Do not create a new startup mechanism.
 
-RF
-Factor
-Importance
-Imp. Score
-Weight
+Use the current working application.
 
-Rows:
+Navigate through the real workflow:
+
+Step 1
+→ Step 2.1
+→ Step 2.2
+→ Step 2.3
+→ Step 2.4
+
+Use an existing valid/confirmed workflow state if one is already
+available.
+
+If necessary, use the minimum existing actions needed to reach
+Step 2.4.
+
+DO NOT fabricate backend state.
+
+============================================================
+4. VERIFY SECTOR LINEAGE
+============================================================
+
+At Step 2.4 confirm that the sector displayed comes from the actual
+Step 2.2 portfolio/sector selection.
+
+Do not hard-code the sector shown in v31 screenshots.
+
+Verify:
+
+Step 2.2 selected sector
+        ↓
+Step 2.4 sector selector
+        ↓
+Step 2.4 generated/loaded sector factors
+
+All three must agree.
+
+============================================================
+5. VERIFY EXACT FACTOR COUNT
+============================================================
+
+Rendered Step 2.4 must contain exactly:
 
 RF1
 RF2
@@ -472,1317 +131,484 @@ RF3
 RF4
 RF5
 
-Follow v31 EXACTLY for:
+Target = 5.
 
-- overall width,
-- column proportions,
-- header height,
-- row height,
-- text alignment,
-- left padding,
-- borders,
-- font weight,
-- header fills,
-- colour blocks,
-- numeric alignment,
-- percentage formatting.
+Verify visually and from application state.
 
-From the v31 reference:
-
-RF / Factor area is neutral/light.
-
-Importance header uses the pale yellow treatment.
-
-Imp. Score uses the light yellow/gold treatment.
-
-Weight uses the pale green treatment.
-
-Do not substitute random bootstrap colours.
-
-Use the actual v31 CSS values wherever available.
-
-If editable weight inputs are part of the current implementation,
-they must visually fit inside the cells exactly as v31 does.
-
-The table must end with or visibly reconcile:
-
-Total Weight: 100.0%
-
-No horizontal overflow.
-No oversized cells.
-No excessive padding.
-No contemporary card redesign.
+No accidental sixth factor.
+No hidden duplicate factor.
+No stale factor from a previous sector.
 
 ============================================================
-12. FACTOR ACCORDION STRUCTURE
+6. VERIFY TOP SUMMARY TABLE LIVE
 ============================================================
 
-Below the summary table are the individual RF panels.
+Check the rendered table against actual v31.
 
-There should be five factor rows/panels.
+Columns:
 
-The expanded factor panel must replicate v31.
+RF
+Factor
+Importance
+Imp. Score
+Weight
 
-HEADER EXAMPLE:
+Verify individually:
 
-[blue circular number/icon]
-Structural Leverage Intensity in Sponsor-Backed Software
-HIGH · 25% · Net 2/5
+- complete table width
+- each column width
+- header height
+- row height
+- header background colours
+- body backgrounds
+- font size
+- font weight
+- vertical alignment
+- horizontal alignment
+- cell padding
+- borders
+- RF labels
+- percentage formatting
+- Importance values
+- Imp. Score values
+- weight values
+- Total Weight presentation
 
-or equivalent values from the actual current factor.
+Weights must reconcile to:
 
-On the right:
-- importance status where used,
-- expand/collapse chevron,
-- existing controls.
+100.0%
 
-Match v31:
-- header height,
-- border,
-- pale-blue header treatment,
-- title size,
-- icon size,
-- icon position,
-- subtitle position,
-- margins,
-- separator.
-
-Collapsed factors must also match v31 exactly.
-
-Do not turn them into generic Bootstrap cards.
-
-============================================================
-13. FACTOR NARRATIVE
-============================================================
-
-Expanded panel first contains:
-
-FACTOR NARRATIVE
-
-Then the narrative field.
-
-Replicate:
-
-- label typography,
-- textarea/input-like framed rectangle,
-- border colour,
-- border width,
-- radius,
-- padding,
-- line-height,
-- minimum height,
-- background,
-- spacing.
-
-The content itself must explain:
-
-- the structural sector vulnerability,
-- how it can impair credit quality,
-- transmission into cash flow / leverage / refinancing / liquidity /
-  enterprise value / recovery etc.,
-- why it persists beyond a single event.
-
-Avoid generic statements such as:
-
-“This risk could negatively affect companies in this industry.”
-
-Credit logic must be explicit.
+Do not merely inspect the object in JavaScript.
+Verify what the browser actually renders.
 
 ============================================================
-14. REFERENCE / EVIDENCE LINE
+7. VERIFY THE SECTOR HEADER STRIP
 ============================================================
 
-Where v31 displays a small reference/source line below the narrative,
-retain it.
+Compare current rendered Step 2.4 to v31:
 
-Example concept:
+- navy sector strip height
+- SECTOR label
+- dropdown dimensions
+- dropdown padding
+- selected sector font
+- factor-count chip
+- chip position
+- chip border/radius
+- strip left/right margins
 
-Reference note → sector observations / research / approved taxonomy.
-
-Do not fabricate references.
-
-If actual references are unavailable, preserve whatever reference
-mechanism the current application already implements.
-
-Do not create false citation strings merely to fill the UI.
-
-============================================================
-15. FACTOR IMPORTANCE
-============================================================
-
-Then:
-
-FACTOR IMPORTANCE
-
-With the compact High / Medium controls exactly as v31.
-
-Replicate:
-
-- button dimensions,
-- active state,
-- inactive state,
-- red/pink High treatment,
-- neutral Medium treatment,
-- spacing,
-- typography.
-
-Do not replace them with:
-- dropdown,
-- slider,
-- toggle switch,
-- stars,
-- generic buttons.
+The factor count should visually follow the v31 convention.
 
 ============================================================
-16. IMPORTANCE JUSTIFICATION
+8. VERIFY INFORMATION / FORMULA BANNERS
 ============================================================
 
-Then:
+Confirm the Step 2.4 explanatory banner matches v31 visually and
+semantically.
 
-IMPORTANCE JUSTIFICATION
+It must retain the correct Step 2.4 concept:
 
-v31 presents this in a pale green bordered/highlighted horizontal box.
+approved/reviewed sector taxonomy
++
+deterministic importance/weights
++
+issuer scoring downstream.
 
-Replicate:
+Do NOT restore inaccurate wording such as claiming the LLM regenerates
+the taxonomy on every run if that contradicts the implemented design.
 
-- background,
-- border,
-- padding,
-- font,
-- width,
-- spacing.
+But visual dimensions must still follow v31:
 
-This text must explain WHY the factor has the assigned importance for
-credit.
-
-Example logic:
-
-HIGH because deterioration can directly affect debt-service capacity
-for a broad share of the sector and transmit quickly into covenant,
-liquidity or refinancing pressure.
-
-Do not simply restate the factor narrative.
+- background
+- left accent
+- height
+- padding
+- font size
+- margins
 
 ============================================================
-17. SET 1 — VULNERABILITY METRICS
+9. VERIFY RF1 COMPLETELY
 ============================================================
 
-This is a CRITICAL part of Step 2.4.
+Open RF1.
 
-Header:
+Compare every element against actual v31 Step 2.4.
 
-VULNERABILITY METRICS (SET 1)
+HEADER:
+- blue number/icon
+- exact icon size
+- title alignment
+- title weight
+- subtitle
+- importance badge
+- Net X/5 display if applicable
+- expand/collapse chevron
+- header height
+- pale-blue treatment
+- borders
 
-Table structure should follow v31 exactly.
+FACTOR NARRATIVE:
+- heading
+- textarea/frame
+- width
+- height
+- padding
+- line-height
+- borders
 
-Left area:
-Metric / Formula
+FACTOR IMPORTANCE:
+- High/Medium controls
+- active/inactive state
+- dimensions
+- spacing
 
-Then severity bands.
+IMPORTANCE JUSTIFICATION:
+- green strip
+- width
+- border
+- padding
+- font
 
-For the v31 Software example:
+SET 1 — VULNERABILITY METRICS:
+- Metric and Formula MUST be visibly separate columns if v31 does so.
+- metric column width
+- formula column width
+- Very High
+- High
+- Moderate
+- Low
+- colour bands
+- threshold cells
+- row heights
+- borders
+- padding
 
-VERY HIGH
-HIGH
-MODERATE
-LOW
+CRITICAL THRESHOLD:
+- position
+- height
+- background
+- border
+- typography
 
-Use the exact v31 colour bands:
+SET 2 — BUFFER METRICS:
+- Metric
+- Formula
+- Strong
+- Moderate
+- Weak
+- Negligible
+- exact v31 colour treatments
+- widths
+- padding
+- row heights
 
-Very High → pale red/pink
-High → pale amber/yellow
-Moderate → pale yellow/neutral
-Low → pale green
+KEY PRINCIPLE:
+- green strip
+- border
+- spacing
 
-Again: extract the actual colours from v31 CSS.
+SCORING LOGIC:
+- Score
+- Vulnerability Profile
+- Buffer Profile
+- rows 5,4,3,2,1
+- exact control/read-only behaviour from ACTUAL v31
+- column widths
+- row heights
+- header fills
+- cell borders
 
-Do not eyeball new colours.
+CREDIT IMPLICATION:
+- heading
+- green box
+- spacing
+- dimensions
 
-The metrics must be credit-relevant and measurable.
-
-Examples can include, depending on the factor:
-
-Debt / EBITDA
-EBITDA Interest Coverage
-Cash Flow Available for Debt Service / Total Debt Service
-Organic Revenue Growth
-Net Revenue Retention
-R&D Expense / Revenue
-Product Concentration
-Customer Churn
-Incident Cost Ratio
-Net CAC Ratio
-Gross Margin
-Liquidity Coverage
-etc.
-
-But DO NOT mechanically copy Software metrics into another sector.
-
-Metrics must correspond to:
-selected sector + selected factor.
-
-============================================================
-18. FORMULAS ARE PART OF THE BUSINESS DESIGN
-============================================================
-
-Where v31 contains Metric / Formula, retain formulas.
-
-Examples:
-
-Total Debt / EBITDA
-
-EBITDA / Cash Interest Expense
-
-Cash Available for Debt Service / Total Debt Service
-
-Annual Recurring Revenue / Total Revenue
-
-etc.
-
-These formulas matter because Step 2.5 needs a measurable framework.
-
-Do not reduce the table to vague qualitative descriptions.
-
-============================================================
-19. THRESHOLDS
-============================================================
-
-Severity bands need meaningful numerical or qualitative thresholds.
-
-Example concept:
-
-Debt / EBITDA
-
-Very High: > 9.0x
-High: > 7.0x to 9.0x
-Moderate: > 5.0x to 7.0x
-Low: <= 5.0x
-
-The actual thresholds must be appropriate to the factor and sector.
-
-Do not blindly use these numbers universally.
-
-Preserve currently approved values where they already exist.
-
-Do not silently rewrite existing sector thresholds merely because you
-would choose different numbers.
+Do not sign off RF1 until the browser result is visually aligned.
 
 ============================================================
-20. CRITICAL THRESHOLD STRIP
+10. VERIFY RF2–RF5 — DO NOT ASSUME RF1 REPRESENTS THEM
 ============================================================
 
-Below Set 1, v31 contains a narrow orange/pale-red strip:
+Expand RF2.
 
-Critical threshold (AND):
-...
+Verify the full structure.
 
-Replicate the strip exactly:
+Repeat for:
+RF3
+RF4
+RF5.
 
-- height,
-- border,
-- background,
-- text size,
-- label emphasis,
-- margins.
+Each factor must contain the full 9-part analytical structure:
 
-This is important analytical logic.
+1. Factor Narrative
+2. Factor Importance
+3. Importance Justification
+4. Vulnerability Metrics Set 1
+5. Critical Threshold
+6. Buffer Metrics Set 2
+7. Key Principle
+8. Scoring Logic 1–5
+9. Credit Implication
 
-It identifies combinations of vulnerability conditions representing
-severe credit stress.
-
-For example, conceptually:
-
-high leverage
-AND
-weak coverage
-AND
-weak CFADS
-
-may trigger the most severe sector score.
-
-Preserve the actual approved condition logic.
+No shallow/partial factors.
 
 ============================================================
-21. SET 2 — BUFFER METRICS
+11. BUSINESS CONTENT CHECK
 ============================================================
 
-Next:
+While testing, verify that the five factors are genuinely:
 
-BUFFER METRICS (SET 2)
+SECTOR-INHERENT
 
-This is NOT optional decoration.
+and are NOT simply repetitions of Step 2.3 event-driven factors.
 
-Sector credit risk cannot be assessed only through vulnerabilities.
+Remember:
 
-Step 2.4 explicitly balances:
+STEP 2.3:
+What risks arise because of THIS scenario/event?
 
-VULNERABILITY
-versus
-BUFFER / MITIGANT
+STEP 2.4:
+What structural credit vulnerabilities already exist because of THIS
+sector?
 
-The v31 columns are conceptually:
+STEP 2.5:
+How does THIS company perform against the event-driven and
+sector-inherent frameworks?
 
-Metric / Formula
-STRONG
-MODERATE
-WEAK
-NEGLIGIBLE
+Do not alter correct business content merely for wording preference.
 
-Colour treatment:
-
-Strong → green
-Moderate → neutral/light
-Weak → amber/yellow
-Negligible → red/pink
-
-Replicate exactly from v31 CSS.
-
-Possible buffer metrics depend on factor, e.g.:
-
-- recurring revenue proportion,
-- unrestricted cash / interest expense,
-- gross revenue retention,
-- weighted-average debt maturity,
-- cyber insurance coverage,
-- security investment ratio,
-- breach recovery speed,
-- liquidity coverage,
-- customer diversification,
-- contractual backlog,
-- pricing power,
-- recovery value.
-
-Again:
-
-DO NOT copy metrics mechanically across sectors.
+Only flag/fix obvious contamination or structural errors.
 
 ============================================================
-22. KEY PRINCIPLE STRIP
+12. VULNERABILITY VS BUFFER LOGIC
 ============================================================
 
-Below buffer metrics, v31 contains a pale-green:
+Confirm the rendered structure genuinely separates:
 
-Key Principle:
+VULNERABILITY METRICS
 
-statement.
+from
 
-Preserve it visually and functionally.
+BUFFER / MITIGANT METRICS.
 
-This is a concise explanation of which buffers are most credit
-protective and WHY.
+Do not merge them.
 
-Example concept:
+This distinction is fundamental because Step 2.5 needs both:
 
-high recurring revenue visibility, strong retention and long debt
-maturity provide the strongest protection because they stabilize
-cash-flow generation while reducing refinancing pressure.
-
-The principle should add analytical reasoning, not repeat table values.
+risk severity
+and
+credit protection.
 
 ============================================================
-23. SCORING LOGIC (1–5)
+13. SCORING LOGIC CHECK
 ============================================================
 
-This is another critical component.
+Verify browser rendering and data for scores:
 
-Header:
-
-SCORING LOGIC (1–5)
-
-The table must contain:
-
-Score
-Vulnerability Profile
-Buffer Profile
-
-Rows:
 5
 4
 3
 2
-1
+1.
 
-Replicate v31 exactly.
+Ensure vulnerability profiles and buffer profiles are paired correctly.
 
-Visual treatment:
+Do not change the existing approved Net Score calculation.
 
-Score column:
-dark/navy header treatment.
-
-Vulnerability Profile:
-pale yellow/amber header.
-
-Buffer Profile:
-pale green header.
-
-Maintain:
-- column widths,
-- row heights,
-- typography,
-- borders,
-- cell padding,
-- textarea/input framing where applicable.
-
-Do not replace this with:
-- cards,
-- badges,
-- progress bars,
-- gauges.
-
-The v31 table is the accepted design.
+The UI, formula banner and actual existing calculation must tell the
+same story.
 
 ============================================================
-24. SCORE MEANING
+14. EDIT / SAVE BEHAVIOUR
 ============================================================
 
-Scoring logic should conceptually mean:
+If actual v31 Step 2.4 supports editable fields:
 
-5 = strongest vulnerability / weakest protection
-4 = high vulnerability
-3 = moderate
-2 = low/moderate
-1 = lowest vulnerability and/or strongest buffers
+test one harmless change in the real UI.
 
-But preserve the actual approved Step 2.4 scoring rule.
+Verify:
 
-The vulnerability profile and buffer profile must work TOGETHER.
+edit
+→ Save All Changes
+→ rendered state
+→ underlying Step 2.4 state
 
-Do not assign score purely from one metric.
+then restore the original value if required.
 
-============================================================
-25. NET SCORE NOTE
-============================================================
-
-Below the scoring table, retain the small explanatory note if present,
-for example:
-
-Net Score = Raw Vulnerability Score − Buffer Credit ...
-
-or whatever rule exists in the approved current implementation.
-
-DO NOT invent a different calculation.
-
-Inspect existing code / v31.
-
-UI display and actual calculation must agree.
+If v31 does NOT permit editing that field, do not introduce editing.
 
 ============================================================
-26. CREDIT IMPLICATION
+15. CONFIRM STEP 2.4
 ============================================================
 
-Then:
+Use:
 
-CREDIT IMPLICATION
+Confirm All Sector Risk Factors
 
-v31 shows this as another pale-green framed statement.
+and verify real behaviour.
 
-Replicate exactly.
+Expected:
 
-This is where the factor is translated into credit language.
-
-It should explain potential impact on:
-
-- debt-service capacity,
-- liquidity,
-- refinancing,
-- covenant headroom,
-- leverage,
-- enterprise value,
-- default risk,
-- recovery,
-- free cash flow,
-- rating migration,
-
-depending on the factor.
-
-This is essential.
-
-Do not let the section become generic business commentary.
-
-============================================================
-27. REMAINING FACTORS
-============================================================
-
-After RF1, show RF2-RF5 as collapsed accordion items exactly like v31.
-
-Example visual sequence in reference:
-
-RF1 expanded
-RF2 collapsed
-RF3 collapsed
-RF4 collapsed
-RF5 collapsed
-
-When another factor is expanded, its detail layout must be identical.
-
-Each factor needs its own:
-
-- Factor Narrative
-- Factor Importance
-- Importance Justification
-- Vulnerability Metrics Set 1
-- Critical Threshold
-- Buffer Metrics Set 2
-- Key Principle
-- Scoring Logic 1–5
-- Credit Implication
-
-Do NOT produce a detailed RF1 and shallow RF2-RF5.
-
-All five must use the same schema.
-
-============================================================
-28. COMPOSITE REFERENCE SCORE NOTE
-============================================================
-
-Near the bottom, v31 contains a note conceptually similar to:
-
-Composite reference score: X/5 independently identifies 4–5
-structural sector-inherent factors from [LM2/LM3] using approved
-enterprise research, then applies deterministic importance, weighting
-and buffer-credit arithmetic. Issuer scoring remains downstream.
-
-Preserve the intended concept.
-
-Most important sentence:
-
-ISSUER SCORING REMAINS DOWNSTREAM.
-
-Step 2.4 should NOT start scoring Salesforce, Apple, Microsoft,
-Volkswagen, etc.
-
-That belongs to Step 2.5.
-
-Step 2.4 creates the SECTOR benchmark/framework.
-
-============================================================
-29. BOTTOM ACTION BUTTONS
-============================================================
-
-Replicate the v31 footer actions exactly.
-
-Existing reference includes:
-
-Save All Changes
-
-Generate Sector Factors
-
-Confirm All Sector Risk Factors →
-
-Match:
-
-- order,
-- horizontal alignment,
-- size,
-- spacing,
-- border radius,
-- font,
-- colours,
-- hover states,
-- disabled states.
-
-Do NOT redesign them.
-
-“Confirm All Sector Risk Factors” should visually remain the primary
-blue action.
-
-============================================================
-30. CONFIRMATION BEHAVIOUR
-============================================================
-
-Confirmation must preserve workflow semantics.
-
-When confirmed:
-
-- Step 2.4 state becomes confirmed/complete.
-- workflow status updates appropriately.
-- Step 2.5 becomes available according to the existing sequence.
-- confirmed sector-factor data remains available downstream.
-
-Do not merely change button colour without preserving application state.
-
-============================================================
-31. FEEDBACK PANEL
-============================================================
-
-Keep the Step 2.4-specific feedback panel at the bottom.
-
-Reference concept:
-
-Feedback to Sector-Inherent Risk Factor Agent
-
-with:
-- input area,
-- Send button,
-- Clear control if present.
-
-Feedback must remain associated specifically with Step 2.4.
-
-Do not merge it with Step 2.3 or global feedback.
-
-Keep v31:
-- dimensions,
-- border,
-- spacing,
-- typography,
-- send-button styling.
-
-============================================================
-32. WORKFLOW STATUS — RIGHT PANEL
-============================================================
-
-Preserve the exact v31 right-side Workflow Status area.
-
-It should correctly show progression such as:
-
-Risk Narrative Intake
-Scenario & Assumptions
-Portfolio Selection
-Event-driven Risk Factors
-Sector-Inherent Factors
-Name Level Assessment
-Portfolio Assessment
-
-Step 2.4 must properly transition between:
-
+Step 2.4 status
 In Progress
-and
-Confirmed / Completed
+        ↓
+Confirmed / Complete
 
-according to existing workflow logic.
+Workflow sidebar updates.
 
-Do NOT fake completion in the UI.
+Step 2.5 becomes available according to existing workflow rules.
 
-============================================================
-33. MOST IMPORTANT DATA-LINEAGE RULE
-============================================================
+Do NOT fake confirmation through DOM/CSS.
 
-Do not allow Step 2.4 to become disconnected from earlier steps.
-
-Sequence must remain:
-
-STEP 1
-provides the risk narrative / event context.
-
-STEP 2.1
-provides scenario and shock assumptions.
-
-STEP 2.2
-determines which portfolio / names / sectors are in scope.
-
-STEP 2.3
-defines event-driven transmission channels.
-
-STEP 2.4
-defines the structural sector vulnerability framework.
-
-STEP 2.5
-combines the selected company evidence with the Step 2.3 event
-framework and Step 2.4 sector framework to assess the NAME.
-
-This distinction is fundamental.
+Use actual application behaviour.
 
 ============================================================
-34. STEP 2.4 SHOULD NOT BE CONTAMINATED BY STEP 2.3
+16. VERIFY STEP 2.5 HANDOFF
 ============================================================
 
-Do not generate sector factors by merely paraphrasing the currently
-selected event.
+After confirmation, verify that Step 2.5 receives the confirmed Step
+2.4 factor state through the existing handoff path you identified:
 
-For example, if Step 1 is about tariffs:
+confirmStep24()
+→ finalizeV6
+→ RPR_STEP25_REFRESH_WORKFLOW_STATE
 
-BAD Step 2.4:
-- Tariff Risk
-- Tariff Revenue Risk
-- Tariff Supply Chain Risk
-- Tariff Margin Risk
-- Tariff Refinancing Risk
+or whatever the actual runtime path is.
 
-That is Step 2.3 logic.
+Do NOT modify Step 2.5 during this task.
 
-GOOD Step 2.4 for a software sector could remain structural:
-
-- sponsor-backed leverage,
-- technology disruption,
-- FCF compression,
-- refinancing concentration,
-- demand/customer cyclicality,
-
-even if the current event is unrelated.
-
-The point is to establish the sector's structural susceptibility.
+Only prove the Step 2.4 output reaches it.
 
 ============================================================
-35. STEP 2.4 SHOULD PREPARE STEP 2.5
+17. VISUAL SIDE-BY-SIDE
 ============================================================
 
-Every factor should be sufficiently structured so that Step 2.5 can
-eventually take issuer evidence and determine:
+At desktop zoom, compare:
 
-- actual metric value,
-- vulnerability band,
-- buffer band,
-- raw vulnerability score,
-- buffer credit,
-- net factor score,
-- evidence/source,
-- rationale,
-- resulting credit implication.
+ACTUAL V31 STEP 2.4
+vs
+CURRENT LIVE STEP 2.4.
 
-Therefore Step 2.4 MUST retain measurable metric definitions and
-thresholds.
+Do not compare from memory.
 
-Do not simplify it into narrative-only AI output.
+Check:
 
-============================================================
-36. DO NOT FABRICATE COMPANY DATA
-============================================================
+- page width
+- right sidebar width
+- content/sidebar gap
+- sector bar
+- summary table
+- RF cards
+- RF header
+- text fields
+- information boxes
+- metric tables
+- scoring tables
+- button positions
+- footer
+- feedback panel
+- overall vertical density
 
-Step 2.4 is sector-level.
-
-It therefore should not need to fabricate issuer financials.
-
-Do not populate illustrative issuer values and present them as facts.
-
-Actual company data belongs to Step 2.5 and must come from the
-approved evidence/data path.
+Correct remaining visible discrepancies individually.
 
 ============================================================
-37. VISUAL COMPARISON METHOD
+18. CSS RULE
 ============================================================
 
-Do not claim “v31 aligned” after a superficial CSS pass.
+Do not solve individual differences with broad global CSS.
 
-Perform a side-by-side comparison:
+Keep Step 2.4 styling scoped.
 
-CURRENT STEP 2.4
-versus
-V31 STEP 2.4
+Avoid regressions to:
+Step 1
+Step 2.1
+Step 2.2
+Step 2.3
+Step 2.5.
 
-Inspect at least:
+Use actual v31 CSS values when available.
 
-PAGE
-- content width
-- sidebar width
-- margins
-- vertical rhythm
-
-SECTOR BAR
-- height
-- dropdown width
-- colours
-- radius
-
-SUMMARY TABLE
-- column widths
-- header bands
-- row heights
-- padding
-- borders
-- text alignment
-
-FACTOR HEADER
-- height
-- icon
-- title
-- subtitle
-- importance
-- chevron
-
-NARRATIVE
-- textarea dimensions
-- padding
-- line height
-
-IMPORTANCE
-- buttons
-- spacing
-
-JUSTIFICATION
-- green box height
-- padding
-
-SET 1
-- header bands
-- column widths
-- row heights
-- metric/formula arrangement
-- threshold cells
-
-CRITICAL THRESHOLD
-- strip dimensions
-
-SET 2
-- header colours
-- widths
-- rows
-
-KEY PRINCIPLE
-- strip dimensions
-
-SCORING TABLE
-- score column width
-- vulnerability column width
-- buffer column width
-- row heights
-
-CREDIT IMPLICATION
-- box dimensions
-
-COLLAPSED FACTORS
-- heights
-- spacing
-- borders
-
-BOTTOM BUTTONS
-- dimensions
-- placement
-
-FEEDBACK
-- width
-- textarea/input height
-- send button
-
-RIGHT SIDEBAR
-- width
-- alignment
-- status styling
-
-Fix mismatches individually.
+Do not approximate colours/dimensions unnecessarily.
 
 ============================================================
-38. DO NOT USE SCREENSHOTS AS AN EXCUSE FOR APPROXIMATION
+19. DO NOT REWRITE BUSINESS FUNCTIONALITY
 ============================================================
 
-The supplied screenshots show the target, but the repository should
-contain the actual v31 baseline.
+If the live test shows the current backend/data works:
 
-Locate it.
+LEAVE IT ALONE.
 
-Possible filenames/locations may contain terms such as:
+This final pass is primarily:
 
-v31
-UI Design
-step24
-consolidated
-reference
-prototype
-
-Do not assume the filename.
-
-Search the repository.
-
-Use v31's actual HTML/CSS as the authoritative source wherever it is
-available.
-
-============================================================
-39. PRESERVE RESPONSIVENESS WITHOUT CHANGING DESKTOP TARGET
-============================================================
-
-The screenshots represent the primary desktop target.
-
-Match that first.
-
-Do not alter desktop proportions in pursuit of a new responsive design.
-
-If existing responsiveness already works, preserve it.
-
-Do not add an elaborate mobile implementation for this POC unless
-required to prevent breakage.
-
-============================================================
-40. DO NOT CHANGE OTHER STEPS' VISUALS
-============================================================
-
-This task is Step 2.4 only.
-
-Do not “standardize” Step 2.1, Step 2.2, Step 2.3 or Step 2.5 as part
-of this work.
-
-If shared CSS must be touched, ensure the selector scope does not
-change those screens.
-
-Prefer Step 2.4-specific selectors where required.
-
-============================================================
-41. BACKEND CHANGES
-============================================================
-
-Do not change backend logic merely because the UI can be improved.
-
-Backend changes are allowed ONLY if you identify a concrete Step 2.4
-functional defect such as:
-
-- factor count incorrect,
-- weights not summing to 100,
-- wrong sector being passed,
-- state not persisting,
-- confirmation broken,
-- details missing because parser drops fields,
-- Step 2.5 cannot access confirmed Step 2.4 output.
-
-If no such defect exists:
-leave backend alone.
-
-============================================================
-42. DATA MODEL CONSISTENCY
-============================================================
-
-For each RF, verify that the data model can preserve all fields needed
-by the v31 design.
-
-Conceptually:
-
-rf_id
-factor_name
-importance
-importance_score
-weight
-
-factor_narrative
-importance_justification
-
-vulnerability_metrics[]
-    metric
-    formula
-    very_high
-    high
-    moderate
-    low
-
-critical_threshold
-
-buffer_metrics[]
-    metric
-    formula
-    strong
-    moderate
-    weak
-    negligible
-
-key_principle
-
-scoring_logic[]
-    score
-    vulnerability_profile
-    buffer_profile
-
-credit_implication
-
-Do NOT blindly replace the current schema with these names.
-
-First inspect the existing schema and map existing fields.
-
-Only add a missing field when genuinely required.
-
-============================================================
-43. QUALITY STANDARD FOR GENERATED FACTORS
-============================================================
-
-Do not accept shallow factor generation.
-
-A high-quality RF should satisfy all of these:
-
-1. Sector-specific.
-2. Credit-specific.
-3. Structurally persistent.
-4. Distinct from other RFs.
-5. Measurable.
-6. Provides vulnerability indicators.
-7. Provides buffer indicators.
-8. Has coherent score bands.
-9. Has a defensible credit transmission mechanism.
-10. Can be applied downstream to an issuer.
-
-Reject generic factors that fail this test.
-
-============================================================
-44. EXAMPLE OF THE EXPECTED ANALYTICAL DEPTH
-============================================================
-
-For illustration only — preserve actual approved content:
-
-Factor:
-Structural Leverage Intensity in Sponsor-Backed Software
-
-Narrative:
-Sponsor-backed software issuers may operate at structurally higher
-leverage levels because recurring revenue and predictable cash flows
-support debt capacity. This leaves less debt-service headroom when
-revenue growth weakens, margins compress or interest expense rises.
-
-Vulnerability metrics:
-- Debt / EBITDA
-- EBITDA Interest Coverage
-- CFADS / Debt Service
-
-Buffer metrics:
-- recurring revenue share
-- unrestricted cash / interest
-- gross retention
-- weighted-average debt maturity
-
-Scoring logic:
-high leverage + weak coverage + weak CFADS → severe vulnerability;
-strong recurring revenue + liquidity + long maturity → buffer credit.
-
-Credit implication:
-persistent leverage reduces capacity to absorb operating deterioration
-and increases refinancing / covenant / liquidity sensitivity.
-
-THIS is the required level of reasoning.
-
-Do not use this example as a hard-coded answer.
-
-============================================================
-45. EXACT VISUAL PRIORITY
-============================================================
-
-When a conflict exists between:
-
-A. current Step 2.4 visual design
-and
-B. v31 visual design
-
-v31 wins.
-
-When a conflict exists between:
-
-A. v31 visual design
-and
-B. working current Step 2.4 functional logic
-
-DO NOT destroy the functional logic.
-
-Instead:
-apply the v31 presentation on top of the working logic.
-
-The desired result is:
-
-V31 PRESENTATION
+runtime validation
 +
-CURRENT WORKING FUNCTIONALITY
-+
-CORRECT STEP 2.4 BUSINESS PURPOSE.
+visual correction.
+
+No architecture change.
 
 ============================================================
-46. TEST THE REAL WORKFLOW
+20. ACCEPTANCE TEST
 ============================================================
 
-After implementation, execute a real Step 2.4 workflow.
+Do not finish until all are true:
 
-Do not validate only static rendering.
-
-At minimum verify:
-
-1. Load application.
-2. Reach Step 2.4 through the existing workflow.
-3. Sector from Step 2.2 is correctly represented.
-4. Five RFs appear.
-5. Summary table is populated.
-6. Weights total 100%.
-7. Expand RF1.
-8. Narrative visible.
-9. Importance visible.
-10. Importance justification visible.
-11. Vulnerability Set 1 visible.
-12. Critical threshold visible.
-13. Buffer Set 2 visible.
-14. Key Principle visible.
-15. Scoring Logic 1–5 visible.
-16. Credit implication visible.
-17. Collapse RF1.
-18. Expand RF2.
-19. Verify same detailed structure.
-20. Repeat enough to ensure RF1-RF5 are all populated.
-21. Save changes if supported.
-22. Confirm all sector risk factors.
-23. Verify Step 2.4 status changes correctly.
-24. Verify downstream Step 2.5 can access the confirmed Step 2.4 state.
-25. Reload/revisit and ensure state has not silently disappeared if
-    persistence is expected by current design.
+[ ] Real application started successfully.
+[ ] Real workflow reaches Step 2.4.
+[ ] Sector comes from Step 2.2 correctly.
+[ ] Exactly 5 RFs rendered.
+[ ] Weights = 100.0%.
+[ ] RF1–RF5 all have the complete 9-part schema.
+[ ] Vulnerability and buffer tables are distinct.
+[ ] Metric and Formula columns match v31.
+[ ] Severity colours match v31.
+[ ] Critical threshold matches v31.
+[ ] Key Principle matches v31.
+[ ] Scoring 5→1 matches v31.
+[ ] Editable/read-only behaviour matches ACTUAL v31 Step 2.4.
+[ ] Credit implication matches v31 structure.
+[ ] Accordion behaviour works.
+[ ] Save works where applicable.
+[ ] Confirmation works.
+[ ] Workflow sidebar updates.
+[ ] Step 2.5 receives confirmed Step 2.4 state.
+[ ] No Step 2.3 regression from step23.html modification.
+[ ] Live visual result has been compared directly against v31.
 
 ============================================================
-47. VISUAL ACCEPTANCE TEST
+21. FINAL RESPONSE — KEEP IT SHORT
 ============================================================
 
-At the end, compare the implementation against v31 at normal desktop
-zoom.
+Do not provide another long design report.
 
-I should NOT see obvious differences in:
+Give me:
 
-- page proportions,
-- section positions,
-- table widths,
-- table heights,
-- colours,
-- header bands,
-- borders,
-- row heights,
-- accordion framing,
-- textarea framing,
-- typography hierarchy,
-- spacing,
-- buttons,
-- feedback section,
-- right workflow sidebar.
+1. LIVE TEST: PASS / FAIL
 
-I am deliberately asking for replication at the smallest practical
-design-detail level.
+2. V31 VISUAL PARITY:
+   PASS / FAIL
 
-“Similar”
-“inspired by”
-“close”
-“same general structure”
+3. FUNCTIONAL STEP 2.4:
+   PASS / FAIL
 
-are NOT acceptance criteria.
+4. STEP 2.5 HANDOFF:
+   PASS / FAIL
 
-The target is:
+5. FILES CHANGED:
+   exact paths only
 
-AS CLOSE TO V31 AS THE EXISTING APPLICATION STRUCTURE PRACTICALLY
-ALLOWS.
+6. REMAINING DIFFERENCES:
+   every known difference, even minor
 
-============================================================
-48. PARTICULAR DIFFERENCE TO AVOID
-============================================================
+7. TESTED SECTOR:
+   actual sector used in the live workflow
 
-Do not produce the simplified implementation where Step 2.4 becomes:
+8. TESTED FACTORS:
+   RF1–RF5 names
 
-Factor name
-Importance
-Weight
-one narrative
-one small table
+If a test fails, continue fixing it before reporting.
 
-That loses the original v31 analytical design.
+Only stop without completion for a genuine external blocker that cannot
+be solved from the repository/environment.
 
-The v31 structure is deliberately richer:
-
-SUMMARY
-↓
-FACTOR NARRATIVE
-↓
-IMPORTANCE
-↓
-IMPORTANCE JUSTIFICATION
-↓
-VULNERABILITY METRICS
-↓
-CRITICAL THRESHOLD
-↓
-BUFFER METRICS
-↓
-KEY PRINCIPLE
-↓
-SCORING LOGIC
-↓
-CREDIT IMPLICATION
-
-Preserve this hierarchy.
-
-============================================================
-49. WHAT NOT TO TOUCH
-============================================================
-
-DO NOT:
-
-- redesign the app,
-- create a new frontend,
-- replace v31 styling conventions,
-- refactor all CSS,
-- modify Stylus presets,
-- create or edit a Stylus preset,
-- investigate preset UUIDs,
-- change Step 2.5 Runner architecture,
-- change SEC/Web implementation,
-- add fake issuer data,
-- replace working APIs,
-- rename unrelated endpoints,
-- restructure repository folders,
-- introduce a new framework.
-
-The VS Code agent does not manage Stylus presets.
-
-Preset changes are manual and belong to the user.
-
-============================================================
-50. IMPLEMENTATION FIRST — NO LONG AUDIT
-============================================================
-
-Do not spend the task producing a large speculative audit.
-
-Quickly inspect:
-
-1. current Step 2.4,
-2. v31 Step 2.4,
-3. current data/state wiring,
-
-then implement.
-
-If you find a concrete discrepancy, fix it.
-
-Do not stop and ask me whether you should fix each discrepancy.
-
-Proceed.
-
-============================================================
-51. FINAL OUTPUT REQUIRED FROM YOU
-============================================================
-
-When complete, provide a concise implementation report containing:
-
-A. FILES CHANGED
-Exact paths.
-
-B. VISUAL CHANGES
-What was changed to reproduce v31.
-
-C. FUNCTIONAL CHANGES
-Only actual Step 2.4 functional fixes.
-
-D. BUSINESS-LOGIC VALIDATION
-Confirm:
-- 5 factors,
-- weights reconcile to 100%,
-- sector correctly inherited,
-- vulnerability + buffer framework retained,
-- scoring logic retained,
-- confirmation works,
-- Step 2.5 receives/retains Step 2.4 output.
-
-E. TEST RESULT
-Actual test performed and result.
-
-F. REMAINING GENUINE DIFFERENCES FROM V31
-List any, however small.
-
-Do NOT say “matches v31” if visible discrepancies remain.
-
-============================================================
-52. STOP CONDITION
-============================================================
-
-The task is complete only when:
-
-[ ] Step 2.4 remains functionally working.
-[ ] Step 2.4 preserves its sector-credit purpose.
-[ ] It is distinct from Step 2.3 event-driven logic.
-[ ] Five high-quality structural RFs are represented.
-[ ] Weights reconcile to 100%.
-[ ] Every RF has the complete v31 analytical structure.
-[ ] Vulnerability metrics are preserved.
-[ ] Buffer metrics are preserved.
-[ ] Critical thresholds are preserved.
-[ ] Scoring logic 1–5 is preserved.
-[ ] Credit implications are preserved.
-[ ] Confirmation/state propagation works.
-[ ] Step 2.5 can consume the confirmed framework.
-[ ] Step 2.4 visually reproduces v31 at component/table/detail level.
-[ ] No working unrelated functionality was broken.
-[ ] No unnecessary architecture/refactoring was introduced.
-
-IMPLEMENT THIS NOW.
-Do not merely explain how you would implement it.
-Inspect the repository, modify the existing implementation, run the
-workflow, compare against v31, correct remaining discrepancies, and
-finish the complete Step 2.4 acceptance test.
+EXECUTE THE LIVE ACCEPTANCE TEST NOW.
