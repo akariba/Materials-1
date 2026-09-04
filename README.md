@@ -1,378 +1,213 @@
-STOP THE CURRENT >30-MINUTE APPLE RUN.
+STOP. Do not make any further payload, preset, SEC, UI or Step 3 changes yet.
 
-We now have the root cause sufficiently isolated.
-
-DO NOT produce another diagnostic report.
-IMPLEMENT THE FIX.
+The latest result gives us a clear checkpoint.
 
 VERIFIED:
 
-- Manual Stylus Apple run completes in approximately 2 minutes.
-- Same preset.
-- Same model.
-- Same tool configuration.
-- Runner itself works.
-- Job/poll mechanism works.
-- Backend run is materially larger than manual run.
-- Backend currently supplies:
-    * real company context
-    * Step 2.1 scenario
-    * Step 2.3 factors
-    * all 5 Step 2.4 factors
-    * additional deterministic SEC grounding
-- Stylus also has SEC/Web tools available.
-- Current backend-driven Apple run has exceeded 30 minutes without a
-  final response.
+- payload compaction succeeded;
+- compact input size is approximately 2,521 chars;
+- 5 ED factors and 5 SI factors were supplied;
+- SEC grounding was reduced to 2 sources;
+- Runner execution failed after ~52 seconds because authentication
+  failed;
+- the preset/model/tool phase was therefore NOT reached;
+- this test does NOT prove whether the compact payload solves the
+  previous long-runtime issue.
 
-The Step 2.5 input contract must now be corrected.
+The ONLY immediate blocker is Runner authentication.
+
+Also, the current diagnostic script added 5 SYNTHETIC Step 2.3 factors.
+That is not acceptable for the real POC acceptance run.
+
+Do the following only.
 
 ============================================================
-1. DO NOT REMOVE THE REAL BUSINESS CONTEXT
+1. PRESERVE THE PAYLOAD COMPACTION
 ============================================================
 
-Do NOT solve performance by going back to the small synthetic manual
-test.
+Keep the current compaction changes in:
 
-The real assessment MUST retain:
+stylus_engine.py
+stylus_sec_grounding.py
 
-- actual company identity
-- actual Step 2.1 scenario
-- exactly 5 confirmed Step 2.3 event-driven factors
-- exactly 5 confirmed Step 2.4 sector-inherent factors
-- assessment as-of date
-- verified SEC grounding
-- supplemental Web capability.
+Do not redesign them again.
 
-The goal is COMPACTION + DE-DUPLICATION, not loss of analytical
-content.
+Do not expand the payload.
 
 ============================================================
-2. MAKE THE BACKEND PAYLOAD MATCH THE MANUAL PRESET CONTRACT
+2. REMOVE SYNTHETIC ED FACTORS FROM THE REAL ACCEPTANCE TEST
 ============================================================
 
-Use exactly the same preset, model and Runner invocation structure as
-the successful manual Stylus call.
+The temporary synthetic ED factors added to:
 
-Do not add separate backend-only prose/prompts unless genuinely needed.
+_step25_ui_route_single_company_diag.py
 
-The only difference should be that the backend supplies REAL values to
-the preset's existing inputs.
+must NOT be treated as the final test inputs.
 
-============================================================
-3. COMPANY CONTEXT MUST BE SMALL
-============================================================
+For the next Apple acceptance run, use the ACTUAL five confirmed
+Step 2.3 Event-Driven factors from the real workflow state.
 
-CompanyContextJSON should contain only fields needed for assessment.
+Also use the ACTUAL five confirmed Step 2.4 Sector-Inherent factors.
 
-For Apple conceptually:
+Acceptance requires:
 
-company_name
-ticker
-CIK
-sector
-country
-internal company identifier where useful
+ED FACTORS = real confirmed 5
+SI FACTORS = real confirmed 5
 
-Do NOT include the entire Step 2.2 row or unrelated portfolio metadata.
+No fabricated/synthetic upstream factors.
+
+If the diagnostic helper needs temporary fixture support for unit
+testing, keep that clearly isolated from the real acceptance path.
 
 ============================================================
-4. COMPACT STEP 2.1
+3. FIX RUNNER AUTHENTICATION ONLY
 ============================================================
 
-ScenarioContextJSON should contain only the confirmed assessment
-scenario required by Step 2.5:
+Latest failure:
 
-- scenario name
-- horizon
-- major assumptions/shocks
-- relevant stress narrative.
+HTTP 401 TOKEN_EXPIRED
 
-Do not pass the complete raw Step 2.1 application state.
+and the automatic refresh attempt itself failed with HTTP 400.
 
-============================================================
-5. KEEP ALL FIVE STEP 2.3 FACTORS, BUT COMPACT THEM
-============================================================
+Do not touch Stylus payload logic to solve this.
 
-EventDrivenFactorsJSON must contain exactly the 5 confirmed Step 2.3
-factors.
+Inspect the EXISTING Runner token mechanism and determine why the
+refresh request is failing now.
 
-For each factor keep only what Step 2.5 genuinely needs, such as:
+Reuse the existing approved authentication mechanism.
 
-factor_id
-factor_name
-weight
-credit transmission / concise rationale
-relevant scoring information if required by approved methodology.
+Do NOT:
+- create another token system;
+- hard-code a bearer token;
+- print secrets;
+- ask me to paste a secret into chat;
+- change Runner API architecture.
 
-Do not send UI metadata, workflow fields, feedback history or other
-irrelevant state.
+Check:
 
-============================================================
-6. KEEP ALL FIVE STEP 2.4 FACTORS
-============================================================
+- current cached Runner token
+- expiry
+- current refresh-token state
+- canonical refreshed-token source
+- existing refresh script / endpoint
+- why the refresh endpoint returned HTTP 400.
 
-SectorInherentFactorsJSON must contain exactly the 5 confirmed Step 2.4
-factors.
-
-Do NOT reduce this to one factor merely to match the manual smoke test.
-
-For each RF keep only fields required to score a company:
-
-factor_id
-factor_name
-weight
-importance
-
-relevant vulnerability metrics / thresholds
-
-relevant buffer metrics / thresholds
-
-scoring rule necessary for Step 2.5.
-
-Do NOT pass visual/UI content or redundant long narratives when the
-structured metric/scoring framework already expresses the same logic.
+If the project already contains the previously implemented secure token
+refresh script/process, use it.
 
 ============================================================
-7. COMPACT SEC GROUNDING AGGRESSIVELY
+4. VERIFY AUTH BEFORE RUNNING APPLE
 ============================================================
 
-This is critical.
+Do NOT launch another Apple assessment until auth is proven.
 
-Do NOT attach entire SEC filings or very large filing text to the
-Stylus input.
+Required preflight:
 
-The backend already deterministically knows:
+RUNNER TOKEN PRESENT: YES
+RUNNER TOKEN EXPIRED: NO
+REFRESH MECHANISM: PASS
+TOKEN REMAINING TIME: sufficient for one assessment
 
-evidence ID
-CIK
-form
-filing date
-accession
-EDGAR URL.
+Then perform a lightweight authenticated Runner connectivity check
+using the existing safe mechanism.
 
-For grounding, supply a SMALL set of relevant verified excerpts/facts
-from the latest appropriate filing(s).
-
-Prefer approximately:
-
-1–3 relevant SEC filing sources
-
-with only credit-relevant excerpts needed for the Step 2.3/2.4
-assessment.
-
-For example where available:
-
-debt/leverage
-liquidity/cash
-interest coverage
-cash flow
-maturities/refinancing
-revenue/retention
-material risk disclosures
-
-depending on the actual RFs.
-
-Do not dump the filing.
-
-Preserve deterministic provenance for every excerpt.
+Do not launch the full preset merely to test auth.
 
 ============================================================
-8. REMOVE DUPLICATE SEC DISCOVERY
+5. IF USER INTERACTION IS GENUINELY REQUIRED
 ============================================================
 
-If verified SEC grounding has already been supplied by the backend,
-Stylus should NOT spend time rediscovering the same SEC filing.
+If the corporate authentication system requires me to perform an
+interactive login or securely refresh the token myself, STOP there.
 
-The backend owns SEC provenance.
+Return only:
 
-The preset should consume supplied verified SEC evidence.
+USER ACTION REQUIRED
 
-Web remains supplemental.
+EXACT ACTION:
+<the exact local command/UI action I must perform>
 
-DO NOT modify the Stylus preset yourself.
+Do NOT ask me to send the bearer token or refresh token in chat.
 
-Implement backend payload support first.
-
-At the end, if the current preset prompt explicitly tells the model to
-always perform its own SEC filing lookup even when verified SEC
-evidence is supplied, flag the minimal manual preset change for the
-user.
+Otherwise continue automatically.
 
 ============================================================
-9. BOUND WEB RESEARCH
+6. THEN RUN ONE REAL APPLE ACCEPTANCE TEST
 ============================================================
 
-Web search is supplemental.
-
-Do not allow open-ended research.
-
-The Step 2.5 purpose is an issuer credit assessment, not a research
-project.
-
-Use Web only where needed for current information not adequately
-covered by SEC evidence.
-
-The successful manual Apple run used a small number of targeted
-searches.
-
-The real backend run should behave similarly.
-
-Do not introduce a generic research loop.
-
-============================================================
-10. DO NOT CHANGE SCORING
-============================================================
-
-Do not modify the approved:
-
-ED score
-SI score
-Composite score
-Residual rating
-Credit impact rating
-
-methodology.
-
-This task only fixes how evidence/context reaches the existing
-assessment.
-
-============================================================
-11. DO NOT CHANGE RUNNER
-============================================================
-
-Runner has now been proven to:
-
-HTTP 200
-open stream
-receive SSE events
-produce final output in previous runs.
-
-Do not rewrite Runner again.
-
-Do not touch Step 3.
-
-Do not touch UI styling.
-
-============================================================
-12. ADD ONE USEFUL PAYLOAD SIZE CHECK
-============================================================
-
-Before calling Runner, log safe summary information only:
-
-company
-ED factor count
-SI factor count
-SEC evidence count
-approximate serialized input size
-
-Do not log secrets or huge evidence text.
-
-This is only to prevent accidental payload growth.
-
-============================================================
-13. APPLE ACCEPTANCE TEST
-============================================================
-
-After implementing payload compaction:
-
-restart backend cleanly.
-
-Run Apple ONLY.
-
-Use:
+Only after authentication passes, run:
 
 Apple Inc.
 AAPL
 CIK 0000320193
 
-Exactly:
+with:
 
-5 Step 2.3 factors
-5 Step 2.4 factors
-real Step 2.1 scenario
-compact verified SEC evidence.
+- real Step 2.1 scenario
+- REAL five confirmed Step 2.3 ED factors
+- REAL five confirmed Step 2.4 SI factors
+- compact verified SEC grounding
+- current assessment as-of date
 
-No 32-company batch.
+Apple only.
 
 No second company.
+No 32-company batch.
+No Step 3.
 
 ============================================================
-14. PERFORMANCE ACCEPTANCE
+7. DO NOT CHANGE THE PRESET DURING THIS TASK
 ============================================================
 
-This POC cannot accept another 30–40 minute name assessment.
+Do not modify the Stylus preset yourself.
 
-Target should be reasonably comparable to the manual Stylus run.
+We already know a potential preset optimisation may be useful, but this
+latest run never reached the preset.
 
-Do not impose an unrealistically strict 2-minute requirement because
-the real assessment has richer context.
-
-But one issuer should normally complete in minutes, not tens of
-minutes.
-
-Use a bounded maximum for the Apple acceptance run.
-
-If the model performs repeated unnecessary tool searches despite the
-compact context, inspect the preset instruction once and request the
-minimal manual change.
+First prove the compact real payload can execute with valid auth.
 
 ============================================================
-15. SUCCESS
+8. FINAL OUTPUT
 ============================================================
-
-Apple must reach:
-
-FINAL RESPONSE RECEIVED
-ARTIFACT PARSED
-EVIDENCE VALIDATED
-ED SCORE POPULATED
-SI SCORE POPULATED
-COMPOSITE SCORE POPULATED
-RESIDUAL RATING POPULATED
-CREDIT IMPACT RATING POPULATED
-JOB COMPLETED
-
-No fabrication.
-
-============================================================
-16. STOP AFTER APPLE
-============================================================
-
-Do not run 10 companies yet.
-Do not execute Step 3 yet.
 
 Return only:
 
-APPLE COMPACT-PAYLOAD TEST: PASS / FAIL
+RUNNER AUTH: PASS / FAIL
 
-INPUT SIZE BEFORE:
-INPUT SIZE AFTER:
+REFRESH: PASS / FAIL
 
-ED FACTORS: 5
-SI FACTORS: 5
+APPLE REAL-INPUT TEST: PASS / FAIL
+
+ED FACTORS:
+5 REAL / NOT REAL
+
+SI FACTORS:
+5 REAL / NOT REAL
+
+INPUT SIZE:
+<chars>
+
 SEC SOURCES:
-WEB SEARCHES PERFORMED:
-RUNNER EXECUTION TIME:
+<count>
 
-FINAL RESPONSE: YES / NO
-EVIDENCE VALIDATED: YES / NO
+RUNNER TIME:
+
+FINAL RESPONSE:
+YES / NO
+
+EVIDENCE VALIDATED:
+YES / NO
+
 ED SCORE:
 SI SCORE:
 COMPOSITE:
 RESIDUAL RATING:
 IMPACT RATING:
-JOB COMPLETED: YES / NO
 
-ROOT CAUSE FIXED:
-one sentence
-
-FILES CHANGED:
-exact paths
-
-PRESET MANUAL CHANGE REQUIRED:
+JOB COMPLETED:
 YES / NO
 
-If YES:
-give only the exact minimal prompt change required.
+NEXT FAILURE:
+NONE or exact checkpoint
 
-Do not continue to another task.
+Do not continue to Step 3.
