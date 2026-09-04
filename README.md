@@ -1,256 +1,320 @@
-FINAL RPR LIVE EXECUTION AND ACCEPTANCE
-NO MORE STATIC CODE-ONLY PASS REPORTS
+RPR POC — STRICT FINAL END-TO-END IMPLEMENTATION
+STEP 2.4 → STEP 2.5 REAL SEC + WEB → STEP 3
 
-Continue from your current implementation.
+THIS SUPERSEDES THE PREVIOUS LIVE-ACCEPTANCE PROMPT.
 
-IMPORTANT:
-Your previous status report is NOT accepted as final completion.
+You have now identified the actual Step 2.5 SEC problem.
 
-You explicitly stated:
+Your own finding was:
 
-- Step 2.5 was not re-run live end-to-end.
-- Step 3 was not executed in a browser.
-- validation was based partly on source inspection/static analysis.
+- cik_resolver.py performs real SEC issuer resolution.
+- sec_filings.py performs deterministic real SEC filing selection.
+- evidence validation correctly rejects unverifiable/fabricated SEC
+  citations.
+- the existing hybrid path has previously produced validated real SEC
+  evidence.
+- BUT the currently-active Stylus path does NOT wire sec_filings.py
+  into stylus_engine.py.
+- Stylus therefore asks the model to discover / describe SEC evidence
+  and self-report accession numbers/URLs.
+- the model frequently fails to emit a parseable real EDGAR accession,
+  so the evidence validator correctly removes the unsupported evidence.
 
-The current browser result also proves the end-to-end workflow is not
-yet demonstrated:
+THAT IS THE PRIMARY BLOCKER.
 
-Step 3 currently shows:
+DO NOT merely report this again.
 
-“No confirmed Step 2.4 sector yet”
-0 entities
-$0 exposure
-empty segmentation
-empty commentary
-
-Therefore STOP doing further broad rewrites.
-
-The task now is REAL EXECUTION, STATE WIRING, DEBUGGING AND ACCEPTANCE.
-
-Do NOT produce another report until you have done everything possible
-to make the actual running application work.
+IMPLEMENT THE FIX.
 
 ============================================================
-1. CRITICAL TESTING CORRECTION — DO NOT TEST VIA file://
+0. EXECUTION RULE
 ============================================================
 
-The user has opened:
+Proceed autonomously through the complete approved scope.
 
-C:/.../UI Design/step23.html
+DO NOT stop after:
+- wiring SEC,
+- one successful issuer,
+- Step 2.5,
+- static tests,
+- API tests,
+- Step 3 code changes.
 
-directly as a local FILE page.
+Continue until the complete real workflow works:
 
-That is NOT a valid end-to-end runtime test if application state/API
-access is normally provided by the local backend.
-
-The system log from the application shows the backend at approximately:
-
-http://127.0.0.1:8000
-
-Determine the existing correct application URL/startup path.
-
-Use the SAME served application/session for:
-
-Step 1
-Step 2.1
 Step 2.2
-Step 2.3
-Step 2.4
-Step 2.5
-Step 3
+→ Step 2.3
+→ Step 2.4
+→ issuer preflight
+→ deterministic SEC evidence
+→ Stylus SEC + Web
+→ validated Step 2.5
+→ confirmed Step 2.5
+→ populated Step 3
+→ confirmed Step 3.
 
-Do not validate Step 3 by opening step23.html directly from disk.
+Do not ask for permission between phases.
 
-Do not invent a new server.
+Do not write interim reports.
 
-Use the project's current working backend/startup mechanism.
+Do not perform broad architectural refactoring.
 
-============================================================
-2. FIRST TRACE STATE STORAGE / STATE PROPAGATION
-============================================================
+This is a POC.
 
-Before changing code, trace exactly where these confirmed states live:
-
-Step 2.2 confirmed portfolio
-Step 2.3 confirmed event RFs
-Step 2.4 confirmed sector RFs
-Step 2.5 confirmed company assessments
-
-Determine whether each is stored in:
-
-- browser memory
-- localStorage
-- sessionStorage
-- backend memory
-- backend JSON
-- server-side workflow state
-- another existing mechanism
-
-Then verify Step 3 is reading the SAME state source.
-
-The current Step 3 showing:
-
-“No confirmed Step 2.4 sector yet”
-
-means either:
-
-A. Step 2.4 was not confirmed in the same runtime session,
-
-B. Step 3 is reading the wrong key/source,
-
-C. direct file:// loading loses the state,
-
-or
-
-D. Step 2.4 confirmation is not persisting correctly.
-
-Identify the actual cause.
-
-Fix only if needed.
+Use the existing code and make the smallest working changes.
 
 ============================================================
-3. DO NOT CONFUSE API FACTOR GENERATION WITH STEP 2.4 CONFIRMATION
+1. ABSOLUTE NO-FABRICATION RULE
 ============================================================
 
-You reported that a real backend call returned:
+NO fabricated:
 
-FACTOR_COUNT = 5
-
-Good.
-
-But that is NOT enough.
-
-We need:
-
-backend generated 5
-        ↓
-Step 2.4 UI rendered those 5
-        ↓
-user/application confirms those 5
-        ↓
-confirmed Step 2.4 state persisted
-        ↓
-Step 2.5 reads the same exact five
-        ↓
-Step 3 knows the confirmed sector.
-
-Verify the full sequence.
-
-============================================================
-4. STEP 2.4 LIVE TEST
-============================================================
-
-Using the served application, load the real workflow.
-
-For Software verify live:
-
-RF1
-RF2
-RF3
-RF4
-RF5
-
-Exactly 5.
-
-Verify:
-
-Total Weight = 100.0%
-
-Every RF has:
-
-- narrative
-- importance
-- importance justification
-- vulnerability metrics
-- formulas
-- thresholds
-- critical threshold
-- buffer metrics
-- key principle
-- scoring 5–1
-- credit implication
-
-Then compare rendered Step 2.4 directly to actual v31.
-
-Do NOT declare visual parity by reading CSS.
-
-Use the live rendered screen.
-
-Fix remaining visual differences if they are visible.
-
-Then confirm Step 2.4 through the actual application.
-
-Verify confirmation persistence.
-
-============================================================
-5. STEP 2.5 POPULATION — PROVE THE FIX LIVE
-============================================================
-
-After Step 2.4 confirmation, open Step 2.5 in the SAME runtime session.
-
-The Step 2.5 universe MUST come from the confirmed Step 2.2 Software
-portfolio.
-
-It must NOT display the old 226-company global population.
-
-Verify the actual Step 2.2 Software count.
-
-Then build the POC cohort from that population.
-
-============================================================
-6. EXACTLY 10 COMPANIES FOR THE POC
-============================================================
-
-We do NOT need to assess all Software companies.
-
-Select exactly ten valid public issuers.
-
-But do not select arbitrary ten names.
-
-Preflight candidates using the identifiers now present in Step 2.2:
-
-- company name
-- ticker if present
+- CIK
+- ticker
 - CUSIP
 - ISIN
-- SEDOL
-- RIC
-- country
-- CAGID/internal ID
+- accession number
+- filing URL
+- SEC form
+- filing date
+- financial value
+- exposure
+- rating
+- risk classification
+- assessment score
+- evidence source.
 
-Preference:
+If data cannot be verified:
 
-1. known ticker / known CIK
-2. strong RIC/ticker resolution
-3. CUSIP/ISIN supported resolution
-4. company-name resolution as fallback
+N/A
+INSUFFICIENT EVIDENCE
+NOT ASSESSED
 
-Use existing CikResolver and existing identity logic.
+must be used.
 
-Do NOT send CUSIP or ISIN to SEC pretending it is CIK.
+Technical failure is NEVER credit deterioration.
 
-Resolve:
-
-Step 2.2 row
-→ canonical issuer
-→ ticker
-→ CIK
-→ SEC filing.
+SEC FAILURE ≠ SUBSTANDARD.
+WEB FAILURE ≠ HIGH IMPACT.
+RUNNER FAILURE ≠ DOWNGRADE.
+MISSING DATA ≠ BAD CREDIT.
 
 ============================================================
-7. PREFLIGHT BEFORE RUNNING EXPENSIVE ASSESSMENTS
+2. DO NOT CHANGE THE STYLUS PRESET FROM VS CODE
 ============================================================
 
-For candidate companies, before Runner/model assessment:
+IMPORTANT ARCHITECTURAL BOUNDARY:
 
-verify:
+The VS Code coding agent does NOT edit, recreate, configure or manage
+the Stylus preset in the Stylus UI.
 
-canonical company
+Do NOT:
+- create a preset,
+- alter preset knowledge,
+- change preset UI fields,
+- change preset UUIDs,
+- configure Runner manually.
+
+The user owns preset configuration manually.
+
+Your code must work with the existing preset/Runner integration.
+
+If a preset prompt adjustment is required for grounded SEC evidence,
+implement the backend payload first and explicitly state the minimum
+manual preset prompt change required at the very end.
+
+Do NOT stop implementation waiting for the preset modification unless
+the current preset literally cannot consume the supplied input.
+
+============================================================
+3. REQUIRED TARGET ARCHITECTURE
+============================================================
+
+Replace the current weak evidence chain:
+
+company
+→ Stylus
+→ model searches SEC
+→ model narrates filing
+→ model self-reports accession
+→ validator rejects citation
+
+with:
+
+Step 2.2 company
+        ↓
+canonical issuer resolution
+        ↓
+CIK resolution
+        ↓
+sec_filings.py
+        ↓
+REAL deterministic SEC filing package
+        ↓
+stylus_engine.py
+        ↓
+Stylus receives VERIFIED SEC evidence as grounding context
+        +
+Web tool for supplemental public evidence
+        ↓
+model assessment
+        ↓
+evidence validator
+        ↓
+normalized Step 2.5 result
+        ↓
+Step 3.
+
+The deterministic backend must own SEC provenance.
+
+The model must NOT be the authority for SEC provenance.
+
+============================================================
+4. REUSE sec_filings.py — DO NOT REBUILD SEC RETRIEVAL
+============================================================
+
+There is already:
+
+sec_filings.py
+
+which you identified as:
+
+- deterministic,
+- real,
+- SEC metadata based,
+- capable of selecting real filings,
+- unit tested,
+- already used in another existing path.
+
+REUSE IT.
+
+Do NOT build a parallel SEC crawler.
+
+Do NOT create another SEC abstraction.
+
+Do NOT rely on LLM web search to identify filings when deterministic
+SEC metadata already exists.
+
+Inspect the existing interface and reuse it with the smallest adapter
+necessary.
+
+============================================================
+5. WIRE sec_filings.py INTO stylus_engine.py
+============================================================
+
+This is the critical implementation.
+
+Before invoking Stylus for a Step 2.5 company:
+
+1. resolve canonical company identity;
+
+2. obtain/confirm CIK;
+
+3. invoke the existing deterministic filing-selection logic;
+
+4. obtain the appropriate real filing(s);
+
+5. construct an evidence package;
+
+6. inject that package into the context passed to Stylus.
+
+Do this in the existing Stylus execution path.
+
+Do not redirect Step 2.5 to the old hybrid engine merely because hybrid
+once worked.
+
+The approved POC path remains Stylus.
+
+Reuse the good SEC component from the hybrid/orchestrated path inside
+the Stylus path.
+
+============================================================
+6. SEC FILING PACKAGE
+============================================================
+
+Build a compact structured grounding package from existing real SEC
+data.
+
+Conceptually it should contain fields equivalent to:
+
+issuer_name
 ticker
-CIK
-latest suitable SEC filing on/before as-of date.
+cik
 
-Use appropriate filings such as:
+filing_id
+form
+filing_date
+accession_number
+filing_url
+
+source = SEC_EDGAR
+
+selected_sections / extracted_content
+or
+filing_text excerpts/content
+
+The exact field names should follow existing repository structures.
+
+DO NOT unnecessarily introduce a new schema if an existing SEC evidence
+model already exists.
+
+Prefer existing models.
+
+Every filing/evidence item should have an internal deterministic
+evidence ID such as:
+
+SEC_1
+SEC_2
+
+or the repository's existing identifier.
+
+============================================================
+7. ACTUAL FILING CONTENT MUST REACH THE MODEL
+============================================================
+
+Do NOT pass only:
+
+“10-K found.”
+
+Stylus must receive useful verified filing content sufficient to assess
+the issuer.
+
+Inspect the existing sec_filings.py / orchestration implementation and
+determine how filing text or relevant filing sections are already
+retrieved.
+
+Reuse the existing implementation.
+
+The model needs enough real evidence for credit assessment such as
+where available:
+
+- debt
+- liquidity
+- interest expense
+- cash flow
+- revenue
+- business risks
+- maturity/refinancing information
+- financial condition
+- risk factors
+
+depending on the filing.
+
+Do NOT dump an enormous raw filing into the prompt unnecessarily.
+
+Use the existing relevant extraction strategy if one already exists.
+
+============================================================
+8. SEC AS-OF DATE
+============================================================
+
+Respect the selected Step 2.5 assessment as-of date.
+
+Select an appropriate filing available ON OR BEFORE that date.
+
+Do not use future information.
+
+Possible forms include:
 
 10-K
 10-Q
@@ -258,494 +322,1007 @@ Use appropriate filings such as:
 20-F
 6-K
 
-depending on issuer.
+as appropriate to the issuer.
 
-If a candidate cannot be reliably resolved:
-
-skip it.
-
-Take the next candidate.
-
-Do not waste a 40-minute Runner attempt on an unresolved company.
-
-Continue until ten companies pass preflight.
+Reuse the existing filing-selection rules in sec_filings.py.
 
 ============================================================
-8. SHOW ME THE PREFLIGHT RESULT INTERNALLY BEFORE RUNNING
+9. SEC PROVENANCE MUST BE DETERMINISTIC
 ============================================================
 
-The application/code should internally have for each selected issuer:
+The model does NOT need to manufacture:
 
-company
+accession number
+EDGAR URL
+form
+filing date.
+
+These are already supplied in the SEC evidence package.
+
+When the model refers to SEC evidence, require it to reference the
+provided evidence ID.
+
+Example concept:
+
+evidence_ids: ["SEC_1"]
+
+NOT:
+
+“I found this filing at some SEC URL…”
+
+The backend then maps:
+
+SEC_1
+→ known accession
+→ known form
+→ known filing date
+→ known EDGAR URL.
+
+============================================================
+10. EVIDENCE VALIDATION
+============================================================
+
+KEEP the existing strict evidence validator.
+
+Do NOT weaken validation to make Stylus output pass.
+
+Do NOT accept model-created URLs.
+
+Do NOT accept malformed accession numbers.
+
+Instead make Stylus produce evidence references that the validator can
+prove.
+
+Preferred validation:
+
+Model returns:
+SEC_1
+
+Backend already knows:
+SEC_1 =
+real verified SEC filing.
+
+Therefore SEC evidence passes deterministically.
+
+For web evidence:
+
+retain existing approved URL/source validation.
+
+============================================================
+11. DO NOT TRUST FREE-FORM CITATIONS
+============================================================
+
+If Stylus includes prose such as:
+
+“According to the company's 10-K…”
+
+that text alone is NOT provenance.
+
+The assessment must link that claim to a valid supplied SEC evidence ID.
+
+If the model outputs unsupported SEC claims:
+
+remove/reject those claims according to existing validation logic.
+
+Do not invent provenance after generation.
+
+============================================================
+12. WEB EVIDENCE
+============================================================
+
+The current SEC + Web path may continue to use the approved Web
+capability.
+
+Web serves a different purpose.
+
+SEC:
+deterministic first-party filing evidence supplied by backend.
+
+WEB:
+supplemental current/public evidence discovered through approved
+enterprise web search.
+
+Do not use Web as a replacement for deterministic SEC filing retrieval
+for SEC issuers.
+
+Keep provenance separated internally:
+
+SEC_*
+WEB_*
+
+or the existing equivalent.
+
+============================================================
+13. STEP 2.2 COMPANY UNIVERSE
+============================================================
+
+Use the confirmed Step 2.2 sector population.
+
+Current POC sector:
+
+Software.
+
+Do not assess the global ~226-name population.
+
+The screenshots show the Software portfolio contains a much smaller
+confirmed sector population.
+
+Use that sector-scoped population only.
+
+============================================================
+14. USE IDENTIFIERS NOW AVAILABLE IN STEP 2.2
+============================================================
+
+Step 2.2 contains useful identifiers for some companies such as:
+
+CUSIP
+ISIN
+SEDOL
+RIC
+company name
+country
+internal company ID / CAGID
+
+and potentially ticker.
+
+Use them to improve issuer resolution.
+
+But NEVER confuse:
+
+CUSIP
+ISIN
+SEDOL
+RIC
+
+with CIK.
+
+They are identity anchors.
+
+Use the existing resolver to map the intended issuer to the correct SEC
+identity.
+
+============================================================
+15. PRE-FLIGHT BEFORE EXPENSIVE STYLUS EXECUTION
+============================================================
+
+Do not repeat the previous 40-minute failure pattern.
+
+Before invoking Stylus, preflight candidate companies.
+
+For each candidate:
+
+A. confirm it belongs to the confirmed Software Step 2.2 population;
+
+B. canonicalize identity;
+
+C. resolve ticker if possible;
+
+D. resolve CIK;
+
+E. call deterministic SEC filing selector;
+
+F. confirm suitable filing exists;
+
+G. confirm accession number is real;
+
+H. confirm SEC URL/metadata is valid.
+
+Only then is the candidate eligible for Step 2.5 execution.
+
+============================================================
+16. TARGET EXACTLY 10 SUCCESSFUL POC COMPANIES
+============================================================
+
+For the acceptance run select:
+
+10 companies
+
+from the confirmed Software population.
+
+Do not hard-code arbitrary famous companies.
+
+Use deterministic preflight quality.
+
+Prefer candidates with:
+
+strong identifier coverage
++
+successful CIK resolution
++
+real SEC filing availability.
+
+Continue through candidates until 10 companies pass preflight.
+
+Do NOT count failed/unresolved names in the 10.
+
+============================================================
+17. ISSUER PREFLIGHT OUTPUT
+============================================================
+
+For each accepted company the backend must know before Stylus runs:
+
+canonical_company_name
 ticker
 CIK
 filing form
 filing date
-filing/accession identity
+accession number
+SEC evidence ID.
 
-Do not fabricate any of these.
+This does not all have to clutter the user-facing table.
 
-Do not publish a company into the 10-company assessment cohort unless
-identity verification succeeds.
-
-============================================================
-9. RUN REAL SEC + WEB
-============================================================
-
-Now run the actual SEC + Web assessment through the existing Stylus
-Runner path.
-
-Do NOT modify the Stylus preset.
-
-The user owns the preset manually.
-
-Use the currently existing Runner integration.
-
-For each company supply:
-
-- canonical issuer identity
-- Step 2.1 scenario
-- Step 2.3 five event RFs
-- Step 2.4 five sector RFs
-- SEC evidence
-- Web evidence
-- assessment as-of date
-
-Use the existing bounded Runner completion handling.
-
-No infinite waits.
+It must exist internally for evidence provenance.
 
 ============================================================
-10. RUNNER FAILURE HANDLING
+18. STEP 2.4 MUST REMAIN EXACTLY 5 FACTORS
 ============================================================
 
-If Runner/auth fails:
+Before Step 2.5 execution verify confirmed Step 2.4 contains:
 
-trace whether it is:
+RF1
+RF2
+RF3
+RF4
+RF5
 
-A. authentication/token
-B. Runner endpoint
-C. issuer identity
-D. SEC retrieval
-E. web retrieval
-F. final-model completion
-G. response parsing
+exactly 5.
 
-Do not label everything “SEC failed.”
+Total weight:
 
-Fix the actual active cause where possible.
+100.0%.
 
-If the Runner credential/token needs refreshing through the existing
-project mechanism, use that existing mechanism.
+Do not use stale 4-factor state.
 
-Do not redesign authentication.
+Use the actual confirmed five-factor object produced by the live Step
+2.4 workflow.
 
-============================================================
-11. ABSOLUTE CREDIT SAFETY RULE
-============================================================
-
-Technical failure must NEVER create a credit assessment.
-
-SEC failure ≠ Substandard.
-
-Runner timeout ≠ High Impact.
-
-Web failure ≠ downgrade.
-
-Missing data ≠ poor credit quality.
-
-If evidence is insufficient, use:
-
-NOT ASSESSED
-or
-INSUFFICIENT EVIDENCE
-
-according to existing vocabulary.
-
-Do not generate a business rating from a technical exception.
+Step 2.5 must consume those exact factors.
 
 ============================================================
-12. STEP 2.5 RESULT QUALITY
+19. STEP 2.5 MODEL CONTEXT
 ============================================================
 
-For each successful issuer result, validate before rendering.
+For each issuer, Stylus must receive a complete assessment context.
 
-No:
+It should contain:
 
-- raw JSON
-- markdown fences
-- SSE messages
-- tool traces
-- stack traces
-- backend exceptions
-- gigantic diagnostic paragraphs
-- fabricated financial values
+COMPANY IDENTITY
+- canonical name
+- ticker
+- CIK
+- country
+- sector
 
-inside the assessment table.
+SCENARIO
+- confirmed Step 2.1 scenario/assumptions
 
-The result must be concise and readable.
+EVENT-DRIVEN FRAMEWORK
+- confirmed Step 2.3 five RFs
 
-Use actual v31 Step 2.5 as presentation authority.
+SECTOR-INHERENT FRAMEWORK
+- confirmed Step 2.4 five RFs
+
+SEC GROUNDING
+- deterministic verified filing evidence package
+
+WEB CAPABILITY
+- supplemental approved web evidence
+
+AS-OF DATE
+- selected assessment date.
+
+Do not make Stylus rediscover upstream workflow state.
+
+Pass it explicitly.
 
 ============================================================
-13. STEP 2.5 VISUAL TARGET
+20. STEP 2.5 BUSINESS PURPOSE
 ============================================================
 
-The live Step 2.5 must look like an assessment application, not a raw
-database dump.
+For each issuer determine:
 
-Use v31 exact structure for:
+How this specific issuer behaves under the confirmed scenario,
+considering BOTH:
 
-- table framing
-- headers
-- row density
+Step 2.3 event-driven vulnerabilities
+
+and
+
+Step 2.4 sector-inherent vulnerabilities.
+
+The assessment must remain issuer-specific.
+
+Do not simply repeat sector commentary.
+
+============================================================
+21. CREDIT ASSESSMENT MUST BE EVIDENCE-DRIVEN
+============================================================
+
+A score/classification may only come from:
+
+real evidence
++
+approved RF framework
++
+existing scoring methodology.
+
+No evidence:
+no score where a score cannot be justified.
+
+Do not infer missing financial metrics.
+
+Use:
+
+N/A
+
+when unavailable.
+
+============================================================
+22. DO NOT CHANGE APPROVED SCORING FORMULA
+============================================================
+
+Inspect v31/current approved Step 2.5 scoring logic.
+
+Reuse it.
+
+Do not invent another composite score methodology.
+
+Step 2.3 and Step 2.4 scores must feed the existing approved name-level
+calculation.
+
+============================================================
+23. STRICT OUTPUT NORMALIZATION
+============================================================
+
+Before rendering an assessment:
+
+parse
+validate
+normalize.
+
+Business cells must contain clean values.
+
+Never display:
+
+raw JSON
+Markdown fences
+tool events
+SSE payloads
+Python exceptions
+backend warnings
+prompt text
+long technical errors.
+
+If output schema is invalid:
+
+mark the run technical failure and retry/fallback according to existing
+bounded logic.
+
+Do not convert it into credit output.
+
+============================================================
+24. TECHNICAL FAILURE ≠ CREDIT ASSESSMENT
+============================================================
+
+This rule is non-negotiable.
+
+If one issuer's assessment fails technically:
+
+do NOT publish:
+
+Substandard
+Continue Review
+Low Impact
+High Impact
+rating downgrade
+composite risk score
+
+as a consequence of the failure.
+
+Use:
+
+NOT ASSESSED / TECHNICAL FAILURE
+
+internally.
+
+For the final 10-company POC acceptance cohort, replace the failed
+candidate with another successfully preflighted Software company.
+
+============================================================
+25. RUNNER BOUNDED COMPLETION
+============================================================
+
+Preserve the bounded SSE completion fix.
+
+Expected sequence:
+
+Runner stream opens
+→ tools execute
+→ SEC/Web tool events occur
+→ assistant content accumulates
+→ wait bounded grace period
+→ genuine final model response received
+→ parse
+→ validate
+→ return.
+
+Do not wait indefinitely.
+
+Do not synthesize a final model assessment yourself.
+
+============================================================
+26. STEP 2.5 UI
+============================================================
+
+Use actual v31 Step 2.5 as the visual source of truth.
+
+The final POC screen must show only the 10 assessment cohort companies.
+
+Do NOT display the old 226-name global table.
+
+Do not make the table an enormous raw-data browser.
+
+Replicate v31:
+
+- header framing
+- column proportions
+- row height
+- dark headers
+- filter row
 - score badges
-- impact/rating badges
-- filters
-- scrolling
-- company name
-- ticker/id
-- score presentation
-- classification presentation
-- button layout
-
-The POC table should contain only the ten assessed companies.
-
-Do not show 226 names.
-
-Do not expose giant technical diagnostics by default.
-
-Keep technical diagnostics collapsed/secondary.
-
-============================================================
-14. STEP 2.5 COMPLETION GATE
-============================================================
-
-Do not proceed to portfolio assessment until:
-
-10 companies are selected
-10 identities are verified
-10 assessments have completed successfully
-10 outputs validate
-10 rows render cleanly.
-
-If one issuer-specific run fails:
-
-use another already-preflighted Software candidate.
-
-Target remains 10 successful results.
-
-============================================================
-15. CONFIRM STEP 2.5 FOR REAL
-============================================================
-
-After the ten results are valid:
-
-Confirm Assessment
-
-through the actual UI/state mechanism.
-
-Verify persisted confirmed assessment state.
-
-Then navigate to Step 3 WITHOUT opening a separate local HTML file.
-
-Use the same served application and same workflow/session.
-
-============================================================
-16. STEP 3 CURRENT EMPTY SCREEN IS A FAILURE
-============================================================
-
-The current live/static screenshot showing:
-
-No confirmed Step 2.4 sector yet
-0 entities
-$0
-0.0%
-empty tables
-
-is NOT an acceptable result.
-
-Step 3 must receive the confirmed upstream state.
-
-Trace and fix the handoff if it does not.
-
-============================================================
-17. STEP 3 INPUT
-============================================================
-
-Step 3 must use:
-
-confirmed Software sector
-
-confirmed Step 2.3 RFs
-
-confirmed Step 2.4 RFs
-
-confirmed Step 2.5 ten-company assessments
-
-actual Step 2.2 exposure/limit values where available.
-
-No v31 demonstration numbers.
-
-No hard-coded Salesforce/SAP/Autodesk values unless those are genuinely
-among the real current assessed companies.
-
-============================================================
-18. STEP 3 REAL AGGREGATION
-============================================================
-
-Populate the v31 portfolio-level framework from actual data.
-
-Portfolio Exposure Summary:
-
-Total Exposure
-IG Exposure
-NIG Exposure
-Criticized Exposure
-Classified Exposure
-
-Exposure Segmentation:
-
-Overall Portfolio
-Investment Grade
-Non-Investment Grade
-Criticized
-Classified
-
-Use real classification logic already approved in v31/current code.
-
-Use actual OSUC/exposure values.
-
-Do not fabricate missing exposure.
-
-If genuinely unavailable, show N/A.
-
-============================================================
-19. STEP 3 SCORING
-============================================================
-
-Use existing approved methodology only.
-
-Do not invent a new weighted composite formula.
-
-The aggregation must be mathematically traceable to the confirmed
-Step 2.5 results and real exposure data.
-
-Where exposure weighting is available, use it.
-
-============================================================
-20. STEP 3 COMMENTARY
-============================================================
-
-Populate the v31 Credit Assessment / Credit Intelligence sections from
-the real current run.
-
-The commentary should explain:
-
-- scenario
-- sector/exposure profile
-- event-driven vulnerabilities
-- sector-inherent vulnerabilities
-- dominant assessed companies
-- largest exposure contributors
-- aggregate impact
-- key mitigants / buffers
-
-Do not create unrelated generic AI commentary.
-
-Do not insert unsupported metrics.
-
-============================================================
-21. STEP 3 VISUAL PARITY
-============================================================
-
-Use ACTUAL v31 code as source of truth.
-
-The reference screenshot contains:
-
-- dark sector selector strip
-- five exposure/KPI cards
-- exposure segmentation table
-- weighted composite scores
 - impact rating badges
-- companies included
-- large Credit Assessment / Credit Intelligence region
-- export control
-- confirm portfolio assessment
+- horizontal scrolling
+- compact readable rows
+- company identity presentation
+- action buttons.
 
-Replicate the actual v31 DOM/CSS geometry.
+Long rationale belongs in the existing detail/expanded mechanism, not
+inside a narrow giant cell.
 
-The currently blank/simple screen is not sufficient.
+============================================================
+27. HIDE DEBUG NOISE IN NORMAL DEMO MODE
+============================================================
 
-Do not merely create sections with similar names.
+Preserve technical diagnostics for development.
+
+But normal Step 2.5 demo mode must not be dominated by:
+
+Local PoC Readiness
+auth flags
+SEC readiness strings
+internal error dumps
+environment variables.
+
+Collapse/hide them behind the existing diagnostic pattern.
+
+Do not delete useful diagnostics.
+
+============================================================
+28. CONFIRM STEP 2.5 ONLY AFTER VALID RESULTS
+============================================================
+
+Confirmation should require the actual valid assessed cohort.
+
+For this acceptance run:
+
+10/10 successful assessments required.
+
+When confirmed:
+
+persist the exact assessment results.
+
+Step 3 must read that confirmed object.
+
+============================================================
+29. STEP 3 — NO STATIC DEMO DATA
+============================================================
+
+Step 3 must be generated from the current live confirmed results.
+
+Do NOT copy the v31 example values such as:
+
+Salesforce
+SAP
+Autodesk
+Open Text
+
+unless those companies genuinely happen to be part of this live
+10-company cohort.
+
+V31 provides the DESIGN and approved methodology.
+
+It is not a data source.
+
+============================================================
+30. STEP 3 DATA LINEAGE
+============================================================
+
+Step 3 inputs:
+
+confirmed Step 2.2 portfolio/exposures
++
+confirmed Step 2.3 event RFs
++
+confirmed Step 2.4 sector RFs
++
+confirmed Step 2.5 assessment results.
+
+Trace this explicitly.
+
+The current state must not show:
+
+“No confirmed Step 2.4 sector yet”
+
+once Step 2.4 has been confirmed in the same served application
+session.
+
+============================================================
+31. STEP 3 ASSESSMENT COHORT
+============================================================
+
+For the POC acceptance run, Step 3 must clearly operate on the confirmed
+10-company assessment cohort.
+
+Do not mix:
+
+10 assessed companies
+
+with
+
+226 global companies.
+
+If Step 2.2 contains exposure for a larger sector population but only
+10 were assessed, explicitly keep:
+
+assessed population
+and
+portfolio population
+
+conceptually distinct.
+
+For this demonstration, aggregate the confirmed assessment cohort
+unless existing approved v31 logic explicitly requires another scope.
+
+No misleading denominator.
+
+============================================================
+32. STEP 3 EXPOSURE
+============================================================
+
+Reuse real Step 2.2 exposure fields where present.
+
+Do not fabricate:
+
+OSUC
+limit
+IG exposure
+NIG exposure
+criticized exposure
+classified exposure.
+
+If exposure is unavailable:
+
+N/A.
+
+If the underlying real data genuinely supports 0:
+
+0 is valid.
+
+Do not replace missing values with 0 just to populate cards.
+
+============================================================
+33. STEP 3 CLASSIFICATION RULES
+============================================================
+
+Reuse the existing approved v31/current classification mappings.
+
+Examples conceptually include:
+
+IG
+NIG
+Criticized
+Classified.
+
+Do not invent a new classification taxonomy.
+
+Make sure classification comes from valid name-level results and/or
+real portfolio fields, not technical execution state.
+
+============================================================
+34. STEP 3 WEIGHTED COMPOSITE
+============================================================
+
+Reuse the existing v31/current approved calculation.
+
+If exposure weights exist:
+use actual exposure.
+
+Do not invent exposure just to calculate a weighted score.
+
+The final number must be mathematically traceable.
+
+============================================================
+35. STEP 3 CREDIT INTELLIGENCE
+============================================================
+
+Populate the portfolio commentary using actual current outputs.
+
+It should explain:
+
+- confirmed scenario;
+- Software sector exposure;
+- assessed company distribution;
+- dominant Step 2.3 event-driven risks;
+- dominant Step 2.4 structural risks;
+- largest name-level contributors;
+- major mitigants/buffers;
+- overall composite result;
+- impact conclusion.
+
+No unsupported metrics.
+
+No static v31 narrative.
+
+============================================================
+36. STEP 3 V31 DESIGN
+============================================================
+
+Replicate the real v31 Step 3 DOM/CSS.
+
+Required information architecture includes:
+
+Sector strip
+
+Portfolio Assessment Outcome
+
+Portfolio Exposure Summary
+
+5 KPI cards:
+- Total
+- IG
+- NIG
+- Criticized
+- Classified
+
+Exposure Segmentation
+
+Weighted Composite Score
+
+Impact Rating
+
+Companies Included
+
+Credit Assessment / Credit Intelligence
+
+Export Report
+
+Confirm Portfolio Assessment
+
+Feedback
+
+Workflow Status.
 
 Match:
 
-width
-height
-padding
-border
-font
-column proportions
-header colours
-row heights
-badge styles
-card layout
-content density.
+dimensions
+spacing
+table layout
+header colors
+border treatment
+card geometry
+font hierarchy
+badges
+density.
+
+Do not leave the simplified empty Step 3 currently shown.
 
 ============================================================
-22. DO NOT TEST STEP 3 BY OPENING step23.html DIRECTLY
+37. LIVE APPLICATION TEST ONLY
 ============================================================
 
-This is important enough to repeat.
+Do not use direct:
 
-The reference v31 can be opened from file:// because it is static.
+file://.../step23.html
 
-The current functional application must be tested through its served
-runtime because it depends on live workflow state.
+for functional acceptance.
 
-So:
+Reference v31 can be opened through file://.
 
-V31 reference:
-file:// is fine.
+The current application must be tested from its actual served runtime,
+using the same workflow/session.
 
-CURRENT APPLICATION:
-use actual backend-served URL/session.
+Start the current backend/frontend with the existing Windows project
+startup method.
 
-============================================================
-23. IF YOU HAVE NO BROWSER AUTOMATION TOOL
-============================================================
-
-Lack of browser automation is NOT permission to declare PASS.
-
-Do everything you can from the repository:
-
-- start backend
-- execute APIs
-- inspect workflow state
-- verify saved JSON/state
-- test Runner
-- test all ten companies
-- verify Step 3 aggregation output
-
-Then, if ONE purely visual click-through remains impossible because your
-environment truly has no browser-driving capability, do NOT claim full
-PASS.
-
-Instead leave the server running and give the user only the exact
-minimal URL/click sequence required for the final visual verification.
-
-But all backend/state/data execution must already have succeeded.
+Do not create another server architecture.
 
 ============================================================
-24. DO NOT WRITE ANOTHER STATUS REPORT WHILE WORK IS REMAINING
+38. TEST IN THIS EXACT ORDER
 ============================================================
 
-Do not stop after:
+1. Start real application.
 
-“code fix complete”
+2. Confirm Step 2.2 Software population.
 
-“source inspection clean”
+3. Verify Step 2.3 = 5 confirmed event-driven RFs.
 
-“get_errors clean”
+4. Run/verify Step 2.4:
+   - 5 RFs
+   - 100%
+   - complete schema
+   - confirm.
 
-“API returns five factors”
+5. Verify Step 2.4 confirmation persists.
 
-“Step 3 rewrite complete.”
+6. Enter Step 2.5 in SAME session.
 
-Those are intermediate conditions.
+7. Preflight Software population.
 
-Continue.
+8. Produce 10 verified issuers.
+
+9. For each verify:
+   company
+   ticker
+   CIK
+   filing
+   accession
+   SEC URL.
+
+10. Run real Stylus SEC + Web assessment.
+
+11. Verify real deterministic SEC evidence reaches Stylus.
+
+12. Verify model references supplied evidence IDs.
+
+13. Verify evidence validator accepts them.
+
+14. Obtain 10 successful clean assessments.
+
+15. Compare Step 2.5 live UI against v31.
+
+16. Confirm Step 2.5.
+
+17. Open Step 3 in SAME session.
+
+18. Verify real Step 2.5 results appear automatically.
+
+19. Verify real exposure calculations.
+
+20. Verify aggregation.
+
+21. Verify commentary.
+
+22. Compare Step 3 against v31.
+
+23. Confirm Step 3.
 
 ============================================================
-25. ACCEPTANCE CRITERIA
+39. PROVE THAT THE SEC FIX ACTUALLY WORKS
 ============================================================
+
+For at least each of the 10 assessment cohort issuers, record internally:
+
+Company
+Ticker
+CIK
+SEC form
+Filing date
+Accession number
+EDGAR URL
+Evidence ID used by model.
+
+The final validation must demonstrate that the model assessment's SEC
+evidence maps to these deterministic records.
+
+It is NOT enough for the model to mention:
+
+“10-K”
+or
+“SEC filing.”
+
+============================================================
+40. DO NOT WEAKEN HONESTY CHECKS
+============================================================
+
+The current backend correctly drops unverifiable model citations.
+
+KEEP THAT.
+
+The solution is not:
+
+make validator less strict.
+
+The solution is:
+
+provide verified evidence BEFORE generation so the model can cite it.
+
+============================================================
+41. PRESET INPUT COMPATIBILITY
+============================================================
+
+Before modifying code assumptions, inspect exactly how the current
+Stylus preset input is serialized.
+
+If the preset currently accepts one large text/context input:
+
+DO NOT require new preset input fields.
+
+Serialize the complete grounded context into that existing input.
+
+That context can contain:
+
+company
+scenario
+RFs
+SEC evidence bundle
+instructions.
+
+This is preferred because it minimizes manual preset changes.
+
+Only require a new preset field if the current preset technically cannot
+receive the required grounding context.
+
+============================================================
+42. IF PRESET PROMPT CURRENTLY TELLS MODEL TO DISCOVER SEC ITSELF
+============================================================
+
+Backend implementation must still be completed.
+
+Then identify the MINIMUM manual prompt change needed.
+
+Do not change the preset yourself.
+
+The desired prompt semantics are:
+
+- provided SEC evidence is authoritative;
+- never invent SEC citations;
+- cite supplied SEC evidence IDs;
+- use web search only as supplemental evidence;
+- if evidence is absent, say unavailable;
+- never infer missing financial values;
+- output only the required assessment structure.
+
+The user will make this preset edit manually if needed.
+
+============================================================
+43. REGRESSION
+============================================================
+
+Do not break:
+
+Step 1
+Step 2.1
+Step 2.2
+Step 2.3
+Step 2.4
+feedback panels
+navigation
+workflow sidebar
+legacy/hybrid paths.
+
+Do not replace old hybrid/orchestrated modes.
+
+Only enhance the active Stylus path to reuse the proven deterministic
+SEC component.
+
+============================================================
+44. COMPLETION GATE
+============================================================
+
+DO NOT RESPOND UNTIL ALL SOLVABLE CONDITIONS PASS.
 
 STEP 2.4
+[ ] 5 RFs live
+[ ] 100% weight
+[ ] full v31 content
+[ ] v31 layout
+[ ] confirmed
+[ ] persisted downstream
 
-[ ] served UI works
-[ ] exactly 5 factors rendered
-[ ] 100% weights
-[ ] all detail structures populated
-[ ] v31 layout replicated
-[ ] confirmation persists
-[ ] sector state available downstream
+SEC GROUNDING
+[ ] sec_filings.py wired into Stylus path
+[ ] canonical issuer resolution
+[ ] deterministic CIK
+[ ] deterministic filing
+[ ] real accession
+[ ] real filing URL
+[ ] real filing content/context
+[ ] evidence IDs provided to model
+[ ] validator verifies model references
+[ ] validator NOT weakened
 
 STEP 2.5
-
-[ ] reads Software population from confirmed Step 2.2
-[ ] no 226-company wrong population
-[ ] 10-company preflight cohort
-[ ] canonical issuer for all 10
-[ ] ticker for all 10 where applicable
-[ ] CIK resolved for SEC issuers
-[ ] real filing located
-[ ] SEC+Web successfully runs
-[ ] 10 valid assessments
-[ ] clean readable business output
+[ ] sector-scoped population
+[ ] exactly 10 successful POC issuers
+[ ] all preflighted
+[ ] all real SEC evidence
+[ ] Web supplemental evidence functioning
+[ ] Stylus Runner works
+[ ] bounded completion works
 [ ] no fabricated data
-[ ] no technical failure translated into credit judgment
-[ ] v31 UI replicated
-[ ] confirmation persists
+[ ] clean normalized table
+[ ] v31 layout
+[ ] confirmed
+[ ] persisted
 
 STEP 3
+[ ] receives confirmed Step 2.5
+[ ] receives Step 2.2 exposure
+[ ] no blank state
+[ ] no static v31 data
+[ ] real segmentation
+[ ] real composite
+[ ] real impact result
+[ ] real companies included
+[ ] real commentary
+[ ] v31 design
+[ ] confirmed
 
-[ ] same live session receives upstream state
-[ ] confirmed Software sector visible
-[ ] ten assessed companies available
-[ ] real exposure aggregation
-[ ] IG/NIG/Criticized/Classified logic
-[ ] weighted composite scores
-[ ] companies included
-[ ] real portfolio commentary
-[ ] v31 dashboard structure
-[ ] not blank
-[ ] confirmation works
+END TO END
+[ ] same served application/session
+[ ] real data
+[ ] no fabrication
+[ ] no raw technical garbage in business output
+[ ] no unresolved solvable blocker.
 
 ============================================================
-26. FINAL RESPONSE ONLY WHEN EXECUTION IS COMPLETE
+45. FINAL RESPONSE ONLY AFTER TESTING
 ============================================================
 
-Only after real execution, respond with:
+Once the complete live flow has actually run, respond only with:
 
 END-TO-END: PASS / FAIL
 
-STEP 2.4 LIVE: PASS / FAIL
-STEP 2.4 V31: PASS / FAIL
-
-STEP 2.5 LIVE SEC+WEB: PASS / FAIL
-STEP 2.5 V31: PASS / FAIL
-
-STEP 3 LIVE: PASS / FAIL
-STEP 3 V31: PASS / FAIL
-
-SOFTWARE POPULATION:
-actual number
+SEC GROUNDING INTO STYLUS: PASS / FAIL
+STEP 2.4: PASS / FAIL
+STEP 2.5 SEC+WEB: PASS / FAIL
+STEP 3: PASS / FAIL
 
 TEN ASSESSED ISSUERS:
-company | ticker | CIK | SEC form | filing date
+
+Company | Ticker | CIK | Form | Filing Date | Accession
+
+For each issuer also confirm:
+SEC evidence validated: YES/NO
 
 STEP 2.4 RF1–RF5:
 names
 
 STEP 3:
-total exposure
+Assessed companies
+Total exposure
 IG
 NIG
-criticized
-classified
-weighted composite score
-impact rating
+Criticized
+Classified
+Weighted composite
+Impact rating
+
+V31 2.4:
+PASS / FAIL
+
+V31 2.5:
+PASS / FAIL
+
+V31 STEP 3:
+PASS / FAIL
 
 FILES CHANGED:
-exact paths
+exact paths only
+
+PRESET MANUAL CHANGE REQUIRED:
+YES / NO
+
+If YES:
+give ONLY the exact minimal manual change required.
 
 REMAINING BLOCKER:
 NONE
 
-If there is a genuine external blocker, state the EXACT blocker and
-the exact last successful checkpoint.
+or exact genuine external blocker.
 
-DO NOT call source inspection alone a PASS.
+DO NOT CALL STATIC SOURCE INSPECTION A PASS.
+DO NOT CALL UNIT TESTS AN END-TO-END PASS.
+DO NOT STOP AFTER ONE COMPANY.
 
-START THE REAL RUNTIME VALIDATION NOW.
+IMPLEMENT THE SEC GROUNDING FIX AND COMPLETE THE REAL WORKFLOW NOW.
