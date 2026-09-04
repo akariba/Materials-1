@@ -1,410 +1,250 @@
-STEP 2.5 — FIX THE REAL SINGLE-COMPANY SELECTION BUG END TO END
+STEP 2.5 — FINAL SEC + RUNNER PREFLIGHT FOR DEUTSCHE BANK
 
-We have now isolated the actual Step 2.5 frontend blocker.
+The Step 2.5 single-company selection defect is now LIVE-PROVEN and CLOSED.
 
-This is NOT an SEC problem.
-This is NOT a Step 2.1–2.4 persistence problem.
-This is NOT a Runner problem yet.
+Freeze the following working state:
 
-The authoritative upstream workflow is already LIVE-PROVEN and FROZEN:
-
-Step 2.1 scenario persisted = YES
-Step 2.2 portfolio persisted = YES
-Sector/L3 = Banks - Major
-
-Confirmed Step 2.2 companies:
-1. COMMERZBANK AG
-   company/CAGID = 9000024985
-
-2. DEUTSCHE BANK AG [DE FRANKFURT AM MAIN]
-   company/CAGID = 9000008998
-
-Step 2.3 confirmed = YES
-Step 2.3 real factors = 5
-Step 2.3 weights = 100%
-
-Step 2.4 confirmed = YES
-Step 2.4 real factors = 5
-Step 2.4 weights = 100%
-
-DO NOT modify any of that.
-
-============================================================
-CONFIRMED LIVE DEFECT
-============================================================
-
-Current Step 2.5 frontend state reports:
-
-S25.selectedCompanyId = 1019556006
-
-but 1019556006 is NOT in the currently confirmed Step 2.2 portfolio.
-
-As a result:
-
-selected company name = none
-selected-company count for /run = 0
-backend company context = missing
-Run Assessment = disabled
-
-Claude also confirmed:
-
-THE DEUTSCHE BANK ROW IS NOT CURRENTLY A SELECTION CONTROL.
-
-There is currently NO visible Step 2.5 company selector.
-
-Therefore the user has no legitimate UI action that can satisfy the
-existing gate:
-
-"select exactly one eligible company from the confirmed Step 2.2
-portfolio before running."
-
-This is the defect to fix.
-
-============================================================
-OBJECTIVE
-============================================================
-
-Implement the smallest correct POC solution that allows the analyst to
-select exactly ONE company from the confirmed Step 2.2 portfolio directly
-inside Step 2.5 and then run the assessment for that company only.
-
-Do not redesign Step 2.5.
-
-Preserve the v31 visual baseline and current table layout.
-
-============================================================
-1. REMOVE STALE COMPANY SELECTION
-============================================================
-
-On Step 2.5 initialization / refresh:
-
-Read the authoritative currently confirmed Step 2.2 company list.
-
-Validate S25.selectedCompanyId against those current company IDs.
-
-If the persisted/current selectedCompanyId is NOT present in the confirmed
-portfolio:
-
-CLEAR IT IMMEDIATELY.
-
-For this current case:
-
-1019556006 must be discarded.
-
-Do NOT attempt to resolve it.
-Do NOT preserve it.
-Do NOT use it as a fallback.
-
-The Step 2.5 assessment target must always belong to the CURRENT confirmed
-Step 2.2 portfolio.
-
-If Step 2.2 is reconfirmed with a different company universe, invalidate
-any Step 2.5 selected company that is no longer part of that universe.
-
-============================================================
-2. ADD A REAL SINGLE-COMPANY SELECTOR
-============================================================
-
-The Step 2.5 portfolio table currently has two rows:
-
-COMMERZBANK AG
+Selected company:
 DEUTSCHE BANK AG [DE FRANKFURT AM MAIN]
 
-Implement an explicit SINGLE-SELECTION mechanism.
-
-Preferred minimal design:
-
-Use the existing narrow left-most table control area and add a small radio
-selection control for each company.
-
-Do NOT add a large new panel.
-Do NOT redesign the table.
-Do NOT change existing column widths unnecessarily.
-Do NOT replace the table.
-Do NOT remove the existing row expansion behavior.
-
-The analyst must be able to clearly select:
-
-( ) COMMERZBANK AG
-( ) DEUTSCHE BANK AG
-
-Only one company can be selected at a time.
-
-If using native radio inputs would visually damage v31 parity, implement
-an equivalent compact single-select control, but it must be visually
-obvious and accessible.
-
-Use the existing v31/Citi styling:
-- same typography
-- same spacing
-- same border treatment
-- same row height as far as possible
-- same navy/blue accent
-- no new design system
-- no oversized controls
-
-Optional but useful:
-when selected, apply the existing subtle selected-row visual treatment.
-Do not invent a radically different highlight.
-
-============================================================
-3. USE THE REAL STEP 2.2 COMPANY ID
-============================================================
-
-When Deutsche Bank is selected:
-
-S25.selectedCompanyId MUST become:
-
+Internal company ID:
 9000008998
 
-When Commerzbank is selected:
-
-S25.selectedCompanyId MUST become:
-
-9000024985
-
-Use the exact identifier from the authoritative confirmed Step 2.2 record.
-
-Do NOT substitute:
-- ticker
-- CIK
-- CUSIP
-- ISIN
-- old cached ID
-- row index
-
-Those can remain supplementary identity fields, but the Step 2.5 target
-identity must remain tied to the confirmed Step 2.2 company record.
-
-============================================================
-4. SELECTION MUST BUILD THE REAL COMPANY OBJECT
-============================================================
-
-Selecting a row/company must resolve the complete current Step 2.2 company
-object already held by the authoritative upstream state.
-
-The selected Step 2.5 company object should preserve available real fields,
-for example:
-
-company_id / cagid
-company_name
-ticker if available
-country
-MLE
-limit industry L1
-limit industry L2
-limit industry L3
-CUSIP if available
-ISIN if available
-SEDOL if available
-GTCX if available
-RIC if available
-current RRR where genuinely supplied
-OSUC/exposure where genuinely supplied
-other existing real Step 2.2 fields already consumed downstream
-
-Do NOT fabricate missing values.
-
-============================================================
-5. REGISTER THE SELECTED COMPANY WITH BACKEND
-============================================================
-
-After a legitimate company selection, use the EXISTING context-registration
-path.
-
-Do not invent another state store.
-
-Use the existing Step 2.5 context handoff / registerContextAndVerifyForRun
-logic or its current equivalent.
-
-The backend must receive the selected company together with the already
-persisted upstream state.
-
-After selecting Deutsche Bank, backend authoritative Step 2.5 context must
-show:
-
-company name =
-DEUTSCHE BANK AG [DE FRANKFURT AM MAIN]
-
-company ID =
-9000008998
-
-Step 2.1 scenario present = true
-
-Step 2.3 confirmed = true
-Step 2.3 factor count = 5
-
-Step 2.4 confirmed = true
-Step 2.4 factor count = 5
-
-selected company count for /run = 1
-
-Do not duplicate or reconstruct the ED/SI factors from displayed DOM text.
-Use the authoritative persisted objects.
-
-============================================================
-6. RUN BUTTON GATING
-============================================================
-
-Keep Run Assessment fail-closed.
-
-It may only become executable when:
-
-- exactly one CURRENT Step 2.2 company is selected
-- selected company identity matches the authoritative portfolio record
-- Step 2.1 scenario is present
-- Step 2.3 confirmed = true
-- Step 2.3 factor count = expected real count
-- Step 2.4 confirmed = true
-- Step 2.4 factor count = expected real count
-- required Step 2.5 context registration succeeds
-
-Do NOT weaken these gates.
-
-Do NOT make the button clickable merely to make the demo work.
-
-But the UI must now provide the legitimate action necessary to satisfy the
-single-company gate.
-
-============================================================
-7. DO NOT MIX SEC/RUNNER INTO THIS FIX
-============================================================
-
-Do NOT start Stylus.
-
-Do NOT call /run.
-
-Do NOT troubleshoot Runner authentication yet.
-
-Do NOT change the SEC resolver.
-
-Do NOT fetch SEC evidence during this implementation test.
-
-We are fixing ONLY the missing single-company selection / stale selection
-handoff.
-
-SEC and Runner readiness will be checked immediately AFTER this selection
-path is proven.
-
-============================================================
-8. PRESERVE ALL EXISTING WORK
-============================================================
-
-DO NOT modify:
-
-Step 2.1 generation/business logic
-Step 2.2 portfolio business logic
-Step 2.3 generation/business logic
-Step 2.4 generation/business logic
-Step 2.3/2.4 confirmed factors
-Stylus preset
-Stylus prompt
-output schema
-Step 2.5 scoring methodology
-80/20 ED/SI weighting
-SEC evidence methodology
-Runner SSE handling
-Step 3
-v31 overall layout
-
-Avoid new architecture.
-Avoid new framework.
-Avoid broad refactoring.
-
-POC implementation only.
-
-============================================================
-9. LIVE ACCEPTANCE TEST
-============================================================
-
-After implementation:
-
-DO NOT restart/rebuild Steps 2.1–2.4 unnecessarily.
-
-Open Step 2.5 using the existing current confirmed Banks-Major workflow.
-
-Verify the table contains:
-
-COMMERZBANK AG
-DEUTSCHE BANK AG
-
-Verify no company is falsely selected from stale state.
-
-Then select:
-
-DEUTSCHE BANK AG [DE FRANKFURT AM MAIN]
-
-through the NEW real UI selector.
-
-Do NOT invoke Run Assessment.
-
-Verify from frontend AND backend:
-
-selected company name =
-DEUTSCHE BANK AG [DE FRANKFURT AM MAIN]
-
-selected company ID =
-9000008998
-
-selected company count for /run =
+Selected company count for /run:
 1
 
-Step 2.1 scenario present =
+Stale company ID:
+CLEARED
+
+Step 2.1 present:
 YES
 
-Step 2.3 confirmed =
-YES
+Step 2.3:
+CONFIRMED
+5 REAL FACTORS
 
-Step 2.3 factor count =
-5
+Step 2.4:
+CONFIRMED
+5 REAL FACTORS
 
-Step 2.4 confirmed =
-YES
-
-Step 2.4 factor count =
-5
-
-stale selected ID 1019556006 present =
-NO
-
-context registration =
+Backend context registration:
 PASS
 
+Run-button company-selection gate:
+PASS
+
+READY FOR SEC + RUNNER PREFLIGHT:
+YES
+
+
 ============================================================
-10. STOPPING CONDITION
+STRICT SCOPE
 ============================================================
 
-Do not stop to write diagnostic reports while implementing.
+Do NOT modify:
 
-Proceed autonomously through this entire approved scope.
+- Step 2.1
+- Step 2.2
+- Step 2.3
+- Step 2.4
+- Step 2.5 company selector
+- upstream persistence
+- Step 2.5 scoring methodology
+- 80/20 ED/SI weighting
+- Step 3
+- v31 UI
+- Stylus preset
+- Stylus preset prompt
+- output schema
 
-Do not ask me for confirmation during implementation.
+Do NOT restart the backend unless absolutely required for an auth action.
 
-Stop only if a genuine external blocker prevents implementation.
+Do NOT call /run yet.
 
-Do not start Step 2.5 assessment itself.
+Do NOT start a Step 2.5 assessment.
 
-Final response only after implementation and validation, using exactly:
+We are checking exactly TWO remaining preconditions:
 
-STEP 2.5 SINGLE-COMPANY SELECTOR: PASS / FAIL
+A. VERIFIED REAL SEC GROUNDING
+B. RUNNER AUTHENTICATION
 
-STALE COMPANY ID CLEARED: YES / NO
-OLD ID:
-CURRENT SELECTED COMPANY:
-CURRENT SELECTED COMPANY ID:
-SELECTED COMPANY COUNT FOR /run:
 
-STEP 2.1 PRESENT: YES / NO
-STEP 2.3 CONFIRMED: YES / NO
-STEP 2.3 FACTOR COUNT:
-STEP 2.4 CONFIRMED: YES / NO
-STEP 2.4 FACTOR COUNT:
+============================================================
+A. VERIFY REAL SEC GROUNDING
+============================================================
 
-BACKEND CONTEXT REGISTRATION: PASS / FAIL
+The Deutsche Bank SEC identity resolver has already been fixed and must
+not be reimplemented.
 
-RUN BUTTON COMPANY-SELECTION GATE: PASS / FAIL
+Expected canonical identity:
 
-READY FOR SEC + RUNNER PREFLIGHT: YES / NO
+Portfolio company:
+DEUTSCHE BANK AG [DE FRANKFURT AM MAIN]
+
+SEC canonical registrant:
+DEUTSCHE BANK AKTIENGESELLSCHAFT
+
+CIK:
+0001159508
+
+SEC registrant:
+YES
+
+Foreign private issuer:
+YES
+
+Relevant filing families:
+20-F
+6-K
+
+Now verify the actual deterministic SEC grounding that will be passed to
+Step 2.5.
+
+This is NOT satisfied merely because CIK resolution succeeds.
+
+REAL SEC GROUNDING READY requires genuine SEC filing metadata/evidence.
+
+For the assessment as-of date, verify a small credit-relevant filing set.
+
+Prefer:
+
+1. latest eligible 20-F at or before the assessment date
+2. one or two relevant recent 6-K filings where useful
+
+Every accepted SEC source must have genuine provenance including:
+
+- filing form
+- filing date
+- accession number
+- real EDGAR source URL/reference
+- company/CIK identity correspondence
+
+No fabricated accession number.
+No fabricated URL.
+No model-invented filing metadata.
+No evidence accepted merely because the model says "SEC".
+
+Do not load excessive filing content.
+
+Use the deterministic SEC grounding path already implemented.
+
+
+============================================================
+B. VERIFY RUNNER AUTH
+============================================================
+
+Check the current Runner authentication state using the existing approved
+Runner/token implementation.
+
+Do not redesign authentication.
+
+Do not implement a new auth framework.
+
+Check:
+
+- token currently available
+- token currently valid
+- expiry
+- refresh mechanism status
+- Runner preflight/auth endpoint
+
+If existing automatic refresh succeeds, use it.
+
+If the credential genuinely requires manual browser-side recapture,
+DO NOT ask me to paste the token into chat.
+
+Instead return the exact local browser action required.
+
+Do not start the assessment merely to test auth.
+
+
+============================================================
+C. VERIFY FINAL PAYLOAD READINESS
+============================================================
+
+Without calling /run, verify that the exact payload that would be used for
+Deutsche Bank contains:
+
+CompanyContextJSON:
+- Deutsche Bank only
+- internal company ID 9000008998
+- correct available real Step 2.2 fields
+- canonical SEC identity / grounding where expected
+
+ScenarioContextJSON:
+- real confirmed Step 2.1 scenario
+
+EventDrivenFactorsJSON:
+- exactly 5 confirmed real Step 2.3 factors
+
+SectorInherentFactorsJSON:
+- exactly 5 confirmed real Step 2.4 factors
+
+AssessmentAsOfDate:
+- current selected assessment date
+
+Do not print the entire large payload.
+Report only field presence/counts and approximate payload size.
+
+No synthetic factors.
+No fixture factors.
+No stale companies.
+No second portfolio company.
+
+
+============================================================
+STOPPING CONDITION
+============================================================
+
+Do not make unrelated fixes.
+
+Do not run Step 2.5.
+
+Return only:
+
+SELECTED COMPANY:
+SELECTED COMPANY ID:
+SELECTED COMPANY COUNT:
+
+SEC CANONICAL NAME:
+SEC CIK:
+SEC REGISTRANT: YES / NO
+FOREIGN PRIVATE ISSUER: YES / NO
+
+REAL SEC GROUNDING READY: YES / NO
+VERIFIED SEC SOURCE COUNT:
+FORM 1:
+FILING DATE:
+ACCESSION NUMBER PRESENT: YES / NO
+EDGAR URL PRESENT: YES / NO
+
+FORM 2:
+FILING DATE:
+ACCESSION NUMBER PRESENT: YES / NO
+EDGAR URL PRESENT: YES / NO
+
+FORM 3:
+FILING DATE:
+ACCESSION NUMBER PRESENT: YES / NO
+EDGAR URL PRESENT: YES / NO
+
+RUNNER TOKEN PRESENT: YES / NO
+RUNNER TOKEN VALID: YES / NO
+RUNNER AUTH READY: YES / NO
+MANUAL TOKEN ACTION REQUIRED: YES / NO
+
+STEP 2.1 PAYLOAD PRESENT: YES / NO
+STEP 2.3 PAYLOAD FACTORS:
+STEP 2.4 PAYLOAD FACTORS:
+COMPANY PAYLOAD COUNT:
+APPROX PAYLOAD SIZE:
+
+COMPACT PAYLOAD READY: YES / NO
+
+SAFE TO CLICK RUN ASSESSMENT: YES / NO
+
+FAILURE POINT:
+NONE or exact remaining blocker
 
 FILES CHANGED:
-<exact paths>
+NONE — this is verification only.
