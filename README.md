@@ -1,46 +1,48 @@
-Step 2.4 has now been confirmed in the LIVE RPR UI.
+The upstream persistence chain is now LIVE-PROVEN and must not be
+changed:
 
-Do NOT modify code.
-Do NOT regenerate the factors.
-Do NOT use fixtures or synthetic factors.
-Do NOT proceed to Step 2.5.
-Do NOT start Stylus.
+Step 2.1 scenario: confirmed/persisted
+Step 2.2 portfolio: confirmed/persisted
+Step 2.3: 5 real confirmed factors persisted
+Step 2.4: 5 real confirmed factors persisted
 
-Check the authoritative backend persisted state NOW.
+Do NOT modify Steps 2.1–2.4.
+Do NOT modify persistence.
+Do NOT modify Stylus.
+Do NOT modify the preset.
+Do NOT start the assessment yet.
 
-Return only:
+I am now on Step 2.5.
 
-STEP 2.4 LIVE PERSISTENCE: PASS / FAIL
-STEP24_CONFIRMED LOG RECEIVED: YES / NO
+Selected assessment type:
+SEC + Web
 
-STEP 2.4 CONFIRMED: YES / NO
+Selected company:
+DEUTSCHE BANK AG
+
+Check the real Step 2.5 pre-run context only.
+
+Return:
+
+COMPANY:
+COMPANY ID:
+COMPANY NAME RESOLVED: YES/NO
+SEC REGISTRANT / SEC-ELIGIBLE RESOLUTION: YES/NO
+
+STEP 2.1 SCENARIO PRESENT: YES/NO
+
+REAL STEP 2.3 FACTOR COUNT:
+STEP 2.3 CONFIRMED: YES/NO
+
 REAL STEP 2.4 FACTOR COUNT:
+STEP 2.4 CONFIRMED: YES/NO
 
-FACTOR 1 ID:
-FACTOR 1 NAME:
+SELECTED COMPANY COUNT FOR /run:
 
-FACTOR 2 ID:
-FACTOR 2 NAME:
+COMPACT PAYLOAD READY: YES/NO
+REAL SEC GROUNDING READY: YES/NO
+RUNNER AUTH READY: YES/NO
 
-FACTOR 3 ID:
-FACTOR 3 NAME:
+SAFE TO CLICK RUN ASSESSMENT: YES/NO
 
-FACTOR 4 ID:
-FACTOR 4 NAME:
-
-FACTOR 5 ID:
-FACTOR 5 NAME:
-
-FACTOR WEIGHTS TOTAL:
-REAL FACTORS ONLY: YES / NO
-
-FINAL UPSTREAM STATE CHECK:
-
-STEP 2.1 SCENARIO PRESENT: YES / NO
-STEP 2.2 PORTFOLIO PRESENT: YES / NO
-STEP 2.3 CONFIRMED: YES / NO
-STEP 2.3 FACTOR COUNT:
-STEP 2.4 CONFIRMED: YES / NO
-STEP 2.4 FACTOR COUNT:
-
-AUTHORITATIVE BACKEND STATE READY FOR STEP 2.5: YES / NO
+Do not run anything.
