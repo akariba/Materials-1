@@ -1,66 +1,44 @@
-STOP CODE CHANGES.
+LIVE STATE VERIFICATION AFTER REBUILD — NO CODE CHANGES
 
-The Deutsche Bank SEC/FPI resolver fix is now proven:
+I have now completed the real workflow again after the backend restart:
 
-SEC canonical name = DEUTSCHE BANK AKTIENGESELLSCHAFT
-CIK = 0001159508
-SEC registrant = YES
-Foreign private issuer = YES
-Annual form = 20-F
-Current/interim form = 6-K
+- Step 2.1 confirmed
+- Step 2.2 Banks - Major portfolio confirmed
+- Step 2.3 real factors confirmed
+- Step 2.4 real factors confirmed
 
-The current Step 2.1/2.3/2.4 zeros appeared after the code changes and
-backend reload. This POC uses in-memory authoritative workflow state,
-so treat those zeros as expected state loss after restart unless proven
-otherwise.
+I am now at Step 2.5.
 
-Do NOT modify:
-- Steps 2.1–2.4
-- persistence wiring
-- SEC resolver
-- Stylus preset
-- Step 2.5 scoring
-- Step 3
-- UI
+Do NOT modify code.
+Do NOT start Stylus.
+Do NOT call /run.
+Do NOT change the preset.
+Do NOT touch Steps 2.1–2.4.
 
-I will now reconfirm the real workflow through Step 2.4 once.
-
-Monitor only.
-
-After I finish 2.1 → 2.2 → 2.3 → 2.4, verify:
-
-STEP 2.1 SCENARIO PRESENT
-STEP 2.2 PORTFOLIO PRESENT
-STEP 2.3 CONFIRMED / FACTOR COUNT
-STEP 2.4 CONFIRMED / FACTOR COUNT
-
-Then, for the selected Deutsche Bank company only, separately check:
-
-1. SEC identity resolution
-2. actual verified SEC grounding construction
-3. Runner authentication
-
-Do not start /run.
+Check ONLY the authoritative backend persisted state that resulted from
+this live browser workflow.
 
 Return only:
 
-UPSTREAM STATE RESTORED: YES/NO
-STEP 2.1 PRESENT: YES/NO
-STEP 2.2 PRESENT: YES/NO
-STEP 2.3 COUNT:
-STEP 2.4 COUNT:
+STEP 2.1 SCENARIO PRESENT: YES / NO
 
-SEC REGISTRANT: YES/NO
-SEC CIK:
-SEC GROUNDING READY: YES/NO
-VERIFIED SEC SOURCE COUNT:
-VERIFIED FORMS:
-VERIFIED ACCESSION NUMBERS PRESENT: YES/NO
-VERIFIED EDGAR URLS PRESENT: YES/NO
+STEP 2.2 PORTFOLIO PRESENT: YES / NO
+STEP 2.2 SECTOR/L3:
+STEP 2.2 COMPANY COUNT:
+COMPANY 1:
+COMPANY 1 ID:
+COMPANY 2:
+COMPANY 2 ID:
 
-RUNNER AUTH READY: YES/NO
-TOKEN REFRESH/CAPTURE REQUIRED: YES/NO
+STEP 2.3 CONFIRMED: YES / NO
+REAL STEP 2.3 FACTOR COUNT:
+STEP 2.3 WEIGHTS TOTAL:
 
-SAFE FOR STEP 2.5 RUN: YES/NO
+STEP 2.4 CONFIRMED: YES / NO
+REAL STEP 2.4 FACTOR COUNT:
+STEP 2.4 WEIGHTS TOTAL:
 
-Do not modify anything during this verification.
+AUTHORITATIVE UPSTREAM STATE READY FOR STEP 2.5: YES / NO
+
+Do not perform SEC retrieval or Runner authentication checks yet.
+Do not make any changes.
