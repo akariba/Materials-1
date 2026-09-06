@@ -1,88 +1,66 @@
-## Evidence Retrieval Strategy — STRICT BOUNDED EXECUTION
+FIX THE CURRENT STEP 2.5 BACKEND FAILURE NOW.
 
-The confirmed ScenarioContextJSON, EventDrivenFactorsJSON and SectorInherentFactorsJSON already define the analytical framework. SEC Filings and Web Search are used only to obtain company-specific evidence needed to apply that framework.
+NO REPORT.
+NO AUDIT.
+NO APPROVAL QUESTION.
+IMPLEMENT, TEST, CONTINUE AUTONOMOUSLY.
 
-### Company Identity Gate
+The exact live error is:
 
-First read CompanyContextJSON and use all supplied identity information.
+call_stylus_preset() got an unexpected keyword argument 'sec_filing_excluded'
 
-If a confirmed CIK or confirmed SEC registrant is supplied:
-SEC_PATH = ENABLED.
+The new SEC identity short-circuit is conceptually correct and MUST be
+preserved.
 
-If the company is confirmed private/non-SEC:
-SEC_PATH = SKIP.
-Do not call SEC Filings.
+Find the caller that passes:
 
-If SEC status is unresolved:
-make at most ONE reasonable SEC identity/registrant attempt.
-If no reliable registrant is resolved, record the evidence gap and STOP using SEC Filings.
+sec_filing_excluded=...
 
-Never repeatedly retry SEC after identity resolution has failed.
+into call_stylus_preset().
 
-### SEC Retrieval Budget
+Then inspect the ACTUAL call_stylus_preset() signature and current inline
+preset/tool-config construction.
 
-When SEC_PATH = ENABLED, normally use only:
+Fix the interface mismatch minimally.
 
-- latest relevant 10-K before AssessmentAsOfDATE;
-- latest relevant 10-Q before AssessmentAsOfDATE;
-- one additional 8-K/filing only when directly material.
+IMPORTANT:
 
-If SEC Filings returns no usable result after the initial direct attempt:
-record the limitation and stop SEC retrieval.
+- Do NOT remove SEC Identity Short-Circuit.
+- Do NOT change the live Stylus preset.
+- Do NOT change Step 2.3/2.4.
+- Do NOT fabricate SEC evidence.
+- Do NOT broadly refactor Runner code.
+- Do NOT add an unused parameter merely to silence Python unless that
+  parameter genuinely belongs in the function contract.
 
-Do not repeatedly search SEC.
+Correct behavior:
 
-### Web Search Budget
+If SEC is excluded for a company:
+  - Runner request still executes;
+  - Web Search remains available;
+  - SEC tool is not invoked for that company;
+  - the assessment receives the SEC-unavailable/excluded state through the
+    appropriate context/prompt/tool configuration;
+  - Step 2.5 continues normally.
 
-Use a maximum of FOUR purposeful Web Search actions for the entire company assessment.
+If SEC is allowed:
+  - existing SEC + Web behavior remains intact.
 
-Do NOT perform one search per Event-Driven or Sector-Inherent factor.
+After fixing:
 
-Search by evidence theme:
+1. py_compile/lint affected files.
+2. Run one NON-SEC Step 2.5 company.
+3. Confirm the job gets past call_stylus_preset().
+4. Confirm Web Search executes.
+5. Confirm SEC is skipped.
+6. Confirm no `unexpected keyword argument` remains.
+7. Do NOT run a portfolio batch.
 
-1. company identity, business model and financial condition;
-2. liquidity, leverage, refinancing and capital structure;
-3. scenario exposure and relevant industry/geographic sensitivity;
-4. counter-thesis / disconfirming evidence only if still needed.
+Return only:
 
-One source may support multiple factors.
-
-If sufficient evidence is obtained after 2 or 3 searches, STOP.
-
-Do not repeat substantially equivalent searches with slightly different wording.
-
-### Evidence Reuse
-
-Create one company-level evidence pool and reuse it across all relevant factors.
-
-Do not search again when existing evidence already supports the factor.
-
-### Assessment
-
-Assess every supplied EventDrivenFactorsJSON factor exactly once.
-
-Assess every supplied SectorInherentFactorsJSON factor exactly once.
-
-For every factor:
-- test company evidence against the supplied vulnerability metrics;
-- test evidence against the supplied buffer metrics;
-- apply the supplied Step 3a 1–5 scoring methodology;
-- identify supporting and disconfirming evidence;
-- record genuine evidence gaps without inventing values.
-
-### Mandatory Stop Rule
-
-STOP searching as soon as enough reliable information exists to assess:
-
-- company identity/business model;
-- principal financial vulnerabilities;
-- liquidity/leverage/refinancing where relevant;
-- scenario exposure;
-- material buffers;
-- reasonable counter-evidence or evidence limitations.
-
-More searches are not automatically higher quality.
-
-When evidence is sufficient, immediately complete scoring and return the final schema-compliant JSON.
-
-Do not generate additional markdown or narrative artifacts.
+SEC_SHORT_CIRCUIT_WIRING = PASS/FAIL
+CALL_STYLUS_PRESET = PASS/FAIL
+NON_SEC_RUN_REACHED_RUNNER = PASS/FAIL
+WEB_AVAILABLE = PASS/FAIL
+SEC_SKIPPED = PASS/FAIL
+FIRST_REMAINING_BLOCKER=<only if any>
