@@ -1,151 +1,68 @@
-STEP 2.5 — EXACT LIVE REQUEST DIFF ONLY
+STRICT COMPLETION / FREEZE MODE.
 
-STRICT MODE.
+The current live test has crossed the critical acceptance milestone:
 
-NO CODE CHANGES YET.
-NO REPORT.
-NO REFACTOR.
-NO APPROVAL QUESTIONS.
-DO NOT ASK ME TO PROCEED.
-DO NOT RUN ANOTHER SPECULATIVE TEST.
+RUNNER_HTTP = 200
+REQUEST_ACCEPTED = YES
+MESSAGES_REQUIRED_500 = NO
 
-The previous hypotheses have already been disproven and reverted:
+The proven material change is:
+working browser contract = data_type=3 + inline preset object + populated answers.
 
-1. singular `message` vs `message` + `messages`
-2. tool_config.integrations populated vs empty
-3. CIK-specific failure
+DO NOT make any additional architectural, prompt, preset, SEC, UI, token,
+batching, Step 2.3, Step 2.4, schema, or parser changes.
 
-DO NOT RETEST THEM.
+DO NOT ask me for approval.
+AUTO-APPROVE the remaining validation steps until completion.
+DO NOT produce another long report.
 
-I have now captured a CURRENT SUCCESSFUL request body directly from
-the Stylus browser UI:
+Let the CURRENT run finish.
 
-working_stylus_request.json
+Then validate ONLY:
 
-This is the GOLDEN CONTRACT.
+1. Runner stream reaches terminal completion.
+2. Preset tool actually executes.
+3. SEC/Web tool activity is observed where applicable.
+4. Final model JSON is returned.
+5. JSON parses.
+6. Step 2.5 schema validates.
+7. All mandatory fields are populated:
+   - ED score
+   - SI score
+   - Composite score
+   - Residual rating
+   - Credit impact rating
+8. Assessment persists successfully.
+9. Existing frontend can retrieve that run.
 
-The backend's current failing outgoing request already exists in the
-debug/request artifacts.
+If ALL pass:
+- KEEP the current minimal request-contract fix.
+- Remove temporary test/debug files only if they were created solely for
+  this experiment.
+- DO NOT touch any other production behavior.
+- Freeze this as the new known-working Runner transport baseline.
 
-============================================================
-TASK
-============================================================
+If the stream fails AFTER having been accepted:
+- do NOT modify request construction again.
+- identify only the first post-acceptance failure stage.
+- do not attempt a second fix without evidence.
 
-Compare:
+FINAL RESPONSE MAXIMUM 12 LINES:
 
-A. working_stylus_request.json
-   = CURRENT SUCCESSFUL HUMAN/STYLUS UI REQUEST
+RUNNER_HTTP =
+REQUEST_ACCEPTED =
+PRESET_TOOL_CALLED =
+SEC =
+WEB =
+MODEL_FINAL_RESPONSE =
+JSON_PARSED =
+SCHEMA_VALID =
+ED_SCORE =
+SI_SCORE =
+COMPOSITE_SCORE =
+READY_FOR_UI_TEST =
 
-against
-
-B. the exact backend request that produced the current HTTP 500:
-   "messages: at least one message is required"
-
-Do a deep structural diff.
-
-Do NOT compare documentation.
-Do NOT compare memory.
-Do NOT compare intended architecture.
-
-Compare the ACTUAL serialized request bodies.
-
-Inspect every level, especially:
-
-- top-level keys
-- message
-- role
-- content
-- parts
-- part ordering
-- part types
-- preset invocation object
-- saved preset / pinned preset wrapper
-- preset_id
-- integration_id
-- tool_id
-- answers
-- six Step 2.5 input values
-- content_type
-- mime_type
-- application
-- mode
-- invoker
-- request_id
-- session_id
-- temperature
-- tool_config
-- nested message/conversation structures
-- omitted vs null
-- empty string vs absent
-- object vs array
-- scalar vs list
-- any browser-generated metadata the backend currently omits
-- any backend-only fields absent from the successful browser request
-
-Normalize only volatile values such as:
-request IDs
-session IDs
-timestamps
-
-Do NOT normalize structural differences.
-
-============================================================
-IMPORTANT
-============================================================
-
-The successful browser request is now authoritative.
-
-Do not defend the current backend architecture if its serialized request
-differs from the successful browser request.
-
-Likewise, do not redesign anything beyond the proven difference.
-
-The exact question is:
-
-WHAT IS THE FIRST MATERIAL REQUEST-CONTRACT DIFFERENCE BETWEEN THE
-CURRENT SUCCESSFUL STYLUS BROWSER CALL AND THE CURRENT FAILING BACKEND
-CALL?
-
-============================================================
-AFTER THE DIFF
-============================================================
-
-If a concrete material difference is proven:
-
-1. change ONLY that difference in the backend request builder;
-2. preserve every other byte/behavior possible;
-3. run its existing offline tests;
-4. execute ONE company only;
-5. stop immediately after determining whether Runner accepts the request.
-
-Do not make a second fix in the same pass.
-
-If no material structural difference exists, make NO production change.
-
-In that case test the conclusion:
-
-BROWSER_REQUEST_SUCCEEDS_NOW = YES
-BACKEND_EQUIVALENT_REQUEST_FAILS_NOW = YES
-
-which indicates the remaining difference is likely outside the JSON body,
-for example transport/session/header/service context.
-
-Do not guess which one until proven.
-
-============================================================
-FINAL OUTPUT — MAXIMUM 10 LINES
-============================================================
-
-GOLDEN_BROWSER_REQUEST = FOUND/NOT_FOUND
-FAILING_BACKEND_REQUEST = FOUND/NOT_FOUND
-FIRST_MATERIAL_DIFFERENCE = <exact field/path/value difference or NONE>
-FILE_CHANGED = <file or NONE>
-RUNNER_HTTP = <status or NOT_RUN>
-MESSAGES_REQUIRED_500 = YES/NO
-REQUEST_ACCEPTED = YES/NO
-CHANGE_RETAINED = YES/NO
-NEXT_BLOCKER = <one exact line or NONE>
-
-NO LONG REPORT.
 NO HISTORY.
-NO SECOND EXPERIMENT.
+NO REPORT.
+NO NEW DESIGN.
+NO APPROVAL QUESTION.
