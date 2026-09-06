@@ -1,230 +1,151 @@
-STEP 2.5 — FIND THE REQUEST REGRESSION FROM THE LAST PROVEN SUCCESS
+STEP 2.5 — EXACT LIVE REQUEST DIFF ONLY
 
-IMPLEMENTATION TASK.
-NO GENERAL REPORT.
+STRICT MODE.
+
+NO CODE CHANGES YET.
+NO REPORT.
+NO REFACTOR.
 NO APPROVAL QUESTIONS.
-DO NOT ASK ME WHETHER TO PROCEED.
-ALL ACTIONS INSIDE THIS SCOPE ARE PRE-APPROVED.
-CONTINUE AUTONOMOUSLY UNTIL THE SINGLE-COMPANY ACCEPTANCE TEST PASSES
-OR UNTIL A GENUINE EXTERNAL RUNNER BLOCKER IS PROVEN.
+DO NOT ASK ME TO PROCEED.
+DO NOT RUN ANOTHER SPECULATIVE TEST.
 
-IMPORTANT CURRENT STATE
+The previous hypotheses have already been disproven and reverted:
 
-The previous isolated experiment is finished and reverted.
+1. singular `message` vs `message` + `messages`
+2. tool_config.integrations populated vs empty
+3. CIK-specific failure
 
-PROVEN:
+DO NOT RETEST THEM.
 
-SINGULAR_MESSAGE_ONLY = FAIL
-RUNNER_HTTP = 500
-MESSAGES_REQUIRED_500 = YES
+I have now captured a CURRENT SUCCESSFUL request body directly from
+the Stylus browser UI:
 
-Therefore:
+working_stylus_request.json
 
-DO NOT retry message-vs-messages experiments.
-DO NOT change parser/SSE framing.
-DO NOT change Step 2.3.
-DO NOT change Step 2.4.
-DO NOT change Step 2.5 UI.
-DO NOT change weighting.
-DO NOT change SEC/CIK behavior.
-DO NOT change token logic.
-DO NOT change the Stylus live preset.
-DO NOT revert the saved/pinned-preset architecture.
+This is the GOLDEN CONTRACT.
 
-The current saved/pinned-preset six-input architecture had successful
-Step 2.5 live runs previously.
-
-Known successful run IDs include:
-
-step25stylus_af7dfb79753c4410
-step25stylus_a83c86e280b84626
-
-Use the repository's persisted run/debug/request artifacts for those
-successful runs as the GOLDEN BASELINE.
+The backend's current failing outgoing request already exists in the
+debug/request artifacts.
 
 ============================================================
-1. DO NOT MODIFY CODE YET
+TASK
 ============================================================
 
-Before changing runtime code, locate the actual persisted request/raw
-Runner artifacts belonging to at least one successful run above.
+Compare:
 
-Also locate the current failing run's exact outgoing Runner request.
+A. working_stylus_request.json
+   = CURRENT SUCCESSFUL HUMAN/STYLUS UI REQUEST
 
-Do not reconstruct either request from memory.
+against
 
-Do not use repo documentation as a substitute when raw request artifacts
-exist.
+B. the exact backend request that produced the current HTTP 500:
+   "messages: at least one message is required"
 
-The goal is an EXACT structural comparison:
+Do a deep structural diff.
 
-SUCCESSFUL_REQUEST
-versus
-CURRENT_FAILING_REQUEST
+Do NOT compare documentation.
+Do NOT compare memory.
+Do NOT compare intended architecture.
 
-============================================================
-2. COMPARE THE COMPLETE OUTGOING REQUEST CONTRACT
-============================================================
+Compare the ACTUAL serialized request bodies.
 
-Compare every relevant field, including nesting and value type:
+Inspect every level, especially:
 
-top-level keys
-application
-invoker
-mode
-request_id
-session_id
-temperature
-tool_config
-message
-messages, if historically present
-message.role
-message.content
-message.parts
-part data/content
-preset/tool invocation object
-integration_id
-tool_id
-preset_id
-preset version/config
-answers/input mapping
-CompanyConte
-ScenarioCont
-EventDrivenF
-SectorInhere
-AssessmentAS
-UserFeedback
+- top-level keys
+- message
+- role
+- content
+- parts
+- part ordering
+- part types
+- preset invocation object
+- saved preset / pinned preset wrapper
+- preset_id
+- integration_id
+- tool_id
+- answers
+- six Step 2.5 input values
+- content_type
+- mime_type
+- application
+- mode
+- invoker
+- request_id
+- session_id
+- temperature
+- tool_config
+- nested message/conversation structures
+- omitted vs null
+- empty string vs absent
+- object vs array
+- scalar vs list
+- any browser-generated metadata the backend currently omits
+- any backend-only fields absent from the successful browser request
 
-Also compare:
+Normalize only volatile values such as:
+request IDs
+session IDs
+timestamps
 
-null versus omitted
-empty string versus populated value
-object versus array
-string versus JSON object
-field casing
-field order only if the receiving API historically depends on it
-content_type / mime_type
-nested `messages` or conversation fields inside the preset/tool payload
-rather than only top-level fields.
-
-The current Runner error is:
-
-HTTP 500
-UPSTREAM_SERVER_ERROR
-"messages: at least one message is required"
-
-Do not assume this refers to the top-level request field.
-
-Identify which exact successful-vs-failing structural difference can make
-the downstream saved-preset execution believe no conversation message was
-provided.
+Do NOT normalize structural differences.
 
 ============================================================
-3. PAY PARTICULAR ATTENTION TO RECENT REQUEST-BUILDER CHANGES
+IMPORTANT
 ============================================================
 
-Inspect recent changes around:
+The successful browser request is now authoritative.
 
-stylus_runner_client.py
-stylus_engine.py
-stylus_preset_config.py
+Do not defend the current backend architecture if its serialized request
+differs from the successful browser request.
 
-and any request/preset serialization helper.
+Likewise, do not redesign anything beyond the proven difference.
 
-Determine whether the successful September 2 request had:
+The exact question is:
 
-- a different `message.parts` structure;
-- preset invocation in a different part;
-- a text/content part accompanying the preset invocation;
-- different answer placement;
-- different content_type;
-- different integration/tool wrapper;
-- different nested conversation structure;
-- a non-empty field that is now empty/omitted.
-
-Do not infer. Prove it from the successful request.
+WHAT IS THE FIRST MATERIAL REQUEST-CONTRACT DIFFERENCE BETWEEN THE
+CURRENT SUCCESSFUL STYLUS BROWSER CALL AND THE CURRENT FAILING BACKEND
+CALL?
 
 ============================================================
-4. MAKE ONLY THE SMALLEST PROVEN FIX
+AFTER THE DIFF
 ============================================================
 
-Once the exact regression is found:
+If a concrete material difference is proven:
 
-make ONLY the minimum change required to restore the successful request
-shape.
+1. change ONLY that difference in the backend request builder;
+2. preserve every other byte/behavior possible;
+3. run its existing offline tests;
+4. execute ONE company only;
+5. stop immediately after determining whether Runner accepts the request.
 
-Do not perform cleanup/refactoring around it.
+Do not make a second fix in the same pass.
 
-Do not change unrelated request fields.
+If no material structural difference exists, make NO production change.
 
-Add a focused regression test that compares the current request builder
-against the relevant shape of the known successful request.
+In that case test the conclusion:
 
-============================================================
-5. ONE LIVE TEST ONLY
-============================================================
+BROWSER_REQUEST_SUCCEEDS_NOW = YES
+BACKEND_EQUIVALENT_REQUEST_FAILS_NOW = YES
 
-After the exact request-shape regression is fixed:
+which indicates the remaining difference is likely outside the JSON body,
+for example transport/session/header/service context.
 
-run ONE company only.
-
-Do not run a batch.
-
-Acceptance milestone:
-
-Runner must no longer immediately return:
-
-"messages: at least one message is required"
-
-If Runner accepts the request and opens normal execution/tool activity,
-allow that single run to continue.
-
-Do not introduce a second speculative fix during the same test.
+Do not guess which one until proven.
 
 ============================================================
-6. IF NO RAW SUCCESSFUL REQUEST EXISTS
+FINAL OUTPUT — MAXIMUM 10 LINES
 ============================================================
 
-Only if no historical outgoing request artifact exists:
+GOLDEN_BROWSER_REQUEST = FOUND/NOT_FOUND
+FAILING_BACKEND_REQUEST = FOUND/NOT_FOUND
+FIRST_MATERIAL_DIFFERENCE = <exact field/path/value difference or NONE>
+FILE_CHANGED = <file or NONE>
+RUNNER_HTTP = <status or NOT_RUN>
+MESSAGES_REQUIRED_500 = YES/NO
+REQUEST_ACCEPTED = YES/NO
+CHANGE_RETAINED = YES/NO
+NEXT_BLOCKER = <one exact line or NONE>
 
-use the closest actual raw successful Runner SSE/request capture and the
-known-working saved-preset code state to reconstruct the request shape.
-
-But do not change runtime code until you can state one concrete structural
-difference supported by repository evidence.
-
-============================================================
-7. FINAL RESPONSE — SHORT ONLY
-============================================================
-
-Return only:
-
-GOLDEN_SUCCESS_REQUEST_FOUND = YES/NO
-CURRENT_FAILING_REQUEST_FOUND = YES/NO
-
-FIRST_PROVEN_REQUEST_DIFFERENCE =
-<one concise line>
-
-FILE_CHANGED =
-<file or NONE>
-
-RUNNER_HTTP =
-<status or NOT_RUN>
-
-MESSAGES_REQUIRED_500 =
-YES/NO
-
-REQUEST_ACCEPTED_BY_RUNNER =
-YES/NO
-
-READY_FOR_ONE_COMPANY_UI_TEST =
-YES/NO
-
-If NO:
-
-FIRST_REMAINING_BLOCKER =
-<one exact line>
-
-NO HISTORY.
 NO LONG REPORT.
-NO SECOND SPECULATIVE FIX.
+NO HISTORY.
+NO SECOND EXPERIMENT.
