@@ -1,455 +1,702 @@
-# CCRIG — Project Handover & Execution Brief for Luna
-## From: Ala-Eddine Karib, ICM First Line of Defense, Citi
+# CCRIG Phase 2 — Real Data Enrichment via Web Search & LLM
+## From: Ala-Eddine Karib, ICM First Line of Defense
 ## Date: September 14, 2026
 
 ---
 
-## 0. Before You Read Anything Else
+## 0. Read This First — What Changed and Why
 
-This is a **running local application**, not a spec for something to build from scratch. Your job is **data integration and feature addition** on top of an existing, working codebase. Do not redesign the architecture, do not change the frontend visual language, do not rebuild modules that already work. Extend what exists.
+Phase 1 is done and working. The CoreAI Network has real CAM relationship data, real OSUC exposure figures, and the relationship scoring engine is live.
 
-Everything synthetic in the tool needs to be replaced or augmented with **real data from the files in this folder**. Where real exposure figures cannot be used (governance/data sensitivity), the structure should be derived from the real population of names and relationships, with figures clearly labelled as illustrative. More on this below.
+**Phase 2 has one clear goal: replace static and synthetic data with real publicly-available data wherever it genuinely exists — and be honest about what cannot be made real.**
 
----
+Before building anything, understand the data reality:
 
-## 1. What This Project Is
-
-**CCRIG** (Counterparty Risk Information Graph) is an internal AI analyst platform, POC stage, built for Citi's Institutional Credit Management (ICM) / Portfolio Credit Risk Management team — specifically the underwriting and CCR monitoring functions.
-
-It is a **local web application** running at `127.0.0.1:5173` (frontend) with a backend API. The codebase is in the folder you have access to:
-
-```
-ccrig-master/
-├── frontend/          ← React/Vite frontend, do not touch visual design
-├── backend/           ← FastAPI or similar Python backend
-├── docs/
-├── screenshots/
-├── README.md
-├── BUILD_REPORT.md
-├── render.yaml
-├── .env.example       ← configure your environment here
-└── AI Economy Study_Masterfile.xlsx   ← THE PRIMARY DATA SOURCE (see Section 3)
-```
-
-The tool has **12 working modules**, all running in offline deterministic mode (no API key required for the POC data layer):
-
-| Module | URL | What it does |
-|---|---|---|
-| Relationships | `/` | Entity/counterparty/theme/risk-factor search. "The graph nominates what's connected — exposure is a separate question, asked after." |
-| Events | `/events` | Event-driven analysis, event → entity propagation |
-| Counterparties | `/counterparty?id=...` | Counterparty 360 — three tabs: Relationships, Exposure & Controls, Decision. Counterparties prioritised CRITICAL → HIGH → MEDIUM → LOW → INFORMATIONAL |
-| Controls | `/breaches` | Control Exceptions — active limit breaches, age-sorted |
-| Inbox | `/inbox` | The ranked investigation queue — "the 5 things worth a look today" with driver classification and ΔPFE |
-| Entity Explorer | `/entity` | Composite relatedness scores with full explainability — Layer A fact relations (SUPPLIES, SUPPLIED_BY, etc.), Layer B derived similarity (sector, news, geography, semantic, market correlation), typed path display |
-| Exposure Movers | `/exposure-movers` | PFE Movers / Stress-NSE Movers / RC-MTM Movers / Sensitivity Movers tabs, ranked by ΔPFE |
-| Graph Explorer | `/graph` | Bounded ego-graph — fact (solid/directional), derived (dashed/symmetric), exposure (dotted) |
-| Theme Radar | `/theme-radar` | Dynamic scatter: X=attention velocity, Y=entity coverage. 47-item curated taxonomy + TF-IDF discovered themes |
-| Model Lab | `/model-lab` | Weight tuning sliders for the relationship vector (Sector, Geography, Supply chain, Ownership, Semantic, News co-mention, Market corr+, Market corr−). Presets. Experimental anchor calibration |
-| Backtest Lab | `/backtest-lab` | Scenario replay — Taiwan earthquake scenario built, Precision@5=0.6, Recall@5=0.375. Look-ahead prevented by design (model computed as-of T0 using only fact-graph + pre-event correlation) |
-| Data Sources | `/data-sources` | Data source configuration |
-
-**Offline deterministic mode** means: the tool runs fully without an AI API key. All relationship scoring is deterministic (weighted formula). The AI layer (if `AI_API_KEY` is set) adds LLM-generated narrative explanation on top of scores that are already computed — it never generates the scores.
-
----
-
-## 2. The Business Context and What the Team Actually Needs
-
-This tool was built to support two overlapping use cases:
-
-**Use Case A — CCR Monitoring (existing, working in synthetic form):**
-The Inbox, Exposure Movers, Controls, and Counterparty 360 modules support daily CCR portfolio monitoring. An analyst opens the Inbox and sees the top-priority counterparties ranked by a combination of ΔPFE magnitude, limit utilisation, breach age, and driver classification (NEW_TRADE, MARKET_MOVE, WWR_RELATED, NON_NETTED_EXPOSURE, UNKNOWN_PENDING_INVESTIGATION). They drill into a counterparty and see Relationships → Exposure & Controls → Decision in three tabs.
-
-**Use Case B — AI Ecosystem / Underwriting Intelligence (the new work, partially built):**
-A separate tool exists (the `AI_Infrastructure_Counterparty_Network` HTML file — also in this folder) that shows a relationship database of 46 companies, 104 records, sourced from three credit memos (BX Matrix II Funding LLC Annual Review CAM, CoreWeave Inc Quarterly Review CAM, Anthropic PBC Annual Review CAM). This tool has the relationship data; CCRIG has the monitoring infrastructure. **The team wants these merged.**
-
-**What MJ (Kim, Moo-Jin, the sponsor) specifically asked for (from email chain, Sept 9-10, 2026):**
-1. **GFCID/CAGID mapping** — given a company name from a CAM (e.g. "OpenAI"), show Citi's total combined exposure across all facilities for that CAGID grouping. The Masterfile has this data.
-2. **Better groupings and filter logic** — as more CAMs are added, the network map becomes hard to read. Smarter clustering by relationship type, hub facility, sector.
-3. **Export functionality** — a UW reviewing a CoreAI name should be able to export a filtered report (relationships + exposure summary) that can be added to their CAM workflow.
-4. **"Indirect exposure" surfacing** — two examples of where indirect exposure is mentioned in CAM text (this is what the Entity Explorer and Graph Explorer already do; needs to be connected to real names).
-
-**Leslie Zhang's direction (same email chain):**
-*"Ala-Eddine has already built a prototype of client correlations, let's build on top of that capability and avoid reinventing the wheel."*
-
-**MJ's phrasing of the goal:**
-*"Intention is not to reinvent the wheel but visualize my idea. Please walk us through the correlation work."*
-*"Citi's exposure if a company mentioned is Citi's clients — we should be able to see all the combined exposures for a grouping — how much is Citi's exposure related to OpenAI for example."*
-
----
-
-## 3. The Data You Have — Read This Section Carefully
-
-### 3A. AI Economy Study_Masterfile.xlsx
-
-This is the **primary data source**. It has six tabs:
-
-**Master file tab:**
-- CAGID (Relationship) — Citi's internal client identifier
-- CAGID (Relationship) Name — company name
-- Total OSUC PSLE Net of Hedges Jul'26 ME — net exposure in USD (the headline exposure figure)
-- Pillar (CLFU, RESCU, F&S)
-- Vertical (TMT, SAII, RE, LFU, etc.)
-- UW Portfolio Head, UW Underwriter, UW Analyst — the coverage team
-- We have CAM? (Yes/No) — 3 of 75 CoreAI names currently have CAMs
-- Latest CAM Date — date of most recent CAM
-- Population Source — "CoreAI" for all rows in this workbook
-
-Key names visible (all publicly known companies, their CAGIDs are internal):
-- BX Matrix II Funding LLC (CAM: Yes, 2/21/2025)
-- Anthropic PBC (CAM: Yes, 10/24/2025)
-- CoreWeave Inc (CAM: Yes, 6/12/2026)
-- OpenAI OPCO LLC, Crusoe Inc, QualityTech LP, QTS Good News Facility, Digital Realty Trust, Equinix Inc, Project Delta, Project Tidal, and ~65 more CoreAI names
-
-**Pivot - Core AI tab:**
-Pivot table showing CoreAI exposure by name, useful for the "total exposure per grouping" view MJ asked for.
-
-**Core AI - Raw data tab:**
-Facility-level detail: GFBN codes, facility long descriptions (Loan-Delayed Draw Construction, Loan-Revolving, Standby Letters of Credit, Traded Products/Derivatives, Loan-Term Loan, etc.), PSLE Amt, Direct Amt, Contingent Amt, PSE Amt, CVA Dynamic, Hedge Amt, Limit-Facility, Outstanding, Exclude flags.
-
-**CAM Data tab:**
-The relationship intelligence extracted from the three CAMs — this is the data that feeds the AI Infrastructure Network tool. Company relationships, types, amounts, sources, confidence.
-
-### 3B. AI_Infrastructure_Counterparty_Network HTML file
-
-The working relationship database tool, showing:
-- 46 unique companies across BX Matrix II / CoreWeave / Anthropic CAMs
-- 52 unique relationships, 104 records (bidirectional)
-- Categories: Hub Facility (Citi Subject), Big Tech/Hyperscaler, Silicon/Hardware Supply Chain, Financial Investor/Lender, AI Lab/Model Developer, Enterprise Customer, Regulator/Legal, Advisory/Rating Agency, M&A Target, Competing Infrastructure
-- Key relationships with amounts and confidence ratings (Very High / High / Medium-High / Medium / Low)
-- Confidence methodology: CAM is primary; SEC + news are supplementary corroboration
-
-### 3C. CAM Priority Population_Batch 1.xlsx
-
-The batch population list used to identify which CoreAI names to prioritise for CAM extraction. Use this as the population reference alongside the Masterfile.
-
-### 3D. CCRIG's existing synthetic data
-
-The tool currently runs on **fictional/synthetic counterparties** (Sovereign Debt Office Nation Alpha, Meridian Alpha Rates Fund, Kestrel Family Office, etc.). These are illustrative. Your job is to **layer in the real CoreAI population** from the Masterfile alongside or replacing the synthetic data, while keeping the synthetic CCR counterparties as illustrative examples for any module that needs them for demo purposes.
-
----
-
-## 4. What You Need to Build — Prioritised
-
-### Priority 1 — GFCID/CAGID Exposure Aggregation Layer (MJ's #1 ask)
-
-**What:** Given any company name that appears in the relationship graph (e.g. "OpenAI", "CoreWeave", "Microsoft"), show Citi's total OSUC PSLE exposure for that company's CAGID grouping, drawn from the Masterfile.
-
-**How:**
-1. Build a lookup table: `company_name_normalized → CAGID → total_exposure + facility_breakdown`
-2. The normalization matters — CAM text says "OpenAI" but the Masterfile says "OPENAI OPCO LLC" — you need fuzzy matching on company name, not exact string match.
-3. Surface this in:
-   - **Counterparty 360, Exposure & Controls tab**: show the OSUC PSLE figure, facility breakdown (revolving, term loan, DDTL, derivatives, standby LCs), utilisation vs limit where available
-   - **Entity Explorer**: when a company is loaded, show a small "Citi Exposure" sidebar panel with the matched CAGID and total net exposure
-   - **Relationships search**: when search results include a company with a known CAGID, show a small exposure badge next to the name
-
-**Key logic:**
-```
-For a company_name from CAM/relationship data:
-  1. Normalize name (lowercase, strip legal suffixes like LLC/Inc/Corp/Ltd)
-  2. Fuzzy match against Masterfile CAGID Name column (threshold: 0.85 similarity)
-  3. Return: matched_CAGID, total_PSLE_net_of_hedges, facility_count, CAM_available (Y/N), latest_CAM_date, UW_underwriter
-  4. If no match found: show "Not in OSUC population" (this is expected for supply-chain entities like TSMC, ASML that are not Citi clients)
-```
-
-**Do not hard-code CAGID mappings.** Build the lookup dynamically from the Masterfile so it updates when the file updates.
-
-### Priority 2 — Real CoreAI Entity Population in Entity Explorer and Graph Explorer
-
-**What:** Populate the Entity Explorer and Graph Explorer with the real 75 CoreAI company names from the Masterfile, using the relationship data from the AI Infrastructure Network (the CAM Data tab / the HTML tool's dataset) as the fact-layer input.
-
-**How:**
-1. Parse the CAM Data tab (or the HTML tool's embedded JSON/data) to extract: Company A, Company B, Relationship Type, Amount, Confidence, Source
-2. Load these as **Layer A (Fact) edges** in CCRIG's graph — typed: GUARANTOR/BACKLEVERAGE, SUPPLIER/INVESTOR/CUSTOMER, SUPPLY_CHAIN, CONTRACTED_CUSTOMER, EQUITY_INVESTOR, COMPETITOR, PEER/CUSTOMER/PARTNER, FAILED_M&A_TARGET, COMPLETED_ACQUISITION, CUSTOMER+EQUITY_HOLDER, etc.
-3. The Entity Explorer's composite relatedness score already works — it just needs real entities to score. Feed the 46 CAM companies + the broader 75 CoreAI names as the entity universe.
-4. The Graph Explorer already renders fact/derived/exposure edges correctly — connect it to this real data.
-
-**Entity universe for the CoreAI population (source: Masterfile + CAM companies):**
-- Hub entities (Citi subjects): BX Matrix II Funding LLC, CoreWeave Inc, Anthropic PBC
-- Hyperscalers: Microsoft, Google/Alphabet, Amazon/AWS, Meta Platforms, Apple
-- Semiconductor supply chain: NVIDIA, TSMC, ASML, SK Hynix, Samsung Electronics, Super Micro, Dell, Gigabyte
-- AI labs: OpenAI, Mistral AI, Cognition, Weights & Biases (acquired by CoreWeave)
-- Financial investors: Blackstone, Coatue, Magnetar Financial, Carlyle Group, Fidelity, J.P. Morgan, Jane Street
-- Enterprise customers: Microsoft (contracted), Meta (contracted), Google Cloud (peer/partner), Replicate, Chai, Mistral AI (select customer), OpenAI (customer+equity holder)
-- Competing infrastructure: Core Scientific, AWS, Google Cloud
-
-### Priority 3 — Export Functionality
-
-**What:** From three views, an analyst should be able to export a structured report.
-
-**Export 1 — Counterparty 360 export:**
-When viewing a counterparty (e.g. CoreWeave), a button "Export to CAM Report" produces a PDF or structured HTML containing:
-- Counterparty name, CAGID, exposure summary (PSLE net, facility breakdown)
-- Key Risk Clusters (the relationship clusters shown in the Relationships tab)
-- Top related entities with relatedness scores and typed paths
-- Active controls/breaches
-- Decision recommendation
-
-**Export 2 — Relationships filter export:**
-From the AI Infrastructure Network's filterable database view, a "Export filtered view" button downloads the currently-filtered records as CSV with: Company A, Company B, Type, Relationship (A's perspective), Amount, Source, Confidence.
-
-**Export 3 — Entity Explorer export:**
-"Export entity report" from Entity Explorer produces a one-page summary: entity name, CAGID + exposure if matched, top 10 related entities with scores and explain text, Layer A fact relations, typed paths.
-
-### Priority 4 — CAGID Grouping in the Network Map
-
-**What:** The network map (the AI Infrastructure Network view) should support grouping by CAGID/facility — when multiple entities roll up to the same economic exposure (e.g. "CoreWeave Inc" and "CoreWeave Operating LLC" might have separate CAGIDs but are the same economic entity), they should be visually groupable.
-
-**How:**
-- Add a "Group by: Hub Facility / Sector / Exposure tier" toggle above the network map
-- "Hub Facility" grouping colours nodes by which CAM they came from (BX Matrix II / CoreWeave / Anthropic / Not in CAM) — this is already partially done via the category colours
-- "Exposure tier" grouping sizes nodes proportional to Citi's PSLE exposure for that company (from the Masterfile lookup in Priority 1) — zero exposure = small dot; large exposure = large node. This makes concentration immediately visible.
-
----
-
-## 5. What NOT to Do
-
-- **Do not rebuild the frontend visual language.** The existing CCRIG UI (sidebar nav, clean typography, teal/dark palette, offline deterministic mode badge) must be preserved exactly.
-- **Do not replace the synthetic CCR counterparty data entirely.** The Inbox, Exposure Movers, and Controls modules using fictional sovereign/fund counterparties are useful demos. Keep them, and add the real CoreAI layer as a separate or merged data source.
-- **Do not attempt to compute PFE from scratch.** CCRIG does not reprice trades or simulate exposure. Where PFE/ΔPFE figures are shown, they come from the data layer (currently synthetic). For the CoreAI population, use the OSUC PSLE Net of Hedges from the Masterfile as the headline exposure figure — do not invent PFE simulation.
-- **Do not use the internal email addresses or team member names** in any output, display, or export. Strip these before any output is generated.
-- **Do not expose raw CAGID numbers in any user-facing display** without confirming with Ala-Eddine first — these are internal identifiers. Use company names in the UI; keep CAGID as internal reference only.
-- **Do not add AI API calls to the critical path.** The tool must remain fully functional in offline deterministic mode. AI narrative generation is additive, never load-bearing.
-
----
-
-## 6. Architecture Notes (from inspecting the running tool)
-
-From what is visible in the screenshots:
-
-**Frontend** (React/Vite, port 5173):
-- Left sidebar navigation with two sections: RELATIONSHIP INTELLIGENCE (Relationships, Events, Counterparties, Controls) and RESEARCH (Inbox, Entity Explorer, Exposure Movers, Graph Explorer, Theme Radar, Model Lab, Backtest Lab) and SYSTEM (Data Sources)
-- "Offline deterministic mode / No AI_API_KEY set — full functionality retained" badge at bottom of sidebar — preserve this
-- URL routing: `/`, `/events`, `/counterparty?id=CP_*`, `/breaches`, `/inbox`, `/entity`, `/exposure-movers`, `/graph`, `/theme-radar`, `/model-lab`, `/backtest-lab`, `/data-sources`
-- The Graph Explorer uses a canvas/SVG graph renderer with typed edge styles (solid=fact, dashed=derived, dotted=exposure)
-- The Theme Radar uses a scatter chart library (likely Recharts or D3)
-
-**Backend** (Python, FastAPI likely):
-- Serves relationship data, exposure data, entity data, event data
-- Deterministic scoring engine: weighted composite over [sector, geography, supply_chain, ownership, semantic_tfidf, news_co_mention, market_corr_pos, market_corr_neg]
-- Data currently loaded from static/synthetic JSON/CSV fixtures
-- The `.env.example` file shows what configuration is needed — set up your environment from there
-
-**Data layer change needed:**
-The backend fixture files (wherever they are in `/backend/`) need to be extended with:
-1. A CoreAI entity list loaded from the Masterfile
-2. A CoreAI relationship list loaded from the CAM Data
-3. A CAGID exposure lookup table derived from the Masterfile
-
-Read the README.md and BUILD_REPORT.md before making any changes — they will tell you exactly how the data fixtures are structured and where to add new ones.
-
----
-
-## 7. The Correlation Work — What Already Exists and Must Be Preserved
-
-The Entity Explorer already implements the correlation/relatedness engine. From the screenshot, it shows for TSM (TSMC):
-
-**Composite relatedness score breakdown for TSM ↔ SSNLF (Samsung):**
-- Sector match: 1.00 × 30% = +0.300
-- News co-occurrence: 1.00 × 30% = +0.300
-- Geography: 0.50 × 16% = +0.088
-- Semantic (TF-IDF): 0.10 × 24% = +0.023
-- FINAL RELATIONSHIP SCORE: 0.783
-
-**Typed Path (deterministic, not AI):** TSM → SUPPLIES → NVDA → SUPPLIED_BY → SSNLF
-
-**Layer A Fact Relations:**
-- → NVIDIA Corporation: SUPPLIES, criticality 0.95 (MEDIUM EVIDENCE)
-- → Advanced Micro Devices: SUPPLIES, criticality 0.88 (HIGH EVIDENCE)
-
-**Model Lab weights (current heuristic defaults):**
-- Sector: 0.15, Geography: 0.08, Supply chain: 0.25, Ownership: 0.10, Semantic: 0.12, News co-mention: 0.15, Market corr(+): 0.10, Market corr(−): 0.05
-
-**Presets available:**
-1. General relatedness
-2. Supply-chain / geographic shock
-3. Market / funding shock
-4. Thematic / technology shock
-
-This entire engine must be **preserved and connected to real entities**, not replaced.
-
----
-
-## 8. The Three-Hub CAM Relationship Data (Source of Truth for Layer A)
-
-The AI Infrastructure Network tool extracted the following from the three CAMs. This is the fact-layer input for CCRIG's relationship engine. Key relationships (all sourced, confidence-rated):
-
-**BX Matrix II Funding LLC ↔ CoreWeave Inc:**
-- Type: GUARANTOR/BACKLEVERAGE
-- Amount: $7.6Bn DDTL (max drawn ~$6.1Bn); Citi $400MM of $2.235Bn LSF
-- Source: BX Matrix II CAM; SEC 10-K/10-Q — VERY HIGH confidence
-
-**CoreWeave ↔ Microsoft:**
-- Type: CONTRACTED CUSTOMER
-- Amount: ~79.9% of Underlying Facility debt; 67% FY25 revenue; >$10Bn since 2023
-- Source: BX Matrix II CAM; CoreWeave QR CAM; SEC; News — VERY HIGH confidence
-- **This is the concentration risk flag** — single customer dominance
-
-**CoreWeave ↔ NVIDIA:**
-- Type: SUPPLIER/INVESTOR/CUSTOMER (triple relationship)
-- Amount: $100mm Series B (2023); $2.0Bn equity (Jan'26, ~11%); $6.38Bn RPO contract
-- Source: BX Matrix II CAM; CoreWeave QR CAM; SEC; News — VERY HIGH confidence
-- **This is the wrong-way risk flag** — NVIDIA is simultaneously supplier, ~11% equity holder, and $6.38Bn RPO customer
-
-**CoreWeave ↔ Meta Platforms:**
-- Type: CONTRACTED CUSTOMER
-- Amount: $14.2Bn (Sept'25) + $21Bn (Mar'26) = $35.2Bn cumulative
-- Source: BX Matrix II CAM; News — VERY HIGH confidence
-
-**CoreWeave ↔ OpenAI:**
-- Type: CUSTOMER + EQUITY HOLDER
-- Amount: Cumulative $22.4Bn (3 tranches); $350M OpenAI equity in CoreWeave
-- Source: Multiple — VERY HIGH confidence
-
-**CoreWeave ↔ Weights & Biases:**
-- Type: COMPLETED ACQUISITION
-- Amount: $1.0Bn ($1.029Bn per SEC), May 2025
-- Source: BX Matrix II CAM; SEC — VERY HIGH confidence
-
-**CoreWeave ↔ Core Scientific:**
-- Type: FAILED M&A TARGET
-- Amount: 2024 bid $5.75/sh (~$900mm); 2025 deal ~$9.0Bn — both terminated
-- Source: BX Matrix II CAM; SEC; News — HIGH confidence
-
-**CoreWeave ↔ TSMC:**
-- Type: SUPPLY CHAIN
-- Relationship: TSMC is the leading fabricator of NVIDIA GPUs underpinning CoreWeave's infrastructure, creating indirect supply-chain exposure. CoWoS packaging capacity dependency.
-- Source: BX Matrix II CAM; News — VERY HIGH confidence
-
-**CoreWeave ↔ Coatue:**
-- Type: EQUITY INVESTOR
-- Amount: Led $1.15Bn Series C (May '24, $19Bn val)
-- Source: BX Matrix II CAM; SEC; News — VERY HIGH confidence
-
-**CoreWeave ↔ Magnetar Financial:**
-- Type: EQUITY + DEBT INVESTOR
-- Amount: Led Series A/B/B-1; $125M 2022 notes; DDTL holdings; >$5.5Bn monetized
-- Source: BX Matrix II CAM; News
-
-**CoreWeave ↔ Carlyle Group:**
-- Type: EQUITY + CREDIT INVESTOR
-- Amount: Key lender in $2.3Bn (2023) & $7.5Bn (2024) debt facilities
-
-**CoreWeave ↔ J.P. Morgan:**
-- Type: EQUITY INVESTOR + AGENT BANK
-- Not disclosed (equity); Agent on RCF/Term Loan
-
-**Blackstone ↔ BX Matrix II:**
-- Type: SPONSOR/EQUITY HOLDER
-- Amount: $4.5Bn of $7.6Bn; agreeing to maintain ≥50.1% position
-- Source: BX Matrix II CAM; News — HIGH confidence
-
-All 104 bidirectional records are in the CAM Data tab of the Masterfile and in the HTML tool. Use all of them.
-
----
-
-## 9. Backtest Lab — Preserve and Extend
-
-The Backtest Lab already has a working Taiwan earthquake scenario:
-- TO: 2026-07-06, data cutoff: 2026-07-06
-- Model-predicted top movers: AAPL (1), AMD (1), NVDA (1), TSM (1), ASML (0.85), SKHY (0.78), ARM (0.75), QCOM (0.70)
-- Precision@5: 0.6, Recall@5: 0.375
-- Look-ahead prevention: ✓ (model score uses only fact-graph + pre-event correlation, no post-T0 data)
-
-There is also a second scenario button visible: "Regional bank funding stress after a major ban..." (truncated).
-
-Preserve both. Do not change the scoring methodology or the look-ahead protection. If new scenarios need to be added (e.g. a scenario relevant to the CoreAI population — "AI infrastructure funding shock"), you may add them following the same pattern.
-
----
-
-## 10. Specific Implementation Notes
-
-### Fuzzy company name matching
-Use `rapidfuzz` or `thefuzz` Python library. Threshold: 0.85 for high-confidence match, 0.70 for flagged match (show "possible match, verify"). Never silently match below 0.70.
-
-```python
-from rapidfuzz import fuzz, process
-
-def find_cagid(company_name: str, masterfile_df: pd.DataFrame) -> dict:
-    normalized = normalize_name(company_name)
-    candidates = masterfile_df['name_normalized'].tolist()
-    match, score, idx = process.extractOne(normalized, candidates, scorer=fuzz.token_sort_ratio)
-    if score >= 85:
-        row = masterfile_df.iloc[idx]
-        return {
-            "matched": True,
-            "confidence": "high",
-            "cagid": row['CAGID'],
-            "name": row['CAGID_Name'],
-            "exposure_psle_net": row['Total_OSUC_PSLE'],
-            "cam_available": row['We_have_CAM'],
-            "cam_date": row['Latest_CAM_Date'],
-            "underwriter": row['UW_Underwriter']
-        }
-    elif score >= 70:
-        # return flagged match
-    else:
-        return {"matched": False, "exposure_psle_net": None}
-```
-
-### Name normalisation function
-```python
-import re
-
-LEGAL_SUFFIXES = ['llc', 'inc', 'ltd', 'plc', 'corp', 'corporation', 'limited', 
-                  'sa', 'ag', 'bv', 'nv', 'pbc', 'lp', 'llp', 'gmbh', 'fund']
-
-def normalize_name(name: str) -> str:
-    n = name.lower().strip()
-    n = re.sub(r'[^\w\s]', ' ', n)  # remove punctuation
-    n = re.sub(r'\s+', ' ', n)
-    tokens = n.split()
-    tokens = [t for t in tokens if t not in LEGAL_SUFFIXES]
-    return ' '.join(tokens)
-```
-
-### Exposure display format
-Always show: `$XXXm net of hedges (Jul'26)` — include the date context so an analyst knows it's not live.
-Always include the label `OSUC PSLE` so it's clear what figure this is.
-Never show a bare dollar figure without source and date context.
-
-### Export format
-For CSV exports: UTF-8, comma-separated, no BOM, include a header row, include a "Generated by CCRIG POC" and date footer row.
-For HTML/PDF exports: use the existing CCRIG visual style (not a blank PDF). Include the "SYNTHETIC POC DATA" or "ILLUSTRATIVE EXPOSURE" watermark in the footer as appropriate.
-
----
-
-## 11. Questions to Answer Before Starting
-
-Read the README.md and BUILD_REPORT.md fully. They should tell you:
-1. How data fixtures are structured and where they live in `/backend/`
-2. How to run the development server
-3. What environment variables are needed (see `.env.example`)
-4. What the current data schema looks like for entities, counterparties, relationships, and exposures
-
-If the README/BUILD_REPORT are unclear on any of these, check the `/backend/` folder structure directly before assuming anything.
-
----
-
-## 12. Definition of Done
-
-A task is complete when:
-1. The feature works in the running local application at `127.0.0.1:5173`
-2. It uses real company names from the Masterfile / CAM data (not invented)
-3. Exposure figures are either real (from Masterfile PSLE) or clearly labelled as illustrative
-4. The existing synthetic CCR data (Sovereign/Meridian/Kestrel etc.) still works alongside
-5. The offline deterministic mode badge still shows and the tool still functions without an AI API key
-6. Exports produce well-structured, labelled output
-7. No internal team names, email addresses, or raw CAGIDs appear in user-facing output
-
----
-
-## 13. Summary of Priorities
-
-| # | Feature | Source | Effort est. |
+| Data type | Publicly available? | Source | Action |
 |---|---|---|---|
-| 1 | GFCID/CAGID exposure lookup + display in Counterparty 360 / Entity Explorer / Relationships | Masterfile → backend lookup | Medium |
-| 2 | Real CoreAI entities in Entity Explorer + Graph Explorer | CAM Data tab + Masterfile | Medium |
-| 3 | Export: Counterparty 360 / Relationships filter / Entity Explorer | New endpoint + download button | Medium |
-| 4 | Exposure-sized node display in network map (bubble ∝ PSLE) | Masterfile lookup + frontend | Low-Medium |
-| 5 | CAGID grouping toggle on network map | Frontend filter | Low |
+| Company profiles, sector, geography | Yes | Web search / Wikipedia / company sites | Replace static with live web-fetched |
+| Real news about CoreAI companies | Yes | Web search (Reuters, Bloomberg, FT, CNBC) | Replace 34 synthetic news docs with real |
+| SEC filings (10-K, 10-Q, S-1) | Yes, via web search through R2D2 | R2D2 web search proxy → SEC.gov | Fetch real filing excerpts per company |
+| Public market prices (OHLC) | Yes for listed companies | Yahoo Finance / web | Expand from 14 to all listed CoreAI entities |
+| GLEIF LEI corporate hierarchy | Yes | api.gleif.org (already partially done) | Expand to full CoreAI population |
+| Real CCR counterparties (named hedge funds, banks, asset managers) | **Partially** — fund names, strategies, AUM are often public | Web search | Replace fictional names with real fund names where verifiable public info exists |
+| PFE (Potential Future Exposure) | **No — never public** | Internal systems only | **Keep synthetic. Label honestly.** |
+| NSE (Net Stress Exposure) | **No — never public** | Internal systems only | **Keep synthetic. Label honestly.** |
+| Utilisation vs limit | **No** | Internal systems only | **Keep synthetic. Label honestly.** |
+| ΔPFE (weekly PFE move) | **No** | Internal systems only | **Keep synthetic. Label honestly.** |
 
-Start with Priority 1 — it is the highest business value and the one the sponsor (MJ) asked for explicitly by name.
+**The rule: real data where it exists publicly, honest synthetic where it doesn't. Never fabricate a number and present it as real.**
 
 ---
 
-*This brief was prepared by Ala-Eddine Karib (ICM First Line of Defense, Citi) with AI assistance. All company names from external sources are public. Internal identifiers (CAGIDs) should not appear in user-facing output.*
+## 1. The LLM Web-Search Layer — How to Use It
+
+The application already has an LLM provider configured (DeterministicProvider offline, OpenAI-compatible when `AI_API_KEY` is set). The LLM has web access.
+
+**Use the LLM for web-search-backed enrichment tasks, not for generating numbers.** Specifically:
+
+```python
+# Pattern for LLM-assisted web enrichment
+ENRICHMENT_PROMPT = """
+Search for current, factual, publicly available information about {company_name}.
+Return ONLY information you can verify from real public sources (company website, 
+Reuters, Bloomberg, FT, SEC.gov, GLEIF, Wikipedia).
+
+Return as JSON:
+{
+  "company_name": str,
+  "sector": str,
+  "headquarters_country": str,
+  "business_description": str (2-3 sentences, factual),
+  "key_customers": [str],          // named, publicly announced only
+  "key_investors": [str],          // from public filings/announcements only
+  "recent_news_headlines": [       // max 3, real headlines with dates
+    {"headline": str, "date": str, "source": str, "url": str}
+  ],
+  "sec_filing_available": bool,
+  "latest_sec_form": str,          // "10-K", "S-1", "20-F" etc or null
+  "latest_sec_date": str,
+  "public_ticker": str,            // null if private
+  "estimated_aum_or_revenue": str, // only if publicly stated, else null
+  "sources_used": [str]
+}
+
+If you cannot verify something from a real source, return null for that field.
+Never estimate or infer financial figures.
+"""
+```
+
+**R2D2 as web-search proxy for SEC filings:**
+R2D2 has web-search capability that can reach SEC.gov. Use it specifically for:
+- Fetching the full-text of a specific SEC filing URL
+- Searching EDGAR for a company's filing history
+- Extracting specific sections (Item 1 Business, Item 1A Risk Factors) from 10-K filings
+
+```python
+# R2D2 web search pattern for SEC filings
+def search_sec_filing_via_r2d2(company_name: str, form_type: str = "10-K") -> dict:
+    """
+    Use R2D2's web search to find and extract SEC filing content.
+    Returns filing metadata and key excerpt, not the full document.
+    """
+    search_query = f"SEC EDGAR {form_type} {company_name} site:sec.gov"
+    # Call R2D2 web search endpoint with this query
+    # Extract: filing date, CIK, accession number, key business description excerpt
+    # Never return more than 500 words of filing text — this is for context only
+```
+
+---
+
+## 2. What to Actually Build — Prioritised
+
+### Priority 1 — Real Counterparty Names in the CCR Layer
+
+**The problem:** The Inbox, Exposure Movers, and Counterparty 360 currently use completely fictional counterparty names (Sovereign Debt Office — Nation Alpha, Meridian Alpha Rates Fund, etc.).
+
+**The solution:** Replace these with real, publicly known CCR-relevant counterparty types. Use the LLM with web search to find real named funds, banks, and asset managers that:
+- Are publicly known to be active in rates/FX/credit derivatives markets
+- Have publicly stated AUM or strategy information
+- Are the *type* of entity Citi's CCR team actually monitors
+
+**Do NOT use real Citi client names.** Use real fund/bank names that are publicly known to exist and operate in these markets — not necessarily Citi clients.
+
+```python
+# LLM prompt for counterparty research
+COUNTERPARTY_RESEARCH_PROMPT = """
+Find real, publicly known financial counterparties in each of these categories.
+Use only public information (Bloomberg, Reuters, fund databases, public filings).
+
+For each, provide: real name, type, domicile, publicly stated AUM or activity, 
+and one public source URL confirming they exist and are active.
+
+Categories needed:
+1. Two large sovereign debt offices or central bank treasury desks (rates exposure)
+2. Two macro/rates hedge funds (publicly known, $1Bn+ AUM)
+3. One large structured equity fund
+4. One sovereign wealth fund treasury operation
+5. One regional bank treasury (EUR or GBP denominated)
+6. Two fixed income asset managers
+7. One triparty funding/repo specialist
+
+Return only funds you can verify with a real public source. Return null for 
+any you cannot verify. Do not invent or estimate.
+"""
+```
+
+Once real counterparty names are found and verified, replace the fictional names in the data layer. Keep the same CCR workflow structure (priority tiers, driver classification, breach logic) — only the names and public profile data change.
+
+**PFE/NSE/ΔPFE numbers stay synthetic and labelled.** The names become real; the exposure metrics remain illustrative. Every metric row carries:
+```
+ΔPFE +900  [Illustrative · not actual exposure]
+```
+
+### Priority 2 — Real News for Theme Radar and Entity 360
+
+**The problem:** 34 of 48 news documents are `SYNTHETIC_NARRATIVE` tagged `is_synthetic=true`. This makes the Theme Radar and news co-occurrence signal weak and fake.
+
+**The solution:** Use LLM web search to fetch real, recent news headlines for the CoreAI entity population. Target: 5 real headlines per major entity, properly sourced.
+
+```python
+NEWS_FETCH_PROMPT = """
+Find the 5 most recent, factually significant news headlines about {company_name}
+from the last 6 months. Focus on: business developments, funding, partnerships,
+supply chain news, regulatory matters, financial results.
+
+Use only real published sources: Reuters, Bloomberg, Financial Times, WSJ, 
+CNBC, TechCrunch, The Information, SEC filings announcements.
+
+Return as JSON array:
+[{
+  "headline": str,           // exact headline, not paraphrased
+  "date": str,               // YYYY-MM-DD
+  "source": str,             // publisher name
+  "url": str,                // direct URL if available
+  "entity_relevance": str,   // one sentence: why relevant to {company_name}
+  "is_verified": true        // only true if you have actual URL/source
+}]
+
+Return empty array if you cannot find verified headlines.
+"""
+```
+
+**Run this for:** NVDA, TSM, ASML, AMD, CoreWeave, Anthropic, OpenAI, Microsoft (AI infra angle), NVIDIA supply chain, Blackstone, Meta, Google Cloud, Apple, SK Hynix, Samsung, Qualcomm, ARM.
+
+**Tag all results:** `source_type: REAL_PUBLIC_NEWS`, `is_synthetic: false`. Keep the 34 synthetic docs as fallback — don't delete them until real news coverage is confirmed for each entity.
+
+### Priority 3 — SEC Filing Context via R2D2 Web Search
+
+**The goal:** For each of the 3 hub entities (CoreWeave, BX Matrix II/Blackstone, Anthropic) and top 10 related entities (NVIDIA, TSMC, ASML, Microsoft, Meta, Blackstone, OpenAI, Coatue, Magnetar, Carlyle), fetch:
+
+- Filing type and date (10-K / 10-Q / S-1 / 20-F)
+- Business description excerpt (Item 1, ~100 words)
+- Key risk factors mentioning counterparties, supply chain, concentration
+- Revenue/AUM figure if stated in the filing
+
+**Display in Entity 360 as a new collapsible section:**
+```
+SEC / PUBLIC FILINGS                              [REAL PUBLIC DATA]
+CoreWeave Inc — S-1 — Filed 2026-03-28
+"CoreWeave is a specialized AI infrastructure provider..."
+[Concentration risk: Microsoft ~79% of revenue as of Dec 2025]
+[Source: SEC EDGAR · accession 0001234567-26-000123]
+```
+
+### Priority 4 — Expand Real Price History and GLEIF
+
+**Price history:** Currently 14/149 entities have OHLC. Expand to all publicly listed CoreAI entities using Yahoo Finance (already working — just run for more tickers):
+- Add: AMD, INTC, AAPL, MSFT, GOOGL, AMZN, META, AVGO, QCOM, ARM, MU, AMAT
+- Private companies (CoreWeave, Anthropic, OpenAI, Mistral): explicitly mark as "Private — no public price history" in Entity 360. Do not fabricate prices.
+
+**GLEIF:** Currently 41/149. Run for all 74 public CoreAI entities. Priority: the 46 companies already in the CAM relationship database.
+
+---
+
+## 3. The Synthetic Layer — What Stays and Why
+
+Be honest in the Data & Provenance Explorer. The following stays synthetic and is explicitly labelled:
+
+| Data | Why it stays synthetic | Label to show |
+|---|---|---|
+| PFE, NSE, RC, ΔPFE, ΔNSE | Never publicly available — internal system outputs only | `Illustrative · not actual exposure` |
+| Utilisation vs limit | Same reason | `Illustrative` |
+| Breach records (except real breach logic) | Breach data is internal | `Synthetic POC · illustrative workflow` |
+| Exposure edges (REPO, TRS, BOND, SEC_LENDING) in Exposure Movers | Product-level exposure by counterparty is internal | `Illustrative product types` |
+
+**One honest label, everywhere, consistently.** Not hidden in footnotes — visible on every row that carries synthetic data.
+
+The existing `is_synthetic=true` flag in the data layer is correct. Make sure the frontend surfaces this flag visibly, not just as metadata.
+
+---
+
+## 4. Updated Data & Provenance Page
+
+After Phase 2, the Data & Provenance Explorer should show:
+
+```
+SOURCE                          CLASSIFICATION                    RECORDS   COVERAGE NOTE
+--------------------------------------------------------------------------------------------
+Real company profiles           REAL PUBLIC DATA (WEB)            74        LLM web-fetched:
+(LLM web-enriched)                                                          sector, HQ, business
+                                                                            description, investors,
+                                                                            customers. Source URLs
+                                                                            stored per record.
+
+Real news (LLM web-fetched)     REAL PUBLIC DATA (WEB)            85+       Reuters, Bloomberg,
+                                                                            FT, CNBC, WSJ.
+                                                                            5 headlines per major
+                                                                            entity. Verified URLs.
+
+SEC filings (via R2D2 web       REAL PUBLIC DATA (WEB             ~13       S-1/10-K/20-F excerpts
+search)                         SEARCH PROXY)                               for hub + top-10
+                                                                            CoreAI entities.
+
+Extended price history          REAL PUBLIC DATA                   60+       Yahoo Finance OHLC.
+(Yahoo Finance)                                                             Private companies
+                                                                            marked explicitly.
+
+GLEIF LEI records               REAL PUBLIC DATA                   70+       Live-fetched from
+                                                                            api.gleif.org.
+
+Real CCR counterparty names     REAL PUBLIC DATA (WEB-            13        Named funds/banks from
+                                VERIFIED PUBLIC INFO)                       public sources. AUM/
+                                                                            strategy public only.
+
+AI Economy Study Masterfile     REAL INTERNAL SOURCE              75        OSUC PSLE exposure
+                                (SANITIZED PRESENTATION)                    figures as before.
+
+CAM relationship network        REAL INTERNAL SOURCE              184       52 source relationships,
+                                (SANITIZED PRESENTATION)                    bidirectional.
+
+CCR exposure metrics            SYNTHETIC POC DATA                18 CPs    PFE/NSE/ΔPFE/utilisation
+(PFE, NSE, RC, limits)          ⚠️ ILLUSTRATIVE ONLY                        illustrative. Not real
+                                                                            exposure data.
+
+Counterparty exposure edges     SYNTHETIC POC DATA                80        Product types (REPO,
+(REPO, TRS, etc.)               ⚠️ ILLUSTRATIVE ONLY                        TRS, BOND) illustrative.
+```
+
+---
+
+## 5. Architecture — New Module: `enrichment.py`
+
+Create `backend/app/core/enrichment.py`:
+
+```python
+"""
+enrichment.py — Real data enrichment via LLM web search and public APIs.
+
+Fetches:
+- Company profiles (LLM web search)
+- Real news headlines (LLM web search)
+- SEC filing context (R2D2 web search proxy → SEC.gov)
+- Extended price history (Yahoo Finance)
+
+All results are cached locally. Results are tagged with:
+- source_type: REAL_PUBLIC_WEB | REAL_PUBLIC_API | REAL_INTERNAL_R2D2_WEB
+- is_synthetic: false
+- fetched_at: ISO timestamp
+- source_url: direct URL where available
+
+Never returns fabricated data. Returns null for fields that cannot
+be verified from a real public source.
+"""
+
+import os, json, httpx, logging
+from pathlib import Path
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
+CACHE_DIR = Path(".enrichment_cache")
+CACHE_DIR.mkdir(exist_ok=True)
+
+
+def enrich_entity(entity_name: str, ticker: str | None = None) -> dict:
+    """
+    Full enrichment pipeline for one entity.
+    Returns cached result if available and fresh (< 24h).
+    """
+    cache_key = entity_name.lower().replace(" ", "_")
+    cache_file = CACHE_DIR / f"{cache_key}.json"
+    
+    if cache_file.exists():
+        cached = json.loads(cache_file.read_text())
+        age_hours = (datetime.now().timestamp() - cached.get("fetched_at_ts", 0)) / 3600
+        if age_hours < 24:
+            return cached
+    
+    result = {
+        "entity_name": entity_name,
+        "fetched_at": datetime.now().isoformat(),
+        "fetched_at_ts": datetime.now().timestamp(),
+        "profile": fetch_company_profile(entity_name),
+        "news": fetch_real_news(entity_name),
+        "sec_filing": fetch_sec_context(entity_name),
+        "price_history": fetch_price_history(ticker) if ticker else None,
+    }
+    
+    cache_file.write_text(json.dumps(result, indent=2))
+    return result
+
+
+def fetch_company_profile(entity_name: str) -> dict | None:
+    """LLM web search for company profile. Returns None on failure."""
+    if not _llm_available():
+        return None
+    try:
+        from backend.app.core.llm import call_llm
+        prompt = f"""
+Search for factual, publicly available information about {entity_name}.
+Return only what you can verify from public sources.
+Return as JSON with fields:
+sector, headquarters_country, business_description (2-3 sentences),
+key_customers (list, public only), key_investors (list, public only),
+public_ticker (str or null), is_publicly_listed (bool),
+primary_sources (list of URLs you used).
+Return null for any field you cannot verify.
+"""
+        response = call_llm(prompt, max_tokens=800)
+        parsed = _safe_parse_json(response)
+        if parsed:
+            parsed["source_type"] = "REAL_PUBLIC_WEB"
+            parsed["is_synthetic"] = False
+        return parsed
+    except Exception as e:
+        logger.error(f"Profile fetch failed for {entity_name}: {e}")
+        return None
+
+
+def fetch_real_news(entity_name: str, max_headlines: int = 5) -> list[dict]:
+    """LLM web search for real news headlines."""
+    if not _llm_available():
+        return []
+    try:
+        from backend.app.core.llm import call_llm
+        prompt = f"""
+Find the {max_headlines} most recent significant news headlines about {entity_name}
+from the last 6 months. Use only real published sources.
+Return as JSON array with fields per item:
+headline (str), date (YYYY-MM-DD), source (publisher), url (str or null),
+is_verified (bool — true only if you have a real URL or confirmed source).
+Return empty array if no verified headlines found.
+"""
+        response = call_llm(prompt, max_tokens=1000)
+        headlines = _safe_parse_json(response) or []
+        for h in headlines:
+            h["source_type"] = "REAL_PUBLIC_NEWS"
+            h["is_synthetic"] = False
+        return [h for h in headlines if h.get("is_verified")]
+    except Exception as e:
+        logger.error(f"News fetch failed for {entity_name}: {e}")
+        return []
+
+
+def fetch_sec_context(entity_name: str) -> dict | None:
+    """
+    Search SEC filings via R2D2 web search proxy.
+    Returns filing metadata and short excerpt only — never full document.
+    """
+    r2d2_url = os.environ.get("R2D2_BASE_URL")
+    helix_token = os.environ.get("HELIX_TOKEN")
+    
+    if not (r2d2_url and helix_token):
+        # Fallback: try direct LLM web search for filing info
+        return _fetch_sec_via_llm(entity_name)
+    
+    try:
+        query = f"SEC EDGAR 10-K OR S-1 OR 20-F {entity_name} site:sec.gov"
+        with httpx.Client(timeout=20.0) as client:
+            resp = client.post(
+                f"{r2d2_url}/websearch",   # adjust to actual R2D2 web-search endpoint
+                headers={
+                    "Authorization": f"Bearer {helix_token}",
+                    "Content-Type": "application/json",
+                },
+                json={"query": query, "max_results": 3},
+            )
+            resp.raise_for_status()
+            results = resp.json().get("results", [])
+            return _parse_sec_search_results(results, entity_name)
+    except Exception as e:
+        logger.warning(f"R2D2 SEC search failed for {entity_name}: {e} — trying LLM fallback")
+        return _fetch_sec_via_llm(entity_name)
+
+
+def _fetch_sec_via_llm(entity_name: str) -> dict | None:
+    """LLM fallback for SEC filing context when R2D2 unavailable."""
+    if not _llm_available():
+        return None
+    try:
+        from backend.app.core.llm import call_llm
+        prompt = f"""
+Search SEC EDGAR for the most recent public filing by {entity_name}.
+Return as JSON:
+{{
+  "form_type": str,       // "10-K", "S-1", "20-F", "10-Q" etc
+  "filing_date": str,     // YYYY-MM-DD
+  "cik": str,             // SEC CIK number if findable
+  "accession_number": str, // SEC accession number if findable
+  "business_excerpt": str, // 100 words max from Item 1 Business section
+  "concentration_risks": [str], // specific named customer/supplier concentration mentions
+  "sec_url": str,         // direct SEC.gov URL
+  "is_verified": bool
+}}
+Return null if no verified filing found.
+"""
+        response = call_llm(prompt, max_tokens=600)
+        parsed = _safe_parse_json(response)
+        if parsed and parsed.get("is_verified"):
+            parsed["source_type"] = "REAL_PUBLIC_WEB"
+            parsed["is_synthetic"] = False
+            return parsed
+        return None
+    except Exception as e:
+        logger.error(f"LLM SEC fallback failed for {entity_name}: {e}")
+        return None
+
+
+def fetch_price_history(ticker: str, period_days: int = 365) -> list[dict] | None:
+    """Fetch real OHLC from Yahoo Finance. Returns None for private companies."""
+    if not ticker or ticker.upper() in ("PRIVATE", "N/A"):
+        return None
+    try:
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
+        with httpx.Client(timeout=10.0) as client:
+            resp = client.get(
+                url,
+                params={"range": "1y", "interval": "1d"},
+                headers={"User-Agent": "Mozilla/5.0 (compatible; research-poc)"},
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            timestamps = data["chart"]["result"][0]["timestamp"]
+            closes = data["chart"]["result"][0]["indicators"]["quote"][0]["close"]
+            return [
+                {"date": datetime.fromtimestamp(t).strftime("%Y-%m-%d"), "close": c}
+                for t, c in zip(timestamps, closes) if c is not None
+            ]
+    except Exception as e:
+        logger.warning(f"Price history fetch failed for {ticker}: {e}")
+        return None
+
+
+def research_real_counterparties() -> list[dict]:
+    """
+    Use LLM web search to find real, publicly known CCR-relevant counterparties
+    (sovereign treasuries, macro hedge funds, bank treasuries, asset managers).
+    Returns verifiable public information only — no Citi client data.
+    """
+    if not _llm_available():
+        return []
+    try:
+        from backend.app.core.llm import call_llm
+        prompt = """
+Find real, publicly known financial entities that are typical counterparties
+in the rates, FX, credit derivatives, and repo markets. Use only public info.
+
+For each entity provide:
+- real_name: exact legal or commonly known name
+- type: sovereign_treasury | macro_hedge_fund | asset_manager | bank_treasury | family_office
+- domicile: country
+- public_aum_or_activity: publicly stated AUM or activity description
+- markets_active_in: ["rates", "fx", "credit", "repo", "equity"] (public info only)
+- public_source_url: one URL confirming this entity is real and active
+- is_verified: true only if you have a real confirming source
+
+Find at minimum:
+- 2 sovereign treasury or central bank desk entities (G10 or major EM)
+- 2 well-known macro/rates hedge funds ($5Bn+ AUM, publicly referenced)
+- 1 sovereign wealth fund with publicly known derivatives activity
+- 2 fixed income asset managers (publicly known, $10Bn+ AUM)
+- 1 bank treasury (non-US, publicly active in rates/repo)
+- 1 structured credit or equity fund (publicly known)
+
+Return as JSON array. Return only is_verified=true entries.
+Do NOT include any entity that could be a Citi client without public confirmation.
+"""
+        response = call_llm(prompt, max_tokens=2000)
+        entities = _safe_parse_json(response) or []
+        verified = [e for e in entities if e.get("is_verified") and e.get("real_name")]
+        for e in verified:
+            e["source_type"] = "REAL_PUBLIC_WEB"
+            e["is_synthetic"] = False
+        logger.info(f"Found {len(verified)} verified public counterparties")
+        return verified
+    except Exception as e:
+        logger.error(f"Counterparty research failed: {e}")
+        return []
+
+
+def _llm_available() -> bool:
+    return bool(os.environ.get("AI_API_KEY") or os.environ.get("AI_BASE_URL"))
+
+
+def _safe_parse_json(text: str) -> dict | list | None:
+    """Parse JSON from LLM response safely, handling markdown code blocks."""
+    try:
+        import re
+        cleaned = re.sub(r"```json\n?|\n?```", "", text).strip()
+        return json.loads(cleaned)
+    except Exception:
+        return None
+
+
+def _parse_sec_search_results(results: list[dict], company: str) -> dict | None:
+    """Parse R2D2 web search results for SEC filing info."""
+    sec_results = [r for r in results if "sec.gov" in r.get("url", "")]
+    if not sec_results:
+        return None
+    top = sec_results[0]
+    return {
+        "form_type": _extract_form_type(top.get("title", "")),
+        "filing_date": top.get("date"),
+        "sec_url": top.get("url"),
+        "excerpt": top.get("snippet", "")[:500],
+        "source_type": "REAL_PUBLIC_WEB",
+        "is_synthetic": False,
+    }
+
+
+def _extract_form_type(title: str) -> str:
+    for form in ["10-K", "10-Q", "S-1", "20-F", "8-K", "SC 13G"]:
+        if form in title.upper():
+            return form
+    return "Filing"
+```
+
+---
+
+## 6. Counterparty Name Replacement Logic
+
+Once `research_real_counterparties()` returns verified results:
+
+```python
+# In data.py — update the CCR counterparty list
+
+def build_counterparty_roster(web_verified: list[dict]) -> list[dict]:
+    """
+    Map web-verified real counterparties to CCR display slots.
+    METRICS (PFE/NSE/utilisation) remain synthetic — only names and profiles are real.
+    """
+    slots = [
+        # slot_id matches existing routes/IDs in the frontend
+        {"slot_id": "CP_PUB_ALPHA",  "priority": "CRITICAL", "required_type": "sovereign_treasury"},
+        {"slot_id": "CP_SOV_BETA",   "priority": "HIGH",     "required_type": "sovereign_treasury"},
+        {"slot_id": "CP_SOV_GAMMA",  "priority": "HIGH",     "required_type": "sovereign_treasury"},
+        {"slot_id": "CP_SOV_DELTA",  "priority": "HIGH",     "required_type": "sovereign_treasury"},
+        {"slot_id": "CP_HF_001",     "priority": "HIGH",     "required_type": "macro_hedge_fund"},
+        {"slot_id": "CP_FUND_ECR",   "priority": "HIGH",     "required_type": "macro_hedge_fund"},
+        {"slot_id": "CP_SOV_EPS",    "priority": "HIGH",     "required_type": "sovereign_treasury"},
+        {"slot_id": "CP_BANK_MRID",  "priority": "HIGH",     "required_type": "bank_treasury"},
+        {"slot_id": "CP_BANK_002",   "priority": "MEDIUM",   "required_type": "bank_treasury"},
+        {"slot_id": "CP_AM_HALC",    "priority": "MEDIUM",   "required_type": "asset_manager"},
+        {"slot_id": "CP_AM_BRK",     "priority": "MEDIUM",   "required_type": "macro_hedge_fund"},
+        {"slot_id": "CP_QF_KES",     "priority": "MEDIUM",   "required_type": "macro_hedge_fund"},
+        {"slot_id": "CP_FO_KES",     "priority": "LOW",      "required_type": "family_office"},
+    ]
+    
+    by_type = {}
+    for cp in web_verified:
+        t = cp.get("type")
+        by_type.setdefault(t, []).append(cp)
+    
+    result = []
+    for slot in slots:
+        candidates = by_type.get(slot["required_type"], [])
+        real_cp = candidates.pop(0) if candidates else None
+        
+        result.append({
+            "counterparty_id": slot["slot_id"],
+            "priority": slot["priority"],
+            # If real counterparty found: use real name and profile
+            "display_name": real_cp["real_name"] if real_cp else _fictional_name(slot["slot_id"]),
+            "type": slot["required_type"],
+            "domicile": real_cp.get("domicile") if real_cp else None,
+            "public_aum": real_cp.get("public_aum_or_activity") if real_cp else None,
+            "markets": real_cp.get("markets_active_in", []) if real_cp else [],
+            "source_url": real_cp.get("public_source_url") if real_cp else None,
+            "is_real_name": bool(real_cp),
+            "is_synthetic_name": not bool(real_cp),
+            "source_type": "REAL_PUBLIC_WEB" if real_cp else "SYNTHETIC_POC_DATA",
+            # Metrics always illustrative
+            "metrics_source": "SYNTHETIC_POC_DATA",
+            "metrics_label": "Illustrative · not actual exposure",
+        })
+    return result
+```
+
+---
+
+## 7. Frontend Display Rules
+
+### The One Consistent Label for Synthetic Metrics
+
+Every ΔPFE, NSE, PFE, utilisation, ΔNSE number in the UI must carry this label, consistently:
+
+```tsx
+// MetricBadge component — use everywhere a synthetic exposure metric appears
+const MetricBadge = ({ value, label }: { value: string, label: string }) => (
+  <span className="metric-with-badge">
+    {value}
+    <span className="illustrative-badge" title="Illustrative figure — not actual exposure data">
+      Illustrative
+    </span>
+  </span>
+)
+```
+
+Style: small, amber-coloured, non-intrusive. Present on every metric — not buried in a footnote.
+
+### Real vs Synthetic Counterparty Name Display
+
+When a counterparty has a real verified name from web search:
+```
+J.P. Morgan Asset Management  [Public profile · web-verified]
+ΔPFE +900  [Illustrative · not actual exposure]
+```
+
+When still using fictional name (fallback):
+```
+Meridian Alpha Rates Fund  [Illustrative name]
+ΔPFE +900  [Illustrative · not actual exposure]
+```
+
+The name badge and the metric badge are always shown separately — a real name does not imply real metrics.
+
+---
+
+## 8. Enrichment Run Schedule
+
+The enrichment pipeline is batch, not real-time:
+
+```
+On startup (or manual trigger from Data Sources page):
+  1. research_real_counterparties() → update counterparty roster
+  2. For each CoreAI entity in COREAI_ENTITY_LIST:
+     a. fetch_company_profile(entity_name)
+     b. fetch_real_news(entity_name, max=5)
+     c. fetch_sec_context(entity_name)  [for hub entities + top 10 only]
+     d. fetch_price_history(ticker)  [if public ticker known]
+  3. Expand GLEIF LEI for all 74 public entities
+  4. Regenerate coreai_snapshot.json
+
+Cache: 24h for company profiles and news, 7 days for SEC filings, 1h for prices.
+Add "Refresh enrichment data" button to Data Sources page.
+```
+
+---
+
+## 9. What Does NOT Change
+
+- `scoring.py` — untouched. The relationship scoring engine is not modified.
+- The three-layer architecture (Layer A facts / Layer B derived / Layer C synthetic CCR) — preserved.
+- The 166 existing backend tests — must all still pass after this phase.
+- CoreAI Network page — already working well, only minor additions (SEC filing context in Entity 360 sidebar).
+- The `is_synthetic=true` flag convention — extended, not replaced. New real data is tagged `is_synthetic=false` consistently.
+
+---
+
+## 10. .gitignore Additions
+
+```
+.enrichment_cache/
+.counterparty_roster_cache.json
+```
+
+These contain web-fetched data that should not be committed — regenerated on each run.
+
+---
+
+## 11. Definition of Done
+
+Phase 2 is complete when:
+
+1. At least 8 of 13 CCR counterparty display names are real, web-verified public entities (not fictional). Each has a `[Public profile · web-verified]` badge and a source URL.
+2. At least 50 real, verified news headlines exist in the corpus (up from 14), tagged `is_synthetic=false`, with source URLs.
+3. SEC filing context (form type, date, business excerpt, key risks) is shown in Entity 360 for CoreWeave, Anthropic, NVIDIA, TSMC, ASML, Microsoft, Blackstone, Coatue, OpenAI, Meta.
+4. Price history exists for all 12 listed CoreAI entities with public tickers. Private companies (CoreWeave, Anthropic, OpenAI, Mistral) are explicitly marked "Private — no public price history."
+5. GLEIF LEI data covers all 74 public CoreAI entities.
+6. Every synthetic metric (PFE, NSE, utilisation, ΔPFE) carries a visible "Illustrative" badge — not just a footnote.
+7. Data & Provenance Explorer shows the new classification table as specified in Section 4.
+8. All 166 existing backend tests still pass.
+9. The application runs correctly with no AI API key set (enrichment disabled, falls back cleanly to existing data).
+10. `.enrichment_cache/` is in `.gitignore` and no web-fetched data is committed to the repo.
