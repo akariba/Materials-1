@@ -1,803 +1,484 @@
-You are now the lead engineer and credit-data analyst for the CCRIG Credit Relationship Workbench.
+STOP ALL NEW FEATURE DEVELOPMENT.
 
-IMPORTANT: CHANGE OF PRIORITY.
+Do NOT work on:
+- network-map enhancement
+- R2D2
+- SEC
+- web enrichment
+- OSUC visualization
+- dashboards
+- configuration enhancements
 
-STOP prioritizing dashboards, exposure visualizations, R2D2 enrichment, or sophisticated network-map design.
+The database build completed technically, but the resulting counts raise serious data-quality concerns.
 
-The PRIMARY objective for this iteration is:
-
-BUILD THE STRONGEST POSSIBLE LENDING CREDIT RELATIONSHIP DATABASE FROM ALL AVAILABLE INTERNAL FILES.
-
-Everything else depends on the quality of this database.
-
-==================================================
-PHASE 1 — DATABASE FIRST
-==================================================
-
-We have many CAMs, credit approval memos, review memos, Excel files, Word files, PDFs, and other credit documents already available in the project folders.
-
-Examples visible in the repository include folders such as:
-
-- CLFU
-- CLM
-- CRMPS
-- RESCU
-- other CAM / credit-document folders
-
-and structured files such as:
-
-- Core AI CAMs.xlsx
-- CAM Priority Population_Batch 1.xlsx
-- AI Economy Study_Masterfile.xlsx
-- Citi Data Layer_July ME 2026.xlsx
-- Customer_latest.parquet
-
-These names are examples only.
-
-FIRST inspect the complete repository and identify ALL potentially useful internal credit files.
-
-Do not limit extraction to three CAMs.
-
-Do not limit extraction to currently demonstrated CoreWeave / Anthropic examples.
-
-The goal is to create a reusable Lending relationship database covering as much of the available internal population as possible.
+We now need a STRICT DATA VALIDATION / GROUNDING PASS.
 
 ==================================================
-WHAT THE DATABASE MUST ANSWER
+WHY THIS IS REQUIRED
 ==================================================
 
-For every client/entity, we want to know:
+Current output reports approximately:
 
-1. What other entities are connected to it?
-2. What exactly is the relationship?
-3. What is the direction of the relationship?
-4. Is it current, historical, or indirect/hidden?
-5. What internal document supports it?
-6. What exact text supports the conclusion?
-7. Is there an amount / percentage / facility value associated with it?
-8. How confident are we that the relationship was extracted correctly?
-9. Is the related entity itself another Citi/Lending client?
-10. Does the same relationship appear in another CAM/document?
-11. Are multiple portfolio clients connected to the same external company?
+- 54 files discovered
+- 48 source documents parsed
+- 31,371 reconciled entities
+- 29,255 portfolio clients
+- 26,453 canonical relationships
+- 28,850 indirect/cross-document records
+- 22,627 historical/terminated
+- 6,504 low-confidence records
+- only 380 multi-source corroborated relationships
 
-This database will later power:
+These numbers may indicate that portfolio/master workbooks or row-level records have been interpreted too broadly as clients/entities/relationships.
 
-- hidden-correlation discovery
-- network mapping
-- concentration analysis
-- exposure overlays
-- R2D2 / SEC / web enrichment
+For example, the UI currently shows an entity such as:
 
-But NOT YET.
+"UBS Sterling Corporate Bond Indexed Fund"
 
-First make the internal database strong.
+as a PORTFOLIO CLIENT even though it has zero extracted relationships.
+
+That may be legitimate data, but it must be proven.
+
+DO NOT assume the current database is correct merely because parsing succeeded.
+
+The objective now is:
+
+PROVE WHICH RECORDS ARE REAL, TRACE THEM TO SOURCE EVIDENCE, REMOVE OR reclassify incorrectly inferred records, and establish trustworthy population boundaries.
 
 ==================================================
-STEP 1 — INVENTORY ALL SOURCE FILES
+1. IDENTIFY THE ROLE OF EVERY SOURCE FILE
 ==================================================
 
-Inspect all relevant project folders and classify available files.
+Inspect every input file and classify it into exactly one primary role:
 
-Identify:
-
+A. RELATIONSHIP EVIDENCE SOURCE
+Examples:
 - CAM
 - CCM
-- Credit Approval Memo
-- Annual Review
-- Quarterly Review
-- Financing / Facility memo
-- Lending approval document
-- other useful internal credit documents
-- structured portfolio files
-- masterfiles
+- credit approval memo
+- annual review
+- quarterly review
+- financing memo
+- other narrative credit document
 
-Build an internal source inventory.
+B. PORTFOLIO / ENTITY MASTER
+Examples:
+- priority population
+- customer master
+- Citi data layer
+- masterfile
 
-For every source file preserve at least:
+C. LOOKUP / REFERENCE DATA
 
-source_file
-source_folder
-document_type
-subject_company if identifiable
-CAGID/internal identifier if identifiable
-document_date if identifiable
+D. OTHER / NOT USED
 
-Do NOT modify the original files.
+This distinction is critical.
 
-==================================================
-STEP 2 — IDENTIFY SUBJECT ENTITY OF EACH DOCUMENT
-==================================================
+A portfolio/master workbook can establish that an entity exists.
 
-Before extracting relationships, identify the primary subject/client of each document.
-
-Example:
-
-Document:
-CoreWeave CAM
-
-Subject:
-CoreWeave
-
-Then relationships mentioned inside it could include:
-
-CoreWeave -> Microsoft
-CoreWeave -> NVIDIA
-CoreWeave -> Blackstone
-etc.
-
-Be careful with project/facility/SPV names.
-
-Where possible distinguish:
-
-legal entity
-facility / SPV
-parent
-operating company
-sponsor
-
-Do not automatically assume they are the same entity.
+It MUST NOT automatically create a relationship simply because two entities or attributes occur in rows.
 
 ==================================================
-STEP 3 — EXTRACT ALL CREDIT-RELEVANT RELATIONSHIPS
+2. REBUILD THE DEFINITION OF "PORTFOLIO CLIENT"
 ==================================================
 
-Read the available internal documents and extract every defensible relationship between entities.
+Do NOT mark every entity found in master/reference files as a Lending portfolio client.
 
-Do NOT limit extraction to a tiny predefined list.
+Determine which exact source/field establishes:
 
-Capture relationships such as, where supported by the documents:
+is_portfolio_client = true
 
-COMMERCIAL
-- customer
-- contracted customer
-- major customer
-- supplier
-- critical supplier
-- service provider
-- distributor
-- strategic partner
+Document the rule.
 
-OWNERSHIP / CONTROL
-- parent
-- subsidiary
-- sponsor
-- equity investor
-- beneficial owner
-- joint venture
+If there is no reliable field, do not guess.
 
-FINANCING / CREDIT SUPPORT
-- guarantor
-- parent guarantor
-- lender
-- agent bank
-- debt investor
-- backleverage provider
-- collateral provider
-- financing vehicle
+Create separate concepts:
 
-DEPENDENCY
-- technology dependency
-- infrastructure dependency
-- hardware dependency
-- revenue dependency
-- customer concentration
-- supplier concentration
+- portfolio_client
+- external_related_entity
+- master/reference entity
+- unresolved entity
 
-OTHER CREDIT-RELEVANT
-- competitor
-- acquisition target
-- potential acquirer
-- legal counterparty
-- regulator
-- rating agency
-- other relationship explicitly relevant to the credit assessment
+Then recalculate counts.
 
-Do NOT invent a relationship merely because two companies are mentioned in the same document.
-
-There must be supporting text.
+I expect a clear explanation for why the current result says 29,255 portfolio clients.
 
 ==================================================
-STEP 4 — RELATIONSHIP TYPE MUST BE ATOMIC
+3. RELATIONSHIPS MUST REQUIRE DOCUMENT EVIDENCE
 ==================================================
 
-Do NOT store:
+Every canonical relationship MUST be linked to at least one genuine relationship evidence record.
 
-Supplier / Investor / Customer
+A relationship cannot be created solely from:
 
-as one relationship type.
+- being in the same spreadsheet
+- being in the same industry
+- appearing in adjacent rows
+- having similar attributes
+- co-mention without relationship language
+- portfolio membership
+- common country
+- common rating
+- common category
 
-If the document supports three relationships, create three records:
+Require evidence that actually states or strongly supports a relationship.
 
-CoreWeave | NVIDIA | Supplier
-CoreWeave | NVIDIA | Equity Investor
-CoreWeave | NVIDIA | Customer
-
-One pair of entities may legitimately have multiple relationship types.
-
-==================================================
-STEP 5 — CANONICAL DATABASE MODEL
-==================================================
-
-Build one canonical relationship dataset.
-
-At minimum each canonical relationship should support:
+For every canonical relationship verify:
 
 relationship_id
-subject_entity_id
-subject_entity_name
-related_entity_id
-related_entity_name
-relationship_family
+entity_a
+entity_b
 relationship_type
-direction
-relationship_state
-direct_or_indirect
-subject_category
-related_entity_category
-amount
-amount_currency
-percentage
-other_quantitative_context
 source_document
-source_document_type
-source_subject
-source_date
-source_page_or_location
+source_location
 evidence_excerpt
-extraction_confidence
-evidence_quality
-review_state
-notes
 
-Possible relationship_state:
-
-CURRENT
-HISTORICAL
-EMERGING
-TERMINATED
-UNKNOWN
-
-Possible connectivity:
-
-DIRECT
-INDIRECT
-
-Avoid using "hidden" as an underlying database value.
-
-"Hidden relationship" can be a UI/business label for an INDIRECT relationship or a relationship discovered from another client's document.
+If evidence_excerpt does not demonstrate the relationship, it must not remain canonical.
 
 ==================================================
-STEP 6 — EXACT EVIDENCE IS MANDATORY
+4. AUDIT A RANDOM SAMPLE
 ==================================================
 
-Transparency is critical.
-
-Every extracted relationship MUST preserve evidence.
-
-For example:
-
-Subject:
-CoreWeave
-
-Related Entity:
-Microsoft
-
-Relationship Type:
-Contracted Customer
-
-Source:
-CoreWeave CAM
-
-Evidence excerpt:
-exact supporting passage or concise source-grounded excerpt
-
-Page / location:
-page number / section / identifiable location where technically available
-
-Amount:
-67% FY25 revenue
-
-Confidence:
-High
-
-Never save a relationship with no supporting evidence.
-
-If evidence is weak or ambiguous, mark it clearly rather than pretending certainty.
-
-==================================================
-STEP 7 — CONFIDENCE MUST BE DEFENSIBLE
-==================================================
-
-Do not let the LLM arbitrarily call everything Very High.
-
-Use conservative extraction confidence.
-
-Suggested logic:
-
-VERY HIGH
-- explicit relationship statement
-- entity identities clear
-- direct internal source evidence
-- potentially corroborated by another internal document
-
-HIGH
-- explicit or very strong relationship wording
-- clear entities
-- strong internal evidence
-
-MEDIUM
-- relationship is reasonably supported but some interpretation is necessary
-
-LOW
-- weak / ambiguous evidence
-- retain only as a proposed relationship requiring review
-
-INSUFFICIENT
-- do not include as a canonical relationship
-
-Confidence must be explainable from evidence.
-
-==================================================
-STEP 8 — CROSS-DOCUMENT CORROBORATION
-==================================================
-
-This is extremely important.
-
-The same relationship may appear in:
-
-- Company A CAM
-- Company B CAM
-- financing memo
-- annual review
-- another portfolio company's CAM
-
-Detect that.
-
-Example:
-
-CoreWeave CAM:
-CoreWeave -> NVIDIA = Supplier
-
-NVIDIA-related document:
-NVIDIA -> CoreWeave = Customer
-
-These may represent the SAME economic relationship from opposite perspectives.
-
-Do not create unrelated duplicate economic relationships.
-
-Attach multiple evidence records to the same canonical relationship where appropriate.
-
-Increase evidence strength when independently supported.
-
-==================================================
-STEP 9 — HIDDEN RELATIONSHIPS
-==================================================
-
-This is one of the most valuable features.
-
-A relationship may NOT appear in Company A's own CAM but may appear in another company's CAM.
-
-Example:
-
-CoreWeave CAM does not mention Supermicro.
-
-Another internal CAM says:
-
-Supermicro -> CoreWeave
-
-When an analyst searches CoreWeave, this relationship should still appear as:
-
-CoreWeave <-> Supermicro
-
-Discovery context:
-INDIRECT / CROSS-DOCUMENT DISCOVERY
-
-Source:
-the other company's CAM
-
-This is what we mean by finding hidden relationships from the internal database.
-
-Do not confuse hidden with low confidence.
-
-It may be a very high-confidence relationship discovered from another document.
-
-==================================================
-STEP 10 — ENTITY RECONCILIATION
-==================================================
-
-We need one company represented once.
-
-Examples:
-
-NVIDIA
-NVIDIA Corp.
-NVIDIA Corporation
-
-should resolve to one canonical entity when evidence supports it.
-
-Prefer:
-
-1. CAGID/internal identifier
-2. available legal identifiers
-3. known structured-data identifiers
-4. normalized legal name
-5. aliases
-
-Do NOT merge purely on fuzzy name similarity if uncertain.
-
-Preserve aliases.
-
-Also distinguish:
-
-company
-subsidiary
-SPV
-financing vehicle
-facility
-fund
-parent
-
-where those distinctions matter for credit.
-
-==================================================
-STEP 11 — RELATED ENTITIES OUTSIDE OUR CLIENT POPULATION
-==================================================
-
-DO NOT restrict the database to Citi/Lending clients.
-
-This is critical.
-
-Suppose our starting population contains:
-
-90 lending clients.
-
-If their CAMs identify:
-
-Microsoft
-NVIDIA
-Blackstone
-Dell
-Supermicro
-AWS
-Google
-etc.
-
-those entities MUST also enter the entity database.
-
-Mark whether:
-
-is_portfolio_client = YES / NO
-
-This enables future analysis such as:
-
-"Show me all Citi Lending clients connected to NVIDIA."
-
-That is one of the main business values of the project.
-
-==================================================
-STEP 12 — STRUCTURED ENTITY TABLE
-==================================================
-
-Create/maintain an entity master alongside the relationship table.
-
-Example fields:
-
-entity_id
-canonical_name
-aliases
-CAGID
-entity_type
-entity_category
-country
-industry
-is_portfolio_client
-source_count
-relationship_count
-
-Only populate attributes supported by available data.
-
-==================================================
-STEP 13 — QUANTITATIVE RELATIONSHIP INFORMATION
-==================================================
-
-Extract quantities when they appear in the internal documents.
-
-Examples:
-
-$ amount
-facility size
-percentage ownership
-percentage revenue
-customer concentration %
-supplier concentration %
-loan amount
-commitment
-financing size
-
-IMPORTANT:
-
-Do not add unrelated dollar values together.
-
-Preserve semantic meaning.
-
-For example:
-
-"$7.6bn facility"
-and
-"$400mm Citi commitment"
-
-are different measures.
-
-Store:
-
-amount_value
-amount_currency
-amount_context
-
-where possible.
-
-==================================================
-STEP 14 — BUILD THE DATABASE BEFORE FANCY UI
-==================================================
-
-This iteration is successful if the database becomes significantly stronger.
-
-Do NOT spend most of the effort designing:
-
-- complex dashboards
-- OSUC visualizations
-- R2D2 Assist
-- SEC integration
-- fancy category bubbles
-- large portfolio reports
-
-Those come later.
-
-First create the trusted internal relationship foundation.
-
-==================================================
-STEP 15 — SIMPLE DATABASE EXPLORER
-==================================================
-
-Once the database is built, provide a clean way to inspect it.
-
-At minimum:
-
-Search entity / company / CAGID
-
-Results:
-- relationship count
-- connected entities
-- current relationships
-- indirect / hidden relationships
-- historical relationships
-
-Relationship table:
-
-Related entity
-Relationship type
-Direction
+Take a reproducible random sample of at least:
+
+- 25 HIGH / VERY HIGH confidence relationships
+- 25 MEDIUM confidence relationships
+- 25 LOW confidence relationships
+- 25 INDIRECT / cross-document relationships
+- 25 HISTORICAL relationships
+
+For each record display:
+
+Entity A
+Entity B
+Relationship Type
 State
-Source
+Connectivity
 Confidence
-Amount/context
-Evidence excerpt
-Inspect
+Source File
+Exact Evidence
+Reason for classification
+
+Then automatically assess whether the source excerpt actually supports:
+
+A. the two entities
+B. the relationship type
+C. direction
+D. state
+E. direct/indirect classification
+
+Produce error counts.
+
+Do not hide failures.
 
 ==================================================
-STEP 16 — SIMPLE NETWORK MAP
+5. VALIDATE "INDIRECT / HIDDEN"
 ==================================================
 
-AFTER the database is working, add/retain a SIMPLE network map.
+The current database reports approximately 28,850 indirect/cross-document records.
 
-Do not make map sophistication the priority.
+That is suspiciously large.
 
-The useful interaction is:
+An INDIRECT / HIDDEN relationship should mean something specific.
 
-1. Search/select Company A
-2. Company A appears in the center
-3. Draw relationship lines to connected entities
-4. Different edge labels/colors may represent relationship type
-5. Click Company B
-6. Pivot the map so Company B becomes the selected entity
-7. Display all known relationships of Company B
+Valid example:
 
-This should allow the user to visually "walk" through the relationship network.
+CoreWeave's own CAM does not mention Supermicro,
+but another internal CAM explicitly documents
+Supermicro -> CoreWeave.
 
-Example:
+That may be classified:
 
-CoreWeave
-     |
-     | Supplier
-     |
-NVIDIA
-     |
-     | Strategic / Customer / other supported links
-     |
-Other Company
+CROSS_DOCUMENT_DISCOVERY = true
 
-Clicking NVIDIA should immediately show NVIDIA's network from the database.
+It should NOT become indirect merely because:
 
-==================================================
-STEP 17 — MULTIPLE RELATIONSHIPS BETWEEN TWO ENTITIES
-==================================================
+- it came from another file
+- the source subject differs
+- the entities occur in different tables
+- there was no direct match in the subject CAM
 
-If two companies have several relationship types, represent them clearly.
+Separate:
 
-Example:
+CONNECTIVITY:
+DIRECT / INDIRECT
 
-CoreWeave <-> NVIDIA
+from:
 
-Supplier
-Equity Investor
-Customer
+DISCOVERY:
+SUBJECT_DOCUMENT
+CROSS_DOCUMENT
 
-The map may show:
-- multiple small edge labels
-OR
-- one edge with "3 relationships"
+These are different dimensions.
 
-Clicking the edge should open the complete relationship list.
+A direct commercial relationship found in another company's CAM is still DIRECT.
 
-Do not collapse the database records into one ambiguous label.
+It is merely CROSS-DOCUMENT DISCOVERED.
+
+Recalculate these counts.
 
 ==================================================
-STEP 18 — MAP MUST BE DRIVEN ONLY BY DATABASE
+6. VALIDATE HISTORICAL / TERMINATED
 ==================================================
 
-The network map should not invent information.
+22,627 historical/terminated relationships is also suspicious.
 
-It should simply visualize canonical relationships already stored in the database.
+Historical must require temporal evidence.
 
-Database first.
-Visualization second.
+Examples of valid language:
 
-==================================================
-STEP 19 — DATABASE QUALITY SUMMARY
-==================================================
+- formerly
+- previously
+- terminated
+- matured
+- repaid
+- exited
+- sold
+- ceased
+- no longer
+- prior relationship
+- historical transaction
 
-Add a simple summary showing:
+Do NOT classify a relationship as historical simply because:
 
-- documents processed
-- documents successfully parsed
-- unique entities
-- portfolio clients
-- external/non-client entities
-- canonical relationships
-- relationship types
-- current relationships
-- indirect/cross-document relationships
-- historical relationships
-- relationships with multiple internal sources
-- low-confidence relationships requiring review
-- documents that failed extraction
+- document is old
+- source date is old
+- another record is newer
+- it appears in an annual review
+- it is absent from another document
 
-This is very important for transparency.
+If the evidence does not explicitly or strongly establish historical status:
 
-==================================================
-STEP 20 — EXTRACTION FAILURE HANDLING
-==================================================
+state = UNKNOWN or CURRENT where explicitly supported.
 
-Do not silently skip files.
-
-If a PDF/DOCX/XLSX cannot be parsed:
-
-record:
-
-file
-reason
-status = extraction_failed
-
-We need to know how complete the database actually is.
+Recalculate.
 
 ==================================================
-ACCEPTANCE TESTS
+7. VALIDATE RELATIONSHIP TYPES
 ==================================================
 
-TEST 1
-All relevant internal Lending folders/files are inventoried.
+There are currently 24 atomic relationship types.
 
-TEST 2
-Available CAM / credit documents are processed rather than only the original demo CAMs.
+For every type provide:
 
-TEST 3
-Canonical entity master exists.
+- relationship type
+- total canonical records
+- sample 5 records
+- sources generating that type
+- extraction rule used
 
-TEST 4
-Canonical relationship database exists.
+Specifically scrutinize large classes such as:
 
-TEST 5
-Each relationship has source provenance and evidence.
+- Lender
+- Infrastructure Dependency
+- Contracted Customer
+- Guarantor
+- Parent Company
+- Sponsor
+- M&A Target
+- Regulator
+- Advisor
+- Agent Bank
 
-TEST 6
-Multiple relationship types can exist for the same entity pair.
-
-TEST 7
-Duplicate/reverse representations do not inflate canonical relationship counts.
-
-TEST 8
-Cross-document corroboration works.
-
-TEST 9
-A relationship discovered in another client's CAM appears when searching either entity.
-
-TEST 10
-External/non-client entities are retained in the database.
-
-TEST 11
-Current / indirect / historical status is retained where supported.
-
-TEST 12
-Amounts/percentages are retained with correct context when present.
-
-TEST 13
-Search an entity and retrieve all known relationships.
-
-TEST 14
-Simple network map is driven by the database.
-
-TEST 15
-Clicking a connected entity pivots/explores that entity's relationships.
-
-TEST 16
-Extraction statistics and failures are visible.
-
-TEST 17
-No fabricated evidence / entities / relationships are introduced.
+Do not allow LLM-created labels to become truth without supporting evidence.
 
 ==================================================
-IMPORTANT ENGINEERING RULES
+8. VALIDATE ENTITY RECONCILIATION
 ==================================================
 
-Inspect before modifying.
+Audit entity resolution.
 
-Reuse existing code.
+Find examples of:
 
-Do not broadly refactor the application.
+- exact duplicates
+- aliases
+- same-name different companies
+- SPV vs parent
+- fund vs operating company
+- facility vs borrower
+- legal entity vs group name
 
-Do not rebuild working components.
+Ensure we are not collapsing distinct legal entities.
 
-Do not create fake data.
+Also ensure obvious aliases are not creating unnecessary duplicate nodes.
 
-Do not use R2D2/Web/SEC in this iteration unless an existing internal file itself contains that evidence.
+==================================================
+9. MASTERFILES MUST NOT POLLUTE RELATIONSHIP EXTRACTION
+==================================================
 
-We are proving the INTERNAL DATABASE first.
+Pay special attention to:
 
-Do not stop repeatedly to ask for approval.
+- AI Economy Study_Masterfile.xlsx
+- CAM Priority Population_Batch 1.xlsx
+- Citi Data Layer_July ME 2026.xlsx
+- Core AI CAMs.xlsx
+- Customer_latest.parquet
 
-Proceed autonomously through this approved scope.
+For each one explicitly state:
 
-If an individual document cannot be parsed, record the failure and continue with the remaining files.
+PURPOSE
+ENTITIES CONTRIBUTED
+PORTFOLIO CLIENT FLAG CONTRIBUTED?
+RELATIONSHIPS CONTRIBUTED?
+EVIDENCE CONTRIBUTED?
 
-Do not let one bad document block the entire batch.
+If a file is merely population/reference data:
+
+RELATIONSHIPS CONTRIBUTED = 0
+
+unless the file explicitly contains relationship information.
+
+==================================================
+10. CREATE A DATABASE QUALITY REPORT
+==================================================
+
+After validation report:
+
+FILES
+- evidence documents
+- portfolio/master files
+- reference files
+
+ENTITIES
+- confirmed Lending portfolio clients
+- external related entities
+- unresolved/reference-only entities
+
+RELATIONSHIPS
+- evidence-backed canonical relationships
+- direct
+- indirect
+- cross-document discovered
+- current
+- historical
+- unknown state
+
+QUALITY
+- high/very-high confidence
+- medium
+- low/review
+- multi-document corroborated
+- records rejected during validation
+
+Also calculate:
+
+% canonical relationships with exact evidence
+% with identifiable source location
+% with multiple internal sources
+% low-confidence
+% unresolved entity identity
+
+==================================================
+11. GOLDEN SAMPLE
+==================================================
+
+Create a small "golden sample" of approximately 20–30 relationships from well-understood CAMs.
+
+Prefer known examples such as relationships around:
+
+- CoreWeave
+- Anthropic
+- other clearly documented subjects in the available CAM set
+
+For every golden record manually/strictly verify:
+
+entity pair
+type
+direction
+state
+source
+excerpt
+
+Use this as a regression test for future database rebuilds.
+
+==================================================
+12. DO NOT DELETE QUESTIONABLE RECORDS BLINDLY
+==================================================
+
+Create statuses:
+
+VALIDATED
+REVIEW_REQUIRED
+REJECTED
+
+Preserve provenance.
+
+Questionable records should be moved out of the trusted canonical view rather than silently disappearing.
+
+The user-facing canonical database should show VALIDATED records by default.
+
+==================================================
+13. FIX THE UI AFTER VALIDATION
+==================================================
+
+The top cards should report trustworthy metrics, not raw ingestion volume.
+
+For example:
+
+Validated relationships
+Review required
+Confirmed Lending clients
+External connected entities
+Cross-document discoveries
+Multi-source corroborated
+
+Do not headline "31,371 entities" if most are merely reference/masterfile rows.
+
+==================================================
+ACCEPTANCE CRITERIA
+==================================================
+
+PASS only if:
+
+1. The exact reason for 29,255 portfolio clients is identified.
+2. Portfolio/master rows are separated from relationship evidence.
+3. Every canonical relationship has real supporting evidence.
+4. Direct vs indirect is separated from cross-document discovery.
+5. Historical status requires temporal evidence.
+6. A random sample audit is produced with error rates.
+7. Entity reconciliation is audited.
+8. Masterfile contributions are explicitly documented.
+9. Counts are rebuilt after quality filtering.
+10. A golden relationship sample exists.
+11. Canonical UI defaults to validated relationships.
+12. No map/dashboard work is performed.
 
 ==================================================
 FINAL RESPONSE
 ==================================================
 
-When finished, report only:
+Do not provide a long implementation narrative.
 
-1. Number of files discovered
-2. Number successfully processed
-3. Number failed + why
-4. Number of unique entities
-5. Number of portfolio clients
-6. Number of external/non-client entities
-7. Number of canonical relationships
-8. Relationship types discovered
-9. Current / indirect / historical counts
-10. Number of relationships with multiple-source corroboration
-11. Exact database files/tables created or updated
-12. Exact source files used
-13. Acceptance-test PASS/FAIL
-14. Genuine blockers
+Report:
 
-Do not give me a long theoretical discussion.
+BEFORE VALIDATION:
+- entities
+- portfolio clients
+- canonical relationships
+- indirect
+- historical
 
-IMPLEMENT FIRST.
+AFTER VALIDATION:
+- confirmed Lending clients
+- external related entities
+- reference/unresolved entities
+- validated canonical relationships
+- review-required relationships
+- rejected relationships
+- direct
+- indirect
+- cross-document discovered
+- current
+- historical
+- unknown
+- multi-source corroborated
 
-==================================================
-CORE OBJECTIVE
-==================================================
+Then provide:
 
-Extract the maximum defensible credit-relationship information from the complete available internal Lending document population, preserve exact evidence and provenance, reconcile it into a strong canonical entity/relationship database, and only then expose that database through a simple interactive network explorer.
+- sample audit accuracy
+- major causes of false positives
+- files responsible for population inflation
+- golden sample status
+- PASS/FAIL acceptance tests
+
+STOP after validation.
