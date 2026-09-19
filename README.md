@@ -1,298 +1,826 @@
-You are working on the CCRIG Credit Relationship Workbench.
+You are continuing the Lending Credit Relationship Workbench.
 
-I want you to act as the lead implementation engineer for the Lending business view and build the next iteration of the product in a business-facing, impressive, and credit-useful way.
+Act as the lead implementation engineer for a real Lending credit-intelligence solution.
 
-IMPORTANT CONTEXT
-- This is for LENDING BUSINESS only.
-- For now, REMOVE CCR from the implementation scope and focus only on Lending.
-- CAM is the authoritative baseline.
-- R2D2 / external evidence is supplementary only and must never silently overwrite CAM truth.
-- We already created a validated Lending relationship database and baseline.
-- The database is the priority foundation. The UI should now present it in a much better and more business-useful way.
-- The client has shown a prototype with:
-  - a front-page relationship/network map,
-  - summary KPI tiles,
-  - category filters,
-  - confidence indicators,
-  - relationship table,
-  - excerpts / evidence.
-- We want to combine that direction with our validated internal lending baseline and current implementation.
+This is NOT a UI-polish task.
+This is NOT a demo task.
+This is NOT another validation loop over the same 767 relationships.
 
-CURRENT REALITY / GROUNDING
-- We already have a validated Lending baseline and a working internal relationship database.
-- The trusted default view must remain based on validated/canonical relationships only.
-- Review-required and rejected items must remain governed separately.
-- Do not fabricate cross-document examples if the data does not support them.
-- The current implementation already supports:
-  - validated canonical relationships,
-  - relationship types,
-  - current / hidden / historical state,
-  - connected-entity pivoting,
-  - evidence provenance,
-  - multi-type endpoint pairs,
-  - map functionality.
-- Build on top of the current validated implementation. Do not throw it away.
-- Minimize unnecessary refactoring. Reuse proven components and backend routes where possible.
-- Keep this as a practical POC / working product, not an abstract architecture exercise.
+The current trusted baseline already exists:
 
-PRIMARY OBJECTIVE
-Build a strong Lending-first front page that immediately impresses the user but is also truly useful for credit analysis.
+Baseline:
+LENDING_INTERNAL_BASELINE_V1
 
-The first page should make most of the important things visible immediately:
-1. a relationship network map in the main area,
-2. high-value summary metrics on top,
-3. relationship-type filtering,
-4. evidence / source-backed relationship inspection,
-5. quick pivoting from one entity to another,
-6. visible distinction between direct, hidden/indirect, and historical relationships,
-7. clear presentation of why the relationship matters for credit.
+Trusted canonical relationships:
+767 VALIDATED
 
-BUSINESS INTENT
-This tool is for portfolio / credit analysis, not a generic graph toy.
-The user should be able to quickly understand:
-- who the main lending clients are,
-- how they are connected,
-- what relationship types exist,
-- where there are concentrations,
-- which relationships are current vs hidden vs historical,
-- what evidence supports them,
-- and what the exact source excerpt is.
+Review-required:
+916
 
-LENDING-ONLY SCOPE
-Implement only Lending now.
-- Remove or hide CCR from the user-facing workflow for this iteration.
-- The page should feel like a dedicated Lending product.
-- Any shared code can remain under the hood, but the visible UI should focus only on Lending.
+Rejected:
+31,274
 
-NON-NEGOTIABLE DATA RULES
-1. CAM is immutable baseline truth.
-2. External / R2D2 / corroborative evidence can support, enrich, or propose — but not overwrite CAM.
-3. The default main view should use the validated canonical Lending baseline.
-4. Review / proposal data must be visually separated from validated canonical data.
-5. If no reliable relationship exists, show that clearly instead of implying connectivity.
-6. All displayed relationships must retain exact provenance: source document, location, evidence excerpt, and confidence.
+Golden sample:
+PASS
 
-WHAT I WANT YOU TO BUILD
+The validated baseline must now be treated as a regression/reference set.
 
-PHASE 1 — TURN THE CURRENT DATABASE INTO A BUSINESS-FACING FRONT PAGE
+DO NOT keep rebuilding and revalidating the same baseline unless a code change directly affects extraction or reconciliation.
 
-Create a new or upgraded Lending landing page / main analysis page with this structure:
+We are now moving from:
 
-A. TOP HEADER / SUMMARY STRIP
-Show compact KPI cards such as:
-- Total validated canonical relationships
-- Total unique counterparties / connected entities
-- Current relationships count
-- Hidden / indirect relationships count
-- Historical relationships count
-- Relationship types count
-- Top concentration indicators (if derivable from current data)
-- Count of pending review / proposed relationships (shown separately, not mixed into canonical)
+STATIC POC DATABASE
 
-B. MAIN HERO AREA = RELATIONSHIP NETWORK MAP
-This should be the centerpiece of the page.
+to:
 
-Requirements:
-- Put the relationship map at the top / center of the first page.
-- The map should visually connect the selected Lending entity to related entities.
-- Clicking a node should pivot the whole view to that entity.
-- Clicking an edge should open / update a relationship inspector panel.
-- Support zoom / reset / re-layout if needed.
-- Show different visual treatment for:
-  - direct/current relationships,
-  - hidden/indirect relationships,
-  - historical relationships.
-- The map should remain readable and not overly cluttered.
-- Prefer business clarity over technical complexity.
+REAL LENDING RELATIONSHIP INGESTION + UPDATE + GOVERNANCE PIPELINE
 
-Map semantics:
-- Node size: based on degree / importance / number of validated connections.
-- Node color: by entity category / ecosystem category.
-- Edge style: by relationship state (solid direct, dashed hidden/indirect, dotted historical, or equivalent).
-- Edge tooltip: relationship type, direction, confidence, state, source count.
-- If multiple atomic relationship types exist between the same two entities, do not collapse them misleadingly — preserve inspectability.
 
-C. FILTER / CONTROL PANEL
-Provide business-friendly filters that are visible and immediately usable:
-- Search by company / alias / CAGID
-- Relationship type
-- State: Current / Hidden / Historical
-- Connectivity: Direct only / Indirect only / Both
-- Confidence
-- Evidence status:
-  - CAM confirmed
-  - Corroborated
-  - External proposed / review
-- Category / ecosystem filters (only if supported by the current data model in a clean way)
-- Optional “show only highly connected entities”
-- Optional “show only portfolio / client entities”
-- Optional “show pending proposals” as a clearly separate toggle
+==================================================
+CORE BUSINESS OBJECTIVE
+==================================================
 
-D. RELATIONSHIP INSPECTOR / FACT PANEL
-When a node or edge is selected, show a rich inspector panel:
-- Company A
-- Company B
-- Relationship type
-- Relationship family
-- Direction
-- Current / hidden / historical state
-- Confidence
-- Why it matters for credit (if available or derivable)
-- Source / provenance list
-- Exact evidence excerpt
-- Source document name
-- Location / section / page if available
-- Number of corroborating sources
-- Discovery origin (subject-document, cross-document, etc.) — but do not fabricate this.
+Build a sustainable Lending relationship data process that can:
 
-This inspector is critical. Transparency is the main concern.
-The user must be able to understand WHY the relationship exists and HOW reliable it is.
+1. know the full target Lending population
+2. know which clients have CAM / credit documents available
+3. know whether the CAM is current or stale
+4. ingest new documents incrementally
+5. extract relationships from the correct sections
+6. reconcile them into the canonical database
+7. preserve exact evidence and document versions
+8. flag uncertain / conflicting relationships for review
+9. avoid rebuilding everything from scratch
+10. keep the relationship database current as new CAMs arrive
 
-E. RELATIONSHIP TABLE BELOW THE MAP
-Below the map, show a relationship table that mirrors the current filtered state.
-Suggested columns:
-- Company A
-- Company B
-- Relationship type
-- Direction
-- State
-- Confidence
-- Category
-- Source count
-- Evidence status
-- Short excerpt
-- Inspect action
+This is the main objective.
 
-This table should be auditable and export-friendly in future, but for now just make it very usable.
+Do NOT prioritize map polish, dashboard styling, animations, R2D2, SEC, or web enrichment in this phase.
 
-F. ENTITY PROFILE PANEL
-When an entity is selected, show a profile box:
-- Entity name
-- CAGID
-- Entity type
-- Category
-- Number of direct relationships
-- Number of indirect relationships
-- Number of historical relationships
-- Number of connected entities
-- Number of unique source documents
-- Whether it is a portfolio / internal subject / external entity
 
-G. SOURCE TRANSPARENCY / GOVERNANCE PANEL
-Somewhere on the page, clearly state:
-- CAM is the authoritative baseline
-- External evidence is supplementary / corroborative / proposal-only
-- Default view shows validated canonical relationships only
-- Low-confidence or review-required items are excluded by default
-- No cross-document examples should be invented
+==================================================
+1. TARGET LENDING POPULATION CONTROL
+==================================================
 
-This is important for Leslie’s transparency concern.
+The email / business context established that the target population is larger than the current parsed CAM set.
 
-UX / VISUAL DIRECTION
-Use the client prototype as inspiration, but adapt it to our validated Lending implementation.
-The page should feel:
-- professional,
-- clean,
-- analytical,
-- visually strong,
-- immediately understandable,
-- and impressive when opened.
+The population includes the CoreAI / Technology Lending names tracked in the masterfile.
 
-It should not feel like a raw technical explorer.
-It should feel like a credit intelligence workspace.
+The email discussion referenced:
 
-SUGGESTED BUSINESS WORDING
-Use “Credit Relationships” or “Lending Credit Relationships”.
-Avoid generic “counterparty intelligence” wording on the main Lending page if it confuses the business.
-Use clear business terms such as:
-- Relationship map
-- Credit relationship
-- Hidden relationship
-- Historical relationship
-- Corroborated evidence
-- CAM confirmed
-- Pending review
-- Why it matters
-- Source evidence
+- 75 CoreAI names
+- 343 Technology CAGIDs
+- 418 CAGIDs total
 
-IMPORTANT CLARIFICATION
-This is LENDING BUSINESS.
-So frame the UI around:
-- Lending relationship intelligence
-- CAM-backed relationship discovery
-- Credit relevance
-- Exposure / concentration awareness (where supported)
-- Supporting evidence and transparency
+Do NOT hard-code 418 blindly.
 
-Do not drift into a generic CCR / trading / counterparty dashboard.
+Inspect the current masterfile / priority population / structured files and determine the actual target population now present.
 
-IMPLEMENTATION APPROACH
-- Build on the current validated Lending database and current routes.
-- Reuse existing map work and relationship explorer logic where appropriate.
-- Keep the backend stable unless small extensions are genuinely needed.
-- Prefer additive implementation over destructive redesign.
-- Preserve acceptance-tested behavior.
-- Do not reopen the whole architecture.
-- Do not bring in ungrounded external data for the default trusted view.
+Create a canonical population control table.
 
-IF YOU HAVE TO CHOOSE PRIORITIES, DO THEM IN THIS ORDER
-1. Lending-only business-facing front page
-2. Strong map + entity pivoting
-3. Transparent relationship inspector with exact evidence
-4. Better filters
-5. Better summary cards
-6. Cleaner relationship table
-7. UI polish
+For every target client store at minimum:
 
-ACCEPTANCE CRITERIA
-The implementation is only complete if all of the below are true:
+client_id
+CAGID
+canonical_name
+business_population
+CAM_available
+latest_CAM_date
+latest_document_type
+latest_document_file
+document_status
+stale_flag
+ingestion_status
+last_ingested_at
+relationship_count
+review_required_count
 
-1. Lending-only focus
-- The visible user flow is Lending-focused.
-- CCR is removed or hidden from this phase.
+Possible document_status:
 
-2. Impressive first page
-- The first page visibly centers the relationship map and summary insight.
-- The page looks materially more business-facing than the current raw explorer.
+AVAILABLE_CURRENT
+AVAILABLE_STALE
+MISSING
+PENDING_EXTRACTION
+UNRESOLVED
 
-3. Business usefulness
-- A user can search a Lending entity and immediately see its network, relationship breakdown, and exact evidence.
+Do not mark a client as covered just because it exists in a master workbook.
 
-4. Transparency
-- Selecting a relationship shows exact source-backed evidence and provenance.
-- The user can tell whether the relationship is CAM-confirmed, corroborated, or pending review/proposed.
-- No silent blending of canonical and review data.
 
-5. Correct governance
-- Default view shows validated canonical relationships only.
-- Review-required or low-confidence items are excluded unless deliberately requested.
-- CAM remains authoritative.
+==================================================
+2. CAM / CREDIT DOCUMENT FRESHNESS
+==================================================
 
-6. Map behavior
-- Node click pivots to the selected entity.
-- Edge click opens relationship inspection.
-- The map reflects the active filters.
+This is a hard requirement from the business emails.
 
-7. Table behavior
-- The relationship table stays synchronized with the current selection / filters.
+For every Lending client:
 
-8. Honest data handling
-- If genuine cross-document examples do not exist, do not fabricate them.
-- Keep the product honest.
+identify all available relevant credit documents.
 
-DELIVERABLES
-When done, provide:
-1. The implemented UI and backend changes
-2. Short summary of what changed
-3. Exact files modified
-4. Acceptance test results
-5. Any remaining real blockers only
+Examples may include:
 
-DO NOT
-- do a long architecture essay,
-- redesign unrelated flows,
-- add fake intelligence,
-- fabricate evidence,
-- or keep asking for confirmation.
+- CAM
+- CCM
+- AR
+- QR
+- Credit Approval Memo
+- Annual Review
+- Quarterly Review
+- Facility / financing memo
 
-Proceed autonomously and implement the best Lending-first version of this front page based on the current validated database and the client’s prototype direction.
+Determine:
+
+- document type
+- document date
+- whether it is the latest available relevant document
+- whether older documents still need to be retained for historical evidence
+
+Do NOT simply ingest every document as equally current.
+
+The pipeline must distinguish:
+
+CURRENT SOURCE
+HISTORICAL SOURCE
+
+Never delete historical evidence.
+
+But the latest relevant document should be clearly identifiable.
+
+
+==================================================
+3. SECTION-AWARE EXTRACTION
+==================================================
+
+Do not treat a CAM as one undifferentiated text blob.
+
+The business explicitly referenced sections such as:
+
+2. Recommendation
+3. Approval Request
+7. Relationship / Counterparty / Obligor Structure
+8. Key Risks and Mitigants
+9. Historical Financial Analysis
+10. Outlook and Projections
+11. Sources of Repayment
+Risk Rating and Classification Assessment
+ORR Overview
+Support
+FRR Overview
+Cluster Analysis
+Classification
+
+Inspect the actual documents and identify section headings robustly.
+
+Extract relationship information with section provenance.
+
+Each evidence record should support:
+
+source_document
+document_type
+document_date
+section_name
+page_or_location
+exact_excerpt
+
+This improves transparency and allows us to later answer:
+
+"Where in the CAM did this relationship come from?"
+
+
+==================================================
+4. RELATIONSHIP EXTRACTION TARGETS
+==================================================
+
+Extract defensible credit-relevant relationships including, where supported:
+
+COMMERCIAL
+- contracted customer
+- major customer
+- supplier
+- critical supplier
+- service provider
+- strategic partner
+
+OWNERSHIP / CONTROL
+- parent company
+- subsidiary
+- sponsor
+- equity investor
+- beneficial owner
+- joint venture
+
+FINANCING / SUPPORT
+- guarantor
+- parent guarantor
+- lender
+- financing provider
+- backleverage provider
+- agent bank
+- collateral provider
+
+DEPENDENCY / CONCENTRATION
+- customer dependency
+- supplier dependency
+- revenue concentration
+- technology dependency
+- infrastructure dependency
+
+OTHER
+- legal relationship
+- regulatory relationship
+- acquisition / target relationship
+- other explicit credit-relevant relationships supported by evidence
+
+Do NOT classify simple co-mentions as relationships.
+
+
+==================================================
+5. INDIRECT EXPOSURE EXTRACTION
+==================================================
+
+This is an explicit business requirement.
+
+The emails asked for examples where indirect exposure is mentioned.
+
+Therefore add a distinct extraction capability for:
+
+INDIRECT EXPOSURE / INDIRECT RELATIONSHIP
+
+Do not treat "indirect" as a vague label.
+
+Capture:
+
+- subject entity
+- intermediate entity if applicable
+- ultimate related entity
+- relationship chain / path
+- relationship type
+- evidence
+- section
+- confidence
+- why it is indirect
+
+Example conceptual structure:
+
+Company A
+  -> depends on Supplier X
+  -> Supplier X depends on Company B
+
+or:
+
+Company A
+  -> SPV
+  -> Sponsor / Parent
+
+If a relationship is direct but discovered in another document, do NOT mark it indirect.
+
+Keep:
+
+economic connectivity:
+DIRECT / INDIRECT
+
+separate from:
+
+discovery origin:
+SUBJECT_DOCUMENT / CROSS_DOCUMENT / MULTI_DOCUMENT
+
+
+==================================================
+6. INCREMENTAL INGESTION
+==================================================
+
+This is one of the most important requirements.
+
+The system must not rebuild all files every time.
+
+Implement incremental ingestion.
+
+For every source document calculate a stable document fingerprint.
+
+Use available metadata such as:
+
+path
+filename
+size
+modified time
+hash
+
+When ingestion runs:
+
+NEW document:
+process it
+
+CHANGED document:
+reprocess it
+
+UNCHANGED document:
+skip extraction
+
+REMOVED document:
+do NOT silently delete historical evidence
+mark source status appropriately and require explicit governance decision
+
+The ingestion job should report:
+
+new files
+changed files
+unchanged files
+failed files
+relationships added
+relationships updated
+relationships sent to review
+relationships retired / historical
+
+
+==================================================
+7. DOCUMENT VERSIONING
+==================================================
+
+Maintain document versions.
+
+Example:
+
+CoreWeave CAM — Jan 2026
+CoreWeave CAM — Aug 2026
+
+These are not duplicates.
+
+The newer document may supersede the older one for current truth,
+but the older document remains valid historical evidence.
+
+Store:
+
+document_id
+document_version
+subject_entity
+document_type
+document_date
+file_hash
+supersedes_document_id
+is_latest_relevant_document
+
+
+==================================================
+8. PERSISTENT DATABASE MODEL
+==================================================
+
+Move away from using a single large JSON file as the operational data model.
+
+The current frozen JSON baseline can remain for regression/reference.
+
+Implement a proper persistent local database suitable for this POC and future Unix deployment.
+
+Prefer a lightweight, transparent, portable option.
+
+SQLite is acceptable for the current phase unless the repository already has a better proven database pattern.
+
+Do NOT over-engineer with distributed infrastructure.
+
+At minimum create normalized tables for:
+
+ENTITIES
+DOCUMENTS
+DOCUMENT_VERSIONS
+RELATIONSHIPS
+RELATIONSHIP_EVIDENCE
+POPULATION_CONTROL
+ALIASES
+REVIEW_DECISIONS
+INGESTION_RUNS
+
+Keep the data model simple and inspectable.
+
+
+==================================================
+9. CANONICAL RELATIONSHIP MODEL
+==================================================
+
+One economic relationship should remain canonical.
+
+Example:
+
+Entity A
+Entity B
+Relationship Type
+
+Multiple documents may support it.
+
+Do not create duplicate relationships for every source.
+
+Instead:
+
+RELATIONSHIP
+    -> Evidence 1
+    -> Evidence 2
+    -> Evidence 3
+
+Keep:
+
+direction
+state
+connectivity
+confidence
+review_status
+current/historical status
+
+separate from evidence records.
+
+
+==================================================
+10. CHANGE DETECTION BETWEEN DOCUMENT VERSIONS
+==================================================
+
+When a new CAM arrives for an existing client:
+
+compare the newly extracted relationships with the previous latest document.
+
+Classify:
+
+NEW_RELATIONSHIP
+UNCHANGED_RELATIONSHIP
+CHANGED_RELATIONSHIP
+NO_LONGER_MENTIONED
+EXPLICITLY_TERMINATED
+
+Do NOT assume:
+
+not mentioned = terminated.
+
+Only mark historical / terminated when supported by evidence.
+
+Otherwise:
+
+NO_LONGER_MENTIONED / REVIEW_REQUIRED
+
+
+==================================================
+11. CONFIDENCE / QUALITY CONTROL
+==================================================
+
+Do not use pure LLM confidence.
+
+Use explainable quality factors.
+
+Examples:
+
+- explicit relationship wording
+- clear entity identity
+- section relevance
+- current vs stale source
+- corroboration count
+- multiple document support
+- ambiguous language
+- exact amount / contractual language
+- entity matching certainty
+
+Keep confidence conservative.
+
+The existing validated baseline and golden sample should remain regression tests.
+
+
+==================================================
+12. REVIEW WORKFLOW
+==================================================
+
+Any new extraction that does not meet trusted canonical criteria should go to:
+
+REVIEW_REQUIRED
+
+Do not automatically promote it.
+
+Analyst review should be able to:
+
+CONFIRM
+MODIFY
+REJECT
+
+Store:
+
+reviewer
+review_time
+decision
+notes
+
+Do not overwrite original extraction/evidence.
+
+
+==================================================
+13. DATA COMPLETENESS / COVERAGE REPORT
+==================================================
+
+Create a useful operational coverage report.
+
+The system should be able to answer:
+
+How many target Lending clients exist?
+How many have a current CAM?
+How many have only stale CAMs?
+How many have no CAM?
+How many are pending extraction?
+How many documents were processed?
+How many relationships were validated?
+How many require review?
+
+This is much more important than another UI dashboard.
+
+
+==================================================
+14. INGESTION COMMAND / ENDPOINT
+==================================================
+
+Create one clean ingestion entry point.
+
+For example:
+
+python build/update command
+
+or
+
+one backend endpoint / admin action
+
+The ingestion should:
+
+1. inspect population
+2. detect document changes
+3. process only new / changed files
+4. extract sections
+5. extract relationships
+6. reconcile entities
+7. reconcile relationships
+8. run validation
+9. persist results
+10. produce ingestion summary
+
+Do not require manual multi-step developer intervention.
+
+
+==================================================
+15. UNIX COMPATIBILITY
+==================================================
+
+The solution is expected to move to a Unix server later.
+
+Therefore:
+
+- avoid Windows-only path assumptions
+- use pathlib / platform-independent paths
+- avoid hard-coded drive letters
+- avoid PowerShell dependency in core processing
+- use environment variables for configurable paths
+- keep database/files portable
+
+Do not redesign deployment now.
+Just ensure the implementation is Unix-compatible.
+
+
+==================================================
+16. BASELINE REGRESSION
+==================================================
+
+The existing trusted baseline remains:
+
+LENDING_INTERNAL_BASELINE_V1
+
+Use it as a regression check.
+
+Do NOT continually regenerate it.
+
+After implementing the new ingestion architecture:
+
+run the current corpus through the new pipeline once.
+
+Compare:
+
+existing validated baseline
+vs
+new persistent database output
+
+Differences must be reported.
+
+Do NOT automatically replace the frozen baseline.
+
+==================================================
+17. NO LOOPS
+==================================================
+
+This is critical.
+
+Do NOT repeatedly:
+
+- rebuild the same dataset
+- re-run the same diagnostics
+- revalidate unchanged files
+- refactor after acceptance tests pass
+- produce repeated reports
+
+Proceed through the full scope once.
+
+If a test fails:
+
+fix the specific cause
+rerun only the necessary test
+continue
+
+When all acceptance tests pass:
+
+STOP.
+
+No additional enhancements.
+No speculative cleanup.
+No "while I am here" refactoring.
+
+
+==================================================
+18. DO NOT WORK ON THESE YET
+==================================================
+
+Do NOT add:
+
+- R2D2
+- web search
+- SEC
+- AI Assist
+- OSUC visual mapping
+- advanced network centrality
+- fancy map UI
+- dashboard redesign
+- scenario analysis
+- risk scoring
+- contagion modeling
+
+Those are later phases.
+
+==================================================
+ACCEPTANCE TESTS
+==================================================
+
+TEST 1 — POPULATION CONTROL
+
+System produces a target Lending population table with:
+
+CAGID
+client name
+CAM availability
+latest CAM date
+document type
+stale/current status
+
+PASS / FAIL
+
+
+TEST 2 — LATEST DOCUMENT LOGIC
+
+For clients with multiple documents:
+
+latest relevant document identified correctly
+older versions preserved
+
+PASS / FAIL
+
+
+TEST 3 — SECTION EXTRACTION
+
+At least 5 representative documents show:
+
+identified business sections
+section-specific evidence
+page/location provenance
+
+PASS / FAIL
+
+
+TEST 4 — INDIRECT EXPOSURE
+
+System can extract and represent at least real repository-supported indirect exposure examples if present.
+
+If none are present:
+
+prove none exist.
+
+Do not fabricate.
+
+PASS / FAIL
+
+
+TEST 5 — INCREMENTAL INGESTION
+
+Run ingestion twice.
+
+First run:
+process current files
+
+Second run:
+unchanged files skipped
+
+Then modify/add one controlled test document/file metadata case and confirm:
+
+only changed/new item reprocessed
+
+PASS / FAIL
+
+
+TEST 6 — DATABASE PERSISTENCE
+
+Verify persistent database contains:
+
+entities
+documents
+relationships
+evidence
+population
+reviews
+ingestion runs
+
+PASS / FAIL
+
+
+TEST 7 — DOCUMENT VERSIONING
+
+Verify multiple document versions for same client remain distinguishable.
+
+PASS / FAIL
+
+
+TEST 8 — RELATIONSHIP RECONCILIATION
+
+Multiple documents supporting the same relationship attach evidence to one canonical relationship.
+
+PASS / FAIL
+
+
+TEST 9 — CHANGE DETECTION
+
+For a versioned document pair, verify:
+
+new
+unchanged
+changed
+no-longer-mentioned
+
+logic works without falsely marking termination.
+
+PASS / FAIL
+
+
+TEST 10 — REVIEW GOVERNANCE
+
+New uncertain relationships go to REVIEW_REQUIRED and do not enter trusted canonical view automatically.
+
+PASS / FAIL
+
+
+TEST 11 — BASELINE REGRESSION
+
+Compare new persistent output with:
+
+LENDING_INTERNAL_BASELINE_V1
+
+Report differences.
+
+Do NOT overwrite baseline.
+
+PASS / FAIL
+
+
+TEST 12 — UNIX COMPATIBILITY
+
+Verify no core ingestion logic depends on:
+
+Windows drive letters
+PowerShell
+Windows-only path assumptions
+
+PASS / FAIL
+
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+When complete provide ONLY:
+
+1. Actual target Lending population count
+2. Current CAM available count
+3. Stale CAM count
+4. Missing CAM count
+5. Documents processed
+6. New/changed/unchanged document counts
+7. Persistent database type/path
+8. Entity count
+9. Canonical relationship count
+10. Review-required count
+11. Real indirect-exposure examples found
+12. Baseline regression differences
+13. Files materially changed
+14. TEST 1–12 PASS / FAIL
+15. Genuine external blockers
+
+No long architecture essay.
+
+STOP immediately after acceptance criteria are satisfied.
+
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Turn the current validated Lending POC into a maintainable Lending relationship data solution that knows the target population, tracks CAM availability and freshness, incrementally ingests new credit documents, extracts section-grounded credit relationships and indirect exposures, preserves exact evidence and document versions, reconciles everything into a persistent canonical database, and updates safely without repeatedly rebuilding the same corpus.
