@@ -1,795 +1,904 @@
 You are continuing the Lending Credit Relationship Workbench.
 
-Act as the lead implementation engineer for a real Lending credit-intelligence solution.
+This phase introduces R2D2 external research/enrichment.
 
-This is NOT a UI-polish task.
-This is NOT a demo task.
-This is NOT another validation loop over the same 767 relationships.
+This is LENDING ONLY.
 
-The current trusted baseline already exists:
+Do NOT modify the trusted internal CAM pipeline unless absolutely required for integration.
+Do NOT rebuild the frozen internal baseline.
+Do NOT redesign the application.
+Do NOT introduce another business lane.
+Do NOT use direct public internet calls as a substitute for R2D2.
 
-Baseline:
-LENDING_INTERNAL_BASELINE_V1
+The current Lending foundation already exists:
 
-Trusted canonical relationships:
-767 VALIDATED
+- target population control
+- CAM availability/freshness
+- persistent SQLite database
+- document/version ingestion
+- section extraction
+- exact evidence storage
+- validated relationship baseline
+- review-required workflow
+- Lending relationship explorer/map
 
-Review-required:
-916
+Treat that foundation as frozen.
 
-Rejected:
-31,274
+==================================================
+MOST IMPORTANT INSTRUCTION — REUSE RPR R2D2
+==================================================
 
-Golden sample:
-PASS
+DO NOT INVENT A NEW R2D2 INTEGRATION.
 
-The validated baseline must now be treated as a regression/reference set.
+There is already a known-working R2D2 integration pattern in the RPR project.
 
-DO NOT keep rebuilding and revalidating the same baseline unless a code change directly affects extraction or reconciliation.
+FIRST locate and inspect the current RPR implementation.
 
-We are now moving from:
+Reuse the proven RPR approach for:
 
-STATIC POC DATABASE
+- authentication
+- OAuth / token handling
+- token refresh
+- environment configuration
+- Runner Service configuration
+- request construction
+- streaming/SSE handling
+- error handling
+- timeout / bounded completion handling
+- response parsing
+- preset payload construction
+- runtime input mapping
 
-to:
+The known RPR pattern uses the Runner Service and sends the FULL PRESET DEFINITION INLINE.
 
-REAL LENDING RELATIONSHIP INGESTION + UPDATE + GOVERNANCE PIPELINE
+Do NOT assume or invent a preset UUID API.
+
+The proven conceptual flow is:
+
+OAuth / refresh token
+    ↓
+Runner Service
+    ↓
+POST /runner-service/chat
+    ↓
+full preset definition inline
+    ↓
+runtime inputs
+    ↓
+streamed response
+    ↓
+structured result parsing
+
+Inspect the actual CURRENT RPR code and reuse the exact working implementation rather than relying only on this description.
+
+Do NOT change the RPR project itself.
+
+==================================================
+IMPORTANT PRESET BOUNDARY
+==================================================
+
+The coding agent does NOT create or manually configure Stylus presets.
+
+Presets are created/configured/tested manually in Stylus Workspaces.
+
+The application code only:
+
+- reuses the proven preset definition/configuration already established
+- sends the captured equivalent full preset definition inline
+- injects runtime company/entity/search inputs
+- invokes the Runner
+- parses the returned result
+
+If a genuinely new manual Stylus preset is required and no existing RPR preset can satisfy the task, report that as a genuine external blocker.
+
+Do NOT fabricate a preset.
+Do NOT guess a preset ID.
+Do NOT create fake preset configuration.
+
+Prefer reuse of the existing proven RPR WEB / SEC+WEB capability where appropriate.
+
+==================================================
+R2D2 ROLE IN THIS LENDING PRODUCT
+==================================================
+
+CAM remains the authoritative internal baseline.
+
+R2D2 must NEVER silently overwrite CAM.
+
+R2D2 has TWO purposes:
+
+1. CORROBORATION
+Find external evidence supporting an existing CAM relationship.
+
+2. DISCOVERY
+Find a potentially credit-relevant relationship not present in the available CAM baseline.
+
+These outcomes must remain separate.
+
+Example:
+
+CAM:
+Company A -> Company B
+Relationship = Supplier
+
+R2D2 finds credible external evidence confirming it.
+
+Result:
+
+same canonical CAM relationship
++
+external corroborating evidence
+
+DO NOT create a duplicate economic relationship.
+
+
+Another example:
+
+CAM has no Company A -> Company C relationship.
+
+R2D2 finds strong external evidence of:
+Company A -> Company C
+Relationship = Critical Supplier
+
+Result:
+
+EXTERNAL_PROPOSED
+
+It must NOT automatically become CAM-confirmed or trusted canonical truth.
 
 
 ==================================================
-CORE BUSINESS OBJECTIVE
+R2D2 SOURCE MODES
 ==================================================
 
-Build a sustainable Lending relationship data process that can:
+Use the RPR-proven R2D2 configuration to expose external research in clearly separated evidence channels.
 
-1. know the full target Lending population
-2. know which clients have CAM / credit documents available
-3. know whether the CAM is current or stale
-4. ingest new documents incrementally
-5. extract relationships from the correct sections
-6. reconcile them into the canonical database
-7. preserve exact evidence and document versions
-8. flag uncertain / conflicting relationships for review
-9. avoid rebuilding everything from scratch
-10. keep the relationship database current as new CAMs arrive
+Where supported by the actual proven RPR configuration:
 
-This is the main objective.
+A. R2D2 WEB
+Broad credible public research.
 
-Do NOT prioritize map polish, dashboard styling, animations, R2D2, SEC, or web enrichment in this phase.
+B. SEC FILINGS
+Regulatory filing evidence.
 
+Even if both technically run through the same R2D2/Runner framework, preserve the distinction in our data model and UI.
 
-==================================================
-1. TARGET LENDING POPULATION CONTROL
-==================================================
+Example:
 
-The email / business context established that the target population is larger than the current parsed CAM set.
-
-The population includes the CoreAI / Technology Lending names tracked in the masterfile.
-
-The email discussion referenced:
-
-- 75 CoreAI names
-- 343 Technology CAGIDs
-- 418 CAGIDs total
-
-Do NOT hard-code 418 blindly.
-
-Inspect the current masterfile / priority population / structured files and determine the actual target population now present.
-
-Create a canonical population control table.
-
-For every target client store at minimum:
-
-client_id
-CAGID
-canonical_name
-business_population
-CAM_available
-latest_CAM_date
-latest_document_type
-latest_document_file
-document_status
-stale_flag
-ingestion_status
-last_ingested_at
-relationship_count
-review_required_count
-
-Possible document_status:
-
-AVAILABLE_CURRENT
-AVAILABLE_STALE
-MISSING
-PENDING_EXTRACTION
-UNRESOLVED
-
-Do not mark a client as covered just because it exists in a master workbook.
-
-
-==================================================
-2. CAM / CREDIT DOCUMENT FRESHNESS
-==================================================
-
-This is a hard requirement from the business emails.
-
-For every Lending client:
-
-identify all available relevant credit documents.
-
-Examples may include:
-
-- CAM
-- CCM
-- AR
-- QR
-- Credit Approval Memo
-- Annual Review
-- Quarterly Review
-- Facility / financing memo
-
-Determine:
-
-- document type
-- document date
-- whether it is the latest available relevant document
-- whether older documents still need to be retained for historical evidence
-
-Do NOT simply ingest every document as equally current.
-
-The pipeline must distinguish:
-
-CURRENT SOURCE
-HISTORICAL SOURCE
-
-Never delete historical evidence.
-
-But the latest relevant document should be clearly identifiable.
-
-
-==================================================
-3. SECTION-AWARE EXTRACTION
-==================================================
-
-Do not treat a CAM as one undifferentiated text blob.
-
-The business explicitly referenced sections such as:
-
-2. Recommendation
-3. Approval Request
-7. Relationship / Counterparty / Obligor Structure
-8. Key Risks and Mitigants
-9. Historical Financial Analysis
-10. Outlook and Projections
-11. Sources of Repayment
-Risk Rating and Classification Assessment
-ORR Overview
-Support
-FRR Overview
-Cluster Analysis
-Classification
-
-Inspect the actual documents and identify section headings robustly.
-
-Extract relationship information with section provenance.
-
-Each evidence record should support:
-
-source_document
-document_type
-document_date
-section_name
-page_or_location
-exact_excerpt
-
-This improves transparency and allows us to later answer:
-
-"Where in the CAM did this relationship come from?"
-
-
-==================================================
-4. RELATIONSHIP EXTRACTION TARGETS
-==================================================
-
-Extract defensible credit-relevant relationships including, where supported:
-
-COMMERCIAL
-- contracted customer
-- major customer
-- supplier
-- critical supplier
-- service provider
-- strategic partner
-
-OWNERSHIP / CONTROL
-- parent company
-- subsidiary
-- sponsor
-- equity investor
-- beneficial owner
-- joint venture
-
-FINANCING / SUPPORT
-- guarantor
-- parent guarantor
-- lender
-- financing provider
-- backleverage provider
-- agent bank
-- collateral provider
-
-DEPENDENCY / CONCENTRATION
-- customer dependency
-- supplier dependency
-- revenue concentration
-- technology dependency
-- infrastructure dependency
-
-OTHER
-- legal relationship
-- regulatory relationship
-- acquisition / target relationship
-- other explicit credit-relevant relationships supported by evidence
-
-Do NOT classify simple co-mentions as relationships.
-
-
-==================================================
-5. INDIRECT EXPOSURE EXTRACTION
-==================================================
-
-This is an explicit business requirement.
-
-The emails asked for examples where indirect exposure is mentioned.
-
-Therefore add a distinct extraction capability for:
-
-INDIRECT EXPOSURE / INDIRECT RELATIONSHIP
-
-Do not treat "indirect" as a vague label.
-
-Capture:
-
-- subject entity
-- intermediate entity if applicable
-- ultimate related entity
-- relationship chain / path
-- relationship type
-- evidence
-- section
-- confidence
-- why it is indirect
-
-Example conceptual structure:
-
-Company A
-  -> depends on Supplier X
-  -> Supplier X depends on Company B
+source_channel = R2D2_WEB
 
 or:
 
-Company A
-  -> SPV
-  -> Sponsor / Parent
+source_channel = SEC_FILING
 
-If a relationship is direct but discovered in another document, do NOT mark it indirect.
 
-Keep:
+If an SEC document is discovered through a broad web search but the actual filing content is subsequently retrieved and verified, classify the evidence as SEC filing evidence.
 
-economic connectivity:
-DIRECT / INDIRECT
+Do not claim SEC support merely because a web page mentions an SEC filing.
 
-separate from:
+==================================================
+SOURCE PRIORITY
+==================================================
 
-discovery origin:
-SUBJECT_DOCUMENT / CROSS_DOCUMENT / MULTI_DOCUMENT
+For Lending use this conceptual hierarchy:
+
+1. CAM / internal approved credit evidence
+2. SEC filing evidence
+3. credible R2D2 Web evidence
+
+CAM remains authoritative.
+
+External evidence may:
+
+- corroborate
+- supplement
+- add freshness/context
+- propose a new relationship
+- flag a conflict
+
+External evidence may NOT automatically overwrite CAM.
 
 
 ==================================================
-6. INCREMENTAL INGESTION
+R2D2 ASSIST
 ==================================================
 
-This is one of the most important requirements.
+Add an R2D2 Assist capability to the existing relationship/correlation configuration experience.
 
-The system must not rebuild all files every time.
+Keep it visually separate from the saved business configuration.
 
-Implement incremental ingestion.
+The assistant should support two modes:
 
-For every source document calculate a stable document fingerprint.
+-----------------------------------------------
+MODE 1 — RESEARCH RELATIONSHIP
+-----------------------------------------------
 
-Use available metadata such as:
+User can type:
 
-path
-filename
-size
-modified time
-hash
+"Find the relationship between NVIDIA and Anthropic"
 
-When ingestion runs:
+or any two entities.
 
-NEW document:
-process it
+R2D2 should research the selected source channels and return STRUCTURED candidate findings.
 
-CHANGED document:
-reprocess it
-
-UNCHANGED document:
-skip extraction
-
-REMOVED document:
-do NOT silently delete historical evidence
-mark source status appropriately and require explicit governance decision
-
-The ingestion job should report:
-
-new files
-changed files
-unchanged files
-failed files
-relationships added
-relationships updated
-relationships sent to review
-relationships retired / historical
-
-
-==================================================
-7. DOCUMENT VERSIONING
-==================================================
-
-Maintain document versions.
-
-Example:
-
-CoreWeave CAM — Jan 2026
-CoreWeave CAM — Aug 2026
-
-These are not duplicates.
-
-The newer document may supersede the older one for current truth,
-but the older document remains valid historical evidence.
-
-Store:
-
-document_id
-document_version
-subject_entity
-document_type
-document_date
-file_hash
-supersedes_document_id
-is_latest_relevant_document
-
-
-==================================================
-8. PERSISTENT DATABASE MODEL
-==================================================
-
-Move away from using a single large JSON file as the operational data model.
-
-The current frozen JSON baseline can remain for regression/reference.
-
-Implement a proper persistent local database suitable for this POC and future Unix deployment.
-
-Prefer a lightweight, transparent, portable option.
-
-SQLite is acceptable for the current phase unless the repository already has a better proven database pattern.
-
-Do NOT over-engineer with distributed infrastructure.
-
-At minimum create normalized tables for:
-
-ENTITIES
-DOCUMENTS
-DOCUMENT_VERSIONS
-RELATIONSHIPS
-RELATIONSHIP_EVIDENCE
-POPULATION_CONTROL
-ALIASES
-REVIEW_DECISIONS
-INGESTION_RUNS
-
-Keep the data model simple and inspectable.
-
-
-==================================================
-9. CANONICAL RELATIONSHIP MODEL
-==================================================
-
-One economic relationship should remain canonical.
-
-Example:
+Return fields such as:
 
 Entity A
 Entity B
 Relationship Type
+Relationship Family
+Direction
+Current / Historical / Emerging
+Direct / Indirect
+Evidence Confidence
+Potential Credit Materiality
+Source Channel
+Source Name
+Source Date
+Exact Evidence Excerpt
+Source Reference
+Why the evidence supports the classification
+Contradictory Evidence
+Known in CAM? yes/no
+Discovery Status
 
-Multiple documents may support it.
+Discovery Status values:
 
-Do not create duplicate relationships for every source.
+CAM_KNOWN
+CORROBORATES_CAM
+NEW_TO_BASELINE
+CONFLICTS_WITH_CAM
+INSUFFICIENT_EVIDENCE
 
-Instead:
 
-RELATIONSHIP
-    -> Evidence 1
-    -> Evidence 2
-    -> Evidence 3
+Do NOT treat co-mention as a relationship.
 
-Keep:
+If two entities are merely mentioned in the same article:
 
+return:
+
+MENTION_ONLY / INSUFFICIENT_EVIDENCE
+
+and do NOT add a relationship proposal.
+
+
+-----------------------------------------------
+MODE 2 — ASSIST CONFIGURATION
+-----------------------------------------------
+
+When the analyst is configuring a relationship type such as:
+
+Critical Supplier
+
+allow R2D2 Assist to suggest:
+
+- objective
+- inclusion criteria
+- exclusion criteria
+- evidence characteristics
+- useful terminology
+- examples from credible evidence
+
+BUT:
+
+R2D2 must never silently modify the saved business definition.
+
+Provide an explicit:
+
+Apply suggestion
+
+action.
+
+The business user remains authoritative over the configuration.
+
+
+==================================================
+TEST CONFIGURATION
+==================================================
+
+Inside the configuration workflow add:
+
+TEST CONFIGURATION
+
+The analyst should be able to test one configured relationship definition against:
+
+- one entity pair
+or
+- a small selected Lending sample
+
+Example:
+
+Relationship:
+Critical Supplier
+
+Test:
+CoreWeave / NVIDIA
+
+Return:
+
+MATCH / NO MATCH / INSUFFICIENT
+
+with:
+
+rules matched
+rules not matched
+evidence
+source
+confidence
+reasoning summary
+
+This is especially important for transparency.
+
+Do not execute large portfolio searches from this configuration test.
+
+
+==================================================
+PORTFOLIO ENRICHMENT
+==================================================
+
+Add a bounded R2D2 enrichment workflow using the existing Lending population.
+
+Allow:
+
+- one client
+- selected clients
+- small controlled batch
+
+Do NOT immediately run R2D2 against all 418 names.
+
+This phase is about proving the integration and governance first.
+
+For each selected Lending client:
+
+1. load canonical entity identity
+2. use configured relationship definitions
+3. query R2D2
+4. parse structured evidence
+5. reconcile entity names
+6. compare against existing CAM relationships
+7. classify as corroboration / proposal / conflict
+8. persist external evidence
+9. send new candidate relationships to review
+
+==================================================
+EXTERNAL DATA MODEL
+==================================================
+
+Do NOT insert R2D2 output directly into the internal CAM baseline tables as if it were internal truth.
+
+Use separate persistent structures such as:
+
+EXTERNAL_RESEARCH_RUNS
+EXTERNAL_EVIDENCE
+RELATIONSHIP_PROPOSALS
+
+or equivalent existing models if already available.
+
+A proposal should support:
+
+proposal_id
+entity_a
+entity_b
+proposed_relationship_type
+relationship_family
 direction
 state
 connectivity
-confidence
-review_status
-current/historical status
+source_channel
+source_name
+source_date
+source_reference
+exact_excerpt
+evidence_confidence
+credit_materiality
+discovery_status
+matching_cam_relationship_id
+review_state
+created_at
 
-separate from evidence records.
+Possible review states:
 
+PENDING_REVIEW
+ANALYST_CONFIRMED
+ANALYST_MODIFIED
+ANALYST_REJECTED
 
-==================================================
-10. CHANGE DETECTION BETWEEN DOCUMENT VERSIONS
-==================================================
-
-When a new CAM arrives for an existing client:
-
-compare the newly extracted relationships with the previous latest document.
-
-Classify:
-
-NEW_RELATIONSHIP
-UNCHANGED_RELATIONSHIP
-CHANGED_RELATIONSHIP
-NO_LONGER_MENTIONED
-EXPLICITLY_TERMINATED
-
-Do NOT assume:
-
-not mentioned = terminated.
-
-Only mark historical / terminated when supported by evidence.
-
-Otherwise:
-
-NO_LONGER_MENTIONED / REVIEW_REQUIRED
+Do not automatically convert external proposals into validated CAM relationships.
 
 
 ==================================================
-11. CONFIDENCE / QUALITY CONTROL
+TRANSPARENCY / CONFIDENCE
 ==================================================
 
-Do not use pure LLM confidence.
+Leslie's core concern is:
 
-Use explainable quality factors.
+"How accurate is the data?"
 
-Examples:
+Therefore confidence must be explainable.
 
-- explicit relationship wording
-- clear entity identity
-- section relevance
-- current vs stale source
-- corroboration count
-- multiple document support
-- ambiguous language
-- exact amount / contractual language
-- entity matching certainty
+Do NOT let the LLM produce unexplained:
 
-Keep confidence conservative.
+HIGH
+MEDIUM
+LOW
 
-The existing validated baseline and golden sample should remain regression tests.
+Store the factors behind confidence.
 
+At minimum evaluate:
 
-==================================================
-12. REVIEW WORKFLOW
-==================================================
+SOURCE AUTHORITY
+- regulatory / official company evidence
+- high-quality reputable source
+- secondary source
+- weak commentary
 
-Any new extraction that does not meet trusted canonical criteria should go to:
+EVIDENCE EXPLICITNESS
+- relationship explicitly stated
+- strongly implied
+- circumstantial only
 
-REVIEW_REQUIRED
+CORROBORATION
+- multiple independent sources
+- single source
 
-Do not automatically promote it.
+ENTITY MATCH
+- exact legal identity
+- strong alias match
+- ambiguous identity
 
-Analyst review should be able to:
+RECENCY
+- current
+- stale
+- historical
 
-CONFIRM
-MODIFY
-REJECT
-
-Store:
-
-reviewer
-review_time
-decision
-notes
-
-Do not overwrite original extraction/evidence.
+CONTRADICTION
+- conflicting evidence exists / does not exist
 
 
-==================================================
-13. DATA COMPLETENESS / COVERAGE REPORT
-==================================================
+The UI should be able to say:
 
-Create a useful operational coverage report.
+Evidence Confidence: HIGH
 
-The system should be able to answer:
+Why:
+- explicit relationship statement
+- official source
+- independently corroborated
+- entity match confirmed
+- current evidence
 
-How many target Lending clients exist?
-How many have a current CAM?
-How many have only stale CAMs?
-How many have no CAM?
-How many are pending extraction?
-How many documents were processed?
-How many relationships were validated?
-How many require review?
-
-This is much more important than another UI dashboard.
+Do not expose hidden chain-of-thought.
+Expose concise evidence-based rationale only.
 
 
 ==================================================
-14. INGESTION COMMAND / ENDPOINT
+CROSS-CHECKING
 ==================================================
 
-Create one clean ingestion entry point.
+Implement a transparent cross-check mechanism.
 
-For example:
+For an external candidate:
 
-python build/update command
+Source 1 says:
+A -> B Supplier
 
-or
+Source 2 says:
+A -> B Supplier
 
-one backend endpoint / admin action
+This strengthens corroboration.
 
-The ingestion should:
+But:
 
-1. inspect population
-2. detect document changes
-3. process only new / changed files
-4. extract sections
-5. extract relationships
-6. reconcile entities
-7. reconcile relationships
-8. run validation
-9. persist results
-10. produce ingestion summary
+one blog / weak commentary only
 
-Do not require manual multi-step developer intervention.
+should remain lower confidence.
 
+If sources conflict:
 
-==================================================
-15. UNIX COMPATIBILITY
-==================================================
+do NOT choose silently.
 
-The solution is expected to move to a Unix server later.
+Mark:
 
-Therefore:
+CONFLICT_REVIEW_REQUIRED
 
-- avoid Windows-only path assumptions
-- use pathlib / platform-independent paths
-- avoid hard-coded drive letters
-- avoid PowerShell dependency in core processing
-- use environment variables for configurable paths
-- keep database/files portable
-
-Do not redesign deployment now.
-Just ensure the implementation is Unix-compatible.
+and present both pieces of evidence.
 
 
 ==================================================
-16. BASELINE REGRESSION
+CREDIT MATERIALITY
 ==================================================
 
-The existing trusted baseline remains:
+Keep evidence confidence separate from credit materiality.
 
-LENDING_INTERNAL_BASELINE_V1
+These are different concepts.
 
-Use it as a regression check.
+Example:
 
-Do NOT continually regenerate it.
+HIGH evidence confidence
+LOW credit materiality
 
-After implementing the new ingestion architecture:
+is possible.
 
-run the current corpus through the new pipeline once.
+Example:
 
-Compare:
+MEDIUM evidence confidence
+POTENTIALLY MATERIAL
 
-existing validated baseline
-vs
-new persistent database output
+is also possible.
 
-Differences must be reported.
+Use categories such as:
 
-Do NOT automatically replace the frozen baseline.
+MATERIAL
+POTENTIALLY_MATERIAL
+CONTEXTUAL
+UNKNOWN
+
+Materiality must have a short explanation.
+
+Do NOT create a numerical risk score.
+
 
 ==================================================
-17. NO LOOPS
+MENTION / ASSOCIATION HANDLING
+==================================================
+
+Explicitly distinguish:
+
+RELATIONSHIP
+
+from:
+
+MENTION / ASSOCIATION
+
+If NVIDIA and another company appear in one news article with no defensible economic relationship:
+
+store it only as research context if useful.
+
+Do not create a relationship edge.
+
+This is essential to reduce false positives.
+
+
+==================================================
+CURRENT / HISTORICAL / EMERGING
+==================================================
+
+External evidence may indicate:
+
+CURRENT
+HISTORICAL
+EMERGING
+TERMINATED
+UNKNOWN
+
+These labels require evidence.
+
+"HISTORICAL" requires actual temporal evidence.
+
+"EMERGING" should mean a newly forming or recently announced relationship.
+
+"NEW_TO_BASELINE" means:
+
+not currently present in the internal CAM baseline
+
+It does NOT necessarily mean the relationship itself is newly created in the real world.
+
+
+==================================================
+ENTITY RESOLUTION
+==================================================
+
+Reuse existing Lending entity reconciliation.
+
+For R2D2 results consider:
+
+internal CAGID if mapped
+legal name
+known aliases
+domains
+CIK/LEI or other identifiers where available
+
+Do NOT merge entities purely because names look similar.
+
+Ambiguous matches:
+
+ENTITY_MATCH_REVIEW_REQUIRED
+
+
+==================================================
+DO NOT TOUCH INTERNAL BASELINE
+==================================================
+
+Hard rule:
+
+LENDING_INTERNAL_BASELINE_V1 remains frozen.
+
+The 767 validated internal relationships remain unchanged by this phase.
+
+R2D2 enrichment lives on top.
+
+Do not mutate CAM relationships.
+
+Do not reinterpret existing CAM classifications merely because external sources use different wording.
+
+
+==================================================
+NO DIRECT PUBLIC WEB CLIENT
+==================================================
+
+Do not create:
+
+requests.get("google...")
+BeautifulSoup public scraping
+random public search APIs
+new external web libraries
+
+All approved external research in this phase must go through the existing RPR-proven R2D2 mechanism.
+
+==================================================
+RUNNER RELIABILITY
+==================================================
+
+Inspect the latest working RPR implementation and reuse its final Runner behavior.
+
+Do not reintroduce historical RPR issues such as:
+
+- indefinite SSE waiting
+- hanging when no model-final event arrives
+- expired-token loops
+- uncontrolled automatic retriggering
+
+Reuse the current proven bounded completion / refresh behavior if present in RPR.
+
+One explicit user action must produce one R2D2 execution.
+
+No automatic reruns on page load/reconnect.
+
+
+==================================================
+ERROR HANDLING
+==================================================
+
+R2D2 failure must not break the Lending application.
+
+Possible outcomes:
+
+SUCCESS
+NO_EVIDENCE
+AUTH_FAILURE
+TIMEOUT
+RUNNER_ERROR
+ENTITY_AMBIGUOUS
+
+Store research-run status.
+
+Show a concise analyst-facing message.
+
+Do not retry endlessly.
+
+Use the proven RPR retry/auth behavior only.
+
+
+==================================================
+NO LOOPS
 ==================================================
 
 This is critical.
 
-Do NOT repeatedly:
+Do not:
 
-- rebuild the same dataset
-- re-run the same diagnostics
-- revalidate unchanged files
-- refactor after acceptance tests pass
-- produce repeated reports
+- repeatedly rerun successful R2D2 calls
+- rebuild the internal database
+- revalidate the 767 baseline
+- refactor working code after acceptance
+- produce multiple diagnostic reports
+- keep tuning prompts after tests pass
 
-Proceed through the full scope once.
+If something fails:
 
-If a test fails:
-
-fix the specific cause
-rerun only the necessary test
-continue
+identify the specific cause
+fix it
+rerun only the affected acceptance test
 
 When all acceptance tests pass:
 
 STOP.
 
-No additional enhancements.
-No speculative cleanup.
-No "while I am here" refactoring.
-
-
-==================================================
-18. DO NOT WORK ON THESE YET
-==================================================
-
-Do NOT add:
-
-- R2D2
-- web search
-- SEC
-- AI Assist
-- OSUC visual mapping
-- advanced network centrality
-- fancy map UI
-- dashboard redesign
-- scenario analysis
-- risk scoring
-- contagion modeling
-
-Those are later phases.
 
 ==================================================
 ACCEPTANCE TESTS
 ==================================================
 
-TEST 1 — POPULATION CONTROL
+TEST 1 — RPR PATTERN REUSE
 
-System produces a target Lending population table with:
+Identify and document the exact RPR files/functions reused for:
 
-CAGID
-client name
-CAM availability
-latest CAM date
-document type
-stale/current status
+authentication
+token refresh
+Runner invocation
+inline preset payload
+stream parsing
 
-PASS / FAIL
-
-
-TEST 2 — LATEST DOCUMENT LOGIC
-
-For clients with multiple documents:
-
-latest relevant document identified correctly
-older versions preserved
+Verify no guessed preset-ID mechanism was introduced.
 
 PASS / FAIL
 
 
-TEST 3 — SECTION EXTRACTION
+TEST 2 — AUTHENTICATION
 
-At least 5 representative documents show:
+Perform one controlled R2D2 call through the reused RPR mechanism.
 
-identified business sections
-section-specific evidence
-page/location provenance
+Verify auth/token refresh succeeds.
 
 PASS / FAIL
 
 
-TEST 4 — INDIRECT EXPOSURE
+TEST 3 — WEB RESEARCH
 
-System can extract and represent at least real repository-supported indirect exposure examples if present.
+Research one real entity pair using R2D2 Web.
 
-If none are present:
+Return structured evidence with:
 
-prove none exist.
-
-Do not fabricate.
-
-PASS / FAIL
-
-
-TEST 5 — INCREMENTAL INGESTION
-
-Run ingestion twice.
-
-First run:
-process current files
-
-Second run:
-unchanged files skipped
-
-Then modify/add one controlled test document/file metadata case and confirm:
-
-only changed/new item reprocessed
+source
+date
+excerpt
+relationship classification
+confidence factors
 
 PASS / FAIL
 
 
-TEST 6 — DATABASE PERSISTENCE
+TEST 4 — SEC MODE
 
-Verify persistent database contains:
+If SEC capability exists in the proven RPR preset/configuration:
 
-entities
-documents
-relationships
-evidence
-population
-reviews
-ingestion runs
+research one entity through SEC evidence.
 
-PASS / FAIL
+Verify SEC evidence remains separately labelled.
 
+If the existing RPR capability does not expose SEC:
 
-TEST 7 — DOCUMENT VERSIONING
+report that honestly as an external/configuration blocker.
 
-Verify multiple document versions for same client remain distinguishable.
+Do not invent it.
 
-PASS / FAIL
+PASS / BLOCKED
 
 
-TEST 8 — RELATIONSHIP RECONCILIATION
+TEST 5 — CAM CORROBORATION
 
-Multiple documents supporting the same relationship attach evidence to one canonical relationship.
+Choose one existing validated CAM relationship.
 
-PASS / FAIL
+Run R2D2.
 
+If corroborating evidence is found:
 
-TEST 9 — CHANGE DETECTION
+attach it as external evidence to the existing relationship.
 
-For a versioned document pair, verify:
-
-new
-unchanged
-changed
-no-longer-mentioned
-
-logic works without falsely marking termination.
+Verify no duplicate canonical relationship is created.
 
 PASS / FAIL
 
 
-TEST 10 — REVIEW GOVERNANCE
+TEST 6 — NEW RELATIONSHIP PROPOSAL
 
-New uncertain relationships go to REVIEW_REQUIRED and do not enter trusted canonical view automatically.
+Use R2D2 on a controlled case where a relationship not in CAM is supported by external evidence.
 
-PASS / FAIL
+Verify:
 
+proposal created
+source retained
+evidence retained
+review state = PENDING_REVIEW
 
-TEST 11 — BASELINE REGRESSION
+Verify:
 
-Compare new persistent output with:
-
-LENDING_INTERNAL_BASELINE_V1
-
-Report differences.
-
-Do NOT overwrite baseline.
+internal CAM baseline unchanged.
 
 PASS / FAIL
 
 
-TEST 12 — UNIX COMPATIBILITY
+TEST 7 — MENTION ONLY
 
-Verify no core ingestion logic depends on:
+Test a case where sources merely mention both entities without proving a relationship.
 
-Windows drive letters
-PowerShell
-Windows-only path assumptions
+Verify:
+
+no relationship proposal is created.
 
 PASS / FAIL
+
+
+TEST 8 — CONFLICT
+
+Where a controlled conflict can be found:
+
+verify both CAM and external evidence remain visible.
+
+Verify R2D2 does not overwrite CAM.
+
+PASS / FAIL / NOT_APPLICABLE
+
+
+TEST 9 — R2D2 ASSIST
+
+Open relationship configuration.
+
+Use:
+
+Research Relationship
+
+Verify structured result appears.
+
+Use:
+
+Assist Configuration
+
+Verify suggestions do not alter saved configuration until explicitly applied.
+
+PASS / FAIL
+
+
+TEST 10 — TEST CONFIGURATION
+
+Run one configured relationship definition against a small test case.
+
+Verify:
+
+MATCH / NO MATCH / INSUFFICIENT
+
+with rule/evidence explanation.
+
+PASS / FAIL
+
+
+TEST 11 — PERSISTENCE
+
+Verify external research runs, evidence, and proposals persist in the Lending database.
+
+Restart application.
+
+Verify persisted results remain available.
+
+PASS / FAIL
+
+
+TEST 12 — NO BASELINE MUTATION
+
+Before and after this phase:
+
+internal trusted canonical relationships = 767
+
+unless the baseline count was legitimately changed before this task by an explicit approved action.
+
+R2D2 must not change the frozen baseline.
+
+PASS / FAIL
+
+
+==================================================
+IMPLEMENTATION DISCIPLINE
+==================================================
+
+FIRST inspect RPR.
+
+Do not code a new R2D2 client until you have found and understood the proven RPR implementation.
+
+Reuse before creating.
+
+Do not change the RPR project.
+
+Do not create a production architecture.
+
+Do not redesign unrelated UI.
+
+Do not add unrelated features.
+
+Proceed autonomously through the approved scope.
+
+Stop only for a genuine external blocker such as:
+- missing manual Stylus preset
+- unavailable approved R2D2 credentials
+- unavailable SEC capability in the existing RPR configuration
 
 
 ==================================================
@@ -798,23 +907,22 @@ FINAL RESPONSE FORMAT
 
 When complete provide ONLY:
 
-1. Actual target Lending population count
-2. Current CAM available count
-3. Stale CAM count
-4. Missing CAM count
-5. Documents processed
-6. New/changed/unchanged document counts
-7. Persistent database type/path
-8. Entity count
-9. Canonical relationship count
-10. Review-required count
-11. Real indirect-exposure examples found
-12. Baseline regression differences
-13. Files materially changed
-14. TEST 1–12 PASS / FAIL
-15. Genuine external blockers
+1. RPR files/functions reused
+2. R2D2 auth method reused
+3. Runner endpoint/pattern reused
+4. Preset strategy used
+5. Web research status
+6. SEC research status
+7. Existing CAM relationship corroboration result
+8. New proposal result
+9. Mention-only exclusion result
+10. R2D2 Assist result
+11. Persistent tables/models added
+12. Internal baseline before/after
+13. TEST 1–12 PASS / FAIL / BLOCKED
+14. Genuine blockers
 
-No long architecture essay.
+No architecture essay.
 
 STOP immediately after acceptance criteria are satisfied.
 
@@ -823,4 +931,4 @@ STOP immediately after acceptance criteria are satisfied.
 CORE OBJECTIVE
 ==================================================
 
-Turn the current validated Lending POC into a maintainable Lending relationship data solution that knows the target population, tracks CAM availability and freshness, incrementally ingests new credit documents, extracts section-grounded credit relationships and indirect exposures, preserves exact evidence and document versions, reconciles everything into a persistent canonical database, and updates safely without repeatedly rebuilding the same corpus.
+Add R2D2 to the Lending relationship solution by reusing the exact proven RPR authentication + Runner + inline-preset integration pattern, so external Web and SEC evidence can transparently corroborate existing CAM relationships or create reviewable new relationship proposals without ever overwriting the trusted internal Lending baseline.
