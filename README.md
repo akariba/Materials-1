@@ -1,1111 +1,810 @@
-LENDING — COMPLETE FRONTEND REPLACEMENT + WORKING ANALYTICS POC
+LENDING POC — APPLY THE APPROVED VISUAL DESIGN
 
-The current Lending UI is rejected.
+The current application functionality and backend wiring are accepted.
 
-DO NOT refine it.
-DO NOT preserve its visual design.
-DO NOT continue incrementally from its page layout.
+DO NOT change:
+- Portfolio API
+- V1/V2/V3
+- 13 canonical relationships
+- 28 review-required relationships
+- relationship extraction
+- external-overlay governance
+- Stylus / SEC / R2D2
+- CCR
+- RPR
+- business calculations
 
-Replace the Lending frontend with a new analytics-first Lending Relationship
-Intelligence POC using the already validated backend.
+THIS TASK IS VISUAL / INTERACTION DESIGN ONLY.
 
-Proceed autonomously through the complete scope.
-Do not stop for intermediate approval.
-Stop only for a genuine external blocker.
+The current frontend presentation is NOT the approved design.
 
-==================================================
-1. PRIMARY OBJECTIVE
-==================================================
-
-Deliver ONE working final Lending application at:
-
-/lending
-
-It must combine:
-
-1. Portfolio analytics
-2. Exposure/materiality analytics
-3. CAM coverage analytics
-4. Sector concentration
-5. Geographic portfolio analytics
-6. Client ranking and drilldown
-7. Relationship network analytics
-8. Relationship/evidence explorer
-9. External SEC/R2D2 intelligence
-10. Review queue
-
-The UI must use REAL backend data.
-
-No mock business data.
+Replace the current visual presentation with the previously approved
+"Lending Relationship Intelligence" design described below.
 
 ==================================================
-2. CURRENT UI IS NOT A BASELINE
+1. DESIGN LANGUAGE
 ==================================================
 
-The existing Lending screens are NOT visually approved.
+Overall appearance:
 
-Current examples include:
+- modern institutional credit-risk analytics
+- light blue / white background
+- clean Citi-style professional visual language
+- soft cards
+- subtle shadows
+- rounded corners
+- blue / teal analytical accents
+- network visualization is the visual centerpiece
 
-- old /lending relationship dashboard
-- current /portfolio/lending shell
-- cards saying NOT AVAILABLE
-- old senior-management layout
-- old filter layout
-- old visual hierarchy
+Use this palette consistently:
 
-Do not preserve those layouts.
+Page background:
+#F5F8FC
 
-You may reuse useful technical components, hooks, API clients or graph
-libraries, but redesign the actual Lending UX.
+Card background:
+#FFFFFF
 
-==================================================
-3. FIX THE 502 FIRST
-==================================================
+Primary dark text:
+#15263A
 
-Before rebuilding the UI, identify and resolve the current:
+Secondary text:
+#66768A
 
-Portfolio analytics unavailable
-502 Bad Gateway
+Border:
+#DCE5EF
 
-Check:
+Primary blue:
+#376FF6
 
-- actual running backend URL/port
-- frontend API base URL
-- Vite proxy
-- backend router mounting
-- frontend route path
-- old/legacy API client usage
-- startup/import errors
-- whether frontend is calling the same backend application where the
-  Portfolio API passed validation
+Light blue:
+#7DB7FF
 
-Test the Portfolio API directly before touching presentation.
+Cyan:
+#55C7E8
 
-The running API must reconcile to:
+Teal:
+#37B6A4
 
-Portfolio clients = 2,484
-CAM-covered = 1,698
-Without CAM = 786
-Exactly 1 CAM = 928
-Exactly 2 CAMs = 770
-Reported OSUC ≈ $349.27B
-CAM-covered OSUC ≈ $259.93B
-Canonical CAM relationships = 13
-Review-required relationships = 28
+Green:
+#57B879
 
-If those values do not reconcile:
+Purple:
+#8B78E6
 
-STOP.
-Do not compensate in frontend.
-Report the backend mismatch.
+Amber:
+#E8AD55
 
-If they reconcile:
-continue immediately into the full frontend replacement.
+Orange:
+#E78A57
 
-==================================================
-4. HARD DATA BOUNDARIES
-==================================================
+Red:
+#D96767
 
-DO NOT:
+Muted gray:
+#9AA8B7
 
-- change V1
-- change V2
-- change V3
-- rerun CAM extraction
-- change the 13 canonical CAM relationships
-- change the 28 review-required relationships
-- modify CAM/PDF/DOCX source files
-- modify source workbooks
-- modify Portfolio API calculations
-- modify external-overlay governance
-- modify Stylus preset
-- modify SEC/R2D2 configuration
-- trigger external research automatically
-- modify CCR
-- modify RPR
-
-Small read-only API compatibility fixes are permitted only if genuinely
-necessary to make the existing validated backend reachable.
+Do NOT use a plain monochrome network.
 
 ==================================================
-5. FINAL ROUTE OWNERSHIP
+2. TOP APPLICATION HEADER
 ==================================================
-
-The final application must live at:
-
-/lending
-
-Do not leave the user choosing between:
-
-/lending
-and
-/portfolio/lending
-
-After the new UI passes:
-
-- /lending = final Lending Relationship Intelligence application
-- /portfolio/lending may redirect to /lending if useful
-- remove legacy Lending UI from active route ownership
-
-Do not affect CCR routes.
-
-==================================================
-6. PRODUCT DESIGN
-==================================================
-
-This is an ANALYTICS WORKBENCH.
-
-It must not look like:
-
-- a collection of empty cards
-- a technical admin page
-- a developer tool
-- a static report
-- a giant table
-- a giant graph
-- a mockup
-
-Visual style:
-
-- white/light background
-- subtle pale-blue accents
-- dark navy/charcoal text
-- restrained borders
-- clean institutional look
-- compact analytical density
-- generous enough whitespace
-- professional senior-management / credit-risk quality
-- no logos for companies
-- no decorative images
-- no unnecessary gradients
-- no oversized cards
-
-==================================================
-7. NAVIGATION
-==================================================
-
-Use a compact left navigation.
-
-Pages:
-
-Overview
-Clients
-Network
-Relationship Explorer
-External Research
-Review Queue
-
-Keep navigation simple.
-
-Do not put entities/companies in sidebar navigation.
-
-==================================================
-8. OVERVIEW — ANALYTICS FIRST
-==================================================
-
-This page must answer within seconds:
-
-What portfolio am I looking at?
-How large is it?
-How much CAM coverage do we have?
-Where is exposure concentrated?
-Which clients matter most?
-Where are the relationships?
-What requires attention?
-
-Build the page in this analytical flow:
-
-PORTFOLIO SCALE
-↓
-CAM COVERAGE
-↓
-EXPOSURE CONCENTRATION
-↓
-SECTOR DISTRIBUTION
-↓
-GEOGRAPHIC DISTRIBUTION
-↓
-CLIENT RANKING
-↓
-RELATIONSHIP NETWORK PREVIEW
-↓
-REVIEW / ATTENTION
-
---------------------------------------------------
-8A. TOP METRICS
---------------------------------------------------
-
-Use real backend values.
-
-Show compact metrics:
-
-Portfolio in Scope
-Reported OSUC
-CAM Coverage
-CAM-Covered OSUC
-Canonical CAM Relationships
-Review Required
-
-Do not hardcode values.
-
-Do not call the 2,484 population the full Lending universe.
 
 Use:
 
-CAM Priority Portfolio
-or
-Current Portfolio Scope
+Lending Relationship Intelligence
+
+Subtitle:
+
+CAM-authoritative relationship intelligence with corroborating Web and SEC
+evidence.
+
+Top navigation:
+
+Overview
+Network View
+Relationship Explorer
+Review Queue
+Reports
+
+Network View should have the strongest visual treatment when selected.
+
+Keep navigation clean and horizontal.
 
 ==================================================
-9. CAM COVERAGE ANALYTICS
+3. NETWORK VIEW — MATCH APPROVED CONCEPT
 ==================================================
 
-Required visual analytics:
+The Network View must visually resemble the previously approved design:
 
-With CAM vs Without CAM
+LEFT COLUMN
+Network Filters
 
-1 CAM vs 2 CAMs
+CENTER
+large relationship intelligence map
 
-Client coverage %
+RIGHT COLUMN
+Entity Overview / Relationship Inspector
 
-OSUC coverage %
+The graph must occupy most of the visual area.
 
-Use a clean stacked bar, donut, or equivalent.
-
-Clicking a segment should drill/filter Clients.
-
-==================================================
-10. EXPOSURE ANALYTICS
-==================================================
-
-Create exposure/materiality analytics based on:
-
-Reported OSUC
-Portfolio Share
-Exposure Rank
-Percentile if deterministically calculable
-Cumulative portfolio share if deterministically calculable
-
-Do NOT invent a risk score.
-
-Show:
-
-Top clients by Reported OSUC
-
-Columns:
-
-Rank
-Client
-CAGID
-Reported OSUC
-Portfolio %
-Sector
-CAM Status
-Relationship Count / Coverage
-
-Click client -> Client Detail.
-
-Add useful deterministic concentration statistics such as:
-
-Top 10 share
-Top 20 share
-
-only if calculable from API data.
+Do not use the current small circular ring graph.
 
 ==================================================
-11. SECTOR ANALYTICS
+4. NETWORK LAYOUT
+==================================================
+
+Use focal-entity architecture.
+
+Selected company in the CENTER.
+
+Example layout concept:
+
+                 Research / Academic
+
+       Customers                     Financial / Advisory
+
+
+Infrastructure        FOCAL ENTITY       Regulatory
+
+
+       Compute                       Investors / Sponsors
+
+              Supply Chain / Infrastructure
+
+
+Actual categories must come from supported relationship data.
+
+Do not fabricate relationship categories merely to fill the layout.
+
+==================================================
+5. RELATIONSHIP GROUP BUBBLES
+==================================================
+
+Create softly colored ecosystem regions / halos around related entities.
+
+Examples:
+
+Compute Infrastructure
+BLUE
+
+Infrastructure & Supply Chain
+ORANGE
+
+Customers
+CYAN
+
+Investors & Sponsors
+TEAL
+
+Financial & Advisory
+AMBER
+
+Research / Academic / Strategic
+GREEN
+
+Regulatory
+RED
+
+Other supported strategic ecosystem relationships
+PURPLE
+
+These are visual groupings only.
+
+Do not alter relationship taxonomy in backend.
+
+Group bubbles should use:
+
+- very pale tinted background
+- subtle outline
+- group label at top
+- related nodes inside the group
+
+==================================================
+6. NODE DESIGN
+==================================================
+
+FOCAL NODE:
+
+- largest node
+- dark blue outer ring
+- soft blue glow
+- company/entity name underneath or inside
+- selected state clearly visible
+
+RELATED NODES:
+
+- smaller
+- relationship-family color
+- white or very pale center
+- colored outline
+- clear readable label
+
+PORTFOLIO CLIENT:
+slightly stronger node styling
+
+RELATED NON-PORTFOLIO ENTITY:
+lighter styling
+
+REVIEW-REQUIRED ENTITY:
+small amber review indicator
+
+EXTERNAL ENTITY:
+small purple/blue supplementary indicator
+
+==================================================
+7. EDGE DESIGN
+==================================================
+
+CAM canonical:
+solid blue line
+
+CAM review-required:
+amber dashed line
+
+Hidden / indirect:
+purple dashed / dotted line
+
+External proposal:
+teal/purple dotted line
+
+Conflict:
+red accented line
+
+Historical:
+muted gray dotted line
+
+Do not rely only on color.
+Line pattern must also communicate state.
+
+==================================================
+8. ANIMATED LIGHT / SIGNAL EFFECTS
+==================================================
+
+Add tasteful analytical animation.
+
+The user specifically wants visible "light" movement through the network.
+
+Implement subtle animated effects:
+
+A. SELECTED RELATIONSHIP
+A small glowing pulse should travel along the selected edge.
+
+B. HOVER RELATIONSHIP
+Edge brightens and a short moving highlight travels from source to target.
+
+C. SELECTED NODE
+Soft breathing / pulsing outer glow.
+
+D. NEW / EXTERNAL FINDING
+Subtle purple pulse around node or edge.
+
+E. REVIEW REQUIRED
+Soft amber pulse, not aggressive flashing.
+
+F. HIDDEN PATH
+When selected:
+animate the complete path sequentially:
+
+A → B
+then
+B → C
+
+This should visually explain propagation.
+
+IMPORTANT:
+
+Do NOT create constant distracting flashing.
+
+Animation should be:
+subtle
+professional
+slow
+analytical
+
+Use SVG/CSS/requestAnimationFrame or the graph library's native animation.
+
+==================================================
+9. NETWORK INTERACTIONS
 ==================================================
 
 Required:
 
-ranked horizontal bar chart.
+mouse drag = pan
 
-Toggle:
+mouse wheel = zoom
 
-Reported OSUC
-Client Count
+buttons:
++
+-
+Fit
+Reset
 
-Sort descending.
+Double click node:
+make it the focal entity
 
-Click sector -> Clients page with that sector filter.
+Single click node:
+open Entity Overview
 
-If CAM coverage by sector is available, provide a secondary view:
+Single click edge:
+open Relationship Detail
 
-CAM Coverage by Sector
+Hover node:
+show small tooltip
 
-Do not invent sectors.
-
-==================================================
-12. GEOGRAPHIC ANALYTICS
-==================================================
-
-Build a geographic portfolio view if validated country data exists.
-
-Required analytics where supported:
-
-Client count by country
-Reported OSUC by country
-
-Provide toggle:
-
-Exposure
-Client Count
-
-Click a country -> filtered Clients list.
-
-Use an interactive geographic map or an equivalent meaningful geographic
-visualization.
-
-Do not invent coordinates.
-
-Do not infer countries from company names.
-
-If only country names are available, use a library/data representation that
-can map countries deterministically.
-
-If geography is genuinely unavailable:
-show a small controlled empty state, not a giant empty card.
-
-==================================================
-13. CLIENTS PAGE
-==================================================
-
-Provide full searchable portfolio population.
+Hover edge:
+show:
+relationship type
+direction
+state
+confidence
+source layer
 
 Search:
-
-Client Name
+entity name
 CAGID
 
-Filters where real data supports:
-
-Sector
-Country
-CAM Yes/No
-CAM Count
-Risk Rating
-Credit Classification
-Relationship Coverage
-
-Default sort:
-
-Reported OSUC descending
-
-Columns:
-
-Client
-CAGID
-Sector
-Country
-Reported OSUC
-Portfolio %
-CAM
-CAM Count
-Risk Rating
-Credit Classification
-Relationships
-
-Use pagination or virtualization.
-
-Do not render all 2,484 rows simultaneously.
+Search result:
+focus node
+animate camera toward it
+highlight node
 
 ==================================================
-14. CLIENT DETAIL
+10. NETWORK TRANSITIONS
 ==================================================
 
-Click a client and open a proper analytical profile.
+When focal entity changes:
+
+Do NOT instantly redraw harshly.
+
+Animate:
+
+old nodes fade
+selected node moves toward center
+new first-degree entities expand outward
+edges appear progressively
+
+Transition duration approximately:
+300–600ms
+
+The effect should feel like exploring an intelligence network.
+
+==================================================
+11. RIGHT ENTITY OVERVIEW PANEL
+==================================================
+
+Match the previously approved panel concept.
 
 Header:
 
-Client Name
-CAGID
-Sector
-Country
-Risk Rating
-Credit Classification
+Entity Overview
 
-Materiality row:
+Show:
+
+Entity Name
+CAGID
+Country
+Sector
+
+Tags / badges
+
+Relationship Summary
 
 Reported OSUC
 Portfolio Share
 Exposure Rank
-CAM Status
 CAM Count
 
-Then sections/tabs:
+Direct Relationships
+Indirect Relationships
+Review Required
+
+Then:
+
+Why it matters for Lending
+
+Only show a generated summary when supported by deterministic backend data.
+Do not invent conclusions.
+
+Materiality card:
+Exposure-based context only
+
+Confidence card:
+relationship/evidence confidence
+
+Evidence Channels:
+
+CAM
+Web
+SEC
+
+Show availability/status indicators.
+
+Potential Risk Flags:
+only backend-supported flags.
+
+==================================================
+12. NETWORK METRICS ABOVE GRAPH
+==================================================
+
+Use compact metrics similar to the approved design:
+
+Total Entities
+
+Direct Relationships
+
+Indirect Relationships
+
+Pending Review
+
+External Findings
+
+Do not force a metric if unavailable.
+
+==================================================
+13. RELATIONSHIP RECORDS UNDER NETWORK
+==================================================
+
+Below network provide:
+
+Relationship Records
+
+Columns:
+
+Entity
+Relationship
+Related Entity
+Direction
+State
+Confidence
+Source
+Evidence
+Review
+
+Keep it compact.
+
+Click a row:
+highlight the corresponding edge in the graph.
+
+==================================================
+14. ANALYTICAL SUB-TABS UNDER NETWORK
+==================================================
+
+Use:
+
+Concentration Analysis
+Geographic View
+Risk Insights
+Recent Mentions
+
+Only activate views supported by real data.
+
+Unsupported future capability:
+disabled state
+
+Do not invent contents.
+
+==================================================
+15. OVERVIEW PAGE
+==================================================
+
+Restyle Overview to use the SAME visual language.
+
+Use:
+
+top KPI strip
+
+Exposure ranking
+
+CAM coverage
+
+Sector concentration
+
+Portfolio geography
+
+Small relationship-network preview
+
+Review attention
+
+Avoid large empty sections.
+
+==================================================
+16. REAL PORTFOLIO GEOGRAPHIC MAP
+==================================================
+
+Use an actual world map using country polygons.
+
+Background:
+very pale blue-gray.
+
+Countries with no portfolio exposure:
+#E8EEF5
+
+Portfolio countries:
+blue intensity based on selected metric.
+
+Highest exposure:
+deep blue.
+
+Modes:
+
+Reported OSUC
+Client Count
+CAM Coverage
+
+Hover country:
+Country
+Clients
+Reported OSUC
+CAM-covered clients
+CAM coverage %
+
+Click country:
+highlight country with animated blue outline
+open filtered client context.
+
+Selected country:
+soft glow/pulse.
+
+Do NOT use fake coordinates.
+
+==================================================
+17. MAP ANIMATION
+==================================================
+
+When switching metric:
+
+smoothly transition country shading.
+
+When hovering:
+
+country outline brightens.
+
+When selected:
+
+subtle animated perimeter glow.
+
+When selecting a country from ranking list:
+
+map smoothly focuses/highlights that country.
+
+No aggressive animation.
+
+==================================================
+18. EXPOSURE RANKING VISUAL
+==================================================
+
+Restyle the current ranking.
+
+Use:
+
+rank number
+client
+CAGID
+CAM badge
+Reported OSUC
+portfolio share
+small visual exposure bar
+
+Top clients should visually stand out without suggesting a risk conclusion.
+
+Click:
+open Client Detail.
+
+==================================================
+19. CLIENT DETAIL
+==================================================
+
+Use clean profile header.
+
+Then compact tabs:
 
 Overview
 Relationships
 External Intelligence
 Evidence
 
-Overview should summarize:
+Add a small client relationship map on Overview.
 
-- exposure
-- portfolio rank
-- CAM status
-- canonical relationships
-- review-required relationships
-- external proposals/corroborations
+The client should appear centrally with its strongest first-degree
+relationships.
 
 ==================================================
-15. RELATIONSHIP NETWORK PREVIEW
+20. FULL NETWORK LENSES
 ==================================================
 
-Overview must include a small network preview.
-
-Do NOT render hundreds of nodes.
-
-Default:
-maximum approximately 8–12 useful evidence-backed nodes.
-
-Show only real relationships.
-
-Button:
-
-Open Full Network
-
-==================================================
-16. FULL NETWORK PAGE
-==================================================
-
-This is a major analytical page.
-
-Layout:
-
-LEFT:
-filters and lenses
-
-CENTER:
-large relationship graph
-
-RIGHT:
-selected node/edge inspector
-
-BOTTOM:
-relationship records table if useful
-
-Required graph capabilities:
-
-pan
-zoom
-fit
-search
-node selection
-edge selection
-evidence drilldown
-
-Do not render full 2,484-client universe automatically.
-
-==================================================
-17. NETWORK LENSES
-==================================================
-
-One primary lens active at a time.
-
-Working lenses:
+Keep:
 
 CAM
 Exposure
 Hidden / Indirect
-External SEC/Web
+External
+
+Style them as attractive pill/toggle controls.
 
 CAM:
-authoritative canonical V3 relationships.
+blue
 
 Exposure:
-node size can represent Reported OSUC.
+teal
 
-Hidden / Indirect:
-only backend-supported evidence-backed paths.
+Hidden:
+purple
 
 External:
-show supplemental external intelligence over CAM.
+cyan/purple
 
-Prepare disabled future lenses:
+Future:
 
 Market & News
 AI Ecosystem
 Potential Impact
 
-Label them:
-
-Future capability
-
-Do NOT fake those datasets.
+Display as muted disabled pills:
+COMING LATER
 
 ==================================================
-18. GRAPH SEMANTICS
+21. SELECTED HIDDEN RELATIONSHIP EXPERIENCE
 ==================================================
 
-CAM canonical:
-solid line
+If a legitimate hidden relationship path exists:
 
-CAM review required:
-dashed line
+Example:
 
-External proposal:
-visibly supplemental dashed/dotted line
+A → B → C
 
-Conflict:
-clear review styling
+show:
 
-Historical:
-dotted when backend supports it
+A highlighted
+B highlighted
+C highlighted
 
-Do not rely only on color.
+dim unrelated network nodes
 
-Show legend.
+animate light sequentially:
 
-==================================================
-19. NETWORK ENTITY INSPECTOR
-==================================================
+A → B → C
 
-Node selection should show:
+Right panel shows:
 
-Entity name
-CAGID
-Sector
-Country
-Reported OSUC
-Portfolio Share
-CAM status
-Relationship counts
+Hidden path
+Hop 1
+relationship type
+evidence
 
-Edge selection should show:
+Hop 2
+relationship type
+evidence
 
-Subject
-Related Entity
-Relationship Type
-Direction
-Connectivity
-State
-CAM / External source layer
-Confidence
-Evidence Count
-Review State
-
-Button:
-
-View Evidence
+Overall path confidence cannot exceed weakest hop.
 
 ==================================================
-20. RELATIONSHIP EXPLORER
+22. EXTERNAL RELATIONSHIP EXPERIENCE
 ==================================================
 
-Create a serious searchable/filterable relationship table.
+When external findings exist:
 
-Columns:
+CAM layer remains visible but slightly muted.
 
-Subject
-Related Entity
-Relationship Type
-Direction
-Connectivity
-State
-Source Layer
-Confidence
-Evidence Count
-Review State
+External nodes/edges appear with purple/cyan styling.
 
-Clearly distinguish:
+Animate new external edge once when shown.
 
-CAM
-CAM Review
-External
-CAM + External Corroboration
+Do not continuously flash.
 
-Do not expose old 32,957 extraction candidates as relationships.
+External result must remain visually distinguishable from CAM truth.
 
 ==================================================
-21. RELATIONSHIP DETAIL
+23. VISUAL HIERARCHY
 ==================================================
 
-Present:
+The user should immediately see:
 
-Subject
-→ relationship type →
-Related Entity
+1. focal entity
+2. important connected entities
+3. relationship type
+4. exposure context
+5. review status
+6. evidence provenance
 
-Then:
+Not:
 
-Direction
-Connectivity
-State
-Confidence
-Source layer
-Review status
-
-Evidence must be separated:
-
-CAM Evidence
-
-External Evidence
-
-CAM evidence should show where available:
-
-document
-page/location
-excerpt
-
-External evidence should show:
-
-SEC / Web
-publisher
-title
-date
-filing type
-source reference
-excerpt
-source tier
-admissibility
-backend normalized confidence
+technical implementation details
+API status text
+long explanatory paragraphs
+development terminology
 
 ==================================================
-22. EXTERNAL RESEARCH PAGE
+24. RESPONSIVENESS
 ==================================================
 
-Use exactly six runtime inputs:
+Optimize primarily for:
 
-SubjectEntity
-RelatedEntity
-RelationshipScope
-SourceChannels
-ResearchInstruction
-AsOfDate
-
-Convenience modes:
-
-Web Research
-= R2D2_WEB
-
-SEC Research
-= SEC_FILING
-
-Deep Validation
-= both
-
-Execution is ONLY from:
-
-Run External Research
-
-Never auto-run on:
-
-page load
-client selection
-network selection
-refresh
-reconnect
-route change
-cache miss
-browser reload
-
-==================================================
-23. EXTERNAL RESULT EXPERIENCE
-==================================================
-
-Do not make JSON the primary interface.
-
-Show:
-
-Relationship
-Classification
-Backend Confidence
-CAM Comparison
-Evidence Count
-Review Requirement
-
-Governed states:
-
-CAM_CORROBORATION
-EXTERNAL_PROPOSAL_PENDING_REVIEW
-CONFLICT_REVIEW_REQUIRED
-NO_EXTERNAL_CORROBORATION
-MENTION_ONLY
-INSUFFICIENT_EVIDENCE
-
-Raw JSON may be under:
-
-Technical Details
-
-==================================================
-24. REVIEW QUEUE
-==================================================
-
-Tabs:
-
-CAM Review
-External Proposals
-Conflicts
-
-CAM Review:
-existing 28 review-required relationships.
-
-External:
-external proposals pending review.
-
-Conflicts:
-external/CAM conflicts.
-
-Columns:
-
-Entity Pair
-Relationship
-Source
-Reason
-Confidence
-Evidence Count
-Reported OSUC context where applicable
-Review State
-
-Do not allow accidental CAM canonical mutation.
-
-==================================================
-25. DATA QUALITY / EMPTY STATES
-==================================================
-
-Do not build large blank cards saying NOT AVAILABLE.
-
-If a feature has no data:
-
-- hide it when appropriate
-or
-- show a compact inline empty state.
-
-The page must still look finished.
-
-Do not create dead sections purely because they were mentioned in an old UI.
-
-==================================================
-26. ANALYTICS DRILLDOWN
-==================================================
-
-Every important visualization should do something:
-
-CAM segment -> filtered Clients
-Sector bar -> filtered Clients
-Country map -> filtered Clients
-Exposure ranking -> Client Detail
-Network node -> Client Detail / Entity Detail
-Network edge -> Relationship Detail
-Review count -> Review Queue
-
-Avoid decorative charts.
-
-==================================================
-27. DATA SOURCE RULES
-==================================================
-
-All business numbers must come from backend APIs.
-
-NO hardcoded:
-
-2484
-1698
-786
-928
-770
-349.27B
-259.93B
-13
-28
-
-Those may appear in tests/expected validations,
-but never as frontend business constants.
-
-==================================================
-28. OSUC LABELING
-==================================================
-
-Use:
-
-Reported OSUC
-
-Do not use:
-
-OSUC Net of Hedges
-
-unless backend explicitly provides governed proof.
-
-Do not invent an as-of date.
-
-==================================================
-29. PERFORMANCE
-==================================================
-
-Desktop POC target:
-
-1366x768
-1440x900
 1920x1080
+1440x900
+1366x768
 
-Use pagination / virtualization for portfolio tables.
+Network center should always receive maximum usable space.
 
-Limit network size.
+Right panel approximately:
+280–340px
 
-Avoid rendering thousands of elements.
+Left filter panel approximately:
+220–260px
 
-No browser freezing.
-
-==================================================
-30. ROUTE TRANSITION
-==================================================
-
-After new UI works:
-
-/lending
-must become the final new application.
-
-/portfolio/lending
-may redirect to /lending.
-
-Legacy Lending UI must no longer be the active user-facing Lending screen.
-
-Do not delete code recklessly if dependencies remain.
-Just remove it from route ownership.
+Center graph fills remaining area.
 
 ==================================================
-31. TEST EVERYTHING
+25. DO NOT CHANGE DATA
+==================================================
+
+After visual redesign confirm:
+
+Portfolio clients unchanged
+Reported OSUC unchanged
+CAM coverage unchanged
+13 canonical unchanged
+28 review-required unchanged
+
+No extraction rerun.
+
+No external automatic executions.
+
+==================================================
+26. FINAL ACCEPTANCE
 ==================================================
 
 Verify:
 
-/lending opens new application
+APPROVED LIGHT-BLUE VISUAL STYLE: PASS/FAIL
 
-No 502
+GROUPED RELATIONSHIP BUBBLES: PASS/FAIL
 
-Overview values reconcile to API
+FOCAL ENTITY NETWORK: PASS/FAIL
 
-CAM coverage visualization works
+PAN: PASS/FAIL
 
-Sector analytics works
+ZOOM: PASS/FAIL
 
-Geographic analytics works if data available
+FIT: PASS/FAIL
 
-Client ranking works
+NODE SEARCH: PASS/FAIL
 
-Client search works
+NODE CLICK: PASS/FAIL
 
-Client filters work
+EDGE CLICK: PASS/FAIL
 
-Client detail works
+MOVING EDGE LIGHT EFFECT: PASS/FAIL
 
-Network works
+SELECTED NODE PULSE: PASS/FAIL
 
-Network node click works
+HIDDEN PATH ANIMATION: PASS/FAIL
 
-Network edge click works
+EXTERNAL OVERLAY VISUAL SEPARATION: PASS/FAIL
 
-Relationship Explorer works
+RIGHT ENTITY PANEL: PASS/FAIL
 
-Evidence drilldown works
+WORLD MAP: PASS/FAIL
 
-External cached result works
+MAP HOVER: PASS/FAIL
 
-External explicit Run button is wired
+MAP CLICK: PASS/FAIL
 
-No external call occurs automatically
+MAP SHADING: PASS/FAIL
 
-Review Queue works
+MAP SELECTION GLOW: PASS/FAIL
 
-No mock data
+EXPOSURE RANKING: PASS/FAIL
 
-==================================================
-32. REGRESSION PROTECTION
-==================================================
+CAM COVERAGE: PASS/FAIL
 
-At end verify:
+SECTOR ANALYTICS: PASS/FAIL
 
-V1 unchanged
-V2 unchanged
-V3 unchanged
+NO MOCK DATA: PASS/FAIL
 
-V3 canonical = 13
-V3 review-required = 28
-V3 unresolved subjects = 0
+NO AUTOMATIC EXTERNAL CALLS: PASS/FAIL
 
-Portfolio API unchanged
+V3 UNCHANGED: PASS/FAIL
 
-External overlay backend unchanged
-
-Stylus preset unchanged
-
-CCR unchanged
-
-RPR unchanged
-
-==================================================
-33. VALIDATION REPORT
-==================================================
-
-Create:
-
-backend/data/LENDING_FINAL_POC_UI_VALIDATION_REPORT.md
-
-Report:
-
-API CONNECTION
-direct portfolio API PASS/FAIL
-frontend connection PASS/FAIL
-502 resolved YES/NO
-
-ROUTES
-/lending PASS/FAIL
-legacy route replaced YES/NO
-/portfolio/lending redirect/status
-
-OVERVIEW
-portfolio count
-reported OSUC
-CAM count
-CAM coverage
-sector analytics PASS/FAIL
-geography PASS/FAIL
-exposure ranking PASS/FAIL
-network preview PASS/FAIL
-
-CLIENTS
-search
-filters
-sorting
-pagination
-detail drilldown
-
-NETWORK
-CAM
-Exposure
-Hidden
-External
-node selection
-edge selection
-evidence drilldown
-
-RELATIONSHIPS
-canonical count
-review count
-external count
-explorer PASS/FAIL
-
-EXTERNAL
-cache read
-explicit run control
-automatic calls = 0
-
-REVIEW
-CAM review
-external proposal
-conflict views
-
-REGRESSION
-V1 unchanged
-V2 unchanged
-V3 unchanged
-Portfolio API unchanged
-External Overlay unchanged
-Stylus unchanged
-CCR untouched
-RPR untouched
-
-==================================================
-34. FINAL RESPONSE
-==================================================
-
-Return:
-
-LENDING FINAL POC UI: PASS / FAIL
-
-502 RESOLVED:
-YES / NO
-
-Final Lending route:
-/lending
-
-Portfolio clients:
-X
-
-Reported OSUC:
-X
-
-CAM-covered clients:
-X
-
-Canonical CAM relationships:
-X
-
-Review-required CAM relationships:
-X
-
-Overview analytics:
-PASS / FAIL
-
-CAM coverage analytics:
-PASS / FAIL
-
-Sector analytics:
-PASS / FAIL
-
-Geographic analytics:
-PASS / FAIL / NOT AVAILABLE
-
-Exposure ranking:
-PASS / FAIL
-
-Clients:
-PASS / FAIL
-
-Client Detail:
-PASS / FAIL
-
-Network:
-PASS / FAIL
-
-Relationship Explorer:
-PASS / FAIL
-
-External Research:
-PASS / FAIL
-
-Review Queue:
-PASS / FAIL
-
-Automatic external executions:
-X
-
-No mock business data:
-PASS / FAIL
-
-V1 unchanged:
-PASS / FAIL
-
-V2 unchanged:
-PASS / FAIL
-
-V3 unchanged:
-PASS / FAIL
-
-Portfolio API unchanged:
-PASS / FAIL
-
-External Overlay unchanged:
-PASS / FAIL
-
-Stylus preset unchanged:
-PASS / FAIL
-
-CCR untouched:
-PASS / FAIL
-
-RPR untouched:
-PASS / FAIL
-
-Validation report:
-<path>
-
-READY FOR USER POC TEST:
-YES / NO
-
-If NO, list only genuine blockers.
+CCR UNCHANGED: PASS/FAIL
 
 Then STOP.
-
-START NOW.
