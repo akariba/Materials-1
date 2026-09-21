@@ -1,1101 +1,1160 @@
-You have completed the repository audit.
+CCR RELATIONSHIP CORRELATION — PHASE 4A
+WINDOWS LOCAL WORKING POC
 
-NOW IMPLEMENT.
+You are working inside the CURRENT CCR repository in VSCode on Windows.
 
-Do not perform another broad architecture audit.
+The immediate objective is:
 
-Do not begin Unix deployment work.
+GET THE CCR RELATIONSHIP CORRELATION TOOL WORKING LOCALLY ON WINDOWS.
 
-The long-term deployment target remains Unix/Linux, so do not introduce new Windows-only dependencies, but the immediate objective is to make the existing Lending Relationship Intelligence tools work end to end in the current environment.
+Do NOT work on Unix / Market Dev in this phase.
 
-==================================================
-IMPORTANT FINDINGS FROM THE AUDIT
-==================================================
+Do NOT spend more time fixing external DNS.
 
-Use these findings as architectural constraints.
+Do NOT require SEC, GLEIF or Web connectivity for the application to start
+and operate locally.
 
-1. The existing backend already contains a governed AI relationship workflow in:
-
-   lending_ai_relationships.py
-
-The audit found that this workflow already supports or substantially supports:
-
-- interpreting an analyst prompt into structured configuration
-- saving a relationship definition
-- saving versioned drafts
-- previewing eligible source-backed matches
-- requiring a saved version before review
-- explicit analyst approval / actor identity
-- publishing versioned AI relationship instances
-- audit events
-- provenance
-
-DO NOT recreate this capability in another service.
-
-Extend and expose it.
-
-2. The primary operational SQLite store already contains:
-
-- AI relationship definitions
-- definition versions
-- relationship instances
-- audit events
-- ingestion state
-- evidence
-- review decisions
-- external-research related state
-
-Reuse this persistence.
-
-Do NOT introduce another relationship-definition database.
-
-3. Higher-order relationships already support deterministic shared-connector synthesis.
-
-Existing supported or partially supported families include:
-
-- Common Guarantor
-- Common Collateral Provider
-- Common Ownership / Control
-- Shared Management
-- Shared Address when governed address evidence exists
-
-Reuse the existing synthesis code.
-
-4. Published AI rows already enter the Lending read layer with explicit origin / quality metadata.
-
-They do NOT mutate the frozen CAM source payload.
-
-Preserve this behavior.
-
-5. External research remains a separate evidence lane.
-
-External evidence is proposal-only and cannot independently create a published Lending relationship instance.
-
-Preserve that governance boundary.
-
-6. There is also a separate external overlay store.
-
-Do not merge this blindly into the primary relationship store.
-
-7. Do NOT work on SEC / Stylus / Helix authentication in this task.
-
-The audit established:
-
-- SEC research is delegated through Stylus Runner.
-- There is no direct SEC/EDGAR client.
-- Stylus authentication is separate from Helix/R2D2.
-- Credential refresh requires a separate focused implementation.
-
-Leave current provider behavior intact for now.
+External providers currently have connectivity problems in this Windows
+environment. The application must handle that gracefully.
 
 ==================================================
-PRIMARY OBJECTIVE
+1. OBJECTIVE
 ==================================================
 
-Make the existing AI Relationship Definition workflow usable from the application UI from beginning to end.
+Create a usable local CCR Relationship Intelligence POC using the REAL
+currently available CCR data.
 
-The user journey must become:
+The user must be able to:
 
-Relationship Explorer
-        ↓
-Relationship Definitions
-        ↓
-AI Create Relationship
-        ↓
-Describe
-        ↓
-Generate structured configuration
-        ↓
-Configure
-        ↓
-Preview against real data
-        ↓
-Inspect candidate relationships
-        ↓
-Why Detected
-        ↓
-Save Draft
-        ↓
-Version / Review
-        ↓
-Publish
-        ↓
-Generate governed relationship instances
-        ↓
-Relationship Records
-        ↓
-Network
-        ↓
-Review Queue where required
+1. open the application;
+2. understand the CCR population;
+3. search clients;
+4. open a client;
+5. see its exposure/reference information;
+6. open the relationship network;
+7. see available evidence-backed structural relationships where they really
+   exist;
+8. optionally display local research-candidate signals separately;
+9. configure AI relationship analyses;
+10. inspect SEC/GLEIF/Web provider status;
+11. run external research explicitly when connectivity is available;
+12. see a clean failure state when external connectivity is unavailable.
 
-This must use the actual existing backend and actual application data.
-
-DO NOT create mock candidates or disconnected UI.
+No fake CCR relationships.
 
 ==================================================
-STEP 0 — PRESERVE CURRENT WORK
+2. CURRENT FOUNDATION
 ==================================================
 
-Before modifying files:
+Use the existing:
 
-- inspect the current git diff / working tree
-- identify existing uncommitted changes
-- preserve already implemented work
-- do not overwrite working relationship functionality
-- do not reset the repository
-- do not discard current changes
+backend/data/ccr_relationship_intelligence.sqlite3
 
-There are already substantial modifications in the working tree.
+Current validated foundation includes approximately:
 
-Integrate with them.
+- 16,755 canonical CCR clients
+- 25,000 exposure rows
+- 24,984 linked exposure rows
+- 14 unresolved source identities
+- 16 unresolved exposure rows
+- 8,009 valid local LEIs
+- Phase-3 external research schema
+- source policy
+- research runs
+- external identity tables
+- evidence tables
+- provider cache
+- GLEIF / SEC provider infrastructure
 
-==================================================
-STEP 1 — MAP EXISTING BACKEND TO UI
-==================================================
+Recompute counts from database.
 
-Inspect the existing AI relationship code specifically.
-
-Focus on:
-
-lending_ai_relationships.py
-lending_relationship_database.py
-workbench.py
-main.py
-
-and any associated:
-
-models
-schemas
-tests
-relationship read-layer functions
-network functions
-review functions
-
-Determine the existing functions/routes for:
-
-- create definition
-- interpret prompt
-- save draft
-- list definitions
-- get definition
-- version definition
-- preview
-- approve
-- publish
-- list published instances
-- retrieve provenance
-- retrieve evidence
-- higher-order synthesis
-
-DO NOT stop after reporting this.
-
-Immediately use those existing capabilities to implement the UI.
-
-Only add API routes when an existing backend capability cannot currently be reached cleanly by the frontend.
+Do not hardcode them.
 
 ==================================================
-STEP 2 — RELATIONSHIP EXPLORER
+3. IMPORTANT WINDOWS RULE
 ==================================================
 
-Do not add another top-level navigation destination.
+External connectivity is OPTIONAL for local UI operation.
 
-Extend the existing Relationship Explorer.
+Application startup must NOT:
 
-Add two internal views:
+- call SEC
+- call GLEIF
+- call Web
+- fail because DNS is unavailable
+- automatically perform external research
 
-[ Relationship Records ]    [ Relationship Definitions ]
+External provider state may show:
 
-Default:
+AVAILABLE
+UNAVAILABLE
+NOT_CONFIGURED
+DNS_ERROR
+CACHE_ONLY
 
-Relationship Records
-
-Relationship Records must preserve the current functionality.
-
-Relationship Definitions exposes the governed definition layer.
-
-==================================================
-STEP 3 — RELATIONSHIP DEFINITIONS LIBRARY
-==================================================
-
-Implement the Relationship Definitions view using actual persisted definitions.
-
-Header:
-
-Relationship Definitions
-
-Primary action:
-
-+ Create Relationship
-
-Create Relationship options:
-
-AI Create Relationship
-Use Template
-Create Manually
-
-For this implementation, AI Create Relationship must be fully functional.
-
-Use Template and Create Manually may reuse the same structured editor if appropriate.
-
-Add actual summary metrics:
-
-Active
-Draft
-Testing / Review
-AI Assisted
-
-Do not use hardcoded numbers.
-
-Display a table/list using persisted backend values.
-
-Recommended columns:
-
-Relationship
-Category
-Entities
-Detection Method
-Source Lane
-Confidence
-Instances
-Creation Method
-Version
-Status
-Last Tested
-Last Updated
-
-Clicking a definition should open its details/version information.
+The rest of the application must continue working.
 
 ==================================================
-STEP 4 — AI CREATE RELATIONSHIP
-==================================================
-
-Use an integrated workspace.
-
-Prefer:
-
-large right-side drawer
-
-or
-
-large in-page workspace
-
-Do NOT create a chatbot page.
-
-Workflow:
-
-Describe
-Configure
-Preview
-Publish
-
-The workflow must maintain state when moving backward and forward.
-
-==================================================
-STEP 5 — DESCRIBE
-==================================================
-
-Provide:
-
-Describe the relationship you want the system to identify
-
-Large textarea.
-
-Suggested relationship starters:
-
-Common Guarantor
-Common Collateral
-Common Ownership / Control
-Shared Management
-Shared Address
-Parent / Subsidiary
-
-Example:
-
-Identify companies that share a common guarantor.
-Require at least one qualifying shared guarantor.
-Use internal evidence as the primary source.
-Send uncertain relationships for review.
-
-Action:
-
-Generate Configuration
-
-IMPORTANT:
-
-Call the existing backend interpretation/configuration logic.
-
-Do not implement a second natural-language parser in React.
-
-Do not simply copy the prompt into a database field and call that configuration.
-
-==================================================
-STEP 6 — CONFIGURE
-==================================================
-
-Render the structured configuration returned/generated by the backend.
-
-Organize it into sections.
-
-RELATIONSHIP
-
-Name
-Code
-Description
-Category
-Relationship Type
-Direction
-
-ENTITIES
-
-Source Entity
-Target Entity
-
-DETECTION
-
-Detection Family
-Connector Type
-Minimum Shared Connectors
-Maximum Connector Group Size
-Minimum Connector Confidence
-
-EVIDENCE
-
-Minimum Evidence Records
-Minimum Evidence Quality
-Require Source Document
-Require Connector ID
-Require Entity IDs
-
-SOURCES
-
-Internal / CAM
-External Research
-SEC Regulatory Filing
-Corporate Filing
-Corporate Website
-Trusted Web
-
-CONFIDENCE
-
-Minimum Confidence
-Auto Qualification Threshold
-Review Threshold
-
-GOVERNANCE
-
-Automatically Qualify
-Send for Review
-Suggest Only
-
-NETWORK
-
-Show on Network
-Edge Label
-Edge Weight
-Direction
-Maximum Traversal Depth
-
-Only display configuration fields actually supported by the backend.
-
-If a field is planned but not implemented:
-
-do NOT create a fake interactive control.
-
-Either:
-
-- hide it
-- disable it with an explanatory label
-- or explicitly mark it as future capability
-
-==================================================
-STEP 7 — HIGHER-ORDER RELATIONSHIP CONFIGURATION
-==================================================
-
-Expose the deterministic shared-connector functionality already present.
-
-Prioritize:
-
-COMMON GUARANTOR
-
-Company A
-        \
-       Guarantor X
-        /
-Company B
-
-→ Common Guarantor
-
-
-COMMON COLLATERAL
-
-Company A
-        \
-       Collateral X
-        /
-Company B
-
-→ Common Collateral Provider / Shared Collateral
-
-
-COMMON OWNERSHIP / CONTROL
-
-Company A
-        \
-        Owner X
-        /
-Company B
-
-→ Common Ownership / Control
-
-
-SHARED MANAGEMENT
-
-Company A
-        \
-       Executive X
-        /
-Company B
-
-→ Shared Management
-
-
-SHARED ADDRESS
-
-Only create this relationship when governed shared-address evidence actually exists.
-
-If no qualifying address signal exists:
-
-return zero candidates.
-
-Zero is correct.
-
-Do not manufacture candidates.
-
-==================================================
-STEP 8 — PREVIEW MUST USE REAL DATA
-==================================================
-
-Preview is the most important stage.
-
-The existing backend has already demonstrated live synthesis results.
-
-Connect the Preview UI to the real preview backend.
-
-Show actual values returned by the engine.
-
-Metrics may include:
-
-Candidate Records
-Shared Connectors
-Synthesized Entity Pairs
-High Confidence
-Review Required
-Rejected
-
-Do NOT hardcode previously observed counts.
-
-Always display the current preview response.
-
-Preview must NOT:
-
-- publish the definition
-- modify CAM
-- create permanent canonical relationships
-- change review decisions
-- leave permanent graph state
-
-==================================================
-STEP 9 — CANDIDATE RELATIONSHIPS
-==================================================
-
-Below Preview metrics show actual candidates.
-
-Each row/card should include:
-
-Entity A
-Entity B
-Relationship Type
-Shared Connector
-Confidence
-Evidence Count
-Source Lane
-Qualification
-
-Actions:
-
-Inspect
-Why Detected
-Exclude from Preview
-
-If multiple connectors contribute, display the connector count and allow inspection.
-
-==================================================
-STEP 10 — WHY DETECTED
-==================================================
-
-This must come from actual provenance.
-
-Show:
-
-WHY DETECTED
-
-Relationship Definition
-Definition Version
-
-Entity A
-Entity B
-
-Detection Family
-
-Shared Connector(s)
-
-Triggered Condition
-
-Required Value
-
-Observed Value
-
-Evidence Records
-
-Evidence IDs
-
-Supporting Relationship IDs
-
-Source Documents
-
-Confidence
-
-Confidence / Quality Components where available
-
-Qualification State
-
-Example:
-
-Definition
-Common Guarantor
-
-Entity A
-ABC Corp
-
-Entity B
-XYZ Corp
-
-Connector
-Guarantor Holdings Ltd
-
-Rule
-Minimum shared connectors >= 1
-
-Observed
-1
-
-Evidence
-3 records
-
-Confidence
-96%
-
-Qualification
-Review / Qualified
-
-Do not reconstruct fake provenance in React.
-
-Use backend evidence/provenance.
-
-==================================================
-STEP 11 — SOURCE / EVIDENCE VIEW
-==================================================
-
-For a preview candidate allow the analyst to inspect supporting evidence.
-
-Reuse existing evidence display concepts already used by Relationship Explorer.
-
-Show where available:
-
-source lane
-source document
-source record
-relationship record
-connector record
-evidence ID
-evidence quality
-origin
-
-Do not expose authentication data.
-
-==================================================
-STEP 12 — SAVE DRAFT
-==================================================
-
-Connect Save Draft to the existing persisted AI definition/version store.
-
-Do not save only in frontend state.
-
-After saving:
-
-- definition appears in Relationship Definitions
-- status is Draft
-- version is visible
-- reopening it restores the structured configuration
-
-==================================================
-STEP 13 — VERSIONING
-==================================================
-
-Reuse existing definition-version behavior.
-
-An active version must not be silently overwritten.
-
-Preferred flow:
-
-Active v1
-    ↓
-Edit
-    ↓
-Draft v2
-    ↓
-Preview
-    ↓
-Review
-    ↓
-Publish v2
-
-Display:
-
-Version
-Status
-Created At
-Created By / Actor
-Change Summary where available
-
-==================================================
-STEP 14 — PUBLISH / APPROVE
-==================================================
-
-Use the governed workflow already implemented.
-
-The audit says the existing model requires:
-
-- saved version
-- review
-- explicit analyst approval
-- actor identity
-- publication
-
-Preserve these requirements.
-
-Do NOT bypass them to make the UI easier.
-
-If actor identity is currently required by the API, provide the appropriate current-user/operator input using the existing application pattern.
-
-Publishing should create governed AI relationship instances using the existing backend.
-
-Publishing must not modify CAM.
-
-==================================================
-STEP 15 — RELATIONSHIP INSTANCES
-==================================================
-
-Published instances must retain existing provenance.
-
-At minimum preserve:
-
-definition ID
-definition version
-entity IDs
-relationship type
-connector information
-supporting relationship IDs
-evidence IDs
-source documents
-confidence
-quality
-origin
-publication/audit metadata
-
-Do not create a simplified frontend publication mechanism that loses this information.
-
-==================================================
-STEP 16 — RELATIONSHIP RECORDS INTEGRATION
-==================================================
-
-Published AI relationship instances already enter the Lending read layer.
-
-Expose them correctly in:
-
-Relationship Explorer
-→ Relationship Records
-
-Do not build another separate instance repository.
-
-Users should be able to identify origin:
-
-CAM / Internal
-AI Definition
-External / Supplemental
-
-Add filtering by Definition if practical.
-
-Opening the record should show its provenance.
-
-==================================================
-STEP 17 — NETWORK INTEGRATION
-==================================================
-
-Reuse the existing Relationship Network.
-
-Two modes are needed.
-
-A. PREVIEW MODE
-
-From the Preview stage:
-
-Preview in Network
-
-Display temporary candidate edges with:
-
-AI Preview
-
-visual semantics.
-
-These are not persisted.
-
-B. PUBLISHED MODE
-
-Published instances should appear through the existing Lending relationship read layer.
-
-Do not create another graph database.
-
-Do not duplicate graph nodes.
-
-Graph edges must remain inspectable.
-
-==================================================
-STEP 18 — REVIEW QUEUE
-==================================================
-
-Reuse the existing Review Queue.
-
-Do NOT create another review application.
-
-Where the existing governance requires review, surface AI relationship proposals through the existing review workflow.
-
-Possible presentation:
-
-CAM Review
-AI Relationship Proposals
-External Proposals
-Conflicts
-
-or equivalent filtering within the existing page.
-
-Each AI relationship review item should show:
-
-Entity A
-Entity B
-Relationship Type
-Definition
-Definition Version
-Confidence
-Evidence Count
-Primary Evidence
-Reason for Review
-
-Actions:
-
-Inspect
-Approve
-Reject
-
-Approval creates/permits governed supplemental intelligence.
-
-It must NOT write to CAM.
-
-==================================================
-STEP 19 — EXTERNAL RESEARCH BOUNDARY
-==================================================
-
-Preserve the architecture discovered in the audit.
-
-External research is separate.
-
-Do NOT make the AI relationship-definition module directly call Stylus or web research.
-
-Relationship workflow may indicate that additional external evidence is required.
-
-External Research remains responsible for gathering that evidence.
-
-External findings remain proposal-only until governed review/acceptance.
-
-Do not allow external evidence alone to silently create a published relationship instance.
-
-==================================================
-STEP 20 — DO NOT IMPLEMENT SEC CREDENTIAL CHANGES YET
+4. PRESERVE EXISTING DATA
 ==================================================
 
 Do not modify:
 
-Helix refresh
-R2D2 authentication
-Stylus token acquisition
-Stylus token refresh
-Runner Service authentication
-SEC provider authentication
+Customer_latest.parquet
+thousandClients.csv
+backend/data/ccr_clients.sqlite3
 
-in this task.
+Do not alter Phase-2 canonical identity.
 
-The audit established that these require separate treatment.
+Do not fabricate:
 
-For now preserve their current behavior.
-
-The next implementation phase will handle these integrations.
+relationships
+parents
+suppliers
+customers
+investors
+materiality
+confidence
+evidence
 
 ==================================================
-STEP 21 — KEEP THE CURRENT UI
+5. FIRST — AUDIT THE CURRENT FRONTEND
 ==================================================
 
-Do not redesign:
+Inspect the existing frontend.
+
+Determine:
+
+framework
+routes
+components
+API client
+theme/design system
+current pages
+current broken states
+
+Do not rewrite everything if usable structure exists.
+
+Reuse working components.
+
+==================================================
+6. LOCAL BACKEND CONTRACT
+==================================================
+
+Create or complete read-only/local endpoints required by the UI.
+
+Use existing FastAPI conventions.
+
+At minimum provide:
+
+GET /api/ccr/status
+
+GET /api/ccr/overview
+
+GET /api/ccr/clients
+
+GET /api/ccr/clients/{ccr_client_key}
+
+GET /api/ccr/clients/{ccr_client_key}/exposure
+
+GET /api/ccr/clients/{ccr_client_key}/identifiers
+
+GET /api/ccr/clients/{ccr_client_key}/hierarchy
+
+GET /api/ccr/clients/{ccr_client_key}/relationships
+
+GET /api/ccr/clients/{ccr_client_key}/candidates
+
+GET /api/ccr/network/{ccr_client_key}
+
+GET /api/ccr/research/status
+
+GET /api/ccr/relationship-config
+
+POST /api/ccr/relationship-config
+
+Existing compatible Phase-3 routes may be reused.
+
+Do not duplicate routes unnecessarily.
+
+==================================================
+7. OVERVIEW PAGE
+==================================================
+
+Build a clean CCR Relationship Intelligence landing page.
+
+The user should understand the tool within seconds.
+
+Show real calculated values:
+
+CCR Clients
+Exposure Records
+Resolved Clients
+Unresolved Clients
+Clients with LEI
+Research-ready Clients
+Relationship Observations
+Research Runs
+Evidence Records
+
+Do not invent monetary totals because exposure units are still UNKNOWN.
+
+If amount units are unresolved display:
+
+Exposure values available
+Units not confirmed
+
+rather than a fake USD number.
+
+==================================================
+8. GLOBAL RELATIONSHIP FOOTPRINT
+==================================================
+
+Include the world-map component in the Overview.
+
+This is important.
+
+Use actual country fields from canonical CCR clients.
+
+Show:
+
+number of CCR clients by country
+percentage of population
+selected client location
+
+If available, show relationship connection arcs ONLY for real
+evidence-backed relationships.
+
+Do NOT draw fake relationship arcs just to make the map attractive.
+
+When there are no real edges:
+
+show client distribution points / country bubbles.
+
+Label clearly:
+
+CCR Client Footprint
+
+and separately:
+
+Evidence-backed Relationship Connections
+
+==================================================
+9. CLIENTS PAGE
+==================================================
+
+Create a scalable searchable client table.
+
+Columns should use actual available fields such as:
+
+Legal Name
+GFCID
+CAGID
+Country
+Industry / Sector
+LEI
+Identity Quality
+Exposure Record Count
+Research Readiness
+
+Support:
+
+search by legal name
+GFCID
+CAGID
+LEI
+
+Filters:
+
+Country
+Sector / industry where available
+Identity quality
+Has LEI
+SEC readiness
+GLEIF readiness
+Web readiness
+
+Use backend pagination.
+
+Do not send all 16k records to browser if unnecessary.
+
+==================================================
+10. CLIENT DETAIL PAGE
+==================================================
+
+When a client is selected show:
+
+legal/display name
+
+GFCID
+CAGID
+LEI
+country
+industry
+sector
+identity quality
+
+Exposure section:
+number of exposure/facility records
+
+Do NOT present unknown-unit exposure amounts as USD.
+
+Identifiers section
+
+Research readiness:
+
+GLEIF
+SEC
+Web
+
+Provider status
+
+Relationships
+
+Research Candidates
+
+Evidence
+
+==================================================
+11. RELATIONSHIP TYPES
+==================================================
+
+Create the canonical CCR relationship taxonomy/configuration catalogue.
+
+Initial configurable types:
+
+SUPPLIER
+CRITICAL_SUPPLIER
+CUSTOMER
+KEY_CUSTOMER
+
+PARENT
+SUBSIDIARY
+ULTIMATE_PARENT
+
+INVESTOR
+SPONSOR
+
+LENDER
+FINANCING_RELATIONSHIP
+
+STRATEGIC_PARTNER
+JOINT_VENTURE
+
+TECHNOLOGY_PROVIDER
+TECHNOLOGY_DEPENDENCY
+
+CLOUD_PROVIDER
+INFRASTRUCTURE_PROVIDER
+INFRASTRUCTURE_DEPENDENCY
+
+SERVICE_PROVIDER
+
+MANUFACTURING_PARTNER
+DISTRIBUTOR
+SOURCE_OF_INPUTS
+
+OTHER_EVIDENCE_BACKED_RELATIONSHIP
+
+These are allowed taxonomy values.
+
+Their existence in the taxonomy does NOT mean a relationship exists.
+
+==================================================
+12. RELATIONSHIP DATA STATES
+==================================================
+
+Keep states explicit.
+
+CONFIRMED_EXTERNAL
+EXTERNAL_PROPOSAL_PENDING_REVIEW
+REVIEW_REQUIRED
+INSUFFICIENT_EVIDENCE
+CONFLICT
+HISTORICAL
+
+Candidate/similarity signals must NOT use these states.
+
+They belong to a separate layer:
+
+RESEARCH_CANDIDATE
+
+==================================================
+13. NETWORK VIEW
+==================================================
+
+Build the relationship network.
+
+This is a core page.
+
+Default behavior:
+
+user searches/selects ONE CCR client
+
+center node:
+selected CCR client
+
+Then display bounded connected data only.
+
+Never load the entire 16k universe.
+
+Provide layers:
+
+[✓] Evidence-backed relationships
+[ ] Research candidates
+[ ] External structural observations
+[ ] Indirect paths
+
+If no real relationship exists:
+
+show the selected node plus an honest empty state:
+
+"No evidence-backed relationships currently stored."
+
+Then optionally:
+
+"Show research candidates"
+
+==================================================
+14. RESEARCH CANDIDATES
+==================================================
+
+Use the existing Phase-2:
+
+candidate_signal_registry
+
+Candidate signals may include only locally supported dimensions.
+
+Examples:
+
+same industry
+same sector
+same geography
+existing structural identifier signal
+shared classification
+
+These are for RESEARCH SEEDING ONLY.
+
+Render candidate edges as:
+
+dashed
+light
+clearly labelled
+
+RESEARCH CANDIDATE
+
+Never:
+
+SUPPLIER
+CUSTOMER
+PARTNER
+
+unless actual evidence exists.
+
+==================================================
+15. NETWORK NODE VISUALS
+==================================================
+
+Distinguish:
+
+Selected CCR Client
+CCR Client
+External Entity
+Research Candidate
+
+When a selected node has exposure context, node size may use:
+
+exposure record count
+
+for now.
+
+Do NOT use unknown-unit exposure amount.
+
+Legend must explicitly say:
+
+Node size = Exposure Record Count
+
+if that sizing is used.
+
+==================================================
+16. NETWORK EDGE VISUALS
+==================================================
+
+Real evidence-backed:
+solid
+
+GLEIF structural observation:
+solid but separate color/style
+
+Pending review:
+dashed
+
+Research candidate:
+thin dotted/dashed
+
+Indirect:
+multi-hop style
+
+Do not visually make candidates look confirmed.
+
+==================================================
+17. EDGE INSPECTOR
+==================================================
+
+Clicking a real edge must show:
+
+Subject
+Related Entity
+Relationship Type
+Direction
+State
+Source Channel
+Source Tier
+Evidence Count
+Research Run
+Review State
+
+Button:
+
+View Evidence
+
+Clicking a candidate edge must instead show:
+
+Candidate Signal
+Why this entity was proposed for research
+Source local fields
+NOT EVIDENCE
+No confirmed relationship
+
+==================================================
+18. AI CREATE RELATIONSHIP
+==================================================
+
+Build this now.
+
+This is configuration first.
+
+Create a page/panel:
+
+AI Create Relationship
+
+The user can define analysis presets.
+
+Seed with:
+
+1. Supply Chain Dependency
+2. Technology Dependency
+3. Customer Relationship
+4. Parent / Subsidiary
+5. Investor / Sponsor
+6. Lender / Financing
+7. Strategic Partner
+8. Infrastructure Dependency
+9. Service Provider
+10. Joint Venture
+11. Custom Analysis
+
+==================================================
+19. AI CONFIG STRUCTURE
+==================================================
+
+Each preset should support:
+
+Analysis Name
+
+Active:
+ON / OFF
+
+Objective
+
+Detailed Instructions
+
+Relationship Scope
+
+Source Channels:
+[ ] SEC
+[ ] GLEIF
+[ ] High-quality Web
+
+Allowed Relationship Types
+
+Source Tier Minimum
+
+Require Primary Source:
+YES / NO
+
+Require Multiple Sources:
+YES / NO
+
+Minimum Evidence Count
+
+Allow Historical Evidence:
+YES / NO
+
+Maximum Evidence Age
+
+Direction Rules
+
+Entity Resolution Requirements
+
+Review Requirement
+
+==================================================
+20. EXAMPLE PRESET — SUPPLY CHAIN
+==================================================
+
+Seed:
+
+Analysis Name:
+Supply Chain Dependency
+
+Objective:
+
+Identify entities whose goods, services, components, technology or other
+inputs are materially required for the subject company's operations.
+
+Detailed instructions:
+
+- Look for explicit supplier/customer disclosures.
+- Determine what is supplied.
+- Determine relationship direction.
+- Distinguish ordinary supplier from dependency.
+- Do not infer a supplier relationship from shared sector.
+- Do not infer dependency from simple vendor mention.
+- Prefer explicit SEC filing or primary-source evidence.
+- Use high-quality secondary sources only when permitted.
+- Preserve evidence excerpt and citation.
+- Return insufficient evidence rather than guessing.
+
+Sources:
+
+SEC = enabled
+GLEIF = disabled for supplier relationship evidence
+Web = enabled when provider becomes available
+
+Allowed relationship types:
+
+SUPPLIER
+CRITICAL_SUPPLIER
+SOURCE_OF_INPUTS
+MANUFACTURING_PARTNER
+
+==================================================
+21. PARENT / SUBSIDIARY PRESET
+==================================================
+
+Objective:
+
+Identify defensible legal/corporate hierarchy.
+
+Primary source:
+
+GLEIF Level 2
+SEC where applicable
+
+Allowed:
+
+PARENT
+SUBSIDIARY
+ULTIMATE_PARENT
+
+Do NOT treat:
+
+beneficial owner
+investor
+sponsor
+
+as equivalent to accounting-consolidating parent.
+
+==================================================
+22. CONFIG PERSISTENCE
+==================================================
+
+Persist the AI relationship configurations.
+
+Add additive tables if needed such as:
+
+relationship_analysis_configs
+relationship_analysis_config_versions
+
+Fields should support:
+
+config_id
+name
+description
+active
+objective
+instructions
+sources
+allowed_relationship_types
+source_policy
+evidence_rules
+direction_rules
+review_rules
+created_at
+updated_at
+version
+
+Do not store config only in frontend localStorage.
+
+==================================================
+23. CONFIG VERSIONING
+==================================================
+
+Every edit creates a new version or maintains an auditable version value.
+
+The user should be able to see:
+
+Current Version
+Last Updated
+
+No need for complex approval workflow yet.
+
+==================================================
+24. EXTERNAL RESEARCH PAGE
+==================================================
+
+Create the page even though Windows connectivity is currently unavailable.
+
+Show provider cards:
+
+GLEIF
+SEC
+Web
+
+Each shows:
+
+Configured
+Connectivity
+Cache
+Last Successful Run
+Last Error
+
+For current Windows state it is valid to show:
+
+GLEIF
+Configured: Yes
+Connectivity: DNS Error
+
+SEC
+Configured: Yes
+Connectivity: DNS Error
+
+Web
+Configured: No
+
+This must NOT break the rest of the product.
+
+==================================================
+25. RUN EXTERNAL RESEARCH
+==================================================
+
+The control may exist.
+
+But execution must remain explicit.
+
+Button:
+
+Run External Research
+
+Never call external research on:
+
+page load
+client click
+network click
+tab change
+refresh
+
+If Windows DNS fails:
+
+display:
+
+Research could not run
+Provider connectivity unavailable
+
+with diagnostic status.
+
+Do not crash.
+
+==================================================
+26. RELATIONSHIP EXPLORER
+==================================================
+
+Create a table with:
+
+Subject
+Related Entity
+Relationship Type
+Direction
+Status
+Source
+Confidence / Quality
+Evidence Count
+Review State
+
+If no relationships exist:
+
+show proper empty state.
+
+Do not fill it with candidate signals.
+
+Provide a separate tab:
+
+Research Candidates
+
+==================================================
+27. EVIDENCE VIEW
+==================================================
+
+For real evidence:
+
+Publisher
+Source
+Source Tier
+Document / Filing Type
+Published Date
+Retrieved Date
+Evidence Excerpt
+Source Reference
+Admissibility
+Research Run
+
+Do not expose raw JSON by default.
+
+Technical Details may be expandable.
+
+==================================================
+28. LOCAL PROVIDER STATUS
+==================================================
+
+Application must start even if:
+
+socket.getaddrinfo(api.gleif.org) fails
+
+or
+
+socket.getaddrinfo(data.sec.gov) fails.
+
+Provider status checks must:
+
+timeout quickly
+be bounded
+not block UI startup
+
+Prefer backend cached status rather than repeated browser polling.
+
+==================================================
+29. WINDOWS STARTUP
+==================================================
+
+Make local startup straightforward.
+
+Do not permanently hardcode the user's C:\ path.
+
+Use project-relative paths.
+
+Backend:
+
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+
+Frontend:
+
+use the existing frontend toolchain.
+
+Likely:
+
+npm install
+npm run dev
+
+Use the actual repo scripts/package.json.
+
+Do not guess if different.
+
+==================================================
+30. FRONTEND API CONFIG
+==================================================
+
+For local development:
+
+frontend should communicate with backend reliably.
+
+Prefer:
+
+Vite proxy / same-origin development proxy
+
+or configurable:
+
+VITE_API_BASE_URL
+
+Do not scatter:
+
+http://127.0.0.1:8000
+
+through components.
+
+This will help later Unix migration.
+
+==================================================
+31. UI VISUAL LANGUAGE
+==================================================
+
+Reuse the established clean Relationship Intelligence visual language.
+
+Do not redesign the Stylus preset.
+
+Visual priorities:
+
+large relationship network
+clear client context
+world map
+evidence panel
+configuration panel
+
+Avoid:
+
+giant technical status dashboard
+raw JSON everywhere
+giant unbounded graph
+fake relationship counts
+
+==================================================
+32. MAIN NAVIGATION
+==================================================
+
+Preferred navigation:
+
+Overview
+
+Clients
+
+Network
+
+Relationship Explorer
+
+AI Create Relationship
+
+External Research
+
+Review
+
+Use existing navigation if already close.
+
+==================================================
+33. LOCAL WORKING ACCEPTANCE SCENARIO
+==================================================
+
+Use REAL CCR data.
+
+Select a deterministic actual client with:
+
+resolved identity
+legal name
+country
+LEI if possible
+
+Do not hardcode a famous company merely for appearance.
+
+Acceptance flow:
+
+1. Overview opens.
+2. Counts reconcile to backend.
+3. World map loads.
+4. Search client.
+5. Open client detail.
+6. Exposure record count displays.
+7. LEI displays where available.
+8. Open Network.
+9. Selected client is center node.
+10. Evidence-backed relationships display if any.
+11. Otherwise honest empty state displays.
+12. Toggle Research Candidates.
+13. Candidate nodes appear separately.
+14. Click candidate and see "NOT EVIDENCE".
+15. Open AI Create Relationship.
+16. Edit Supply Chain Dependency preset.
+17. Save.
+18. Reload page.
+19. Configuration persists.
+20. Open External Research.
+21. Provider DNS error does not crash UI.
+
+==================================================
+34. TESTS
+==================================================
+
+Add tests for:
+
+Overview API
+
+client pagination
+
+client search
+
+client detail
+
+network boundedness
+
+candidate != relationship
+
+candidate cannot appear as confirmed edge
+
+AI config CRUD
+
+AI config persistence
+
+AI config versioning
+
+external provider failure does not break local APIs
+
+GET pages do not trigger external calls
+
+network page does not trigger external calls
+
+world-map country aggregation
+
+empty relationship state
+
+evidence endpoint
+
+Phase-2 regression
+
+Phase-3 regression
+
+==================================================
+35. RUN THE APPLICATION
+==================================================
+
+After implementation:
+
+start backend
+
+start frontend
+
+exercise the local acceptance flow.
+
+Use localhost/127.0.0.1 only for this Windows POC.
+
+If browser automation/playwright already exists, use it.
+
+Otherwise perform API tests plus frontend build/typecheck.
+
+==================================================
+36. SCREENSHOTS
+==================================================
+
+If browser tooling is available, capture screenshots of:
 
 Overview
 Clients
+Client Detail
 Network
-Relationship Explorer
+AI Create Relationship
 External Research
-Review Queue
 
-Use the existing styling and design system.
+Save under an appropriate local test/output directory.
 
-Do not create:
-
-- a separate AI application
-- a chatbot-style screen
-- a second Network
-- a second Review Queue
-- a second evidence explorer
-
-Extend the existing application.
+Do not embed mock business values.
 
 ==================================================
-STEP 22 — PORTABILITY GUARDRAIL
+37. REPORT
 ==================================================
 
-The later target is Unix/Linux deployment.
+Create:
 
-For all NEW code in this task:
+backend/data/CCR_PHASE4A_WINDOWS_LOCAL_POC_REPORT.md
 
-do not introduce:
+Include:
 
-C:\ paths
-PowerShell requirements
-cmd.exe requirements
-Windows-only path handling
-new working-directory assumptions
-frontend credentials
-new hardcoded localhost business logic
-
-Use existing portable Python/path utilities.
-
-But do not spend this task fixing the broader deployment blockers from the audit.
-
-TOOLS FIRST.
-
-==================================================
-STEP 23 — TEST EXISTING BACKEND CAPABILITY FIRST
-==================================================
-
-Before UI validation, exercise the actual backend AI workflow directly.
-
-At minimum verify:
-
-create definition
-create version
-preview definition
-approve where required
-publish
-read published instance
-read provenance
-
-Verify higher-order preview for:
-
-Common Guarantor
-Common Collateral
-Common Ownership / Control
-Shared Management
-
-Verify Shared Address safely returns zero when qualifying governed signals do not exist.
-
-Do not insert permanent test data into the live-like store unless required.
-
-Use isolated tests where possible.
-
-==================================================
-STEP 24 — FRONTEND TESTS
-==================================================
-
-Validate:
-
-Relationship Definitions tab opens
-
-Definitions list loads from backend
-
-AI Create Relationship opens
-
-Natural language description can generate configuration
-
-Generated configuration renders correctly
-
-Configuration can be edited
-
-Save Draft works
-
-Saved Draft reloads
-
-Preview works
-
-Preview returns real candidates
-
-Candidate Inspect works
-
-Why Detected works
-
-Evidence can be inspected
-
-Preview in Network works
-
-Preview edges are temporary
-
-Publish workflow works
-
-Published instances become visible in Relationship Records
-
-Published relationships appear in Network where appropriate
-
-Review-required relationships appear in Review Queue
-
-CAM data remains unchanged
-
-==================================================
-STEP 25 — END-TO-END VALIDATION
-==================================================
-
-Perform one full live workflow using:
-
-COMMON GUARANTOR
-
-Use this description:
-
-Identify companies that share a common guarantor.
-Require at least one qualifying shared guarantor.
-Use internal evidence as the primary source.
-Relationships that do not qualify for automatic acceptance should require analyst review.
-
-Then perform:
-
-1. Generate Configuration
-2. Inspect generated structured definition
-3. Save Draft
-4. Reopen Draft
-5. Preview
-6. Record actual preview metrics
-7. Inspect an actual candidate
-8. Verify actual shared connector
-9. Open Why Detected
-10. Verify evidence/provenance
-11. Preview in Network
-12. Confirm graph preview is temporary
-13. Complete required analyst approval
-14. Publish
-15. Confirm versioned instance was created
-16. Confirm instance appears in Relationship Records
-17. Confirm published edge can appear in Network
-18. Confirm review routing where applicable
-19. Confirm audit event exists
-20. Confirm CAM source payload is unchanged
-
-==================================================
-STEP 26 — REGRESSION VALIDATION
-==================================================
-
-Run:
-
-all backend tests
-
-the existing AI relationship tests
-
-frontend TypeScript validation
-
-frontend build
-
-frontend tests if configured
-
-diagnostics for modified files
-
-Existing audit information indicated:
-
-56 backend full-suite tests previously passed
-5 focused AI tests previously passed
-frontend production build previously passed
-
-Do not regress these.
-
-==================================================
-FINAL RESPONSE
-==================================================
-
-When finished report:
-
-IMPLEMENTED
-
-EXISTING BACKEND CAPABILITIES REUSED
-
+ROUTES
+API STATUS
+UI PAGES
+OVERVIEW COUNTS
+CLIENT SEARCH
+NETWORK
+WORLD MAP
+RESEARCH CANDIDATES
+RELATIONSHIP CONFIG
+EXTERNAL PROVIDER STATUS
+TEST RESULTS
+KNOWN LIMITATIONS
 FILES CHANGED
 
-NEW API ROUTES, IF ANY
+==================================================
+38. FINAL RESPONSE
+==================================================
 
-DEFINITIONS UI
+Return exactly:
+
+CCR WINDOWS LOCAL POC: PASS / FAIL
+
+BACKEND
+Running:
+URL:
+Health:
+
+FRONTEND
+Running:
+URL:
+Build/typecheck:
+
+OVERVIEW
+CCR clients:
+Exposure rows:
+Resolved:
+Unresolved:
+LEI clients:
+World map: PASS / FAIL
+
+CLIENTS
+Search: PASS / FAIL
+Pagination: PASS / FAIL
+Client detail: PASS / FAIL
+
+NETWORK
+Selected-client graph: PASS / FAIL
+Evidence-backed edges:
+Research candidate layer: PASS / FAIL
+Candidate/evidence separation: PASS / FAIL
+No full-universe graph: PASS / FAIL
 
 AI CREATE RELATIONSHIP
+Page: PASS / FAIL
+Default presets:
+Edit: PASS / FAIL
+Save: PASS / FAIL
+Persistence: PASS / FAIL
+Versioning: PASS / FAIL
 
-DRAFT / VERSION WORKFLOW
+EXTERNAL RESEARCH
+GLEIF status:
+SEC status:
+Web status:
+DNS failure handled gracefully: PASS / FAIL
+Automatic external calls: 0 / FAIL
 
-PREVIEW RESULTS
+RELATIONSHIPS
+Confirmed external:
+Pending review:
+GLEIF observations:
+Research candidates:
+Synthetic relationships: 0 / FAIL
 
-COMMON GUARANTOR TEST RESULT
+TESTS
+Passed:
+Failed:
 
-COMMON COLLATERAL TEST RESULT
+SCREENSHOTS
+Overview:
+Clients:
+Client Detail:
+Network:
+AI Create Relationship:
+External Research:
 
-COMMON OWNERSHIP / CONTROL TEST RESULT
+REPORT:
+backend/data/CCR_PHASE4A_WINDOWS_LOCAL_POC_REPORT.md
 
-SHARED MANAGEMENT TEST RESULT
+WINDOWS LOCAL POC READY:
+YES / NO
 
-SHARED ADDRESS RESULT
-
-WHY DETECTED / PROVENANCE
-
-PUBLISH RESULT
-
-RELATIONSHIP EXPLORER INTEGRATION
-
-NETWORK INTEGRATION
-
-REVIEW QUEUE INTEGRATION
-
-AUDIT EVENTS
-
-CAM IMMUTABILITY CHECK
-
-BACKEND TEST RESULTS
-
-FRONTEND BUILD RESULT
-
-KNOWN LIMITATIONS
-
-Do not mark the task complete because components merely compile or render.
-
-Completion requires a real Definition → Preview → Inspect → Approve → Publish → Relationship Record → Network / Review flow using actual source-backed data.
-
-Do not start Unix deployment work.
-
-Do not start SEC / Helix / Stylus credential work.
-
-Focus exclusively on making the relationship tools operate end to end.
+STOP.
