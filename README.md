@@ -1,42 +1,16 @@
-You are working on the existing CCRIG / Lending Relationship Intelligence repository.
+Proceed with Phase 1 of Unix portability for CCRIG.
 
-The final target is Unix/Linux deployment. I want to be able to copy the CCRIG project to Unix, configure it, install dependencies, start it, and have the complete application work end to end.
+Goal:
 
-DO NOT modify code yet.
+The same repository must work in:
 
-First perform a deep repository audit.
+1. Windows development
+2. Unix/Linux development
+3. Unix/Linux deployment
 
-Inspect the entire repository for:
+Do NOT change product behavior or redesign the UI.
 
-- Windows-specific paths
-- C:\ references
-- Users\ / Downloads\ references
-- PowerShell / pwsh
-- cmd.exe
-- .bat / .ps1 dependencies
-- hardcoded localhost / 127.0.0.1
-- hardcoded ports 5174 / 8001
-- absolute filesystem paths
-- database paths
-- data paths
-- log paths
-- frontend build/start logic
-- backend start logic
-- SEC integration
-- Helix
-- Stylus
-- bearer tokens
-- refresh logic
-- credential cache
-- environment variables
-- subprocess usage
-- shell=True
-- runtime-generated files
-- relationship definition persistence
-- relationship instance persistence
-- external research persistence
-
-Also inspect the current application architecture for:
+Preserve:
 
 Overview
 Clients
@@ -44,42 +18,158 @@ Network
 Relationship Explorer
 External Research
 Review Queue
-AI Create Relationship / Relationship Definitions
+Relationship Definitions
+AI Create Relationship
+CAM-authoritative separation
+existing evidence and review behavior
 
-I specifically need you to determine:
+Implement the following.
 
-1. How the backend currently starts.
-2. How the frontend currently starts.
-3. Whether the frontend can be served as a production build.
-4. Where application data is stored.
-5. Where relationship definitions are stored.
-6. Where relationship instances are stored.
-7. How External Research works.
-8. How SEC requests are executed.
-9. Exactly how Helix credentials are obtained.
-10. Exactly how Stylus credentials are obtained.
-11. How token expiration is detected.
-12. How tokens are refreshed today.
-13. Whether anything depends on Windows-only authentication.
-14. What will fail if the folder is copied directly to Unix today.
-15. Which files need modification to make the application Unix-ready.
+A. REMOVE PLATFORM-SPECIFIC PATH ASSUMPTIONS
 
-Return a structured report only.
+Replace Windows-specific and absolute runtime paths with pathlib-based configurable paths.
 
-Use sections:
+Create a central runtime configuration layer.
 
-CURRENT ARCHITECTURE
-WINDOWS DEPENDENCIES
-FRONTEND RUNTIME
-BACKEND RUNTIME
-PERSISTENCE
-SEC / HELIX / STYLUS
-RELATIONSHIP DEFINITIONS
-UNIX BLOCKERS
-FILES THAT NEED CHANGES
-RECOMMENDED IMPLEMENTATION ORDER
+Support at minimum:
 
-Do not implement anything yet.
-Do not rewrite existing working modules.
-Do not invent Helix or Stylus authentication behavior.
-Base the report only on what actually exists in the repository.
+CCRIG_HOME
+CCRIG_DATA_DIR
+CCRIG_LOG_DIR
+CCRIG_DATABASE_PATH
+CCRIG_HOST
+CCRIG_PORT
+
+Development defaults may derive from the repository root.
+
+Do not hardcode /opt/ccrig.
+Allow /opt/ccrig as a deployment example only.
+
+All durable runtime data must use configurable locations.
+
+B. FRONTEND PRODUCTION BUILD
+
+Keep Vite dev mode for development.
+
+For Unix deployment:
+
+npm ci
+npm run build
+
+must produce the frontend production build.
+
+Configure FastAPI to serve the built React frontend.
+
+Target production architecture:
+
+Browser
+   |
+   v
+CCRIG backend :8001
+   |- /api/...       FastAPI API
+   |- /...           React production build
+
+Support React SPA fallback for routes including:
+
+/lending
+/lending/clients
+/lending/network
+/lending/relationships
+/lending/external-research
+/lending/review
+
+Do not require Vite port 5174 in production.
+
+C. HOST / PORT
+
+Do not force 127.0.0.1.
+
+Use configurable host and port.
+
+Development can default to:
+127.0.0.1:8001
+
+Deployment must support:
+0.0.0.0:8001
+
+D. PERSISTENCE
+
+Ensure application restart does not lose:
+
+relationship definitions
+definition versions
+published relationship instances
+review state
+external research cache
+SEC evidence metadata
+user-created configuration
+
+Do not store durable application data in temp directories.
+
+E. LOGGING
+
+Use CCRIG_LOG_DIR.
+
+Make logs work on Windows and Unix.
+
+Do not log:
+credentials
+tokens
+Authorization headers
+cookies
+secret environment values
+
+F. HEALTH CHECK
+
+Add:
+
+GET /api/health
+
+Return only non-sensitive status such as:
+
+application
+database
+relationship_engine
+external_research
+frontend_build
+
+Possible states:
+ready
+degraded
+unavailable
+
+Do not add SEC credential detail yet; that comes in the next phase.
+
+G. VALIDATION
+
+Run:
+
+backend tests
+frontend TypeScript check
+frontend production build
+
+Then start CCRIG in production-style mode using the frontend build served by FastAPI.
+
+Validate:
+
+/
+/lending
+/lending/clients
+/lending/network
+/lending/relationships
+/lending/external-research
+/lending/review
+/api/health
+
+Return:
+
+FILES CHANGED
+PATH CHANGES
+NEW ENVIRONMENT VARIABLES
+FRONTEND SERVING MODEL
+PERSISTENCE MODEL
+TEST RESULTS
+MANUAL VALIDATION RESULTS
+REMAINING UNIX BLOCKERS
+
+Do not move to Helix/Stylus work yet.
