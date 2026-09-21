@@ -1,839 +1,1013 @@
-CCR RELATIONSHIP CORRELATION — PHASE 1
-FULL DATA / REPOSITORY FORENSIC AUDIT
+CCR RELATIONSHIP CORRELATION — PHASE 2
+CANONICAL CCR CLIENT + EXPOSURE FOUNDATION
 
 You are working inside the CURRENT CCR repository opened in VSCode.
 
-This is CCR only.
+This is CCR ONLY.
 
-DO NOT inspect, modify, import from, or change:
+Do not inspect, import from, modify, or depend on:
 - Lending
 - CCRIG
 - RPR
-- any other repository or project
+- any other repository
 
-Do not implement the relationship engine yet.
-Do not redesign the frontend.
-Do not run SEC research.
-Do not run Web research.
-Do not call external APIs.
-Do not modify source datasets.
-Do not overwrite any SQLite database.
-Do not fabricate relationships or enrichment.
+Phase 1 has completed and produced:
 
-This phase is READ-ONLY discovery and validation.
+backend/data/CCR_RELATIONSHIP_PHASE1_DATA_AUDIT.md
+
+READ THAT REPORT FIRST.
+
+Treat its findings as the starting evidence, but independently recompute
+critical row counts during implementation rather than hardcoding report values.
 
 ==================================================
 1. OBJECTIVE
 ==================================================
 
-We are preparing to build a CCR Relationship Correlation / Relationship Intelligence capability.
+Build the clean canonical data foundation required for the future:
 
-The intended eventual architecture is:
+CCR Relationship Correlation / Relationship Intelligence system.
 
-CCR client/exposure population
-    ↓
-canonical client identity
-    ↓
-entity resolution
-    ↓
-SEC / authoritative reference enrichment
-    ↓
-high-quality Web enrichment where allowed
-    ↓
-relationship candidate discovery
-    ↓
-relationship evidence
-    ↓
-relationship classification
-    ↓
-quality / confidence / admissibility gates
-    ↓
+The intended future pipeline is:
+
+Customer_latest.parquet
+        ↓
+master client reference
+        ↓
+CCR exposure population
+        ↓
+canonical CCR client identity
+        ↓
+legal/entity hierarchy
+        ↓
+external identity enrichment
+        ↓
+SEC / GLEIF / high-quality Web evidence
+        ↓
+relationship discovery
+        ↓
+AI Create Relationship configuration
+        ↓
 CCR relationship graph
-    ↓
-AI Create Relationship configurable analysis
 
-BUT DO NOT BUILD THIS YET.
+THIS PHASE implements only:
 
-First establish exactly what data and code already exist.
+MASTER REFERENCE
+        +
+CCR EXPOSURE EXTRACT
+        ↓
+CANONICAL CCR CLIENT UNIVERSE
+        ↓
+NORMALIZED EXPOSURE RECORDS
+        ↓
+IDENTITY RESOLUTION / EXCEPTIONS
+        ↓
+HIERARCHY READINESS
+        ↓
+RELATIONSHIP-RESEARCH READINESS
 
-There are three particularly important assets expected in the repository:
-
-1. Customer_latest.parquet
-   - approximately 3 million customer/client records
-   - this is the MASTER client/customer dataset
-
-2. thousandClients.csv
-   - despite its filename, DO NOT assume it contains exactly 1,000 records
-   - this is the CCR working extract created from exposure/client information
-   - determine its actual row count and actual client population
-
-3. backend/data/ccr_clients.sqlite3
-   - existing application artifact / SQLite database
-   - determine exactly how it was built and what it contains
-
-There may also be:
-
-backend/scripts/build_ccr_client_artifact.py
-
-and existing frontend/backend structures.
+Do NOT implement relationship discovery yet.
 
 ==================================================
-2. HARD RULE: MASTER VS CCR POPULATION
+2. IMPORTANT KNOWN PHASE-1 FINDINGS
 ==================================================
 
-Treat:
+Phase 1 reported approximately:
+
+Customer_latest.parquet:
+- 3.67M rows
+- ~3.658M unique GFCIDs
+
+thousandClients.csv:
+- 25,000 facility/exposure rows
+- 16,769 unique GFCIDs
+
+Reconciliation:
+- very high exact GFCID match
+- 14 unresolved GFCIDs
+- 31 unresolved CAGIDs
+
+Existing ccr_clients.sqlite3:
+- master/reference artifact
+- ~3.658M customer records
+- no proper CCR exposure/facility layer
+
+These values MUST be recomputed from source.
+
+Do not hardcode them.
+
+==================================================
+3. HARD SAFETY RULES
+==================================================
+
+DO NOT modify:
 
 Customer_latest.parquet
 
-as the MASTER client reference universe unless repository evidence proves otherwise.
-
-Treat:
+DO NOT modify:
 
 thousandClients.csv
 
-as a CCR-derived population/exposure extract.
+DO NOT overwrite:
 
-Do not treat the CSV as authoritative for attributes that should come from the master unless that is explicitly how the current build works.
+backend/data/ccr_clients.sqlite3
 
-Do not assume:
-- one CSV row = one client
-- every client exists once
-- every row represents one legal entity
-- all exposure rows are client-level
-- every client maps cleanly to Customer_latest.parquet
+Treat ccr_clients.sqlite3 as a frozen/reference artifact for now.
 
-Determine these facts empirically.
+Create a SEPARATE CCR relationship-intelligence database.
 
-==================================================
-3. FIRST — INVENTORY THE REPOSITORY
-==================================================
+Preferred path:
 
-Inspect the current repository tree.
+backend/data/ccr_relationship_intelligence.sqlite3
 
-Report relevant files under:
+If repository conventions strongly indicate another appropriate path/name,
+document the reason before using it.
 
-backend/
-backend/app/
-backend/app/core/
-backend/app/routers/
-backend/data/
-backend/scripts/
-frontend/
+Do not delete or mutate Phase-1 outputs.
 
-Also search the entire CURRENT repository for:
+Do not make external network calls.
 
-CCR
-client
-customer
-exposure
-relationship
-correlation
-graph
-network
-SEC
-EDGAR
-CIK
-LEI
-GLEIF
-Stylus
-preset
-AI Create Relationship
-relationship configuration
-external research
-web research
-R2D2
-confidence
-evidence
-source tier
-admissibility
+Specifically:
 
-Do NOT assume these components exist.
-
-Report exactly what exists.
-
-For every relevant discovered file provide:
-
-PATH
-PURPOSE
-USED BY
-STATUS:
-- active
-- apparently legacy
-- unclear
-- generated artifact
+NO SEC
+NO EDGAR
+NO GLEIF API
+NO Web search
+NO R2D2
+NO external AI research
 
 ==================================================
-4. AUDIT Customer_latest.parquet
+4. SOURCE AUTHORITY MODEL
 ==================================================
 
-Use an efficient Parquet-aware method.
+Enforce this authority model.
 
-Prefer:
-- pyarrow
-- parquet metadata
-- DuckDB if already available
-- pandas only where reasonable
-
-Do not convert the 3M-row file to CSV.
-
-Report:
-
-FILE PATH
-FILE SIZE
-ROW COUNT
-COLUMN COUNT
-ROW GROUP COUNT
-PARQUET SCHEMA
-
-For every column report:
-
-COLUMN
-TYPE
-NON-NULL COUNT
-NULL COUNT
-NULL %
-APPROX/EXACT DISTINCT COUNT where practical
-SAMPLE VALUES (safe short examples only)
-
-Identify candidate fields for:
-
-- master client/customer ID
-- CAGID or equivalent internal ID
-- legal entity name
-- short/client/display name
-- alternate names
-- parent name
-- ultimate parent
-- country
-- country of incorporation
-- domicile
-- address
-- city
-- state
-- postal code
-- industry
-- sector
-- NAICS
-- SIC
-- LEI
-- CIK
-- ticker
-- exchange
-- public/private indicator
-- legal entity type
-- client type
-- website/domain
-- status / active flag
-- hierarchy fields
-- regulatory identifiers
-
-Do not invent mappings.
-If field meaning is unclear mark UNKNOWN.
-
-==================================================
-5. MASTER DATA QUALITY
-==================================================
-
-Perform data-quality tests on Customer_latest.parquet.
-
-At minimum:
-
-A. ID QUALITY
-
-Determine likely primary client identifier(s).
-
-For each likely identifier report:
-
-rows
-non-null
-unique
-duplicate count
-duplicate %
-blank/whitespace count
-
-B. LEGAL NAME QUALITY
-
-For primary legal/client name field(s):
-
-non-null count
-blank count
-unique raw names
-unique normalized names
-
-Create a TEMPORARY in-memory normalization only for analysis:
-
-uppercase/lowercase normalization
-trim whitespace
-collapse repeated spaces
-remove obvious punctuation differences
-
-DO NOT modify the source file.
-
-Identify:
-- exact duplicate names
-- normalized duplicate names
-- suspicious placeholder names
-- N/A / UNKNOWN / TEST / DUMMY-like values
-- obvious encoding problems
-
-Give counts and representative examples.
-
-C. IDENTIFIER QUALITY
-
-If available test:
-
-LEI:
-- expected length/format
-- duplicates
-- invalid-looking values
-
-CIK:
-- numeric/normalized validity
-- duplicates
-- invalid-looking values
-
-Ticker:
-- coverage
-- duplicate ticker cases
-- exchange ambiguity if exchange exists
-
-Do not externally validate identifiers yet.
-
-D. ENTITY HIERARCHY
-
-Determine whether Customer_latest already contains:
-
-parent
-immediate parent
-ultimate parent
-legal hierarchy
-relationship manager hierarchy
-business hierarchy
-
-Clearly distinguish true legal/corporate hierarchy from internal client classifications.
-
-E. COVERAGE PROFILE
-
-Calculate coverage % for all fields potentially useful for CCR relationship discovery.
-
-Especially:
-
-legal name
-country
-industry
-sector
-LEI
-CIK
-ticker
-website
-parent
-ultimate parent
-public/private
-
-==================================================
-6. AUDIT thousandClients.csv
-==================================================
-
-Do not trust the filename.
-
-Report:
-
-FILE SIZE
-ROW COUNT
-COLUMN COUNT
-COLUMN NAMES
-INFERRED TYPES
-
-For every field:
-
-COLUMN
-TYPE
-NON-NULL
-NULL
-DISTINCT
-SAMPLE VALUES
-
-Then classify every column as one of:
-
-CLIENT_IDENTITY
-CLIENT_REFERENCE
-EXPOSURE
-LIMIT
-PRODUCT
-LEGAL_ENTITY
-PORTFOLIO
-DATE
-CLASSIFICATION
-UNKNOWN
-
-Determine:
-
-- actual unique CCR clients
-- actual number of rows
-- whether rows repeat because of exposures/products/netting sets/etc.
-- whether there are duplicate identical rows
-- likely client identifier
-- total number of unique identifiers
-- missing identifier rows
-- duplicate identifier distribution
-
-If exposure fields exist:
-
-DO NOT assume units.
-
-Report:
-field name
-min
-max
-median
-sum
-negative-count
-zero-count
-null-count
-
-But label units UNKNOWN unless established by repository/source metadata.
-
-==================================================
-7. RECONCILE CCR CSV TO 3M MASTER
-==================================================
-
-Determine the strongest deterministic join key between:
-
-thousandClients.csv
-
-and:
+A. MASTER IDENTITY AUTHORITY
 
 Customer_latest.parquet
 
-Possible keys may include:
-CAGID
-client/customer ID
-LEI
-another internal identifier
+is authoritative for master client/reference attributes when available.
 
-Do not fuzzy-match names yet unless there is no deterministic identifier.
+B. CCR POPULATION / EXPOSURE AUTHORITY
 
-Report candidate join keys and quality.
+thousandClients.csv
 
-For the best available deterministic key calculate:
+defines the CCR population in current scope and carries the exposure/facility
+records relevant to this CCR prototype.
 
-CCR unique clients
-matched to master
-unmatched
-master duplicates for join key
-CCR duplicate identifiers
-one-to-one matches
-one-to-many matches
-many-to-one conditions
+C. RELATIONSHIP AUTHORITY
 
-Produce percentages.
+NONE YET.
 
-If multiple candidate IDs exist, compare them.
+Neither file may manufacture a corporate/economic relationship merely because:
 
-For unmatched CCR clients:
-show up to 20 representative records with only useful diagnostic fields.
+- two clients are in the same country
+- two clients are in the same sector
+- two clients have exposure
+- two clients share a product
+- two clients share an owner field
+- two clients have similar names
+- two clients appear near one another
+- two entities belong to the same group classification
 
-Do NOT repair them yet.
+Those may later help candidate generation.
+
+They are NOT external relationship evidence.
 
 ==================================================
-8. AUDIT ccr_clients.sqlite3
-==================================================
-
-Open read-only.
-
-Report:
-
-SQLite version if relevant
-file size
-
-List every table/view/index.
-
-For each table:
-
-name
-row count
-columns
-primary key
-foreign keys
-indexes
-
-Show schema.
-
-Determine whether database contains:
-
-client master
-CCR population
-exposure information
-relationship information
-SEC information
-web information
-evidence
-configuration
-graph edges
-AI configuration
-
-Report actual contents, not assumptions.
-
-==================================================
-9. TRACE BUILD LINEAGE
-==================================================
-
-Inspect:
-
-backend/scripts/build_ccr_client_artifact.py
-
-and every file it imports or calls that is relevant.
-
-Explain exactly:
-
-INPUTS
-    ↓
-TRANSFORMATIONS
-    ↓
-MATCHING / FILTERING
-    ↓
-OUTPUTS
-
-Determine:
-
-- whether it reads Customer_latest.parquet
-- whether it reads thousandClients.csv
-- how it joins them
-- which columns survive
-- whether data is aggregated
-- whether duplicate clients are collapsed
-- whether exposure rows are collapsed
-- how ccr_clients.sqlite3 is produced
-- whether values are hardcoded
-- whether any mock/synthetic values exist
-- whether any records are silently dropped
-- whether row counts are validated
-- whether there are tests
-
-Do not change the script.
-
-==================================================
-10. SEARCH FOR EXISTING SEC INFRASTRUCTURE
-==================================================
-
-We expect the future CCR relationship engine to rely heavily on SEC where applicable.
-
-Search CURRENT CCR repository for any existing:
-
-SEC
-EDGAR
-submissions API
-companyfacts
-CIK mapping
-filing parser
-10-K
-10-Q
-8-K
-DEF 14A
-13D
-13G
-13F
-filing cache
-SEC user-agent configuration
-rate limiting
-SEC source tier
-SEC evidence structure
-
-Report:
-
-EXISTS / DOES NOT EXIST
-
-for each relevant capability.
-
-If something exists, report:
-file
-class/function
-configuration
-cache
-runtime contract
-outputs
-
-DO NOT call SEC.
-
-==================================================
-11. SEARCH FOR EXISTING WEB RESEARCH INFRASTRUCTURE
-==================================================
-
-Search only the current CCR repository.
-
-Identify whether there is any existing:
-
-R2D2
-web search
-external research
-source-quality classifier
-publisher allowlist
-publisher denylist
-source tier
-evidence admissibility
-confidence calculation
-URL normalization
-research caching
-
-Report exact implementation if found.
-
-Do not execute it.
-
-==================================================
-12. SEARCH FOR STYLUS / UI PRESET
-==================================================
-
-Search for:
-
-Stylus
-stylus
-preset
-theme
-design tokens
-CSS variables
-Tailwind configuration
-component library
-layout system
-
-Determine whether the CURRENT CCR repository already contains or references the
-existing Stylus preset.
-
-Report exact path(s).
-
-Do not modify the preset.
-
-If no local Stylus preset exists, say:
-
-STYLUS_PRESET_LOCAL = NOT FOUND
-
-Do not invent one.
-
-==================================================
-13. EXISTING RELATIONSHIP / CORRELATION CAPABILITY
-==================================================
-
-Search for any implementation of:
-
-relationship
-related entity
-correlation
-network
-graph
-edge
-node
-supplier
-customer
-parent
-subsidiary
-investor
-sponsor
-lender
-technology dependency
-strategic partner
-industry relation
-macro/theme relation
-
-Report whether each is:
-
-IMPLEMENTED
-PARTIAL
-PLACEHOLDER
-NOT FOUND
-
-If graph/network UI exists, report current routes/components/API dependencies.
-
-If correlation math exists, explain what "correlation" means there.
-
-Do not assume Pearson correlation is the intended CCR relationship model.
-
-==================================================
-14. AI / MODEL CONFIGURATION
-==================================================
-
-Search for:
-
-OpenAI
-AI provider
-model
-Luna
-LLM
-prompt
-AI config
-AI create relationship
-relationship config
-preset
-
-Report:
-
-- provider abstraction if any
-- environment variables
-- model configuration
-- prompt locations
-- structured-output schemas
-- deterministic fallback
-- cache
-- retry behavior
-
-Do not expose secrets.
-Only report environment VARIABLE NAMES, never secret values.
-
-==================================================
-15. DATA ACCURACY / STRUCTURAL VERDICT
-==================================================
-
-After completing the audit, provide an evidence-based assessment.
-
-Answer:
-
-A. Is Customer_latest.parquet structurally suitable as the 3M master reference source?
-
-B. Is thousandClients.csv structurally suitable as the CCR population/exposure source?
-
-C. Can CCR clients be deterministically reconciled to the master?
-
-D. Is ccr_clients.sqlite3 a faithful derivative of those inputs?
-
-E. What information is currently missing for relationship discovery?
-
-F. Which master fields are usable immediately for candidate generation?
-
-G. Which fields must NOT be treated as relationship evidence?
-
-IMPORTANT PRINCIPLE:
-
-Exposure, common geography, common industry, shared classification, or mere
-co-occurrence do NOT by themselves establish a relationship.
-
-They may be candidate-generation/blocking signals, but not relationship evidence.
-
-==================================================
-16. DO NOT IMPLEMENT YET
-==================================================
-
-Do not:
-
-- modify data
-- build new database tables
-- add SEC
-- add Web
-- add relationship engine
-- add UI
-- add relationship presets
-- change Stylus
-- create synthetic relationships
-- create fake test business data
-
-This phase ends with analysis only.
-
-==================================================
-17. OUTPUT FILE
+5. BUILD A CANONICAL CCR DATABASE
 ==================================================
 
 Create:
 
-backend/data/CCR_RELATIONSHIP_PHASE1_DATA_AUDIT.md
+backend/data/ccr_relationship_intelligence.sqlite3
 
-Do not overwrite any unrelated existing report.
+Use foreign keys where appropriate.
 
-The report must contain:
+Enable:
 
-1. Repository inventory
-2. Master Parquet audit
-3. CCR CSV audit
-4. CCR-to-master reconciliation
-5. SQLite audit
-6. Build lineage
-7. Existing SEC infrastructure
-8. Existing Web infrastructure
-9. Existing Stylus/preset state
-10. Existing relationship capability
-11. Existing AI/model configuration
-12. Data-quality findings
-13. Critical blockers
-14. Recommendations for Phase 2
+PRAGMA foreign_keys = ON
+
+Create an appropriate schema containing at minimum the following logical
+structures.
+
+Exact table names may be adapted slightly to repository naming conventions,
+but preserve the semantics.
+
+--------------------------------------------------
+5A. canonical_clients
+--------------------------------------------------
+
+Exactly ONE canonical row per CCR client identity where resolvable.
+
+Required fields should include where available:
+
+ccr_client_key
+gfcid
+cagid
+legal_name
+display_name
+normalized_name
+
+country
+country_code
+country_of_risk
+country_of_incorporation
+
+industry
+sector
+industry_code
+naics
+sic
+
+lei
+cik
+ticker
+exchange
+
+client_type
+account_type
+legal_entity_type
+
+website
+domain
+
+parent_gfcid
+parent_name
+ultimate_parent_gfcid
+ultimate_parent_name
+
+source_master_row_reference where practical
+
+identity_status
+identity_quality
+identity_resolution_method
+
+sec_research_eligible
+gleif_research_eligible
+web_research_eligible
+
+created_at
+build_version
+
+IMPORTANT:
+
+Only populate fields that actually exist or are defensibly derived from
+existing local fields.
+
+Do not fabricate missing identifiers.
+
+If multiple possible columns correspond to the same concept, document the
+mapping.
+
+--------------------------------------------------
+5B. exposure_records
+--------------------------------------------------
+
+Preserve the original CCR exposure/facility granularity.
+
+Do NOT collapse the 25,000 source rows into one row per client.
+
+Create one normalized record per relevant source row.
+
+Include:
+
+exposure_record_id
+source_row_number or stable source-row hash
+ccr_client_key
+gfcid
+cagid
+
+all meaningful exposure/facility/product fields
+
+raw amount/value fields
+normalized numeric representation where safe
+
+source_file
+build_version
+
+Retain original source values where needed for auditability.
+
+If a field's unit is not documented:
+
+DO NOT guess.
+
+Persist:
+
+unit_status = UNKNOWN
+
+or equivalent metadata.
+
+--------------------------------------------------
+5C. client_exposure_summary
+--------------------------------------------------
+
+Create a derived one-row-per-client summary.
+
+Include only mathematically valid aggregations.
+
+Possible fields where data permits:
+
+exposure_record_count
+facility_count
+product_count
+
+reported exposure totals
+positive exposure totals
+negative exposure totals
+zero exposure rows
+
+But do not sum fields unless they are actually additive.
+
+Before aggregating each numeric field classify it:
+
+ADDITIVE
+NON_ADDITIVE
+UNKNOWN
+
+Do not aggregate NON_ADDITIVE or UNKNOWN measures into misleading totals.
+
+Persist this classification somewhere explicit.
+
+--------------------------------------------------
+5D. identity_resolution
+--------------------------------------------------
+
+Persist the exact CCR → master reconciliation.
+
+At minimum:
+
+source_gfcid
+source_cagid
+source_name
+
+matched_master_gfcid
+matched_master_cagid
+matched_master_name
+
+resolution_status
+resolution_method
+match_quality
+conflict_reason
+
+Statuses should include concepts such as:
+
+EXACT_GFCID
+EXACT_CAGID
+GFCID_CAGID_CONFLICT
+MASTER_DUPLICATE
+CCR_DUPLICATE_IDENTIFIER
+UNRESOLVED
+REVIEW_REQUIRED
+
+Do not force unresolved records into a resolved state.
+
+--------------------------------------------------
+5E. identity_exceptions
+--------------------------------------------------
+
+Persist every unresolved or conflicting identity condition.
+
+Include:
+
+exception_id
+source_record/client
+exception_type
+gfcid
+cagid
+name
+description
+candidate_master_ids if relevant
+status
+review_required
+
+The known Phase-1 unresolved populations must therefore be visible and
+queryable rather than hidden.
+
+--------------------------------------------------
+5F. identifier_aliases
+--------------------------------------------------
+
+Create a bounded identity/alias table for existing local identifiers.
+
+Examples:
+
+GFCID
+CAGID
+LEI
+CIK
+ticker
+legal-name alias
+
+Fields:
+
+ccr_client_key
+identifier_type
+identifier_value
+normalized_value
+source
+is_primary
+quality
+
+Do not create inferred aliases from arbitrary fuzzy name matching.
+
+--------------------------------------------------
+5G. hierarchy_records
+--------------------------------------------------
+
+Extract any actual hierarchy information already present in the master.
+
+Possible relationship concepts:
+
+LEGAL_PARENT
+ULTIMATE_PARENT
+BENEFICIAL_OWNER
+INTERNAL_PARENT
+UNKNOWN_HIERARCHY_TYPE
+
+CRITICAL:
+
+Do not automatically equate:
+
+owner
+beneficial owner
+parent
+ultimate parent
+relationship manager hierarchy
+account hierarchy
+
+Determine semantics from field names/data/repository context.
+
+Persist:
+
+child_client_key
+parent_reference
+hierarchy_type
+source_field
+source_value
+quality
+status
+
+If a hierarchy concept cannot be established reliably, mark it UNKNOWN or
+REVIEW_REQUIRED.
+
+Do not manufacture ownership edges.
 
 ==================================================
-18. FINAL RESPONSE TO ME
+6. EXPOSURE SEMANTICS ANALYSIS
 ==================================================
 
-Do not paste the entire report into chat.
+Phase 1 identified exposure semantics as a blocker.
+
+Resolve as much as possible LOCALLY.
+
+Inspect:
+
+- source column names
+- README
+- comments
+- build scripts
+- any existing data dictionaries
+- configuration
+- tests
+- API code
+
+For every numeric CCR field create a classification:
+
+FIELD
+BUSINESS CONCEPT
+TYPE
+UNIT
+UNIT STATUS
+ADDITIVE?
+CAN SUM ACROSS ROWS?
+CAN SUM ACROSS CLIENTS?
+NEGATIVE VALUES VALID?
+ZERO VALUES VALID?
+SOURCE OF INTERPRETATION
+CONFIDENCE
+
+Allowed UNIT STATUS:
+
+CONFIRMED
+LIKELY
+UNKNOWN
+
+Do not convert LIKELY into CONFIRMED.
+
+Do not invent currency.
+
+Generate:
+
+backend/data/CCR_EXPOSURE_DATA_DICTIONARY.md
+
+==================================================
+7. IDENTITY QUALITY SCORE
+==================================================
+
+Create an EXPLAINABLE categorical identity-quality classification.
+
+Do NOT create a mysterious ML score.
+
+Recommended categories:
+
+HIGH
+MEDIUM
+LOW
+UNRESOLVED
+
+Example principles:
+
+HIGH:
+- exact stable master identifier
+- no conflicting identifier
+- legal name present
+
+MEDIUM:
+- stable identifier resolved
+- some useful identity fields missing
+
+LOW:
+- weak or incomplete master identity
+- unresolved hierarchy/alias ambiguity
+
+UNRESOLVED:
+- no defensible canonical master mapping
+
+Store reasons.
+
+For example:
+
+identity_quality_reason = [
+  "EXACT_GFCID_MATCH",
+  "LEGAL_NAME_PRESENT",
+  "CAGID_CONFLICT"
+]
+
+Use actual applicable reasons only.
+
+==================================================
+8. RESEARCH-READINESS FLAGS
+==================================================
+
+We will use these in the SEC/GLEIF/Web phase later.
+
+Do NOT run research yet.
+
+Create deterministic readiness fields.
+
+--------------------------------------------------
+SEC readiness
+--------------------------------------------------
+
+sec_research_eligible = true only where existing local information provides
+a defensible SEC identity path.
+
+Strong examples may include:
+
+- valid existing CIK
+- another explicit local SEC identifier
+
+Do not assume every US company is SEC registered.
+
+If only company name/country exists:
+
+SEC status should be:
+
+UNKNOWN / DISCOVERY_REQUIRED
+
+not eligible-by-fact.
+
+--------------------------------------------------
+GLEIF readiness
+--------------------------------------------------
+
+If valid LEI exists:
+
+GLEIF_LOOKUP_READY
+
+If no LEI but high-quality legal identity exists:
+
+GLEIF_DISCOVERY_REQUIRED
+
+Otherwise:
+
+INSUFFICIENT_IDENTITY
+
+--------------------------------------------------
+Web readiness
+--------------------------------------------------
+
+May be READY when there is sufficiently specific legal identity to construct
+a bounded future research query.
+
+Avoid marking generic/ambiguous names as high-quality Web-ready.
+
+Persist reasons.
+
+==================================================
+9. RELATIONSHIP CANDIDATE SIGNALS — DATA ONLY
+==================================================
+
+Do NOT create relationships.
+
+But identify which LOCAL fields may later be used for candidate generation.
+
+Classify each candidate signal as:
+
+IDENTITY
+BLOCKING
+CANDIDATE_SIGNAL
+RELATIONSHIP_EVIDENCE
+
+For this phase:
+
+RELATIONSHIP_EVIDENCE should almost certainly be NONE unless the local data
+contains genuine independently sourced relationship evidence.
+
+Examples of candidate signals may include:
+
+same sector
+same country
+same industry
+common ultimate parent where genuinely established
+same issuer group
+similar classification
+
+But explicitly record:
+
+candidate signal ≠ relationship evidence
+
+Create an internal registry/table or JSON config if appropriate:
+
+candidate_signal_registry
+
+with:
+
+signal_name
+source_field
+classification
+description
+safe_for_candidate_generation
+safe_as_relationship_evidence
+
+==================================================
+10. DO NOT BUILD N×N PAIRS
+==================================================
+
+There are ~16k CCR clients.
+
+Do NOT produce a full dense pair matrix.
+
+Do NOT calculate:
+
+16k × 16k
+
+relationship scores.
+
+Do NOT create millions of speculative client pairs.
+
+Future architecture will use candidate generation before research/scoring.
+
+For this phase only establish the normalized entity foundation.
+
+==================================================
+11. PERFORMANCE REQUIREMENT
+==================================================
+
+Do not repeatedly scan the entire 3.6M-row Parquet unnecessarily.
+
+Use efficient approaches:
+
+- PyArrow predicate/column projection
+- DuckDB where appropriate
+- chunked processing
+- indexed temporary lookup structures
+
+Load only required columns.
+
+The final CCR relationship database should contain only the data required for
+the CCR population and relationship workflow.
+
+Do NOT copy all ~3.6M master customer records into the new relationship
+database.
+
+The existing ccr_clients.sqlite3 can remain the large reference artifact.
+
+==================================================
+12. BUILD SCRIPT
+==================================================
+
+Create a deterministic builder.
+
+Preferred:
+
+backend/scripts/build_ccr_relationship_foundation.py
+
+The script should:
+
+1. inspect source schemas
+2. load CCR extract
+3. determine CCR population
+4. obtain corresponding master records
+5. reconcile identities
+6. preserve exceptions
+7. normalize exposure records
+8. generate safe exposure summaries
+9. extract hierarchy fields
+10. calculate research-readiness states
+11. populate SQLite
+12. validate counts
+13. write build report
+
+Running twice from unchanged input should produce logically identical business
+data.
+
+Timestamp metadata may differ.
+
+==================================================
+13. SOURCE HASHES / LINEAGE
+==================================================
+
+Record source lineage.
+
+At minimum persist/hash:
+
+Customer_latest.parquet
+thousandClients.csv
+
+Record:
+
+path
+file size
+SHA-256 if practical
+modified time
+build time
+
+The final database should be traceable back to its sources.
+
+==================================================
+14. TESTS
+==================================================
+
+Add tests.
+
+At minimum prove:
+
+1. Source Parquet unchanged.
+
+2. Source CSV unchanged.
+
+3. Existing ccr_clients.sqlite3 unchanged.
+
+4. Number of canonical CCR identities equals the independently derived
+resolvable CCR population plus explicit unresolved handling.
+
+5. No duplicate canonical primary client key.
+
+6. Every normalized exposure row either:
+   - references a canonical client
+   OR
+   - is represented in a clearly identified unresolved exception state.
+
+7. Original CCR source row count reconciles to:
+   normalized rows + explicitly rejected/exception rows.
+
+8. No records silently disappear.
+
+9. Identity conflicts are not silently promoted.
+
+10. GFCID/CAGID disagreement is persisted.
+
+11. Exposure units are not fabricated.
+
+12. UNKNOWN exposure semantics remain UNKNOWN.
+
+13. Non-additive fields are not summed.
+
+14. No SEC calls.
+
+15. No Web calls.
+
+16. No GLEIF calls.
+
+17. No synthetic business relationships created.
+
+18. Build is deterministic.
+
+19. Foreign-key integrity passes.
+
+20. No full N×N relationship pair generation occurs.
+
+==================================================
+15. VALIDATION QUERIES
+==================================================
+
+After building, run and report queries for:
+
+canonical CCR clients
+resolved identities
+unresolved identities
+identity conflicts
+
+exposure rows
+exposure rows linked
+exposure rows unresolved
+
+clients with:
+CIK
+LEI
+ticker
+website
+parent
+ultimate parent
+
+SEC:
+READY
+DISCOVERY_REQUIRED
+INSUFFICIENT
+
+GLEIF:
+LOOKUP_READY
+DISCOVERY_REQUIRED
+INSUFFICIENT
+
+Web:
+READY
+AMBIGUOUS
+INSUFFICIENT
+
+identity quality:
+HIGH
+MEDIUM
+LOW
+UNRESOLVED
+
+Do not hardcode expected values.
+
+==================================================
+16. BUILD REPORT
+==================================================
+
+Create:
+
+backend/data/CCR_RELATIONSHIP_PHASE2_FOUNDATION_REPORT.md
+
+Include:
+
+SOURCE RECONCILIATION
+CANONICAL CLIENTS
+EXPOSURE NORMALIZATION
+EXPOSURE SEMANTICS
+IDENTITY EXCEPTIONS
+HIERARCHY COVERAGE
+IDENTIFIER COVERAGE
+RESEARCH READINESS
+DATA QUALITY
+TEST RESULTS
+PERFORMANCE
+OPEN ISSUES
+
+Include exact table row counts.
+
+==================================================
+17. IMPORTANT FUTURE CONTRACT
+==================================================
+
+Design the foundation so that Phase 3 can later add external evidence without
+changing canonical client identity.
+
+Future evidence should be attachable by:
+
+ccr_client_key
+
+and related external/canonical entity key.
+
+Future relationship evidence will need fields such as:
+
+subject_entity
+related_entity
+relationship_type
+direction
+source_channel
+publisher
+source_title
+filing_type
+published_date
+source_reference
+evidence_excerpt
+source_tier
+admissibility
+confidence
+research_run_id
+
+DO NOT populate these yet.
+
+Only ensure the identity model will support them.
+
+==================================================
+18. DO NOT IMPLEMENT YET
+==================================================
+
+Do not implement:
+
+SEC connector
+GLEIF connector
+Web research
+R2D2
+relationship extraction
+relationship scoring
+relationship confidence
+relationship graph
+AI Create Relationship
+relationship configuration UI
+Stylus changes
+frontend redesign
+
+Those are later phases.
+
+==================================================
+19. FINAL RESPONSE FORMAT
+==================================================
 
 Return exactly:
 
-CCR PHASE 1 DATA AUDIT: PASS / FAIL
+CCR PHASE 2 FOUNDATION: PASS / FAIL
 
-MASTER PARQUET
-Rows:
-Columns:
-Likely primary ID:
-Unique primary IDs:
-Duplicate primary IDs:
-Legal-name coverage:
-LEI coverage:
-CIK coverage:
-Ticker coverage:
-Parent coverage:
-Ultimate-parent coverage:
+DATABASE:
+<path>
 
-CCR CSV
-Rows:
-Unique CCR clients:
-Likely client ID:
-Exposure fields:
-Duplicate client rows:
-Missing client IDs:
+SOURCE
+Master rows:
+CCR source rows:
+Unique CCR GFCIDs:
+Unique CCR CAGIDs:
 
-MASTER RECONCILIATION
-Matched:
-Unmatched:
-One-to-one:
-Ambiguous:
-Match rate:
+CANONICAL IDENTITY
+Canonical clients:
+Exact GFCID:
+Exact CAGID fallback:
+Conflicts:
+Unresolved:
+High quality:
+Medium quality:
+Low quality:
 
-CCR SQLITE
-Tables:
-Client rows:
-Exposure rows:
-Relationship rows:
-Build lineage understood: YES / NO
+EXPOSURE
+Normalized exposure rows:
+Linked exposure rows:
+Unresolved exposure rows:
+Numeric exposure fields:
+Confirmed-unit fields:
+Unknown-unit fields:
+Additive fields:
+Non-additive/unknown fields:
 
-SEC INFRASTRUCTURE
-Existing: YES / PARTIAL / NO
-Key files:
+HIERARCHY
+Clients with parent:
+Clients with ultimate parent:
+Hierarchy conflicts:
+Hierarchy unknown:
 
-WEB INFRASTRUCTURE
-Existing: YES / PARTIAL / NO
-Key files:
+IDENTIFIERS
+CIK:
+LEI:
+Ticker:
+Website/domain:
 
-STYLUS PRESET
-Found locally: YES / NO
-Path:
+RESEARCH READINESS
+SEC ready:
+SEC discovery required:
+SEC insufficient:
+GLEIF lookup ready:
+GLEIF discovery required:
+GLEIF insufficient:
+Web ready:
+Web ambiguous:
+Web insufficient:
 
-RELATIONSHIP ENGINE
-Existing: YES / PARTIAL / NO
+INTEGRITY
+Foreign keys: PASS / FAIL
+Source row reconciliation: PASS / FAIL
+Source files unchanged: PASS / FAIL
+Existing ccr_clients.sqlite3 unchanged: PASS / FAIL
+External calls made: 0 / FAIL
+Synthetic relationships created: 0 / FAIL
+Dense N×N pairs generated: 0 / FAIL
 
-AI CREATE RELATIONSHIP CONFIG
-Existing: YES / PARTIAL / NO
-
-TOP 10 DATA QUALITY FINDINGS
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-10.
-
-PHASE 2 BLOCKERS
-1.
-2.
-3.
+TESTS:
+X passed / Y failed
 
 REPORT:
-<exact path>
+backend/data/CCR_RELATIONSHIP_PHASE2_FOUNDATION_REPORT.md
 
-No implementation yet.
+EXPOSURE DICTIONARY:
+backend/data/CCR_EXPOSURE_DATA_DICTIONARY.md
+
+PHASE 3 READY:
+YES / NO
+
+If NO:
+list only genuine blockers.
+
 STOP.
