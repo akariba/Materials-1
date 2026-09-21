@@ -1,151 +1,548 @@
-CONTINUE FROM CURRENT STATE — DO NOT START OVER
+LENDING — PORTFOLIO / MATERIALITY API
 
-Continue the Lending External Research Overlay backend task from exactly the
-current repository/session state.
+Build the read-only Lending portfolio analytics layer required by the final
+POC UI.
 
-Do NOT restart the implementation.
-Do NOT rerun V3 extraction.
-Do NOT modify V1, V2, V3 relationship data or source artifacts.
-Do NOT modify the Stylus preset.
-Do NOT modify the frontend.
-Do NOT touch CCR.
+This stage is BACKEND/API ONLY.
 
-First inspect the current working tree and distinguish:
+Do NOT redesign or modify the frontend yet.
 
-1. changes that existed before this external-overlay task;
-2. changes created by this task.
+==================================================
+TRUSTED DATA BOUNDARIES
+==================================================
+
+Keep these populations distinct.
+
+A. CAM-priority / credit-portfolio population
+Source:
+CAM CAGIDs List_20260918.xlsx
+
+Validated:
+- 2,484 distinct CAGIDs
+- 1,698 with CAM data
+- 786 without CAM data
+- 928 with exactly 1 CAM
+- 770 with exactly 2 CAMs
+- 0 with >2 CAMs
+- total supplied OSUC approximately $349.27B
+- CAM-covered supplied OSUC approximately $259.93B
 
 IMPORTANT:
-The existing V3 files visible in the working tree may contain approved
-pre-existing changes from the completed V3/Project Miner work.
+This is scope-limited.
+It is NOT proven to be the complete Lending universe.
 
-Do NOT overwrite, revert, regenerate, or normalize them merely because they
-appear modified.
+OSUC is SUPPLEMENTAL because:
+- explicit as-of date is unavailable
+- unit definition is not encoded in workbook metadata
+- hedge treatment is not established
 
-Continue only the external-overlay implementation.
+Never label this field "OSUC Net of Hedges".
 
-Complete ALL remaining tasks:
+Use wording such as:
+"Reported OSUC"
+or
+"Portfolio OSUC"
+and preserve the source limitation.
 
-1. Finish backend conventions/fixture integration.
-2. Finish overlay data models/schema.
-3. Finish normalization and governance service.
-4. Finish explicit external-research API boundary.
-5. Finish cache implementation.
-6. Finish focused automated tests.
-7. Run validation and produce the required statistics report.
+B. AI Economy Masterfile
+- 418 clients
+- separate analytical population
+- overlap with 2,484 = 330
+- absent from 2,484 = 88
 
-Use:
-CoreWeave_NVIDIA_Relationship_Research.json
+Do not silently merge these populations.
 
-as the golden fixture.
+C. V3 CAM relationship layer
+Frozen:
+- 13 canonical relationships
+- 28 review-required relationships
+- 0 unresolved CAM document subjects
 
-Acceptance requirements remain:
+V3 remains authoritative internal relationship evidence.
 
-- exactly 2 semantic findings:
-  supplier
-  technology_dependency
+D. External overlay
+The external-research overlay backend has PASSED.
 
-- supplier direction:
-  NVIDIA -> CoreWeave / B_TO_A
+External intelligence remains separate from V3 CAM truth.
 
-- technology_dependency direction:
-  CoreWeave -> NVIDIA / A_TO_B
+==================================================
+HARD RULES
+==================================================
 
-- external data remains separate from CAM V3
-- SEC source normalization enforced
-- duplicate evidence controlled
-- cross_source_corroboration recomputed by backend
-- no fuzzy entity guessing
-- no invented CAGIDs
-- caching works
-- read endpoints never trigger external research
-- startup never triggers external research
-- external execution requires explicit POST/user action
-- frontend untouched
-- CCR untouched
+LENDING ONLY.
 
-Do not make a live Stylus/R2D2/SEC call unless absolutely required for the
-final acceptance test and the existing configured runner is already
-available.
+Do NOT:
+- modify V1
+- modify V2
+- modify V3
+- rerun extraction
+- modify CAM source documents
+- modify source workbooks
+- modify Stylus preset
+- call SEC/R2D2/Web
+- modify CCR
+- rebuild frontend
+- create fake/demo portfolio values
+- infer relationship facts from structured portfolio workbooks
 
-The local golden-fixture test is sufficient for this stage.
+This stage is read-only analytics/API.
 
-Before completion verify regression protection:
+==================================================
+OBJECTIVE
+==================================================
 
-- V1 unchanged
-- V2 unchanged
-- V3 canonical relationships = 13
-- V3 review-required relationships = 28
-- V3 unresolved document subjects = 0
-- approved V3 digest/hash unchanged from the state at the start of this task
-- Stylus preset unchanged
+Expose clean backend endpoints for:
 
-If any unexpected V3 difference is detected:
-STOP modifying it.
-Report the difference.
-Do not attempt to repair V3 automatically.
+1. portfolio overview
+2. portfolio clients
+3. client detail
+4. exposure/materiality analytics
+5. CAM coverage
+6. sectors
+7. V3 relationship summaries
+8. external overlay summaries
+9. review queue statistics
 
-At the end generate:
+Use actual repository data only.
 
-backend/data/LENDING_EXTERNAL_OVERLAY_VALIDATION_REPORT.md
+==================================================
+PORTFOLIO OVERVIEW
+==================================================
 
-and, if already planned,
-backend/data/LENDING_EXTERNAL_OVERLAY_VALIDATION_REPORT.json
+Provide an endpoint conceptually similar to:
 
-Final response must contain:
+GET /lending/portfolio/overview
 
-LENDING EXTERNAL OVERLAY BACKEND: PASS / FAIL
+Return:
 
-Golden fixture parsed:
-Fixture findings received:
-Semantic findings retained:
+population_name
+population_scope_description
+client_count
+clients_with_cam
+clients_without_cam
+one_cam_count
+two_cam_count
 
-Supplier direction:
-Technology dependency direction:
+reported_osuc_total
+reported_osuc_cam_covered
+reported_osuc_no_cam
 
-Evidence received:
-Evidence retained:
-Evidence filtered/flagged:
+cam_coverage_pct_by_clients
+cam_coverage_pct_by_osuc
 
-SEC evidence normalized:
-SEC duplicated as Web:
+sector_count
 
-Backend cross-source corroboration recomputed:
+canonical_relationship_count
+review_required_relationship_count
 
-Entity matches:
-Unresolved entity matches:
+external_proposal_count
+external_conflict_count
 
-CAM_CORROBORATION:
-EXTERNAL_PROPOSAL_PENDING_REVIEW:
-CONFLICT_REVIEW_REQUIRED:
-NO_EXTERNAL_CORROBORATION:
-MENTION_ONLY:
-INSUFFICIENT_EVIDENCE:
+data_quality / limitation flags
 
-Cache write:
-Cache read:
-Duplicate execution prevented:
+Include explicit metadata:
 
-Explicit-run-only:
-Automatic startup executions:
-Automatic read executions:
+osuc_authority = SUPPLEMENTAL
+osuc_as_of_date = null if unknown
+osuc_net_of_hedges = UNKNOWN
+population_authority = SCOPE_LIMITED
+
+Do not hide these limitations.
+
+==================================================
+CLIENT LIST
+==================================================
+
+Provide:
+
+GET /lending/portfolio/clients
+
+Support:
+- search by CAGID
+- search by name
+- sector filter
+- CAM coverage filter
+- relationship-risk-rating filter if available
+- credit-classification filter if available
+- country/exclusion filter if available
+- sorting
+- pagination
+
+Return per client:
+
+CAGID
+client name
+sector L1
+sector L2
+sector L3
+country risk
+reported OSUC
+portfolio share
+exposure rank
+CAM count
+CAM coverage flag
+relationship risk rating
+credit classification
+country exclusion flag
+
+V3 relationship counts:
+- canonical
+- review-required
+
+External overlay counts:
+- corroborations
+- proposals
+- conflicts
+
+Do not execute external research from this endpoint.
+
+==================================================
+EXPOSURE MATERIALITY
+==================================================
+
+Compute exposure materiality only.
+
+Do NOT create a generic "risk score".
+
+For each client calculate where possible:
+
+reported_osuc
+portfolio_share
+exposure_rank
+exposure_percentile
+cumulative_portfolio_share
+
+Materiality is based on exposure only.
+
+Call it:
+
+EXPOSURE MATERIALITY
+
+Do not call it:
+- overall risk
+- credit risk score
+- relationship risk score
+
+Do not invent business thresholds.
+
+Expose raw metrics first.
+
+If tiers are needed for UI convenience, make them configurable and label
+them clearly as UI analytical bands, not approved risk policy.
+
+==================================================
+TOP EXPOSURES
+==================================================
+
+Provide:
+
+GET /lending/portfolio/top-exposures
+
+Support a configurable limit.
+
+Return:
+- rank
+- CAGID
+- client
+- reported OSUC
+- portfolio %
+- cumulative portfolio %
+- sector
+- CAM count
+- canonical relationship count
+- review relationship count
+
+==================================================
+SECTOR ANALYTICS
+==================================================
+
+Provide:
+
+GET /lending/portfolio/sectors
+
+Return by sector:
+
+client count
+reported OSUC
+portfolio share
+CAM-covered client count
+CAM-covered OSUC
+no-CAM OSUC
+1-CAM count
+2-CAM count
+
+Validate that the CAM-covered sector totals reconcile to the validated
+1,698-client / approximately $259.93B population.
+
+==================================================
+CAM COVERAGE
+==================================================
+
+Provide:
+
+GET /lending/portfolio/cam-coverage
+
+Return:
+
+with CAM
+without CAM
+1 CAM
+2 CAMs
+
+and corresponding reported OSUC values.
+
+IMPORTANT:
+
+"CAM data available" does NOT mean:
+- physical PDF/DOCX CAM exists locally
+- CAM is current
+- CAM type is known
+- CCM is proven
+- annual review is proven
+
+Expose those caveats in response metadata.
+
+==================================================
+CLIENT DETAIL
+==================================================
+
+Provide:
+
+GET /lending/portfolio/client/{cagid}
+
+Return:
+
+identity
+portfolio metadata
+reported OSUC
+portfolio share
+rank
+sector
+country
+CAM count
+risk rating
+credit classification
+
+Then relationship intelligence:
+
+V3 canonical relationships
+V3 review-required relationships
+external overlay results
+
+Keep sections separate:
+
+cam_relationships
+cam_review_relationships
+external_intelligence
+
+Never merge external intelligence into CAM truth.
+
+==================================================
+RELATIONSHIP SUMMARY
+==================================================
+
+Provide a lightweight endpoint for UI network/overview use.
+
+Conceptually:
+
+GET /lending/portfolio/client/{cagid}/relationships
+
+Allow filters:
+
+canonical
+review_required
+external
+relationship_type
+direct/indirect
+current/emerging/historical/terminated
+
+Do not expose the old 32,957 noisy candidate population.
+
+Only use:
+- V3 canonical 13
+- V3 review-required 28
+- governed external overlay
+
+==================================================
+REVIEW QUEUE SUMMARY
+==================================================
+
+Provide:
+
+GET /lending/review/summary
+
+Return counts for:
+
+V3 review-required
+external proposals pending review
+external conflicts
+external insufficient evidence
+unresolved entity matches
+
+==================================================
+POPULATION METADATA
+==================================================
+
+Provide:
+
+GET /lending/populations
+
+Return each population independently:
+
+CAM Priority / Credit Portfolio
+AI Economy Masterfile
+Technology
+CoreAI
+CoreAI tracker
+physical CAM subject population
+
+For each:
+- count
+- description
+- source
+- authority
+- overlap information where available
+
+Do not pretend one is the universal denominator.
+
+==================================================
+PERFORMANCE
+==================================================
+
+Do not load multi-million-row Customer_latest.parquet on every API call.
+
+Use existing indexed/reference mechanisms or load only what is required.
+
+POC implementation:
+simple, deterministic, fast.
+
+Avoid enterprise-scale refactoring.
+
+==================================================
+TESTS
+==================================================
+
+Add tests for:
+
+- overview population count = 2,484
+- CAM count = 1,698
+- no-CAM = 786
+- 1 CAM = 928
+- 2 CAMs = 770
+- no >2 CAM rows
+- exposure arithmetic reconciles
+- sector totals reconcile
+- search/filter/pagination
+- portfolio shares sum appropriately
+- exposure ranking deterministic
+- client drill-down
+- canonical V3 count remains 13
+- review-required remains 28
+- rejected/noisy 32,957 candidates are NOT exposed
+- external overlay remains separate
+- read endpoints trigger zero SEC/R2D2 calls
+- CCR inaccessible from Lending routes
+
+==================================================
+REGRESSION
+==================================================
+
+Verify:
+
+V1 unchanged
+V2 unchanged
+V3 unchanged
+external overlay tests still pass
+Stylus preset unchanged
+frontend unchanged
+CCR untouched
+
+==================================================
+FINAL REPORT
+==================================================
+
+Generate:
+
+backend/data/LENDING_PORTFOLIO_API_VALIDATION_REPORT.md
+
+Final response:
+
+LENDING PORTFOLIO API: PASS / FAIL
+
+Portfolio clients:
+Clients with CAM:
+Clients without CAM:
+1 CAM:
+2 CAMs:
+
+Reported OSUC total:
+Reported CAM-covered OSUC:
+Reported no-CAM OSUC:
+
+OSUC authority:
+SUPPLEMENTAL
+
+Portfolio overview endpoint:
+PASS / FAIL
+
+Client list endpoint:
+PASS / FAIL
+
+Client detail endpoint:
+PASS / FAIL
+
+Top exposure endpoint:
+PASS / FAIL
+
+Sector endpoint:
+PASS / FAIL
+
+CAM coverage endpoint:
+PASS / FAIL
+
+Relationship endpoint:
+PASS / FAIL
+
+Review summary endpoint:
+PASS / FAIL
+
+Population metadata endpoint:
+PASS / FAIL
+
+V3 canonical exposed:
+13
+
+V3 review-required exposed:
+28
+
+32,957 noisy candidates exposed:
+0
+
+Automatic external calls from read endpoints:
+0
 
 Tests passed:
 Tests failed:
 
 V1 unchanged:
+PASS / FAIL
+
 V2 unchanged:
+PASS / FAIL
+
 V3 unchanged:
-Stylus preset unchanged:
+PASS / FAIL
+
+External overlay unchanged:
+PASS / FAIL
+
 Frontend unchanged:
+PASS / FAIL
+
 CCR untouched:
+PASS / FAIL
 
-Validation report:
-<path>
-
-READY FOR PORTFOLIO API + UI INTEGRATION:
+READY FOR FINAL UI REBUILD:
 YES / NO
-
-If NO, list only genuine blockers.
 
 Then STOP.
