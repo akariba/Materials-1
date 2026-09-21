@@ -1,12 +1,27 @@
-You have just completed the CCRIG repository audit.
+You have just completed the Lending Relationship Intelligence repository audit.
 
 Use the findings from that audit as context, but DO NOT start the Unix/Linux deployment refactor yet.
 
-The long-term target remains that CCRIG will eventually run as a packaged application on a Unix instance and be accessed through a link. Therefore, avoid introducing new Windows-only dependencies, hardcoded local paths, PowerShell-only business logic, or frontend-held credentials.
+The long-term target remains that the application will eventually run as a packaged application on a Unix instance and be accessed through a link.
 
-FOR THIS TASK, HOWEVER, FOCUS ONLY ON MAKING THE RELATIONSHIP INTELLIGENCE TOOL WORK END TO END IN THE CURRENT ENVIRONMENT.
+Therefore, avoid introducing new:
 
-Do not spend time creating deployment scripts, systemd services, Unix installers, packaging scripts, reverse proxies, or production hosting configuration.
+- Windows-only dependencies
+- hardcoded local paths
+- PowerShell-only business logic
+- frontend-held credentials
+- development-only architectural assumptions
+
+FOR THIS TASK, HOWEVER, FOCUS ONLY ON MAKING THE RELATIONSHIP INTELLIGENCE TOOLS WORK END TO END IN THE CURRENT ENVIRONMENT.
+
+Do not spend time creating:
+
+- deployment scripts
+- systemd services
+- Unix installers
+- packaging scripts
+- reverse proxies
+- production hosting configuration
 
 ==================================================
 PRIMARY OBJECTIVE
@@ -36,7 +51,7 @@ The completed workflow must allow me to:
 4. Describe the desired relationship in natural language.
 5. Have the system generate a structured relationship configuration.
 6. Edit the configuration.
-7. Preview the configuration against actual CCRIG data.
+7. Preview the configuration against actual application data.
 8. See actual candidate relationships.
 9. Inspect why each candidate was detected.
 10. Save the definition as Draft.
@@ -71,6 +86,7 @@ Company ↔ Company
 Condition:
 Both companies share at least one qualifying guarantor.
 
+
 2. RELATIONSHIP INSTANCE
 
 A concrete detected relationship between actual entities.
@@ -83,6 +99,7 @@ XYZ Corp
 
 Shared connector:
 Guarantor Holdings Ltd
+
 
 3. CORRELATION
 
@@ -104,7 +121,11 @@ Company C
 
 DO NOT collapse these into one object.
 
-This task focuses primarily on Definition → Instance.
+This task focuses primarily on:
+
+Relationship Definition
+        ↓
+Relationship Instance
 
 ==================================================
 IMPORTANT GOVERNANCE PRINCIPLE
@@ -134,25 +155,25 @@ STEP 1 — INSPECT AND REUSE EXISTING IMPLEMENTATION
 
 Before adding new modules, inspect the existing repository for components already created for:
 
-relationship definitions
-definition versions
-AI relationship configuration
-relationship synthesis
-higher-order synthesis
-common guarantor
-common collateral
-common ownership
-common control
-shared management
-shared address
-relationship preview
-relationship persistence
-relationship instance persistence
-evidence aggregation
-confidence scoring
-review workflow
-network graph
-external relationship lane
+- relationship definitions
+- definition versions
+- AI relationship configuration
+- relationship synthesis
+- higher-order synthesis
+- common guarantor
+- common collateral
+- common ownership
+- common control
+- shared management
+- shared address
+- relationship preview
+- relationship persistence
+- relationship instance persistence
+- evidence aggregation
+- confidence scoring
+- review workflow
+- network graph
+- external relationship lane
 
 Reuse existing implementation whenever possible.
 
@@ -171,6 +192,15 @@ Specifically determine whether existing backend capabilities already support:
 
 If something already exists, connect the UI to it rather than rewriting it.
 
+Before coding, briefly identify:
+
+EXISTING COMPONENT
+CURRENT PURPOSE
+CAN REUSE?
+REQUIRED CHANGE
+
+Then proceed with implementation.
+
 ==================================================
 STEP 2 — RELATIONSHIP EXPLORER NAVIGATION
 ==================================================
@@ -187,11 +217,11 @@ Default:
 
 Relationship Records
 
-This preserves the current experience.
-
 Relationship Records continues showing actual relationship instances.
 
 Relationship Definitions manages reusable detection configurations.
+
+Do not break existing Relationship Explorer behavior.
 
 ==================================================
 STEP 3 — RELATIONSHIP DEFINITIONS LIBRARY
@@ -266,11 +296,11 @@ AI Create Relationship must open as an integrated workspace.
 
 Prefer:
 
-large right-side drawer
+- large right-side drawer
 
 or
 
-large in-context panel
+- large in-context panel
 
 Do not build a separate chatbot page.
 
@@ -291,7 +321,9 @@ Configure
 Preview
 Publish
 
-The stages must have real state and navigation.
+The stages must have real application state and navigation.
+
+The user must be able to move backward without losing the current configuration.
 
 ==================================================
 STEP 5 — DESCRIBE
@@ -358,6 +390,7 @@ Credit Support
 Direction:
 Bidirectional
 
+
 B. ENTITIES
 
 Source Entity
@@ -370,9 +403,10 @@ Borrower → Guarantor
 Loan → Collateral
 Company → Parent Company
 
-Reuse the existing CCRIG entity model.
+Reuse the existing Lending Relationship Intelligence entity model.
 
 Do not create another duplicate taxonomy unless necessary.
+
 
 C. DETECTION LOGIC
 
@@ -407,13 +441,15 @@ Connector Recency
 
 Maximum Connector Group Size is important.
 
-For example, if one registered address or service provider connects hundreds of entities, the definition must be able to suppress meaningless mass relationships.
+For example:
+
+If one registered address, agent, guarantor, service provider, or other connector links hundreds of entities, the definition must be able to prevent meaningless mass relationships.
 
 ==================================================
 STEP 7 — RELATIONSHIP TYPES
 ==================================================
 
-Expose existing supported relationship synthesis rather than implementing random new types.
+Expose existing supported relationship synthesis rather than implementing arbitrary new types.
 
 Prioritize:
 
@@ -428,7 +464,9 @@ Shared Address must only produce relationships if governed address signals actua
 
 Do not fabricate shared-address results.
 
-If the current data has no governed address signals, preview should correctly show zero.
+If current data contains no governed shared-address signals, preview should correctly return zero.
+
+Zero valid results is a legitimate result, not an application error.
 
 ==================================================
 STEP 8 — EVIDENCE CONFIGURATION
@@ -455,11 +493,25 @@ AI Inference
 
 An AI-inferred relationship must remain explainable.
 
+Evidence generated for a relationship must retain provenance.
+
+Where available retain:
+
+source system
+source document
+source record ID
+entity ID
+connector ID
+retrieval timestamp
+evidence timestamp
+evidence type
+evidence quality
+
 ==================================================
 STEP 9 — SOURCE GOVERNANCE
 ==================================================
 
-Reuse the source concepts already established in CCRIG.
+Reuse the source concepts already established in the application.
 
 Support source priorities such as:
 
@@ -476,11 +528,16 @@ Use governed source categories where the architecture supports them.
 
 IMPORTANT:
 
-Do not implement the new Helix/Stylus refresh architecture in this prompt.
+Do not implement the new Helix/Stylus refresh architecture in this task.
 
 SEC integration will be handled in the next task.
 
-For now, preserve the existing SEC behavior and source controls.
+For now:
+
+- preserve existing SEC behavior
+- preserve existing external research behavior
+- preserve existing source controls
+- do not break current SEC execution
 
 ==================================================
 STEP 10 — CONFIDENCE AND QUALIFICATION
@@ -504,6 +561,12 @@ Minimum Confidence
 Auto-Qualify Threshold
 Review Threshold
 Reject Threshold
+
+Validate that thresholds are logically consistent.
+
+For example:
+
+Auto-Qualify Threshold must not be below Review Threshold.
 
 ==================================================
 STEP 11 — APPROVAL MODE
@@ -535,7 +598,7 @@ Current Only
 Historical
 Current + Historical
 
-Also support:
+Also support where actual backend capability exists:
 
 Effective Date Source
 Expiration / Revalidation
@@ -543,7 +606,13 @@ Revalidation Frequency
 
 Do not invent historical capability if the backend cannot support it.
 
-If some temporal features are not yet implemented, keep them clearly disabled or deferred rather than pretending they work.
+If temporal functionality does not yet exist:
+
+- show it as unavailable
+- disable it clearly
+- or omit it
+
+Do not create UI controls that appear functional but are disconnected.
 
 ==================================================
 STEP 13 — NETWORK BEHAVIOR
@@ -563,13 +632,15 @@ Reuse the existing Network graph.
 
 Do not build a second graph component.
 
+Do not create another graph persistence model.
+
 ==================================================
 STEP 14 — PREVIEW
 ==================================================
 
 This is critical.
 
-The Preview stage must execute the actual relationship detection logic against actual CCRIG data.
+The Preview stage must execute the actual relationship detection logic against actual application data.
 
 Do not show mock metrics.
 
@@ -588,13 +659,15 @@ If the existing backend reports values such as:
 22 shared connectors
 26 synthesized pairs
 
-show those values.
+show those actual values.
 
-Preview must not publish the definition.
+Preview must NOT:
 
-Preview must not modify CAM.
-
-Preview must not create permanent canonical relationships.
+- publish the definition
+- modify CAM
+- permanently publish instances
+- alter review state
+- leave persistent graph edges unless explicitly saved later
 
 ==================================================
 STEP 15 — PREVIEW CANDIDATES
@@ -618,6 +691,10 @@ Actions:
 Inspect
 Why Detected?
 Exclude
+
+Use actual entities from current source data.
+
+Do not generate placeholder companies.
 
 ==================================================
 STEP 16 — WHY DETECTED
@@ -673,6 +750,10 @@ confidence components
 
 Do not expose sensitive authentication material.
 
+The explanation should come from actual detection provenance.
+
+Do not reconstruct a fake explanation in the frontend if the backend has the real provenance.
+
 ==================================================
 STEP 17 — EXCLUSION / FEEDBACK
 ==================================================
@@ -705,7 +786,15 @@ Buttons:
 Apply Suggestion
 Dismiss
 
-The user must remain in control.
+The user remains in control.
+
+If Apply Suggestion is selected:
+
+update the draft configuration
+
+do not immediately publish it
+
+and require preview to be rerun.
 
 ==================================================
 STEP 18 — PREVIEW IN NETWORK
@@ -726,11 +815,13 @@ AI Preview relationships must be visually distinguishable from:
 CAM Canonical
 CAM Review
 External Supplemental
-Published AI/Supplemental Relationships
+Published AI / Supplemental Relationships
 
 Do not persist AI Preview graph edges as published instances.
 
 Closing or leaving preview should not leave phantom graph state.
+
+The graph must continue to allow opening the existing relationship inspector.
 
 ==================================================
 STEP 19 — SAVE DRAFT
@@ -740,13 +831,13 @@ Allow:
 
 Save Draft
 
-Draft must persist.
-
-Restarting the backend should not silently erase it if the existing persistence layer supports durable definitions.
+Draft must persist using the existing definition persistence mechanism.
 
 Draft should appear in Relationship Definitions with:
 
 Status = Draft
+
+Do not silently save a draft only into React/browser state.
 
 ==================================================
 STEP 20 — VERSIONING
@@ -765,7 +856,7 @@ v2
 minimum connectors = 1
 maximum connector group size = 20
 
-Store:
+Store where supported:
 
 Version
 Created By
@@ -774,6 +865,16 @@ Change Summary
 Status
 
 Do not silently overwrite an active published definition when materially changed.
+
+Prefer:
+
+Active Version
+        ↓
+Create New Draft Version
+        ↓
+Preview
+        ↓
+Publish New Version
 
 ==================================================
 STEP 21 — PUBLISH
@@ -800,6 +901,10 @@ Return to Preview
 
 Publishing must NOT mutate CAM.
 
+Publishing means:
+
+this relationship definition/version is approved for use by the supplemental relationship-intelligence engine.
+
 ==================================================
 STEP 22 — RELATIONSHIP INSTANCE GENERATION
 ==================================================
@@ -815,6 +920,14 @@ source evidence
 connector IDs
 confidence
 qualification state
+
+Also retain where supported:
+
+source lane
+review state
+effective date
+relationship strength
+evidence IDs
 
 Do not store only a pair of entity IDs without provenance.
 
@@ -849,6 +962,8 @@ Confidence
 Why Detected
 Review Status
 
+Do not create a disconnected second relationship-record screen.
+
 ==================================================
 STEP 24 — NETWORK INTEGRATION
 ==================================================
@@ -862,6 +977,16 @@ Do not create duplicate graph data stores.
 Each graph edge should retain enough information to open its relationship inspector.
 
 Preserve source-lane visual distinctions.
+
+The user should be able to understand whether an edge is:
+
+CAM canonical
+CAM review
+External supplemental
+AI/supplemental
+AI preview
+
+without examining backend data.
 
 ==================================================
 STEP 25 — REVIEW QUEUE INTEGRATION
@@ -894,9 +1019,13 @@ Inspect
 Approve
 Reject
 
-Approval means approved supplemental relationship intelligence.
+Approval means:
 
-It does NOT mean write into CAM.
+approved supplemental relationship intelligence.
+
+It does NOT mean:
+
+write into CAM.
 
 ==================================================
 STEP 26 — EXTERNAL RESEARCH BOUNDARY
@@ -926,9 +1055,11 @@ Relationship Candidate
    ↓
 Review
 
-Do not let relationship definition code directly implement SEC/web retrieval.
+Do not let relationship-definition code directly implement SEC/web retrieval.
 
 Maintain a service boundary.
+
+This separation is important for the later Unix-hosted architecture.
 
 ==================================================
 STEP 27 — API CONTRACTS
@@ -952,7 +1083,12 @@ Do not invent duplicate endpoints if equivalents already exist.
 
 Return typed, stable response models.
 
-Preview responses should include real metrics plus candidate results.
+Preview responses should include:
+
+real metrics
+actual candidate results
+qualification state
+evidence/provenance references
 
 ==================================================
 STEP 28 — ERROR HANDLING
@@ -975,6 +1111,8 @@ Show clear business-readable UI errors.
 
 Do not expose raw stack traces in React.
 
+"No candidates found" is a valid preview result, not necessarily an error.
+
 ==================================================
 STEP 29 — EMPTY STATES
 ==================================================
@@ -993,7 +1131,7 @@ Preview with no candidates should show:
 
 No relationships matched the current definition.
 
-Do not present this as a system error.
+Do not present this as a system failure.
 
 ==================================================
 STEP 30 — DO NOT REDESIGN EXISTING PRODUCT
@@ -1001,7 +1139,7 @@ STEP 30 — DO NOT REDESIGN EXISTING PRODUCT
 
 Preserve the current visual language.
 
-The application is already working and has:
+The application already contains:
 
 Overview
 Clients
@@ -1041,6 +1179,8 @@ localhost dependencies in business logic
 
 But DO NOT perform the broader Unix migration in this task.
 
+The priority remains making the tools work end to end now.
+
 ==================================================
 STEP 32 — TESTS
 ==================================================
@@ -1051,20 +1191,30 @@ create definition
 save draft
 read definition
 create new version
+
 preview common guarantor
 preview common collateral
 preview common ownership/control
 preview shared management
+
 shared address with no governed data returns zero correctly
+
 preview does not publish
 preview does not mutate CAM
+
 publish definition
+
 generate relationship instances
+
 instance links to definition/version
+
 review-required instance routed correctly
+
 published instance appears in relationship records
+
 explain / why detected returns evidence and triggered logic
-definition persistence survives service reload if supported
+
+definition persistence survives service reload if the current persistence design supports it
 
 Add frontend tests for:
 
@@ -1107,18 +1257,22 @@ Scenario:
    Send relationships below the auto-qualification threshold for review.
 
 6. Generate structured configuration.
-7. Preview against actual data.
-8. Confirm real candidate metrics.
-9. Inspect at least one candidate.
-10. Open Why Detected.
-11. Preview it in Network.
-12. Save Draft.
-13. Publish/activate according to existing governance.
-14. Generate relationship instances.
-15. Confirm instance appears in Relationship Records.
-16. Confirm applicable instance appears in Network.
-17. Confirm review-required instance appears in Review Queue.
-18. Confirm CAM was not modified.
+7. Confirm generated configuration contains actual structured fields.
+8. Preview against actual data.
+9. Confirm real candidate metrics.
+10. Inspect at least one actual candidate.
+11. Open Why Detected.
+12. Confirm provenance and triggered rule are real.
+13. Preview it in Network.
+14. Confirm preview edge is temporary.
+15. Save Draft.
+16. Confirm draft appears in Relationship Definitions.
+17. Publish/activate according to existing governance.
+18. Generate relationship instances.
+19. Confirm instance appears in Relationship Records.
+20. Confirm applicable instance appears in Network.
+21. Confirm review-required instance appears in Review Queue.
+22. Confirm CAM was not modified.
 
 Also validate the other existing relationship families at API/service level.
 
@@ -1137,6 +1291,8 @@ existing diagnostics
 Do not leave temporary test definitions in the live production-like store unless deliberately created as part of validated application state.
 
 Clean up temporary test artifacts.
+
+Do not delete existing legitimate definitions or relationship data.
 
 ==================================================
 FINAL REPORT
@@ -1179,3 +1335,7 @@ NEXT RECOMMENDED STEP
 Do not mark the task complete merely because the UI renders.
 
 The task is complete only when the workflow is connected end to end using real backend data and actual relationship detection.
+
+Do not spend time on Unix deployment infrastructure in this task.
+
+The next implementation phase after this one will focus on making SEC execution operational end to end, including Helix/Stylus readiness, manual refresh control, automatic credential preflight, and evidence integration.
