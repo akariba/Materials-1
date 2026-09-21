@@ -1,1341 +1,914 @@
-You have just completed the Lending Relationship Intelligence repository audit.
+CCR RELATIONSHIP CORRELATION — PHASE 3A
+EXTERNAL CONNECTIVITY REMEDIATION + PROVIDER ACTIVATION
 
-Use the findings from that audit as context, but DO NOT start the Unix/Linux deployment refactor yet.
+You are working inside the CURRENT CCR repository in VSCode on Windows.
 
-The long-term target remains that the application will eventually run as a packaged application on a Unix instance and be accessed through a link.
+CCR ONLY.
 
-Therefore, avoid introducing new:
+This is a focused remediation pass.
 
-- Windows-only dependencies
-- hardcoded local paths
-- PowerShell-only business logic
-- frontend-held credentials
-- development-only architectural assumptions
+DO NOT proceed to Phase 4.
+DO NOT implement AI Create Relationship yet.
+DO NOT build relationship scoring.
+DO NOT build the graph.
+DO NOT modify Stylus.
+DO NOT create synthetic evidence.
+DO NOT weaken TLS/security controls.
 
-FOR THIS TASK, HOWEVER, FOCUS ONLY ON MAKING THE RELATIONSHIP INTELLIGENCE TOOLS WORK END TO END IN THE CURRENT ENVIRONMENT.
+Read first:
 
-Do not spend time creating:
+backend/data/CCR_RELATIONSHIP_PHASE3_EXTERNAL_RESEARCH_REPORT.md
 
-- deployment scripts
-- systemd services
-- Unix installers
-- packaging scripts
-- reverse proxies
-- production hosting configuration
+Inspect all Phase-3 implementation files, especially:
 
-==================================================
-PRIMARY OBJECTIVE
-==================================================
+backend/scripts/migrate_ccr_phase3.py
+backend/scripts/run_ccr_phase3_research.py
+backend/scripts/report_ccr_phase3.py
+backend/tests/test_ccr_phase3_external_foundation.py
 
-Implement and fully connect:
-
-RELATIONSHIP DEFINITIONS
-+
-AI CREATE RELATIONSHIP
-+
-LIVE PREVIEW
-+
-RELATIONSHIP INSTANCES
-+
-RELATIONSHIP EXPLORER
-+
-NETWORK PREVIEW / DISPLAY
-+
-REVIEW QUEUE GOVERNANCE
-
-The completed workflow must allow me to:
-
-1. Open Relationship Explorer.
-2. Open Relationship Definitions.
-3. Create a new definition using AI Create Relationship.
-4. Describe the desired relationship in natural language.
-5. Have the system generate a structured relationship configuration.
-6. Edit the configuration.
-7. Preview the configuration against actual application data.
-8. See actual candidate relationships.
-9. Inspect why each candidate was detected.
-10. Save the definition as Draft.
-11. Version the definition.
-12. Publish or activate the definition.
-13. Generate relationship instances from the definition.
-14. See those instances in Relationship Explorer.
-15. Preview or display them in the existing Network.
-16. Route review-required instances into the existing Review Queue.
-17. Preserve CAM as authoritative and unchanged.
-
-This must be a real connected workflow.
-
-Do not build static mock screens whose controls are disconnected from the backend.
+and all provider/config files added in Phase 3.
 
 ==================================================
-CORE PRODUCT ARCHITECTURE
+1. OBJECTIVE
 ==================================================
 
-Preserve these three separate concepts.
+Phase 3 architecture passed.
 
-1. RELATIONSHIP DEFINITION
+However the live bounded pilot failed because:
 
-A reusable governed configuration describing how relationships are detected.
+GLEIF:
+- 10 network attempts
+- 0 verified
+- every attempt returned URLERROR
 
-Example:
+SEC:
+- network requests occurred
+- no identity/reference data successfully retrieved
 
-COMMON_GUARANTOR
+WEB:
+- provider not configured
 
-Company ↔ Company
+The objective of this pass is:
 
-Condition:
-Both companies share at least one qualifying guarantor.
+A. determine the exact root cause of GLEIF/SEC URL failures;
 
+B. repair external connectivity WITHOUT weakening security;
 
-2. RELATIONSHIP INSTANCE
+C. prove official GLEIF and SEC retrieval works;
 
-A concrete detected relationship between actual entities.
+D. rerun the bounded Phase-3 pilot;
 
-Example:
+E. determine the correct path for high-quality Web research;
 
-ABC Corp
-↔ Common Guarantor ↔
-XYZ Corp
-
-Shared connector:
-Guarantor Holdings Ltd
-
-
-3. CORRELATION
-
-A higher-order pattern composed from one or more relationship instances.
-
-Example:
-
-Company A
-   |
-ownership
-   |
-Company B
-   |
-guarantee
-   |
-Company C
-
-→ Economic Group / Connected Borrower correlation
-
-DO NOT collapse these into one object.
-
-This task focuses primarily on:
-
-Relationship Definition
-        ↓
-Relationship Instance
+F. make Phase 4 ready only if external evidence acquisition is genuinely usable.
 
 ==================================================
-IMPORTANT GOVERNANCE PRINCIPLE
+2. PRESERVE EVERYTHING THAT ALREADY PASSED
 ==================================================
 
-CAM remains authoritative.
+Do not redesign Phase 3.
 
-AI-created relationship definitions and resulting instances must NOT mutate CAM.
+Preserve:
 
-The flow is:
+- 19 additive Phase-3 tables
+- source_policy_registry
+- research_runs
+- provider_cache
+- external_identity
+- sec_entity_map
+- sec_submission_records
+- sec_filing_metadata
+- gleif_entity_map
+- gleif_relationship_observations
+- gleif_reporting_exceptions
+- source_documents
+- evidence_snippets
+- all cache semantics
+- all safety rules
+- explicit-run requirement
+- Phase-2 immutability
 
-Relationship Definition
-        ↓
-Detection
-        ↓
-Candidate Relationship Instances
-        ↓
-Qualification / Review
-        ↓
-Supplemental Relationship Intelligence
-
-Do not silently promote relationships into CAM.
-
-==================================================
-STEP 1 — INSPECT AND REUSE EXISTING IMPLEMENTATION
-==================================================
-
-Before adding new modules, inspect the existing repository for components already created for:
-
-- relationship definitions
-- definition versions
-- AI relationship configuration
-- relationship synthesis
-- higher-order synthesis
-- common guarantor
-- common collateral
-- common ownership
-- common control
-- shared management
-- shared address
-- relationship preview
-- relationship persistence
-- relationship instance persistence
-- evidence aggregation
-- confidence scoring
-- review workflow
-- network graph
-- external relationship lane
-
-Reuse existing implementation whenever possible.
-
-Do NOT create parallel duplicate services if equivalent functionality already exists.
-
-Specifically determine whether existing backend capabilities already support:
-
-- definition CRUD
-- definition versions
-- preview
-- publish
-- higher-order synthesis
-- evidence aggregation
-- confidence calculation
-- instance generation
-
-If something already exists, connect the UI to it rather than rewriting it.
-
-Before coding, briefly identify:
-
-EXISTING COMPONENT
-CURRENT PURPOSE
-CAN REUSE?
-REQUIRED CHANGE
-
-Then proceed with implementation.
+Do not drop or rebuild these tables unless a migration defect is actually proven.
 
 ==================================================
-STEP 2 — RELATIONSHIP EXPLORER NAVIGATION
+3. FIRST: CAPTURE THE EXACT ERROR
 ==================================================
 
-Do NOT add another main navigation item.
+The current report only says:
 
-Relationship Definitions belongs inside the existing Relationship Explorer.
+URLERROR
 
-At the top of Relationship Explorer add two subviews:
+That is insufficient.
 
-[ Relationship Records ]   [ Relationship Definitions ]
+Run ONE diagnostic request to GLEIF and ONE diagnostic request to SEC.
 
-Default:
+Capture the complete exception chain safely.
 
-Relationship Records
+For each failure report:
 
-Relationship Records continues showing actual relationship instances.
+provider
+URL host
+exception class
+exception message
+nested reason class
+nested reason message
+errno if available
+HTTP status if available
+TLS/SSL error if available
+DNS error if available
+proxy error if available
+timeout flag
 
-Relationship Definitions manages reusable detection configurations.
+Do NOT expose:
+- credentials
+- proxy passwords
+- email addresses unnecessarily
+- tokens
+- secrets
 
-Do not break existing Relationship Explorer behavior.
+Persist normalized error diagnostics.
 
-==================================================
-STEP 3 — RELATIONSHIP DEFINITIONS LIBRARY
-==================================================
+Examples of possible classes that must be distinguished:
 
-Build the Relationship Definitions view.
+socket.gaierror
+ConnectionRefusedError
+TimeoutError
+ssl.SSLCertVerificationError
+urllib.error.URLError
+urllib.error.HTTPError
+ProxyError
+certificate chain error
 
-Header:
-
-Relationship Definitions
-
-Primary action:
-
-+ Create Relationship
-
-Clicking it should provide:
-
-AI Create Relationship
-Use Template
-Create Manually
-
-AI Create Relationship should be the primary option.
-
-Add summary metrics such as:
-
-ACTIVE DEFINITIONS
-DRAFT DEFINITIONS
-TESTING
-PENDING REVIEW
-AI ASSISTED
-
-Use actual backend values.
-
-Do not hardcode fake counts.
-
-Main table should support columns similar to:
-
-Relationship
-Category
-Source Entity
-Target Entity
-Detection Method
-Source Lane
-Confidence Threshold
-Generated Instances
-Creation Method
-Version
-Status
-Last Tested
-Last Updated
-
-Statuses:
-
-Draft
-Testing
-Pending Approval
-Active
-Paused
-Archived
-
-Creation method:
-
-System
-Manual
-AI Assisted
+Do not treat all of these as URLERROR.
 
 ==================================================
-STEP 4 — AI CREATE RELATIONSHIP WORKSPACE
+4. VERIFY OFFICIAL BASE ENDPOINTS
 ==================================================
 
-AI Create Relationship must open as an integrated workspace.
+Use only official endpoints.
 
-Prefer:
+GLEIF base:
 
-- large right-side drawer
+https://api.gleif.org
 
+SEC API base:
+
+https://data.sec.gov
+
+SEC archive/reference host where needed:
+
+https://www.sec.gov
+
+Do NOT substitute third-party mirrors.
+
+For SEC submissions the official pattern is:
+
+https://data.sec.gov/submissions/CIK##########.json
+
+with a zero-padded 10-digit CIK.
+
+Do not test random invalid CIKs merely to make connectivity look successful.
+
+For GLEIF use:
+
+https://api.gleif.org/api/v1/lei-records/<VALID_LOCAL_LEI>
+
+using one of the existing 8,009 valid local LEIs.
+
+==================================================
+5. OPERATING-SYSTEM NETWORK DIAGNOSTICS
+==================================================
+
+Determine whether failure exists at:
+
+DNS
+TCP
+TLS
+HTTP
+Python runtime
+application/provider layer
+
+Run bounded diagnostics.
+
+On Windows, where available:
+
+Resolve-DnsName api.gleif.org
+Resolve-DnsName data.sec.gov
+
+Test-NetConnection api.gleif.org -Port 443
+Test-NetConnection data.sec.gov -Port 443
+
+Then perform simple HTTPS HEAD/GET tests with PowerShell where appropriate.
+
+Do not flood endpoints.
+
+Maximum:
+1–2 requests per host for diagnostics.
+
+Record whether:
+
+DNS PASS/FAIL
+TCP 443 PASS/FAIL
+OS HTTPS PASS/FAIL
+
+==================================================
+6. PYTHON NETWORK DIAGNOSTICS
+==================================================
+
+Using the SAME Python interpreter/venv as the application, test:
+
+A. socket DNS resolution
+B. TLS connection
+C. urllib request
+D. requests/httpx request ONLY if already installed/used
+
+Determine:
+
+Python version
+OpenSSL version
+certificate paths
+default verify paths
+
+Report:
+
+ssl.get_default_verify_paths()
+
+Also inspect package versions where relevant:
+
+certifi
+requests
+urllib3
+httpx
+
+Do NOT install arbitrary packages unless necessary.
+
+==================================================
+7. PROXY / CORPORATE NETWORK DETECTION
+==================================================
+
+This machine may be behind a managed corporate network.
+
+Inspect safely whether the environment defines:
+
+HTTP_PROXY
+HTTPS_PROXY
+NO_PROXY
+ALL_PROXY
+
+Also inspect standard Windows proxy configuration where safely possible.
+
+DO NOT print credentials contained in proxy URLs.
+
+Mask sensitive portions.
+
+Report only:
+
+HTTP_PROXY configured: YES/NO
+HTTPS_PROXY configured: YES/NO
+NO_PROXY configured: YES/NO
+system proxy detected: YES/NO
+
+Determine whether:
+
+PowerShell succeeds but Python fails
+
+or:
+
+both fail
+
+This distinction is critical.
+
+==================================================
+8. CERTIFICATE TRUST DIAGNOSTICS
+==================================================
+
+If the failure is SSL certificate verification:
+
+DO NOT use:
+
+verify=False
+ssl._create_unverified_context()
+PYTHONHTTPSVERIFY=0
+disabled certificate checks
+
+These are forbidden.
+
+Instead determine whether the environment needs:
+
+- normal OS certificate trust
+- certifi refresh
+- corporate root CA bundle
+- SSL_CERT_FILE
+- REQUESTS_CA_BUNDLE
+
+If a corporate CA is required but not available in the repository:
+
+do not fabricate it.
+
+Return:
+
+CORPORATE_CA_REQUIRED
+
+and document the required user/environment action.
+
+Never commit private corporate CA files unless explicitly approved.
+
+==================================================
+9. SEC USER AGENT
+==================================================
+
+Verify that all SEC requests include an appropriate declared User-Agent.
+
+Do not reveal personal contact details in the report.
+
+Configuration may contain environment-variable references such as:
+
+SEC_USER_AGENT
+SEC_CONTACT_EMAIL
+
+but never commit real sensitive values.
+
+SEC provider must fail clearly with:
+
+SEC_CONFIGURATION_INCOMPLETE
+
+if mandatory identification configuration is absent.
+
+Do not silently substitute:
+
+Mozilla/5.0
+
+or a fake identity.
+
+==================================================
+10. SEC RATE LIMIT
+==================================================
+
+Preserve:
+
+default = 5 requests/second
+
+and hard maximum:
+
+10 requests/second
+
+Do not increase this during diagnostics.
+
+Official SEC APIs are public and do not require API keys, but automated access
+must follow SEC fair-access requirements.
+
+==================================================
+11. DIAGNOSTIC MATRIX
+==================================================
+
+Generate a matrix:
+
+                    GLEIF       SEC
+DNS                 PASS/FAIL   PASS/FAIL
+TCP 443             PASS/FAIL   PASS/FAIL
+OS HTTPS            PASS/FAIL   PASS/FAIL
+Python TLS          PASS/FAIL   PASS/FAIL
+urllib              PASS/FAIL   PASS/FAIL
+application client  PASS/FAIL   PASS/FAIL
+cache               PASS/FAIL   PASS/FAIL
+
+For each FAIL provide:
+
+ROOT CAUSE
+FIX APPLIED
 or
-
-- large in-context panel
-
-Do not build a separate chatbot page.
-
-Header:
-
-AI Create Relationship
-
-Under the header show:
-
-CAM remains authoritative.
-AI relationship definitions create supplemental,
-evidence-backed relationship intelligence only.
-
-Use four stages:
-
-Describe
-Configure
-Preview
-Publish
-
-The stages must have real application state and navigation.
-
-The user must be able to move backward without losing the current configuration.
+EXTERNAL ACTION REQUIRED
 
 ==================================================
-STEP 5 — DESCRIBE
+12. FIX APPLICATION NETWORKING ONLY IF JUSTIFIED
 ==================================================
 
-Provide a large natural-language field:
+If the defect is inside the application/provider code:
 
-Describe the relationship you want the system to identify
-
-Example:
-
-Identify companies that share a common guarantor.
-Use internal guarantee records first.
-Allow SEC evidence as supporting evidence.
-Require at least one qualifying shared guarantor.
-
-Suggested starting points:
-
-Common Guarantor
-Common Collateral
-Common Ownership / Control
-Shared Management
-Shared Address
-Parent / Subsidiary
-Economic Group
-
-Primary action:
-
-Generate Configuration
-
-The output must become a structured configuration.
-
-Do NOT simply save the natural-language prompt.
-
-==================================================
-STEP 6 — STRUCTURED CONFIGURATION
-==================================================
-
-The generated configuration should contain structured sections.
-
-A. RELATIONSHIP DEFINITION
-
-Fields:
-
-Name
-Code
-Description
-Category
-Relationship Type
-Direction
-Strength Method
-
-Example:
-
-Name:
-Common Guarantor
-
-Code:
-COMMON_GUARANTOR
-
-Category:
-Credit Support
-
-Direction:
-Bidirectional
-
-
-B. ENTITIES
-
-Source Entity
-Target Entity
+fix it.
 
 Examples:
 
-Company ↔ Company
-Borrower → Guarantor
-Loan → Collateral
-Company → Parent Company
+malformed URL
+bad URL joining
+incorrect headers
+bad timeout handling
+proxy not inherited
+wrong SSL context construction
+bad content negotiation
+incorrect encoding
+incorrect GLEIF path
+incorrect SEC path
 
-Reuse the existing Lending Relationship Intelligence entity model.
+Do not rewrite working architecture.
 
-Do not create another duplicate taxonomy unless necessary.
-
-
-C. DETECTION LOGIC
-
-Implement a readable structured rule builder.
-
-Support:
-
-ALL
-ANY
-NONE
-
-Support nested AND / OR where the backend supports it.
-
-Example:
-
-ANY
-
-Shared qualifying guarantor >= 1
-
-OR
-
-Explicit guarantee relationship supported by authoritative evidence
-
-For connector-based relationships support fields such as:
-
-Connector Type
-Minimum Shared Connectors
-Maximum Connector Group Size
-Minimum Connector Confidence
-Connector Status
-Connector Recency
-
-Maximum Connector Group Size is important.
-
-For example:
-
-If one registered address, agent, guarantor, service provider, or other connector links hundreds of entities, the definition must be able to prevent meaningless mass relationships.
+Add regression test for each real defect found.
 
 ==================================================
-STEP 7 — RELATIONSHIP TYPES
+13. GLEIF PROVIDER VERIFICATION
 ==================================================
 
-Expose existing supported relationship synthesis rather than implementing arbitrary new types.
+After connectivity works, perform a tiny acceptance test first.
 
-Prioritize:
+Use ONE actual existing valid LEI from canonical CCR data.
 
-1. Common Guarantor
-2. Common Collateral Provider
-3. Common Ownership / Control
-4. Shared Management
-5. Shared Address
-6. Parent / Subsidiary where evidence exists
+Retrieve:
 
-Shared Address must only produce relationships if governed address signals actually exist.
+legal entity record
 
-Do not fabricate shared-address results.
+Confirm:
 
-If current data contains no governed shared-address signals, preview should correctly return zero.
+HTTP success
+JSON parsed
+returned LEI equals requested LEI
+legal name present where source supplies it
 
-Zero valid results is a legitimate result, not an application error.
+Then test Level-2 retrieval according to actual current GLEIF API capabilities.
 
-==================================================
-STEP 8 — EVIDENCE CONFIGURATION
-==================================================
+Do not assume every LEI has a parent.
 
-Add an Evidence section.
+Distinguish:
 
-Support fields such as:
+PARENT_FOUND
+NO_PARENT_REPORTED
+REPORTING_EXCEPTION
+NOT_APPLICABLE
+API_ERROR
 
-Minimum Evidence Records
-Minimum Independent Sources
-Require Source Document
-Require Supporting Entity ID
-Require Connector ID
-Minimum Evidence Quality
+Never report NO_PARENT_REPORTED as an error.
 
-Distinguish visibly between:
-
-Deterministic Rule
-
-and
-
-AI Inference
-
-An AI-inferred relationship must remain explainable.
-
-Evidence generated for a relationship must retain provenance.
-
-Where available retain:
-
-source system
-source document
-source record ID
-entity ID
-connector ID
-retrieval timestamp
-evidence timestamp
-evidence type
-evidence quality
+Never create a fake parent.
 
 ==================================================
-STEP 9 — SOURCE GOVERNANCE
+14. GLEIF PILOT RERUN
 ==================================================
 
-Reuse the source concepts already established in the application.
+Only after the single-record test passes:
 
-Support source priorities such as:
+rerun the existing deterministic 10-client GLEIF pilot.
 
-CAM / Internal Data                Primary
-SEC Regulatory Filings            Primary External
-Corporate Filings                 Supporting
-Corporate Website                 Supporting
-Trusted Public Web                Supporting
-Unverified Web                    Excluded
+Do not expand it.
 
-Do not hardcode specific websites unnecessarily.
+Report:
 
-Use governed source categories where the architecture supports them.
+attempted
+HTTP successful
+identity verified
+identity conflicts
+direct parent found
+ultimate parent found
+reporting exceptions
+no-parent cases
+errors
+cache hits
 
-IMPORTANT:
-
-Do not implement the new Helix/Stylus refresh architecture in this task.
-
-SEC integration will be handled in the next task.
-
-For now:
-
-- preserve existing SEC behavior
-- preserve existing external research behavior
-- preserve existing source controls
-- do not break current SEC execution
+Persist retrieved authoritative data using the existing Phase-3 tables.
 
 ==================================================
-STEP 10 — CONFIDENCE AND QUALIFICATION
+15. SEC CONNECTIVITY VERIFICATION
 ==================================================
 
-Add configurable confidence rules.
+Do not begin with fuzzy CCR identity matching.
 
-Example:
+First verify the SEC platform itself works.
 
-95–100    Auto Qualified
-85–94     Review Required
-Below 85  Reject
+Use an official SEC reference resource suitable for CIK/entity mapping.
 
-These values must be editable/configurable.
+Confirm:
 
-Do not hardcode the example thresholds as universal business rules.
+HTTP success
+User-Agent present
+content returned
+cache write successful
+second call served from cache where appropriate
 
-Support at minimum:
+Then test one known valid record FROM THE OFFICIAL SEC REFERENCE DATA.
 
-Minimum Confidence
-Auto-Qualify Threshold
-Review Threshold
-Reject Threshold
+Do not hardcode a famous company merely as business data.
 
-Validate that thresholds are logically consistent.
-
-For example:
-
-Auto-Qualify Threshold must not be below Review Threshold.
+It may be used as a technical fixture only if obtained from the SEC mapping
+itself during the test.
 
 ==================================================
-STEP 11 — APPROVAL MODE
+16. SEC DISCOVERY DESIGN REVIEW
 ==================================================
 
-Provide:
+The previous pilot executed only 4 of 10 planned SEC discovery cases.
 
-Creation / Approval Mode
+Determine WHY.
 
-Options:
+Classify the six not attempted as:
 
-Automatically Qualify
-Send for Review
-Suggest Only
+INSUFFICIENT_LOCAL_IDENTITY
+NO_US_JURISDICTION_SIGNAL
+PILOT_SELECTION_RULE
+UPSTREAM_CONNECTIVITY_STOP
+OTHER
 
-For newly AI-created definitions, default to:
+Do not call this a failed match if it was never attempted.
 
-Send for Review
+Fix reporting so:
 
-Do not default to automatically publishing inferred relationships.
+ATTEMPTED
+NOT_ATTEMPTED
+FAILED
+NOT_FOUND
 
-==================================================
-STEP 12 — TEMPORAL SETTINGS
-==================================================
-
-Where supported, expose:
-
-Current Only
-Historical
-Current + Historical
-
-Also support where actual backend capability exists:
-
-Effective Date Source
-Expiration / Revalidation
-Revalidation Frequency
-
-Do not invent historical capability if the backend cannot support it.
-
-If temporal functionality does not yet exist:
-
-- show it as unavailable
-- disable it clearly
-- or omit it
-
-Do not create UI controls that appear functional but are disconnected.
+are distinct.
 
 ==================================================
-STEP 13 — NETWORK BEHAVIOR
+17. SEC PILOT RERUN
 ==================================================
 
-Definition configuration should include:
+After connectivity is proven:
 
-Show on Network
-Edge Label
-Edge Weight
-Direction
-Relationship Priority
-Maximum Traversal Depth
-Allow Relationship Chaining
+rerun the deterministic Phase-3 SEC pilot.
 
-Reuse the existing Network graph.
+Maximum 10 clients.
 
-Do not build a second graph component.
+Use official SEC reference data and local matching first.
 
-Do not create another graph persistence model.
+Report separately:
 
-==================================================
-STEP 14 — PREVIEW
-==================================================
+selected
+eligible
+attempted
+verified CIK
+candidate CIK
+ambiguous
+not found
+not attempted
+errors
 
-This is critical.
+For VERIFIED CIKs only:
 
-The Preview stage must execute the actual relationship detection logic against actual application data.
+retrieve submissions metadata.
 
-Do not show mock metrics.
+Do not retrieve large numbers of filings.
 
-Surface real backend metrics such as:
+For acceptance:
 
-Candidate Source Records
-Shared Connectors
-Synthesized Relationship Pairs
-High Confidence
-Review Required
-Rejected
+maximum 1–2 recent relevant filing metadata records per verified pilot entity.
 
-If the existing backend reports values such as:
-
-116 candidate records
-22 shared connectors
-26 synthesized pairs
-
-show those actual values.
-
-Preview must NOT:
-
-- publish the definition
-- modify CAM
-- permanently publish instances
-- alter review state
-- leave persistent graph edges unless explicitly saved later
+Metadata only is sufficient at this point unless one bounded filing is needed
+to prove the document acquisition path.
 
 ==================================================
-STEP 15 — PREVIEW CANDIDATES
+18. WEB PROVIDER — DO NOT FAKE THIS
 ==================================================
 
-Show actual candidate relationships.
+Current status:
 
-Each candidate should show:
+WEB_PROVIDER_CONFIGURED = NO
 
-Entity A
-Entity B
-Relationship Type
-Connector(s)
-Confidence
-Evidence Count
-Source Lane
-Qualification State
+Do not hide this.
 
-Actions:
+Inspect CURRENT CCR repository/environment for an APPROVED existing Web
+research runtime.
 
-Inspect
-Why Detected?
-Exclude
+Search for configuration only in this current repository/environment:
 
-Use actual entities from current source data.
+R2D2
+WEB_PROVIDER
+WEB_SEARCH
+SEARCH_API
+BING
+GOOGLE
+SERP
+OPENAI_WEB
+EXTERNAL_RESEARCH
 
-Do not generate placeholder companies.
+Do not inspect Lending or other repositories.
 
-==================================================
-STEP 16 — WHY DETECTED
-==================================================
+If an approved provider is already available:
+wire it through the Phase-3 WebResearchProvider abstraction.
 
-Implement explainability for each candidate.
+If none exists:
+leave provider unconfigured.
 
-Example:
+Do NOT add:
+- random scraping
+- browser automation against search-engine HTML
+- unofficial Google scraping
+- arbitrary free search APIs
+- hardcoded search results
 
-WHY THIS RELATIONSHIP WAS DETECTED
+Return clearly:
 
-Definition:
-Common Guarantor
-
-Company A:
-ABC Corp
-
-Company B:
-XYZ Corp
-
-Shared Connector:
-Guarantor Holdings Ltd
-
-Triggered Rule:
-Minimum shared connectors >= 1
-
-Observed:
-1
-
-Evidence Records:
-3
-
-Sources:
-Internal Guarantee Data
-SEC Filing
-
-Confidence:
-96%
-
-Required Confidence:
-85%
-
-Qualification:
-PASSED
-
-Where possible, show:
-
-rule ID
-source records
-connector IDs
-evidence IDs
-confidence components
-
-Do not expose sensitive authentication material.
-
-The explanation should come from actual detection provenance.
-
-Do not reconstruct a fake explanation in the frontend if the backend has the real provenance.
+WEB_PROVIDER_ACTIVATION_REQUIRED
 
 ==================================================
-STEP 17 — EXCLUSION / FEEDBACK
+19. WEB PROVIDER CONFIG CONTRACT
 ==================================================
 
-If the user excludes a preview candidate, allow a reason such as:
+Even if unconfigured, ensure the provider interface supports environment
+configuration.
 
-Incorrect Entity Match
-Connector Not Meaningful
-Outdated Relationship
-Insufficient Evidence
-False Positive
-Other
+Do not hardcode credentials.
 
-Do not automatically rewrite the definition.
+Expected generic concepts:
 
-Optionally offer:
+WEB_PROVIDER
+WEB_API_KEY
+WEB_ENDPOINT
+WEB_MODEL_OR_ENGINE if applicable
+WEB_TIMEOUT_SECONDS
+WEB_MAX_RESULTS
 
-Suggest Configuration Change
+Actual variables may depend on the approved provider.
 
-Example:
-
-This candidate was rejected because the connector is shared by many unrelated entities.
-
-Suggested rule:
-
-Maximum Connector Group Size = 20
-
-Buttons:
-
-Apply Suggestion
-Dismiss
-
-The user remains in control.
-
-If Apply Suggestion is selected:
-
-update the draft configuration
-
-do not immediately publish it
-
-and require preview to be rerun.
+No credentials in git.
 
 ==================================================
-STEP 18 — PREVIEW IN NETWORK
+20. WEB SOURCE POLICY REMAINS IN FORCE
 ==================================================
 
-Add:
+Do not weaken Phase-3 source tiers.
 
-Preview in Network
+Tier 1:
+authoritative/primary
 
-Reuse the existing Relationship Network.
+Tier 2:
+high-quality established secondary
 
-Introduce a temporary visual state/lane:
+Tier 3:
+corroborative specialist
 
-AI Preview
+Inadmissible:
+must remain inadmissible.
 
-AI Preview relationships must be visually distinguishable from:
+Search results/snippets are NOT evidence.
 
-CAM Canonical
-CAM Review
-External Supplemental
-Published AI / Supplemental Relationships
-
-Do not persist AI Preview graph edges as published instances.
-
-Closing or leaving preview should not leave phantom graph state.
-
-The graph must continue to allow opening the existing relationship inspector.
+Underlying retrieved source required.
 
 ==================================================
-STEP 19 — SAVE DRAFT
+21. EVIDENCE CLEANUP
 ==================================================
 
-Allow:
+Current Phase-3 report shows:
 
-Save Draft
+source_documents = 4
+all SOURCE_NOT_VERIFIED
 
-Draft must persist using the existing definition persistence mechanism.
+Inspect these.
 
-Draft should appear in Relationship Definitions with:
+Do not delete them merely because retrieval failed.
 
-Status = Draft
+Their failure state is valuable audit history.
 
-Do not silently save a draft only into React/browser state.
+Ensure a successful rerun creates NEW properly linked retrieval state rather
+than rewriting history misleadingly.
 
-==================================================
-STEP 20 — VERSIONING
-==================================================
-
-Material changes should create or support a version.
-
-Example:
-
-COMMON_GUARANTOR
-
-v1
-minimum connectors = 1
-
-v2
-minimum connectors = 1
-maximum connector group size = 20
-
-Store where supported:
-
-Version
-Created By
-Created At
-Change Summary
-Status
-
-Do not silently overwrite an active published definition when materially changed.
-
-Prefer:
-
-Active Version
-        ↓
-Create New Draft Version
-        ↓
-Preview
-        ↓
-Publish New Version
+Research runs must remain auditable.
 
 ==================================================
-STEP 21 — PUBLISH
+22. PROVIDER CACHE
 ==================================================
 
-Publish should operate on a Definition Version.
+After successful connectivity test prove:
 
-Before publish show a summary:
+first request:
+CACHE_MISS
+NETWORK_REQUEST = 1
 
-Relationship
-Entities
-Detection Logic
-Evidence Requirements
-Sources
-Confidence
-Approval Mode
-Network Behavior
+second logically identical request:
+CACHE_HIT
+NETWORK_REQUEST = 0
 
-Actions:
+Test separately for:
 
-Publish
-Save Draft
-Return to Preview
+GLEIF
+SEC
 
-Publishing must NOT mutate CAM.
-
-Publishing means:
-
-this relationship definition/version is approved for use by the supplemental relationship-intelligence engine.
+Do not require Web while provider is unconfigured.
 
 ==================================================
-STEP 22 — RELATIONSHIP INSTANCE GENERATION
+23. REPORTING IMPROVEMENT
 ==================================================
 
-After publication/activation, the definition must be able to generate actual Relationship Instances.
+The Phase-3 report was too coarse because all connectivity failures became
+URLERROR.
 
-Instances should retain linkage back to:
+Improve reporting permanently.
 
-definition_id
-definition_version
-detection timestamp
-source evidence
-connector IDs
-confidence
-qualification state
+Provider errors should now include categories:
 
-Also retain where supported:
+DNS_ERROR
+TCP_ERROR
+TLS_CERTIFICATE_ERROR
+PROXY_ERROR
+TIMEOUT
+HTTP_403
+HTTP_404
+HTTP_429
+HTTP_5XX
+MALFORMED_URL
+PARSE_ERROR
+PROVIDER_NOT_CONFIGURED
+UNKNOWN_NETWORK_ERROR
 
-source lane
-review state
-effective date
-relationship strength
-evidence IDs
-
-Do not store only a pair of entity IDs without provenance.
-
-==================================================
-STEP 23 — RELATIONSHIP EXPLORER INTEGRATION
-==================================================
-
-Generated instances must appear in:
-
-Relationship Explorer
-→ Relationship Records
-
-Users should be able to filter by:
-
-Relationship Type
-Definition
-Source Lane
-State
-Confidence
-Review Status
-
-Opening an instance should show:
-
-Entities
-Relationship Type
-Definition
-Version
-Evidence
-Sources
-Connector(s)
-Confidence
-Why Detected
-Review Status
-
-Do not create a disconnected second relationship-record screen.
+Keep original low-level exception available in technical logs, sanitized.
 
 ==================================================
-STEP 24 — NETWORK INTEGRATION
+24. TESTS
 ==================================================
 
-Qualified/published relationship instances should be displayable in the existing Network.
+Retain all 27 existing tests.
 
-Reuse current graph entities and edge rendering.
+Add tests for:
 
-Do not create duplicate graph data stores.
+1. malformed provider URL classification
+2. DNS error classification
+3. TLS certificate error classification
+4. timeout classification
+5. HTTP 429 classification
+6. proxy-aware behavior where applicable
+7. security verification cannot be disabled via config
+8. SEC User-Agent is always present
+9. SEC rate maximum remains 10
+10. cache eliminates duplicate network request
+11. failed research history is preserved
+12. rerun creates new research run
+13. NOT_ATTEMPTED != NOT_FOUND
+14. GLEIF no-parent != failure
+15. reporting exception != failure
+16. canonical Phase-2 data remains immutable
 
-Each graph edge should retain enough information to open its relationship inspector.
+If live integration tests are added:
 
-Preserve source-lane visual distinctions.
+mark them separately from unit tests.
 
-The user should be able to understand whether an edge is:
-
-CAM canonical
-CAM review
-External supplemental
-AI/supplemental
-AI preview
-
-without examining backend data.
-
-==================================================
-STEP 25 — REVIEW QUEUE INTEGRATION
-==================================================
-
-Do not create another approval application.
-
-Use the existing Review Queue.
-
-Add support/filter/tab for:
-
-AI Relationship Proposals
-
-or integrate into the existing supplemental proposal queue if that is cleaner architecturally.
-
-Review-required instances should contain:
-
-Entity A
-Entity B
-Relationship Type
-Definition
-Confidence
-Evidence Count
-Primary Source
-Reason for Review
-
-Actions should use existing review patterns:
-
-Inspect
-Approve
-Reject
-
-Approval means:
-
-approved supplemental relationship intelligence.
-
-It does NOT mean:
-
-write into CAM.
+They must not make the normal offline test suite fragile.
 
 ==================================================
-STEP 26 — EXTERNAL RESEARCH BOUNDARY
+25. CONNECTIVITY REPORT
 ==================================================
 
-Do not duplicate External Research in the definition builder.
-
-A Relationship Definition may declare:
-
-External Research Allowed = Yes
-
-But actual external research remains owned by the existing External Research service/page.
-
-Conceptually:
-
-Definition
-   ↓
-Internal Detection
-   ↓
-Evidence Insufficient
-   ↓
-External Research
-   ↓
-Evidence
-   ↓
-Relationship Candidate
-   ↓
-Review
-
-Do not let relationship-definition code directly implement SEC/web retrieval.
-
-Maintain a service boundary.
-
-This separation is important for the later Unix-hosted architecture.
-
-==================================================
-STEP 27 — API CONTRACTS
-==================================================
-
-Use existing API conventions.
-
-If missing, implement clean endpoints for concepts such as:
-
-list definitions
-get definition
-create definition
-update draft
-create version
-preview definition
-publish definition
-list instances for definition
-explain instance
-
-Do not invent duplicate endpoints if equivalents already exist.
-
-Return typed, stable response models.
-
-Preview responses should include:
-
-real metrics
-actual candidate results
-qualification state
-evidence/provenance references
-
-==================================================
-STEP 28 — ERROR HANDLING
-==================================================
-
-Handle at minimum:
-
-Invalid entity type
-Invalid rule
-Unsupported relationship family
-No source data
-No candidates found
-Preview failure
-Persistence failure
-Definition version conflict
-Publish failure
-Instance generation failure
-
-Show clear business-readable UI errors.
-
-Do not expose raw stack traces in React.
-
-"No candidates found" is a valid preview result, not necessarily an error.
-
-==================================================
-STEP 29 — EMPTY STATES
-==================================================
-
-Relationship Definitions empty state:
-
-Create relationship intelligence for your lending network.
-
-Actions:
-
-AI Create Relationship
-Use Template
-Create Manually
-
-Preview with no candidates should show:
-
-No relationships matched the current definition.
-
-Do not present this as a system failure.
-
-==================================================
-STEP 30 — DO NOT REDESIGN EXISTING PRODUCT
-==================================================
-
-Preserve the current visual language.
-
-The application already contains:
-
-Overview
-Clients
-Network
-Relationship Explorer
-External Research
-Review Queue
-
-Extend it.
-
-Do not replace it.
-
-Do not introduce a new design system.
-
-Do not convert the interface into a chatbot.
-
-AI should behave as an embedded configuration assistant.
-
-==================================================
-STEP 31 — PORTABILITY GUARDRAIL
-==================================================
-
-Remember the future deployment target is Unix/Linux.
-
-For new code added in this task:
-
-Use pathlib or existing portable path utilities.
-
-Do not add:
-
-C:\ paths
-PowerShell requirements
-cmd.exe requirements
-Windows-only filesystem assumptions
-frontend-held secrets
-localhost dependencies in business logic
-
-But DO NOT perform the broader Unix migration in this task.
-
-The priority remains making the tools work end to end now.
-
-==================================================
-STEP 32 — TESTS
-==================================================
-
-Add or extend backend tests for:
-
-create definition
-save draft
-read definition
-create new version
-
-preview common guarantor
-preview common collateral
-preview common ownership/control
-preview shared management
-
-shared address with no governed data returns zero correctly
-
-preview does not publish
-preview does not mutate CAM
-
-publish definition
-
-generate relationship instances
-
-instance links to definition/version
-
-review-required instance routed correctly
-
-published instance appears in relationship records
-
-explain / why detected returns evidence and triggered logic
-
-definition persistence survives service reload if the current persistence design supports it
-
-Add frontend tests for:
-
-Definitions tab
-Create Relationship menu
-AI Create workspace
-Describe
-Generate Configuration
-Configure
-Preview
-Why Detected
-Save Draft
-Publish
-Preview in Network
-Review routing
-empty states
-error states
-
-==================================================
-STEP 33 — END-TO-END VALIDATION
-==================================================
-
-Run an actual end-to-end workflow.
-
-Use one supported relationship type, preferably:
-
-Common Guarantor
-
-Scenario:
-
-1. Open Relationship Explorer.
-2. Open Relationship Definitions.
-3. Click Create Relationship.
-4. Choose AI Create Relationship.
-5. Enter:
-
-   Identify companies that share a common guarantor.
-   Require at least one qualifying shared guarantor.
-   Use internal evidence as the primary source.
-   Send relationships below the auto-qualification threshold for review.
-
-6. Generate structured configuration.
-7. Confirm generated configuration contains actual structured fields.
-8. Preview against actual data.
-9. Confirm real candidate metrics.
-10. Inspect at least one actual candidate.
-11. Open Why Detected.
-12. Confirm provenance and triggered rule are real.
-13. Preview it in Network.
-14. Confirm preview edge is temporary.
-15. Save Draft.
-16. Confirm draft appears in Relationship Definitions.
-17. Publish/activate according to existing governance.
-18. Generate relationship instances.
-19. Confirm instance appears in Relationship Records.
-20. Confirm applicable instance appears in Network.
-21. Confirm review-required instance appears in Review Queue.
-22. Confirm CAM was not modified.
-
-Also validate the other existing relationship families at API/service level.
-
-==================================================
-STEP 34 — RUN EXISTING QUALITY CHECKS
-==================================================
-
-Run:
-
-all backend tests
-frontend TypeScript check
-frontend tests if present
-frontend production build
-existing diagnostics
-
-Do not leave temporary test definitions in the live production-like store unless deliberately created as part of validated application state.
-
-Clean up temporary test artifacts.
-
-Do not delete existing legitimate definitions or relationship data.
-
-==================================================
-FINAL REPORT
-==================================================
-
-After implementation provide a concise but complete report with:
-
-IMPLEMENTED
-
-EXISTING COMPONENTS REUSED
-
+Create:
+
+backend/data/CCR_PHASE3A_CONNECTIVITY_REPORT.md
+
+Include:
+
+ROOT CAUSE
+WINDOWS NETWORK DIAGNOSTICS
+PYTHON NETWORK DIAGNOSTICS
+PROXY STATE
+TLS STATE
+GLEIF TEST
+GLEIF PILOT
+SEC TEST
+SEC PILOT
+WEB PROVIDER STATUS
+CACHE VALIDATION
+ERROR TAXONOMY
 FILES CHANGED
+TESTS
+REMAINING BLOCKERS
 
-DATABASE / PERSISTENCE CHANGES
+Do not expose secrets.
 
-API ENDPOINTS USED / ADDED
+==================================================
+26. PHASE 4 READINESS RULE
+==================================================
 
-RELATIONSHIP TYPES VERIFIED
+Set:
 
-AI CREATE RELATIONSHIP FLOW
+PHASE 4 READY = YES
 
-PREVIEW RESULTS
+only if:
 
-RELATIONSHIP INSTANCE FLOW
+A. Phase-2 regression still passes
 
-NETWORK INTEGRATION
+AND
 
-REVIEW QUEUE INTEGRATION
+B. at least one authoritative external provider is genuinely functional
 
-CAM IMMUTABILITY VALIDATION
+AND
 
-TEST RESULTS
+C. identity/source retrieval produces verifiable records
 
-MANUAL END-TO-END VALIDATION
+AND
 
-KNOWN LIMITATIONS
+D. no synthetic evidence was used
 
-NEXT RECOMMENDED STEP
+AND
 
-Do not mark the task complete merely because the UI renders.
+E. source policy remains enforced.
 
-The task is complete only when the workflow is connected end to end using real backend data and actual relationship detection.
+Preferred state:
 
-Do not spend time on Unix deployment infrastructure in this task.
+GLEIF functional
+SEC functional
 
-The next implementation phase after this one will focus on making SEC execution operational end to end, including Helix/Stylus readiness, manual refresh control, automatic credential preflight, and evidence integration.
+Web may remain:
+
+PROVIDER_NOT_CONFIGURED
+
+provided this is explicit.
+
+However do NOT claim full external-research readiness while Web is absent.
+
+Use:
+
+PHASE_4_CORE_READY
+
+and separately:
+
+WEB_RESEARCH_READY
+
+==================================================
+27. FINAL RESPONSE FORMAT
+==================================================
+
+Return exactly:
+
+CCR PHASE 3A CONNECTIVITY: PASS / FAIL
+
+ROOT CAUSE
+GLEIF:
+SEC:
+WEB:
+
+DIAGNOSTIC MATRIX
+GLEIF DNS:
+GLEIF TCP:
+GLEIF TLS:
+GLEIF Python:
+GLEIF application:
+
+SEC DNS:
+SEC TCP:
+SEC TLS:
+SEC Python:
+SEC application:
+
+PROXY
+System proxy:
+Python proxy:
+Corporate CA required:
+
+GLEIF
+Single-record test:
+Pilot selected:
+Pilot attempted:
+HTTP success:
+Verified identities:
+Direct parents:
+Ultimate parents:
+Reporting exceptions:
+No-parent cases:
+Errors:
+Network requests:
+Cache hits:
+
+SEC
+Reference-data retrieval:
+Pilot selected:
+Eligible:
+Attempted:
+Not attempted:
+Verified CIK:
+Candidate:
+Ambiguous:
+Not found:
+Errors:
+Submission metadata retrieved:
+Network requests:
+Cache hits:
+
+WEB
+Provider configured:
+Provider type:
+Activation required:
+
+CACHE
+GLEIF cache test:
+SEC cache test:
+
+SAFETY
+TLS verification disabled: 0 / FAIL
+Synthetic evidence: 0 / FAIL
+Canonical Phase-2 mutations: 0 / FAIL
+Automatic GET research: 0 / FAIL
+Dense pair generation: 0 / FAIL
+
+TESTS
+Existing Phase-3 tests:
+New tests:
+Total passed:
+Failed:
+
+REPORT:
+backend/data/CCR_PHASE3A_CONNECTIVITY_REPORT.md
+
+PHASE_4_CORE_READY:
+YES / NO
+
+WEB_RESEARCH_READY:
+YES / NO
+
+If PHASE_4_CORE_READY = NO:
+list only genuine blockers.
+
+STOP.
