@@ -1,79 +1,53 @@
-STOP ALL FURTHER UI WORK.
+I am building an internal Lending Portfolio Intelligence POC in a React/Vite frontend.
 
-The actual browser runtime has exposed a compile failure that your previous
-source-inspection validation did not catch.
+I need to add an interactive geographic portfolio map using existing governed country-level data.
 
-CURRENT REAL ERROR:
+IMPORTANT:
+This is Lending only. Ignore CCR.
 
-[plugin:vite:oxc] Transform failed
-[PARSE_ERROR] Expected '}' but found 'Identifier'
-'}' expected
+The application currently has:
+- client CAGID
+- client name
+- country / country-of-risk label
+- reported OSUC
+- CAM count / CAM coverage
+- sector
+- relationship information
 
-File:
-frontend/src/pages/PortfolioAnalytics.tsx
+We DO NOT currently have governed latitude/longitude coordinates for individual clients.
 
-The browser points approximately to:
-122364..122370
+Therefore the map should initially work at COUNTRY LEVEL only:
+- country choropleth or country bubble/centroid visualization
+- aggregate Reported OSUC by country
+- aggregate client count by country
+- CAM-covered vs non-CAM clients
+- click country to filter the portfolio
+- hover country to show metrics
+- no invented client coordinates
 
-TASK:
+Please tell me which mapping libraries/frameworks are actually APPROVED and AVAILABLE for use inside Citi internal applications in this environment.
 
-Fix ONLY the syntax / TSX parse error preventing the Lending application
-from compiling.
+For each approved option provide:
 
-Do not redesign anything further.
-Do not add features.
-Do not change backend.
-Do not change APIs.
-Do not modify V1/V2/V3.
-Do not modify relationship data.
-Do not modify portfolio calculations.
-Do not touch external-overlay logic.
-Do not touch Stylus/R2D2/SEC.
-Do not touch CCR.
+1. exact library/package name
+2. whether npm installation is allowed
+3. whether it requires an external API key
+4. whether it requires internet access at runtime
+5. whether map tiles are fetched externally
+6. whether OpenStreetMap tiles are approved for internal use
+7. whether local/offline GeoJSON or TopoJSON country boundaries are permitted
+8. whether Leaflet is approved
+9. whether OpenLayers is approved
+10. whether D3 geographic maps are approved
+11. whether ECharts maps are approved
+12. whether Mapbox is approved
+13. whether any Citi-approved internal map component/library already exists
 
-Inspect the code around the reported location and also inspect the immediately
-surrounding JSX/TSX blocks for:
+Most importantly:
 
-- missing }
-- missing )
-- missing >
-- malformed JSX attribute
-- incorrectly nested JSX
-- unterminated template literal
-- malformed object literal
-- malformed conditional rendering
-- accidental text/identifier inside JSX or JavaScript expression
+Recommend the APPROVED option for a React/Vite application that can render a world/country map without sending client data externally.
 
-Fix the smallest possible scope.
+If external public tile services are not permitted, identify the approved approach for rendering a local country-level map from bundled GeoJSON/TopoJSON.
 
-After fixing:
-
-1. Save the file.
-2. Let the existing Vite dev server recompile.
-3. Open:
-   http://127.0.0.1:5174/lending
-4. Confirm the Vite red error overlay is gone.
-5. Confirm the Lending page actually renders.
-6. Check browser console for runtime errors.
-7. Navigate Overview -> Clients -> Network and confirm each route renders.
-
-Do NOT claim PASS based only on code inspection.
-
-The browser rendering is the acceptance test.
-
-Final response only:
-
-TSX PARSE ERROR FIXED: YES / NO
-VITE COMPILE: PASS / FAIL
-/lending RENDERS: PASS / FAIL
-OVERVIEW: PASS / FAIL
-CLIENTS: PASS / FAIL
-NETWORK: PASS / FAIL
-BROWSER CONSOLE ERRORS: <count>
-
-FILES MODIFIED:
-<files>
-
-DATA/BACKEND/V3 CHANGED: YES / NO
-
-Then STOP.
+Do not provide generic open-source recommendations.
+I need Citi-specific approved/available options only.
