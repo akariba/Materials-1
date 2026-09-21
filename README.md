@@ -1,116 +1,101 @@
-DO NOT IMPLEMENT OR REDESIGN ANYTHING YET.
+A compliant local world-country SVG asset has now been supplied.
 
-The Lending world-map attempt stopped correctly because:
-- no local GeoJSON/TopoJSON/SVG country-boundary asset was found
-- D3 is not installed
-- approved internal npm registry returned HTTP 401
+DO NOT install D3 or any other map package.
+DO NOT call any external tile service.
+DO NOT modify backend calculations, V1/V2/V3, relationship extraction,
+external research, Stylus/R2D2/SEC, or CCR.
 
-Perform READ-ONLY discovery only.
+TASK
 
-SCOPE: LENDING MAP DEPENDENCY DISCOVERY.
+Inspect the supplied local world SVG.
 
-Do not modify:
-- frontend code
-- backend code
-- V1/V2/V3
-- portfolio calculations
-- relationship data
-- Stylus/R2D2/SEC
-- CCR
-- package.json
-- package-lock.json
-- npm configuration
+First verify:
+- every country is represented by an individual path
+- country identifiers are available through ISO2, ISO3, path id, or country name
+- no external runtime resources exist
+- no remote scripts, images, fonts, tiles, or URLs are required
 
-SEARCH FOR EXISTING LOCAL MAP CAPABILITY
+Then integrate it into the existing Lending Portfolio Geography section.
 
-Inspect the current repository and available local frontend dependencies for:
+Use the existing governed Portfolio API country statistics.
 
-1. d3
-2. d3-geo
-3. topojson-client
-4. world-atlas
-5. react-simple-maps
-6. echarts geographic/map support
-7. any existing geographic/map package already installed
-8. any local:
-   - .geojson
-   - .topojson
-   - world*.json
-   - countries*.json
-   - country*.json
-   - world*.svg
-   - map*.svg
-   - geographic boundary asset
+MAP BEHAVIOR
 
-Also inspect:
-- frontend/node_modules
-- npm cache if locally accessible
-- repository public/assets directories
-- existing HTML prototype/reference files
-- any bundled static assets already included in the application
+Render a real interactive world map.
 
-Do not search the public internet.
-Do not install anything.
-Do not authenticate or modify npm configuration.
+For every country successfully matched:
 
-SPECIFIC FALLBACK CHECK
+- fill intensity based on Reported OSUC
+- hover highlight
+- smooth glow/flash transition
+- tooltip containing:
+    country
+    client count
+    CAM-covered count
+    without-CAM count
+    Reported OSUC
+    portfolio OSUC share
+    CAM coverage %
+- click country filters the Lending client population
+- clicking the selected country again clears the filter
+- selected country gets a stronger outline/glow
+- keep the existing country ranking/list synchronized with map selection
 
-Determine whether an existing LOCAL world SVG exists where countries have
-stable identifiers such as:
-- ISO2
-- ISO3
-- country name
-- path id
+COUNTRY MATCHING
 
-If such SVG exists, report whether the map can be implemented directly using
-React/SVG WITHOUT D3.
+Build an explicit normalization table between Portfolio API country labels
+and SVG country identifiers.
 
-Also determine whether an already-installed charting library can render a
-locally supplied map WITHOUT runtime external calls.
+Do not silently fuzzy-match ambiguous countries.
 
-INTERNAL NPM
+Produce:
+- matched country count
+- unmatched country count
+- explicit unmatched list
 
-Inspect current npm configuration READ-ONLY and report:
+Expected portfolio country labels: 88.
 
-- configured registry URL
-- whether authentication appears missing/expired
-- exact HTTP 401 source
-- whether other packages from that same internal registry are already installed
+Do not fabricate coordinates or country boundaries.
 
-Do not attempt to fix credentials.
+VISUAL STYLE
 
-FINAL RESPONSE ONLY:
+Use the existing Lending visual language:
 
-LOCAL D3: YES / NO
-LOCAL D3-GEO: YES / NO
-LOCAL TOPOJSON CLIENT: YES / NO
-LOCAL WORLD ATLAS: YES / NO
+- light background
+- soft blue base countries
+- deeper blue for increasing OSUC
+- teal selection/glow
+- subtle animated highlight on hover/selection
+- clean institutional style
+- no dark-map redesign
+- no unnecessary map controls
 
-EXISTING MAP LIBRARY:
-<name or NONE>
+Do not redesign the rest of the page.
 
-LOCAL GEOJSON/TOPOJSON:
-<paths or NONE>
+VALIDATION
 
-LOCAL WORLD SVG:
-<path or NONE>
+Confirm:
+- total client count remains 2,484
+- reported OSUC remains approximately $349.27B
+- CAM-covered count remains 1,698
+- no API or analytics calculations changed
+- no external runtime calls
+- country click correctly filters clients
+- clearing selection restores all 2,484 clients
 
-SVG DIRECT RENDER POSSIBLE:
-YES / NO
+Final response:
 
-NPM REGISTRY:
-<registry>
-
-NPM 401 CAUSE:
-<what can be established without guessing>
-
-MAP CAN BE BUILT WITHOUT NEW PACKAGE:
-YES / NO
-
-MINIMUM MISSING ASSET:
-<exact asset/package needed>
-
-RECOMMENDED NEXT STEP:
-<one concise recommendation>
+LOCAL SVG VALIDATION: PASS / FAIL
+COUNTRIES IN SVG: X
+PORTFOLIO COUNTRY LABELS: 88
+COUNTRIES MATCHED: X
+COUNTRIES UNMATCHED: X
+EXTERNAL MAP CALLS: 0 / NOT 0
+PORTFOLIO RECONCILIATION: PASS / FAIL
+COUNTRY FILTER: PASS / FAIL
+HOVER TOOLTIP: PASS / FAIL
+SELECTION GLOW: PASS / FAIL
+V1/V2/V3 UNCHANGED: PASS / FAIL
+CCR UNCHANGED: PASS / FAIL
 
 Then STOP.
