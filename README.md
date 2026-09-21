@@ -1,1160 +1,1585 @@
-CCR RELATIONSHIP CORRELATION — PHASE 4A
-WINDOWS LOCAL WORKING POC
+IMPLEMENT THE NEXT NETWORK INTELLIGENCE PHASE.
 
-You are working inside the CURRENT CCR repository in VSCode on Windows.
+Do not perform another broad architecture audit.
 
-The immediate objective is:
+Do not redesign the entire application.
 
-GET THE CCR RELATIONSHIP CORRELATION TOOL WORKING LOCALLY ON WINDOWS.
+Do not start Unix deployment packaging yet.
 
-Do NOT work on Unix / Market Dev in this phase.
+The immediate objective is to turn the existing Network page into the primary relationship-intelligence surface, with:
 
-Do NOT spend more time fixing external DNS.
+1. a World Relationship Map near the top
+2. multiple network/map views
+3. AI Tools available directly beside the map
+4. AI tools connected to actual relationship data
+5. automatic Helix and Stylus credential readiness / refresh
+6. no CAM mutation
+7. no duplicate graph or relationship stores
 
-Do NOT require SEC, GLEIF or Web connectivity for the application to start
-and operate locally.
+The existing relationship-definition and AI relationship work has already passed:
 
-External providers currently have connectivity problems in this Windows
-environment. The application must handle that gracefully.
+- backend suite
+- focused AI tests
+- higher-order relationship-family validation
+- TypeScript diagnostics
+- production frontend build
 
-==================================================
-1. OBJECTIVE
-==================================================
-
-Create a usable local CCR Relationship Intelligence POC using the REAL
-currently available CCR data.
-
-The user must be able to:
-
-1. open the application;
-2. understand the CCR population;
-3. search clients;
-4. open a client;
-5. see its exposure/reference information;
-6. open the relationship network;
-7. see available evidence-backed structural relationships where they really
-   exist;
-8. optionally display local research-candidate signals separately;
-9. configure AI relationship analyses;
-10. inspect SEC/GLEIF/Web provider status;
-11. run external research explicitly when connectivity is available;
-12. see a clean failure state when external connectivity is unavailable.
-
-No fake CCR relationships.
+Preserve that work.
 
 ==================================================
-2. CURRENT FOUNDATION
+CORE PRODUCT INTENT
 ==================================================
 
-Use the existing:
+The Network page should answer immediately:
 
-backend/data/ccr_relationship_intelligence.sqlite3
+- Where are our major lending relationships?
+- Which clients are connected?
+- Which relationships cross countries or regions?
+- Where are ownership / guarantor / collateral / management concentrations?
+- Which relationships came from CAM?
+- Which were AI-defined?
+- Which are external / supplemental?
+- Which are under review?
+- Where are major relationship clusters?
+- Where should an analyst investigate further?
 
-Current validated foundation includes approximately:
+The user should be able to move from:
 
-- 16,755 canonical CCR clients
-- 25,000 exposure rows
-- 24,984 linked exposure rows
-- 14 unresolved source identities
-- 16 unresolved exposure rows
-- 8,009 valid local LEIs
-- Phase-3 external research schema
-- source policy
-- research runs
-- external identity tables
-- evidence tables
-- provider cache
-- GLEIF / SEC provider infrastructure
+GLOBAL VIEW
+    ↓
+REGION
+    ↓
+COUNTRY
+    ↓
+GROUP
+    ↓
+CLIENT
+    ↓
+RELATIONSHIP
+    ↓
+EVIDENCE
 
-Recompute counts from database.
-
-Do not hardcode them.
-
-==================================================
-3. IMPORTANT WINDOWS RULE
-==================================================
-
-External connectivity is OPTIONAL for local UI operation.
-
-Application startup must NOT:
-
-- call SEC
-- call GLEIF
-- call Web
-- fail because DNS is unavailable
-- automatically perform external research
-
-External provider state may show:
-
-AVAILABLE
-UNAVAILABLE
-NOT_CONFIGURED
-DNS_ERROR
-CACHE_ONLY
-
-The rest of the application must continue working.
+without leaving the intelligence workflow.
 
 ==================================================
-4. PRESERVE EXISTING DATA
+1. NETWORK PAGE — NEW TOP STRUCTURE
 ==================================================
 
-Do not modify:
+Keep the existing main navigation.
 
-Customer_latest.parquet
-thousandClients.csv
-backend/data/ccr_clients.sqlite3
+Network remains the top-level destination.
 
-Do not alter Phase-2 canonical identity.
+At the top of the Network page use:
 
-Do not fabricate:
+Network Intelligence
 
-relationships
-parents
-suppliers
-customers
-investors
-materiality
-confidence
-evidence
+Subtitle:
 
-==================================================
-5. FIRST — AUDIT THE CURRENT FRONTEND
-==================================================
+Explore relationships across the lending portfolio,
+identify concentrations, inspect connected groups,
+and discover evidence-backed patterns.
 
-Inspect the existing frontend.
+Immediately below the title add the view selector:
 
-Determine:
+[ World Map ]
+[ Client Network ]
+[ Group View ]
+[ Sector View ]
+[ Geographic View ]
+[ Supply Chain ]
+[ Custom View ]
 
-framework
-routes
-components
-API client
-theme/design system
-current pages
-current broken states
+IMPORTANT:
 
-Do not rewrite everything if usable structure exists.
+World Map should become the first/highest-level view.
 
-Reuse working components.
+It should appear near the top of the page.
+
+Do not hide it deep below existing tables.
 
 ==================================================
-6. LOCAL BACKEND CONTRACT
+2. TOP NETWORK INTELLIGENCE LAYOUT
 ==================================================
 
-Create or complete read-only/local endpoints required by the UI.
+For World Map view use a two-column top layout.
 
-Use existing FastAPI conventions.
+LEFT:
+approximately 70% width
 
-At minimum provide:
+WORLD RELATIONSHIP MAP
 
-GET /api/ccr/status
+RIGHT:
+approximately 30% width
 
-GET /api/ccr/overview
+AI TOOLS + CURRENT SELECTION / INSIGHTS
 
-GET /api/ccr/clients
+Conceptually:
 
-GET /api/ccr/clients/{ccr_client_key}
+------------------------------------------------------------
+|                                                          |
+|               WORLD RELATIONSHIP MAP                     |
+|                                                          |
+|                                                          |
+|                                            | AI TOOLS    |
+|                                            |             |
+|                                            | Create Rel. |
+|                                            | Analyze Net |
+|                                            | Concentrate |
+|                                            | Research    |
+|                                                          |
+------------------------------------------------------------
 
-GET /api/ccr/clients/{ccr_client_key}/exposure
+Below this top area show:
 
-GET /api/ccr/clients/{ccr_client_key}/identifiers
+portfolio relationship metrics
+network insights
+relationship distributions
+selected entity / relationship details
+recent activity
 
-GET /api/ccr/clients/{ccr_client_key}/hierarchy
+Do not place the map below several screens of statistics.
 
-GET /api/ccr/clients/{ccr_client_key}/relationships
-
-GET /api/ccr/clients/{ccr_client_key}/candidates
-
-GET /api/ccr/network/{ccr_client_key}
-
-GET /api/ccr/research/status
-
-GET /api/ccr/relationship-config
-
-POST /api/ccr/relationship-config
-
-Existing compatible Phase-3 routes may be reused.
-
-Do not duplicate routes unnecessarily.
-
-==================================================
-7. OVERVIEW PAGE
-==================================================
-
-Build a clean CCR Relationship Intelligence landing page.
-
-The user should understand the tool within seconds.
-
-Show real calculated values:
-
-CCR Clients
-Exposure Records
-Resolved Clients
-Unresolved Clients
-Clients with LEI
-Research-ready Clients
-Relationship Observations
-Research Runs
-Evidence Records
-
-Do not invent monetary totals because exposure units are still UNKNOWN.
-
-If amount units are unresolved display:
-
-Exposure values available
-Units not confirmed
-
-rather than a fake USD number.
+The map is the primary visual object.
 
 ==================================================
-8. GLOBAL RELATIONSHIP FOOTPRINT
+3. WORLD MAP
 ==================================================
 
-Include the world-map component in the Overview.
+Build a real interactive world map.
 
-This is important.
+Do not use a static image.
 
-Use actual country fields from canonical CCR clients.
+Reuse existing portfolio geography and relationship data.
 
-Show:
+If the current project already contains geographic normalization / country data, reuse it.
 
-number of CCR clients by country
-percentage of population
-selected client location
+Do not create another geographic dataset unless required.
 
-If available, show relationship connection arcs ONLY for real
-evidence-backed relationships.
+The map should display:
 
-Do NOT draw fake relationship arcs just to make the map attractive.
+- countries
+- portfolio entities
+- relationship clusters
+- cross-border relationships
+- relationship concentration
+- selected groups
+- selected clients
 
-When there are no real edges:
+Map should support:
 
-show client distribution points / country bubbles.
-
-Label clearly:
-
-CCR Client Footprint
-
-and separately:
-
-Evidence-backed Relationship Connections
-
-==================================================
-9. CLIENTS PAGE
-==================================================
-
-Create a scalable searchable client table.
-
-Columns should use actual available fields such as:
-
-Legal Name
-GFCID
-CAGID
-Country
-Industry / Sector
-LEI
-Identity Quality
-Exposure Record Count
-Research Readiness
-
-Support:
-
-search by legal name
-GFCID
-CAGID
-LEI
-
-Filters:
-
-Country
-Sector / industry where available
-Identity quality
-Has LEI
-SEC readiness
-GLEIF readiness
-Web readiness
-
-Use backend pagination.
-
-Do not send all 16k records to browser if unnecessary.
+zoom
+pan
+fit to world
+reset
+country selection
+region selection
+entity selection
+relationship selection
 
 ==================================================
-10. CLIENT DETAIL PAGE
+4. MAP REPRESENTATION
 ==================================================
 
-When a client is selected show:
+Use clustered points at global zoom.
 
-legal/display name
+Example:
 
-GFCID
-CAGID
-LEI
+North America
+142 relationships
+42 entities
+
+Europe
+96 relationships
+36 entities
+
+Asia-Pacific
+78 relationships
+28 entities
+
+Middle East
+28 relationships
+10 entities
+
+Africa
+16 relationships
+8 entities
+
+Latin America
+34 relationships
+12 entities
+
+DO NOT hardcode these numbers.
+
+Use actual backend results.
+
+At higher zoom levels break regional clusters into:
+
 country
-industry
-sector
-identity quality
-
-Exposure section:
-number of exposure/facility records
-
-Do NOT present unknown-unit exposure amounts as USD.
-
-Identifiers section
-
-Research readiness:
-
-GLEIF
-SEC
-Web
-
-Provider status
-
-Relationships
-
-Research Candidates
-
-Evidence
+city / entity clusters where supported
+individual entities
 
 ==================================================
-11. RELATIONSHIP TYPES
+5. CROSS-BORDER RELATIONSHIP ARCS
 ==================================================
 
-Create the canonical CCR relationship taxonomy/configuration catalogue.
-
-Initial configurable types:
-
-SUPPLIER
-CRITICAL_SUPPLIER
-CUSTOMER
-KEY_CUSTOMER
-
-PARENT
-SUBSIDIARY
-ULTIMATE_PARENT
-
-INVESTOR
-SPONSOR
-
-LENDER
-FINANCING_RELATIONSHIP
-
-STRATEGIC_PARTNER
-JOINT_VENTURE
-
-TECHNOLOGY_PROVIDER
-TECHNOLOGY_DEPENDENCY
-
-CLOUD_PROVIDER
-INFRASTRUCTURE_PROVIDER
-INFRASTRUCTURE_DEPENDENCY
-
-SERVICE_PROVIDER
-
-MANUFACTURING_PARTNER
-DISTRIBUTOR
-SOURCE_OF_INPUTS
-
-OTHER_EVIDENCE_BACKED_RELATIONSHIP
-
-These are allowed taxonomy values.
-
-Their existence in the taxonomy does NOT mean a relationship exists.
-
-==================================================
-12. RELATIONSHIP DATA STATES
-==================================================
-
-Keep states explicit.
-
-CONFIRMED_EXTERNAL
-EXTERNAL_PROPOSAL_PENDING_REVIEW
-REVIEW_REQUIRED
-INSUFFICIENT_EVIDENCE
-CONFLICT
-HISTORICAL
-
-Candidate/similarity signals must NOT use these states.
-
-They belong to a separate layer:
-
-RESEARCH_CANDIDATE
-
-==================================================
-13. NETWORK VIEW
-==================================================
-
-Build the relationship network.
-
-This is a core page.
-
-Default behavior:
-
-user searches/selects ONE CCR client
-
-center node:
-selected CCR client
-
-Then display bounded connected data only.
-
-Never load the entire 16k universe.
-
-Provide layers:
-
-[✓] Evidence-backed relationships
-[ ] Research candidates
-[ ] External structural observations
-[ ] Indirect paths
-
-If no real relationship exists:
-
-show the selected node plus an honest empty state:
-
-"No evidence-backed relationships currently stored."
-
-Then optionally:
-
-"Show research candidates"
-
-==================================================
-14. RESEARCH CANDIDATES
-==================================================
-
-Use the existing Phase-2:
-
-candidate_signal_registry
-
-Candidate signals may include only locally supported dimensions.
+Show relationship arcs between regions / countries.
 
 Examples:
 
-same industry
-same sector
-same geography
-existing structural identifier signal
-shared classification
+United States → United Kingdom
+Parent / Subsidiary
 
-These are for RESEARCH SEEDING ONLY.
+United States → Ireland
+Common Guarantor
 
-Render candidate edges as:
+Germany → United States
+Ownership / Control
 
-dashed
-light
-clearly labelled
+Japan → United States
+Supplier / Customer
 
-RESEARCH CANDIDATE
+The arcs must come from actual relationship instances.
 
-Never:
-
-SUPPLIER
-CUSTOMER
-PARTNER
-
-unless actual evidence exists.
+Do not fabricate links.
 
 ==================================================
-15. NETWORK NODE VISUALS
+6. RELATIONSHIP ORIGIN / LANE SEMANTICS
 ==================================================
 
-Distinguish:
+Preserve the existing governance lanes.
 
-Selected CCR Client
-CCR Client
-External Entity
-Research Candidate
+Map legend should distinguish:
 
-When a selected node has exposure context, node size may use:
+CAM / Internal
+AI Defined — Published
+AI Preview
+External / Supplemental
+Review Required
 
-exposure record count
+Use the same semantics already introduced in Network and Relationship Explorer.
 
-for now.
+Do not create another definition of source origin.
 
-Do NOT use unknown-unit exposure amount.
-
-Legend must explicitly say:
-
-Node size = Exposure Record Count
-
-if that sizing is used.
+All views must use the same underlying relationship-lane model.
 
 ==================================================
-16. NETWORK EDGE VISUALS
+7. RELATIONSHIP FAMILY FILTERS
 ==================================================
 
-Real evidence-backed:
-solid
+Add top filters:
 
-GLEIF structural observation:
-solid but separate color/style
-
-Pending review:
-dashed
-
-Research candidate:
-thin dotted/dashed
-
-Indirect:
-multi-hop style
-
-Do not visually make candidates look confirmed.
-
-==================================================
-17. EDGE INSPECTOR
-==================================================
-
-Clicking a real edge must show:
-
-Subject
-Related Entity
 Relationship Type
-Direction
-State
-Source Channel
-Source Tier
-Evidence Count
-Research Run
-Review State
-
-Button:
-
-View Evidence
-
-Clicking a candidate edge must instead show:
-
-Candidate Signal
-Why this entity was proposed for research
-Source local fields
-NOT EVIDENCE
-No confirmed relationship
-
-==================================================
-18. AI CREATE RELATIONSHIP
-==================================================
-
-Build this now.
-
-This is configuration first.
-
-Create a page/panel:
-
-AI Create Relationship
-
-The user can define analysis presets.
-
-Seed with:
-
-1. Supply Chain Dependency
-2. Technology Dependency
-3. Customer Relationship
-4. Parent / Subsidiary
-5. Investor / Sponsor
-6. Lender / Financing
-7. Strategic Partner
-8. Infrastructure Dependency
-9. Service Provider
-10. Joint Venture
-11. Custom Analysis
-
-==================================================
-19. AI CONFIG STRUCTURE
-==================================================
-
-Each preset should support:
-
-Analysis Name
-
-Active:
-ON / OFF
-
-Objective
-
-Detailed Instructions
-
-Relationship Scope
-
-Source Channels:
-[ ] SEC
-[ ] GLEIF
-[ ] High-quality Web
-
-Allowed Relationship Types
-
-Source Tier Minimum
-
-Require Primary Source:
-YES / NO
-
-Require Multiple Sources:
-YES / NO
-
-Minimum Evidence Count
-
-Allow Historical Evidence:
-YES / NO
-
-Maximum Evidence Age
-
-Direction Rules
-
-Entity Resolution Requirements
-
-Review Requirement
-
-==================================================
-20. EXAMPLE PRESET — SUPPLY CHAIN
-==================================================
-
-Seed:
-
-Analysis Name:
-Supply Chain Dependency
-
-Objective:
-
-Identify entities whose goods, services, components, technology or other
-inputs are materially required for the subject company's operations.
-
-Detailed instructions:
-
-- Look for explicit supplier/customer disclosures.
-- Determine what is supplied.
-- Determine relationship direction.
-- Distinguish ordinary supplier from dependency.
-- Do not infer a supplier relationship from shared sector.
-- Do not infer dependency from simple vendor mention.
-- Prefer explicit SEC filing or primary-source evidence.
-- Use high-quality secondary sources only when permitted.
-- Preserve evidence excerpt and citation.
-- Return insufficient evidence rather than guessing.
-
-Sources:
-
-SEC = enabled
-GLEIF = disabled for supplier relationship evidence
-Web = enabled when provider becomes available
-
-Allowed relationship types:
-
-SUPPLIER
-CRITICAL_SUPPLIER
-SOURCE_OF_INPUTS
-MANUFACTURING_PARTNER
-
-==================================================
-21. PARENT / SUBSIDIARY PRESET
-==================================================
-
-Objective:
-
-Identify defensible legal/corporate hierarchy.
-
-Primary source:
-
-GLEIF Level 2
-SEC where applicable
-
-Allowed:
-
-PARENT
-SUBSIDIARY
-ULTIMATE_PARENT
-
-Do NOT treat:
-
-beneficial owner
-investor
-sponsor
-
-as equivalent to accounting-consolidating parent.
-
-==================================================
-22. CONFIG PERSISTENCE
-==================================================
-
-Persist the AI relationship configurations.
-
-Add additive tables if needed such as:
-
-relationship_analysis_configs
-relationship_analysis_config_versions
-
-Fields should support:
-
-config_id
-name
-description
-active
-objective
-instructions
-sources
-allowed_relationship_types
-source_policy
-evidence_rules
-direction_rules
-review_rules
-created_at
-updated_at
-version
-
-Do not store config only in frontend localStorage.
-
-==================================================
-23. CONFIG VERSIONING
-==================================================
-
-Every edit creates a new version or maintains an auditable version value.
-
-The user should be able to see:
-
-Current Version
-Last Updated
-
-No need for complex approval workflow yet.
-
-==================================================
-24. EXTERNAL RESEARCH PAGE
-==================================================
-
-Create the page even though Windows connectivity is currently unavailable.
-
-Show provider cards:
-
-GLEIF
-SEC
-Web
-
-Each shows:
-
-Configured
-Connectivity
-Cache
-Last Successful Run
-Last Error
-
-For current Windows state it is valid to show:
-
-GLEIF
-Configured: Yes
-Connectivity: DNS Error
-
-SEC
-Configured: Yes
-Connectivity: DNS Error
-
-Web
-Configured: No
-
-This must NOT break the rest of the product.
-
-==================================================
-25. RUN EXTERNAL RESEARCH
-==================================================
-
-The control may exist.
-
-But execution must remain explicit.
-
-Button:
-
-Run External Research
-
-Never call external research on:
-
-page load
-client click
-network click
-tab change
-refresh
-
-If Windows DNS fails:
-
-display:
-
-Research could not run
-Provider connectivity unavailable
-
-with diagnostic status.
-
-Do not crash.
-
-==================================================
-26. RELATIONSHIP EXPLORER
-==================================================
-
-Create a table with:
-
-Subject
-Related Entity
-Relationship Type
-Direction
+Source Lane
 Status
-Source
-Confidence / Quality
+Sector
+Country / Region
+Confidence
+Definition
+Exposure
+
+Relationship Type should include existing supported families such as:
+
+Ownership / Control
+Parent / Subsidiary
+Guarantor
+Common Guarantor
+Collateral
+Common Collateral
+Management
+Shared Management
+Shared Address
+Commercial
+Supplier / Customer
+Other
+
+Only expose families actually present in the data model.
+
+==================================================
+8. WORLD MAP SELECTION
+==================================================
+
+Clicking a regional cluster should zoom.
+
+Clicking a country should:
+
+- highlight that country
+- filter relevant relationships
+- open a right-side summary panel
+
+Example:
+
+UNITED STATES
+
+Clients
+128
+
+Relationships
+342
+
+Connected Groups
+17
+
+Cross-Border Relationships
+86
+
+Reported OSUC
+$...
+
+CAM Coverage
+...
+
+AI-Defined Relationships
+...
+
+Review Required
+...
+
+Actions:
+
+View Clients
+View Relationships
+Analyze Region
+Open Network
+
+Use actual data.
+
+==================================================
+9. ENTITY SELECTION
+==================================================
+
+Clicking an entity should open the existing-style entity inspector.
+
+Show:
+
+Entity Name
+CAGID / entity ID
+Entity Type
+Country
+Sector
+Reported OSUC
+CAM Coverage
+Risk Rating if available
+Relationship Count
+Connected Clients
+Connected Groups
+
+Tabs:
+
+Overview
+Relationships
+Groups
+Exposure
+Evidence
+
+Do not invent risk scores if none exist.
+
+==================================================
+10. RELATIONSHIP SELECTION
+==================================================
+
+Clicking a relationship arc or edge should open:
+
+RELATIONSHIP INSPECTOR
+
+Show:
+
+Subject
+Related Entity
+Relationship Type
+Direction
+Source Lane
+Definition
+Definition Version
+Confidence
 Evidence Count
-Review State
+State
+Review Status
 
-If no relationships exist:
+Actions:
 
-show proper empty state.
+Why Detected
+View Evidence
+Open in Relationship Explorer
+Focus Network
 
-Do not fill it with candidate signals.
-
-Provide a separate tab:
-
-Research Candidates
-
-==================================================
-27. EVIDENCE VIEW
-==================================================
-
-For real evidence:
-
-Publisher
-Source
-Source Tier
-Document / Filing Type
-Published Date
-Retrieved Date
-Evidence Excerpt
-Source Reference
-Admissibility
-Research Run
-
-Do not expose raw JSON by default.
-
-Technical Details may be expandable.
+Reuse existing relationship provenance.
 
 ==================================================
-28. LOCAL PROVIDER STATUS
+11. TOP PORTFOLIO METRICS
 ==================================================
 
-Application must start even if:
+Directly under the map show compact metrics.
 
-socket.getaddrinfo(api.gleif.org) fails
+Examples:
 
-or
+Countries
+Entities
+Relationships
+Connected Groups
+Cross-Border Relationships
+AI-Defined Relationships
+Review Required
+High Concentration Alerts
 
-socket.getaddrinfo(data.sec.gov) fails.
+Do not show every metric at once if space becomes cluttered.
 
-Provider status checks must:
+Prioritize the most useful 5–7.
 
-timeout quickly
-be bounded
-not block UI startup
-
-Prefer backend cached status rather than repeated browser polling.
-
-==================================================
-29. WINDOWS STARTUP
-==================================================
-
-Make local startup straightforward.
-
-Do not permanently hardcode the user's C:\ path.
-
-Use project-relative paths.
-
-Backend:
-
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-
-Frontend:
-
-use the existing frontend toolchain.
-
-Likely:
-
-npm install
-npm run dev
-
-Use the actual repo scripts/package.json.
-
-Do not guess if different.
+All values must come from current backend state.
 
 ==================================================
-30. FRONTEND API CONFIG
+12. MULTIPLE NETWORK VIEWS
 ==================================================
 
-For local development:
+World Map is one lens over the same relationship graph.
 
-frontend should communicate with backend reliably.
+Implement these views using the same data source.
 
-Prefer:
+WORLD MAP
 
-Vite proxy / same-origin development proxy
+Global geographic relationship view.
 
-or configurable:
+CLIENT NETWORK
 
-VITE_API_BASE_URL
+Existing focal-entity graph.
 
-Do not scatter:
+GROUP VIEW
 
-http://127.0.0.1:8000
+Connected borrower / economic-group view.
 
-through components.
+SECTOR VIEW
 
-This will help later Unix migration.
+Relationships grouped by sector.
 
-==================================================
-31. UI VISUAL LANGUAGE
-==================================================
+GEOGRAPHIC VIEW
 
-Reuse the established clean Relationship Intelligence visual language.
+Country / region concentration and connectivity.
 
-Do not redesign the Stylus preset.
+SUPPLY CHAIN
 
-Visual priorities:
+Commercial / supplier / customer relationships where available.
 
-large relationship network
-clear client context
-world map
-evidence panel
-configuration panel
+CUSTOM VIEW
 
-Avoid:
+User-selected filters / relationship families.
 
-giant technical status dashboard
-raw JSON everywhere
-giant unbounded graph
-fake relationship counts
+Do not create separate duplicated datasets for each view.
 
 ==================================================
-32. MAIN NAVIGATION
+13. GROUP VIEW
 ==================================================
 
-Preferred navigation:
+Group View should show connected groups rather than individual raw relationships first.
 
-Overview
+Example group card:
 
-Clients
+CONNECTED GROUP
 
-Network
+Global Holdings Group
 
-Relationship Explorer
+12 entities
+4 countries
+$4.2B Reported OSUC
+18 relationships
 
-AI Create Relationship
+Primary drivers:
 
-External Research
+Ownership
+Common Guarantor
+Shared Management
 
-Review
+Review Required:
+2
 
-Use existing navigation if already close.
+Actions:
 
-==================================================
-33. LOCAL WORKING ACCEPTANCE SCENARIO
-==================================================
+Open Group
+View Map
+Analyze Group
 
-Use REAL CCR data.
+Group membership should come from existing relationship/correlation logic.
 
-Select a deterministic actual client with:
-
-resolved identity
-legal name
-country
-LEI if possible
-
-Do not hardcode a famous company merely for appearance.
-
-Acceptance flow:
-
-1. Overview opens.
-2. Counts reconcile to backend.
-3. World map loads.
-4. Search client.
-5. Open client detail.
-6. Exposure record count displays.
-7. LEI displays where available.
-8. Open Network.
-9. Selected client is center node.
-10. Evidence-backed relationships display if any.
-11. Otherwise honest empty state displays.
-12. Toggle Research Candidates.
-13. Candidate nodes appear separately.
-14. Click candidate and see "NOT EVIDENCE".
-15. Open AI Create Relationship.
-16. Edit Supply Chain Dependency preset.
-17. Save.
-18. Reload page.
-19. Configuration persists.
-20. Open External Research.
-21. Provider DNS error does not crash UI.
+Do not create unsupported legal conclusions.
 
 ==================================================
-34. TESTS
+14. AI TOOLS PANEL — TOP RIGHT
 ==================================================
 
-Add tests for:
+Beside the map place a persistent panel:
 
-Overview API
-
-client pagination
-
-client search
-
-client detail
-
-network boundedness
-
-candidate != relationship
-
-candidate cannot appear as confirmed edge
-
-AI config CRUD
-
-AI config persistence
-
-AI config versioning
-
-external provider failure does not break local APIs
-
-GET pages do not trigger external calls
-
-network page does not trigger external calls
-
-world-map country aggregation
-
-empty relationship state
-
-evidence endpoint
-
-Phase-2 regression
-
-Phase-3 regression
-
-==================================================
-35. RUN THE APPLICATION
-==================================================
-
-After implementation:
-
-start backend
-
-start frontend
-
-exercise the local acceptance flow.
-
-Use localhost/127.0.0.1 only for this Windows POC.
-
-If browser automation/playwright already exists, use it.
-
-Otherwise perform API tests plus frontend build/typecheck.
-
-==================================================
-36. SCREENSHOTS
-==================================================
-
-If browser tooling is available, capture screenshots of:
-
-Overview
-Clients
-Client Detail
-Network
-AI Create Relationship
-External Research
-
-Save under an appropriate local test/output directory.
-
-Do not embed mock business values.
-
-==================================================
-37. REPORT
-==================================================
-
-Create:
-
-backend/data/CCR_PHASE4A_WINDOWS_LOCAL_POC_REPORT.md
+AI Tools
 
 Include:
 
-ROUTES
-API STATUS
-UI PAGES
-OVERVIEW COUNTS
-CLIENT SEARCH
-NETWORK
-WORLD MAP
-RESEARCH CANDIDATES
-RELATIONSHIP CONFIG
-EXTERNAL PROVIDER STATUS
-TEST RESULTS
-KNOWN LIMITATIONS
-FILES CHANGED
+CREATE RELATIONSHIP
+Define a new relationship using AI.
+
+ANALYZE NETWORK
+Find patterns and hidden connections.
+
+IDENTIFY CONCENTRATIONS
+Detect shared connectors and concentration points.
+
+RESEARCH RELATIONSHIP
+Use governed external research to investigate a selected relationship.
+
+GENERATE REPORT
+Generate a relationship intelligence summary.
+
+The panel should be compact.
+
+Do not turn the page into an AI chat application.
 
 ==================================================
-38. FINAL RESPONSE
+15. CREATE RELATIONSHIP
 ==================================================
 
-Return exactly:
+Create Relationship must open the existing:
 
-CCR WINDOWS LOCAL POC: PASS / FAIL
+AI Create Relationship
 
-BACKEND
-Running:
-URL:
-Health:
+workflow.
 
-FRONTEND
-Running:
-URL:
-Build/typecheck:
+Do not create another tool.
 
-OVERVIEW
-CCR clients:
-Exposure rows:
-Resolved:
-Unresolved:
-LEI clients:
-World map: PASS / FAIL
+If a country / entity / group is currently selected on the map, pass that context into AI Create Relationship.
 
-CLIENTS
-Search: PASS / FAIL
-Pagination: PASS / FAIL
-Client detail: PASS / FAIL
+Example:
 
-NETWORK
-Selected-client graph: PASS / FAIL
-Evidence-backed edges:
-Research candidate layer: PASS / FAIL
-Candidate/evidence separation: PASS / FAIL
-No full-universe graph: PASS / FAIL
+Current context:
 
-AI CREATE RELATIONSHIP
-Page: PASS / FAIL
-Default presets:
-Edit: PASS / FAIL
-Save: PASS / FAIL
-Persistence: PASS / FAIL
-Versioning: PASS / FAIL
+Selected group:
+Global Holdings
 
-EXTERNAL RESEARCH
-GLEIF status:
-SEC status:
-Web status:
-DNS failure handled gracefully: PASS / FAIL
-Automatic external calls: 0 / FAIL
+Selected countries:
+US, UK, Ireland
 
-RELATIONSHIPS
-Confirmed external:
-Pending review:
-GLEIF observations:
-Research candidates:
-Synthetic relationships: 0 / FAIL
+The user can then enter:
 
-TESTS
-Passed:
-Failed:
+Identify companies in this network that share a common guarantor.
 
-SCREENSHOTS
-Overview:
-Clients:
-Client Detail:
+The AI relationship-definition tool should start with that scope.
+
+==================================================
+16. ANALYZE NETWORK
+==================================================
+
+Click:
+
+Analyze Network
+
+Open an AI analysis drawer.
+
+It should NOT be a generic chatbot.
+
+Show:
+
+Analysis Scope
+
+Current World
+Selected Region
+Selected Country
+Selected Group
+Selected Client
+Current Filters
+
+User can choose one.
+
+Prompt examples:
+
+Find major common guarantor clusters.
+
+Identify ownership chains.
+
+Find shared management across unrelated clients.
+
+Identify cross-border concentration.
+
+Find highly connected entities.
+
+Identify potential economic groups.
+
+Find relationships supported by multiple evidence types.
+
+Primary action:
+
+Run Analysis
+
+==================================================
+17. NETWORK ANALYSIS OUTPUT
+==================================================
+
+Output should be structured.
+
+Example:
+
+NETWORK ANALYSIS
+
+Patterns Detected
+4
+
+1. COMMON GUARANTOR CONCENTRATION
+
+Universal Guarantor Ltd
+
+Connected Clients:
+5
+
+Countries:
+3
+
+Reported OSUC:
+$...
+
+Evidence:
+12 records
+
+Confidence:
+...
+
+[View on Map]
+[Inspect Relationships]
+
+
+2. OWNERSHIP CLUSTER
+
+...
+
+
+3. SHARED MANAGEMENT CLUSTER
+
+...
+
+Do not output long unstructured AI prose as the primary result.
+
+==================================================
+18. AI RESULTS ON MAP
+==================================================
+
+AI analysis results should be able to highlight map elements.
+
+Actions:
+
+View on Map
+Highlight Network
+Open Relationships
+Inspect Evidence
+
+Example:
+
+AI detects a common-guarantor cluster.
+
+Click:
+
+View on Map
+
+The map highlights all connected entities and their geographic locations.
+
+Do not automatically publish new relationships.
+
+Analysis is exploratory unless routed through the governed Relationship Definition workflow.
+
+==================================================
+19. IDENTIFY CONCENTRATIONS
+==================================================
+
+This AI tool should use deterministic metrics first where possible.
+
+Analyze:
+
+shared guarantors
+shared collateral
+common owners
+management overlap
+country concentration
+sector concentration
+connected-group exposure
+cross-border relationship concentration
+
+Output:
+
+Concentration
+Entities
+Countries
+Relationship Count
+Exposure
+Evidence
+Review State
+
+Do not invent risk materiality thresholds.
+
+Where thresholds do not exist, label:
+
+Observed concentration
+
+rather than:
+
+High Risk
+
+unless governed rules define High Risk.
+
+==================================================
+20. RESEARCH RELATIONSHIP
+==================================================
+
+Research Relationship should reuse the existing External Research service.
+
+Do NOT create another external research implementation.
+
+When triggered from Network:
+
+automatically pass current context:
+
+Subject Entity
+Related Entity
+Relationship Type
+Current Evidence
+Current Definition
+Current Source Lane
+
+The External Research service remains responsible for:
+
+web research
+Stylus Runner
+SEC filing research where supported
+evidence caching
+proposal generation
+
+==================================================
+21. HELIX AND STYLUS — IMPORTANT ARCHITECTURE
+==================================================
+
+Implement reliable automatic readiness and refresh for the AI tools.
+
+IMPORTANT:
+
+Helix/R2D2 and Stylus are separate integrations.
+
+DO NOT incorrectly merge them into a single token mechanism.
+
+The audit found:
+
+HELIX / R2D2
+
+Helix is used by the R2D2 / AI integration.
+
+The existing flow uses the Helix CLI / token mechanism and the existing Python integration.
+
+STYLUS
+
+Stylus Runner is independent.
+
+Stylus is used for live external research / SEC-related research through the Runner Service contract.
+
+Use the actual existing provider implementations.
+
+Do not invent a new authentication mechanism.
+
+==================================================
+22. BACKEND CREDENTIAL MANAGERS
+==================================================
+
+Centralize each provider behind its own backend readiness manager.
+
+Conceptually:
+
+AI Tools Orchestrator
+       |
+       +---- AI / R2D2
+       |       |
+       |       └── Helix Credential Manager
+       |
+       +---- External Research
+               |
+               └── Stylus Credential Manager
+
+Do not put token logic in React.
+
+Do not pass raw tokens to the frontend.
+
+==================================================
+23. HELIX AUTO REFRESH
+==================================================
+
+Before an operation requiring Helix/R2D2:
+
+ensure_helix_access()
+
+Behavior:
+
+Check existing Helix token.
+
+If valid beyond safety window:
+reuse token.
+
+If missing / expired / expiring:
+invoke the existing supported Helix refresh mechanism.
+
+Then retry readiness.
+
+If refresh succeeds:
+continue AI operation.
+
+If refresh fails:
+fail only the dependent AI operation with a clear error.
+
+Do not break the rest of the application.
+
+Use existing Helix mechanisms found in the repository.
+
+Do not invent new credentials.
+
+==================================================
+24. STYLUS AUTO REFRESH / TOKEN READINESS
+==================================================
+
+Before an operation requiring Stylus:
+
+ensure_stylus_access()
+
+Use the existing Stylus token implementation.
+
+The audit found that Stylus already performs local token-expiry validation and treats tokens with less than approximately five minutes remaining as unusable.
+
+Reuse that behavior.
+
+If the current environment provides a supported token renewal / token-seeding mechanism:
+
+use it.
+
+If automatic token renewal is not actually supported by the existing Runner Service integration:
+
+DO NOT fake a refresh.
+
+Instead:
+
+1. attempt the supported existing credential acquisition mechanism
+2. return a clear Authentication Required state if it cannot obtain a usable token
+
+Do not create an undocumented refresh-token protocol.
+
+==================================================
+25. AUTO PREFLIGHT
+==================================================
+
+The user should not have to manually refresh credentials before using AI tools.
+
+For each operation:
+
+Analyze Network
+Create Relationship if AI inference is required
+Research Relationship
+External Research
+SEC-related research
+
+run provider preflight automatically.
+
+Example:
+
+Analyze Network
+      ↓
+requires R2D2?
+      ↓
+ensure Helix
+      ↓
+execute
+
+
+Research Relationship
+      ↓
+requires Stylus?
+      ↓
+ensure Stylus
+      ↓
+execute
+
+If one operation requires both:
+
+ensure each provider separately.
+
+==================================================
+26. MANUAL REFRESH CONTROL
+==================================================
+
+Also provide an operator convenience action.
+
+In the AI Tools panel or status popover:
+
+AI / Research Access
+
+Helix
+Ready
+
+Stylus
+Ready
+
+[ Refresh Access ]
+
+Refresh Access should:
+
+- check Helix
+- refresh/reacquire if needed
+- check Stylus
+- reacquire/refresh only through supported existing mechanisms
+
+Do not display tokens.
+
+Optionally allow:
+
+Refresh Helix
+Refresh Stylus
+
+inside a detail popover.
+
+==================================================
+27. STATUS DISPLAY
+==================================================
+
+Use small status indicators.
+
+Example:
+
+AI Access
+Helix ● Ready
+
+Research Access
+Stylus ● Ready
+
+Other states:
+
+Ready
+Expiring Soon
+Refreshing
+Authentication Required
+Unavailable
+
+Do not show:
+
+bearer token
+JWT
+Authorization header
+credential contents
+cookie
+secret environment variables
+
+==================================================
+28. SINGLE-FLIGHT REFRESH
+==================================================
+
+Prevent multiple simultaneous refreshes.
+
+If several AI operations arrive while Helix or Stylus needs refresh:
+
+one refresh should occur.
+
+Other callers should await that result.
+
+Implement backend locking / single-flight behavior.
+
+Do not allow token-refresh race conditions.
+
+==================================================
+29. PROVIDER FAILURE BEHAVIOR
+==================================================
+
+Provider failures must be isolated.
+
+Example:
+
+Helix unavailable
+
+Network browsing:
+WORKS
+
+Relationship Explorer:
+WORKS
+
+Existing relationships:
+WORK
+
+Analyze Network:
+UNAVAILABLE
+
+Show:
+
+AI analysis unavailable.
+Helix authentication could not be established.
+
+[Retry]
+
+
+Stylus unavailable
+
 Network:
-AI Create Relationship:
+WORKS
+
+AI internal analysis:
+WORKS if it does not require Stylus
+
 External Research:
+UNAVAILABLE
 
-REPORT:
-backend/data/CCR_PHASE4A_WINDOWS_LOCAL_POC_REPORT.md
+Show:
 
-WINDOWS LOCAL POC READY:
-YES / NO
+External research unavailable.
+Stylus authentication could not be established.
 
-STOP.
+[Retry]
+
+==================================================
+30. NO RAW SECRET LOGGING
+==================================================
+
+Never log:
+
+Helix bearer tokens
+Stylus JWT
+Authorization header
+cookies
+refresh tokens
+credential environment values
+
+Safe audit events:
+
+HELIX_ACCESS_CHECK
+HELIX_REFRESH_STARTED
+HELIX_REFRESH_SUCCEEDED
+HELIX_REFRESH_FAILED
+
+STYLUS_ACCESS_CHECK
+STYLUS_REFRESH_STARTED
+STYLUS_REFRESH_SUCCEEDED
+STYLUS_REFRESH_FAILED
+
+AI_NETWORK_ANALYSIS_STARTED
+AI_NETWORK_ANALYSIS_COMPLETED
+
+EXTERNAL_RESEARCH_STARTED
+EXTERNAL_RESEARCH_COMPLETED
+
+==================================================
+31. AI TOOL CONTEXT
+==================================================
+
+All AI tools should understand current UI context.
+
+Pass only governed context.
+
+Examples:
+
+Selected Client
+Selected Relationship
+Selected Country
+Selected Region
+Selected Group
+Current Relationship Filters
+
+Example:
+
+User selects Germany on World Map.
+
+Clicks:
+
+Analyze Network
+
+The analysis scope defaults to:
+
+Germany
+
+User selects:
+
+Common Guarantor
+
+AI analysis should analyze the current German subnetwork rather than the entire portfolio unless changed.
+
+==================================================
+32. WORLD MAP + AI INTERACTION
+==================================================
+
+Allow AI results to control the map.
+
+Examples:
+
+Highlight these entities
+Zoom to cluster
+Show only this relationship family
+Show connected countries
+Show evidence-backed path
+Show cross-border chain
+
+But do not allow AI to change underlying relationship records merely by changing the map.
+
+Map state is presentation state.
+
+==================================================
+33. AI FINDINGS PANEL
+==================================================
+
+Below or beside the map include:
+
+Network Insights
+
+Tabs:
+
+Key Insights
+Concentration
+Emerging Patterns
+AI Findings
+
+Examples:
+
+Shared guarantor concentration
+5 clients connected through the same guarantor
+
+[View]
+
+
+Cross-border ownership cluster
+7 entities across 4 countries
+
+[View]
+
+
+Shared management cluster
+3 companies share senior management
+
+[View]
+
+
+Potential new relationship
+Additional evidence may support common control
+
+[Review]
+
+Use actual source-backed results.
+
+==================================================
+34. PORTFOLIO EXPOSURE CONTEXT
+==================================================
+
+Where exposure data exists, map and analysis should include:
+
+Reported OSUC
+
+Do not invent adjusted exposure or relationship risk exposure.
+
+Examples:
+
+Connected Group
+$4.2B Reported OSUC
+
+Country Network
+$12.8B Reported OSUC
+
+Relationship Cluster
+$820M Reported OSUC
+
+Always label the metric clearly as Reported OSUC where that is the source metric.
+
+==================================================
+35. MAP PERFORMANCE
+==================================================
+
+Do not attempt to render thousands of individual nodes at world zoom.
+
+Implement clustering / aggregation.
+
+At world level:
+
+region clusters
+
+At regional level:
+
+country clusters
+
+At country level:
+
+entity clusters
+
+At detailed level:
+
+individual entities and relationships
+
+Use progressive rendering.
+
+==================================================
+36. MAP DATA CONTRACT
+==================================================
+
+Prefer a backend map/network summary endpoint if necessary.
+
+Do not send the entire raw relationship database to the browser.
+
+Return only what is required for the current view.
+
+Possible map response:
+
+regions
+countries
+entity counts
+relationship counts
+relationship-family counts
+cross-border connections
+exposure aggregates
+review counts
+
+Then fetch detailed relationships after selection.
+
+Use existing endpoints if they already provide equivalent data.
+
+==================================================
+37. WORLD MAP EMPTY / INCOMPLETE GEO DATA
+==================================================
+
+Not every entity may have usable geography.
+
+Show:
+
+Mapped Entities
+Unmapped Entities
+
+Do not guess coordinates.
+
+If only country is available:
+
+place at country centroid / aggregated country marker.
+
+If country is missing:
+
+keep entity out of geographic placement and surface:
+
+Unmapped Geography
+
+Do not invent locations.
+
+==================================================
+38. MAP LEGENDS
+==================================================
+
+Legend should support two dimensions without becoming confusing.
+
+RELATIONSHIP ORIGIN
+
+CAM
+AI Published
+AI Preview
+External
+Review Required
+
+ENTITY TYPE
+
+Client
+Parent
+Subsidiary
+Guarantor
+Other Entity
+
+For relationship family use filters instead of too many simultaneous colors where possible.
+
+Avoid an unreadable rainbow network.
+
+==================================================
+39. CLIENT NETWORK
+==================================================
+
+Preserve the existing focal relationship graph.
+
+World Map and Client Network must complement each other.
+
+From World Map entity:
+
+Open Client Network
+
+From Client Network:
+
+Show on World Map
+
+This should maintain selected entity context.
+
+==================================================
+40. GROUP VIEW
+==================================================
+
+From a connected cluster:
+
+Open Group View
+
+Show:
+
+Group Name / generated group label
+Entities
+Countries
+Relationships
+Reported OSUC
+Primary Relationship Drivers
+Evidence Coverage
+Review Required
+
+Display a group graph.
+
+Allow:
+
+Show Group on World Map
+
+==================================================
+41. CUSTOM VIEW
+==================================================
+
+Allow analyst to save a temporary or persisted network filter configuration if existing persistence makes sense.
+
+Example:
+
+North America
++
+Common Guarantor
++
+Exposure > configured threshold
++
+AI Published + CAM
+
+Do not create another complex configuration system in this phase unless straightforward.
+
+==================================================
+42. EXISTING RELATIONSHIP TOOL INTEGRATION
+==================================================
+
+AI Create Relationship must remain the governed route for defining new relationship logic.
+
+The Network AI tool may suggest:
+
+Potential Common Control pattern detected.
+
+But the action should be:
+
+Create Relationship Definition
+
+or
+
+Review Candidate
+
+It must NOT silently convert exploratory AI findings into published relationships.
+
+==================================================
+43. REVIEW QUEUE INTEGRATION
+==================================================
+
+When map/AI analysis discovers a candidate requiring review:
+
+route it to the existing governed review workflow.
+
+The user should be able to:
+
+View on Map
+Inspect Evidence
+Open Review Queue
+
+Do not create another approval queue.
+
+==================================================
+44. TOP PAGE LAYOUT TARGET
+==================================================
+
+The final Network page should visually resemble:
+
+------------------------------------------------------------
+NETWORK INTELLIGENCE
+[World Map] [Client Network] [Group] [Sector] [...]
+
+------------------------------------------------------------
+| WORLD RELATIONSHIP MAP             | AI TOOLS            |
+|                                    |                     |
+| region / country clusters          | Create Relationship |
+| cross-border arcs                  | Analyze Network     |
+| CAM / AI / External lanes          | Concentrations      |
+|                                    | Research            |
+|                                    | Generate Report     |
+------------------------------------------------------------
+
+[ Countries ] [ Entities ] [ Relationships ]
+[ Connected Groups ] [ Review Required ]
+
+------------------------------------------------------------
+| NETWORK INSIGHTS        | RELATIONSHIP TYPES             |
+|                         |                                |
+| concentration           | distribution                   |
+| emerging patterns       | trends                         |
+| AI findings             |                                |
+------------------------------------------------------------
+
+[selected relationship / entity details as appropriate]
+
+==================================================
+45. DO NOT REDESIGN THE ENTIRE APPLICATION
+==================================================
+
+Keep existing:
+
+header
+navigation
+cards
+typography
+filters
+Relationship Explorer
+External Research
+Review Queue
+Network graph
+relationship inspectors
+
+Extend them.
+
+Do not introduce a new design system.
+
+==================================================
+46. TESTS
+==================================================
+
+Add backend tests where needed for:
+
+world map aggregation
+country aggregation
+cross-border relationship aggregation
+source-lane filtering
+relationship-family filtering
+AI-analysis scope
+Helix preflight
+Helix refresh/reacquisition
+Stylus preflight
+Stylus usable-token handling
+Stylus unavailable state
+single-flight refresh behavior
+provider failure isolation
+
+Frontend validation:
+
+World Map renders
+filters work
+cluster selection works
+country selection works
+entity selection works
+relationship inspector works
+AI Tools panel renders
+Analyze Network scope works
+AI results can highlight map
+Create Relationship opens existing workflow
+Research Relationship opens existing External Research flow
+provider status appears safely
+no tokens appear in frontend state/responses
+existing Client Network still works
+
+==================================================
+47. END-TO-END VALIDATION
+==================================================
+
+Perform this actual workflow:
+
+1. Open Network.
+2. World Map is visible near the top.
+3. Confirm actual entities/relationships are represented.
+4. Select a region.
+5. Select a country.
+6. Select an entity.
+7. Inspect its top relationships.
+8. Open Client Network.
+9. Return to World Map.
+10. Run Analyze Network for the selected geography.
+11. Verify Helix preflight occurs automatically if required.
+12. Confirm no manual token copying is required.
+13. Highlight one AI finding on the map.
+14. Select one relationship.
+15. Run Research Relationship.
+16. Verify Stylus preflight occurs automatically.
+17. Confirm External Research receives the selected entities / relationship as context.
+18. Return research evidence.
+19. Confirm no CAM record is modified.
+20. Open Create Relationship from AI Tools.
+21. Confirm existing AI Create Relationship workflow opens with selected context.
+22. Generate / preview a relationship definition.
+23. Confirm preview can be shown on Network.
+24. Confirm review-required candidate routes to Review Queue.
+
+==================================================
+48. IMPORTANT TOKEN VALIDATION
+==================================================
+
+After implementation explicitly verify:
+
+- no Helix token is returned to React
+- no Stylus token is returned to React
+- no bearer token is rendered in UI
+- no token is written to localStorage
+- no token is written to sessionStorage
+- no token is placed in a URL
+- no token appears in application logs
+- no token appears in audit records
+
+==================================================
+49. FINAL REPORT
+==================================================
+
+Report:
+
+IMPLEMENTED
+
+WORLD MAP
+
+MAP DATA SOURCE
+
+REGIONS / COUNTRIES MAPPED
+
+UNMAPPED GEOGRAPHY
+
+CROSS-BORDER RELATIONSHIPS
+
+NETWORK VIEW TABS
+
+AI TOOLS PANEL
+
+CREATE RELATIONSHIP INTEGRATION
+
+ANALYZE NETWORK
+
+IDENTIFY CONCENTRATIONS
+
+RESEARCH RELATIONSHIP
+
+HELIX PREFLIGHT
+
+HELIX AUTO REFRESH / REACQUISITION
+
+STYLUS PREFLIGHT
+
+STYLUS AUTO REFRESH / REACQUISITION
+
+PROVIDER FAILURE BEHAVIOR
+
+TOKEN LEAKAGE CHECK
+
+NETWORK INSIGHTS
+
+RELATIONSHIP EXPLORER INTEGRATION
+
+EXTERNAL RESEARCH INTEGRATION
+
+REVIEW QUEUE INTEGRATION
+
+CAM IMMUTABILITY CHECK
+
+BACKEND TEST RESULTS
+
+FRONTEND BUILD RESULT
+
+KNOWN LIMITATIONS
+
+Do not mark complete because the map visually renders.
+
+Completion requires:
+
+- real relationship data
+- working filters
+- functioning selections
+- actual AI tools
+- automatic credential preflight
+- map-to-AI context
+- map-to-research context
+- relationship workflow integration
+- CAM immutability
