@@ -1,17 +1,19 @@
-Next step only
+Stop here. The key is fine; the command has a path typo.
 
-Open Windows PowerShell and run:
+You used something equivalent to:
 
-$ssh = "C:\Users\ak54743\AppData\Local\CitiSoftware\CTC1829056_GITFORWINDOWSPORTABLE_2.45.0\usr\bin\ssh.exe"
+$HOME.ssh\id_rsa_marketdev.pub
 
-Get-Content "$HOME\.ssh\id_rsa_marketdev.pub" |
-& $ssh ak54743@sd-f34e-972f.nam.nsroot.net `
-'umask 077; mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys; chmod 700 ~/.ssh; chmod 600 ~/.ssh/authorized_keys'
+It needs the backslash:
 
-It should ask for your Market Dev password one final time.
+$HOME\.ssh\id_rsa_marketdev.pub
 
-After it completes, test the new key explicitly:
+Run only this now:
 
-& $ssh -i "$HOME\.ssh\id_rsa_marketdev" ak54743@sd-f34e-972f.nam.nsroot.net
+Test-Path "$HOME\.ssh\id_rsa_marketdev.pub"
 
-Expected result: it should connect without asking for the Market Dev password. If you created the key with a passphrase, it may ask for the key passphrase instead; we can automate that safely with ssh-agent next.
+Expected result:
+
+True
+
+Do not enter your password again yet. If it returns True, send me that result and I’ll give you the single next command to install the public key on Market Dev.
