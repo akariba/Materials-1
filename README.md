@@ -1,582 +1,84 @@
-CCR RELATIONSHIP INTELLIGENCE — RESEARCH ORCHESTRATOR FOUNDATION
-
-Work only in the CURRENT CCR repository.
-
-Read first:
-
-backend/data/CCR_CANONICAL_DATA_MODEL_REPORT.md
-backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
-backend/data/CCR_RELATIONSHIP_EVIDENCE_PATH_POLICY.md
-
-Inspect existing:
-
-research_runs
-research_requests
-provider cache
-source_documents
-evidence_snippets
-SEC provider code
-GLEIF provider code
-Web provider interface
-relationship source strategies
-analysis configurations
-
-Do not duplicate working Phase-3 infrastructure.
-
-IMPORTANT
-
-This task builds the research orchestration layer.
-
-Do NOT perform broad external research yet.
-
-Do NOT create production confirmed relationships.
-
-Do NOT run across the full CCR population.
-
-A few bounded connectivity/contract tests are allowed only if required,
-but the primary objective is orchestration logic.
-
-==================================================
-1. OBJECTIVE
-==================================================
-
-Create a central Research Orchestrator that receives a structured research
-question such as:
-
-"Does Entity A have a technology dependency on Entity B?"
-
-or:
-
-"Discover material suppliers for Entity A."
-
-and determines:
-
-- relationship type
-- direction
-- eligible source channels
-- preferred source order
-- required evidence threshold
-- entity-resolution requirements
-- stopping conditions
-- final governed outcome
-
-The orchestrator must return one of:
-
-PROPOSAL_PENDING_REVIEW
-INSUFFICIENT_EVIDENCE
-CONFLICT
-NOT_FOUND
-PROVIDER_UNAVAILABLE
-IDENTITY_UNRESOLVED
-
-Never silently return CONFIRMED.
-
-==================================================
-2. CREATE ORCHESTRATOR MODULE
-==================================================
-
-Create a focused backend module such as:
-
-backend/app/core/relationship_research_orchestrator.py
-
-or equivalent consistent project location.
-
-Core input:
-
-subject_entity_key
-optional related_entity_key
-relationship_type
-analysis_config_id/version
-as_of_date
-research_scope
-
-Supported research scopes:
-
-PAIR_RESEARCH
-ENTITY_RELATIONSHIP_DISCOVERY
-
-PAIR_RESEARCH:
-
-A and B are known.
-
-Question:
-does relationship X exist?
-
-ENTITY_RELATIONSHIP_DISCOVERY:
-
-A is known.
-
-Question:
-which entities have relationship X with A?
-
-==================================================
-3. SOURCE STRATEGY SELECTION
-==================================================
-
-Read the existing relationship-specific source policy.
-
-Do not hardcode one global order.
-
-Examples:
-
-PARENT / ULTIMATE_PARENT
-GLEIF
-→ SEC
-→ authoritative Web
-
-SUPPLIER / CRITICAL_SUPPLIER
-SEC
-→ official company Web
-→ high-quality Web
-
-CUSTOMER / KEY_CUSTOMER
-SEC
-→ official company Web
-→ high-quality Web
-
-TECHNOLOGY_DEPENDENCY
-SEC
-→ official company Web
-→ high-quality Web
-
-INVESTOR / SPONSOR
-SEC/regulatory
-→ official company source
-→ high-quality Web
-
-LENDER / FINANCING
-SEC
-→ official disclosure
-→ high-quality Web
-
-STRATEGIC_PARTNER / JV
-official company/regulatory
-→ SEC
-→ high-quality Web
-
-Return the selected strategy with every research run.
-
-==================================================
-4. FALLBACK LOGIC
-==================================================
-
-Implement source fallback correctly.
-
-Example:
-
-Try preferred Tier-1 source.
-
-If:
-
-NOT_APPLICABLE
-NOT_FOUND
-PROVIDER_UNAVAILABLE
-
-then continue to the next permitted source.
-
-Do NOT interpret:
-
-NOT_FOUND
-
-as proof that the relationship does not exist.
-
-Do NOT downgrade automatically to low-quality sources.
-
-If only inadmissible evidence exists:
-
-INSUFFICIENT_EVIDENCE
-
-==================================================
-5. EVIDENCE THRESHOLDS
-==================================================
-
-Create configurable evidence rules per relationship type.
-
-Example conceptual rules:
-
-PARENT / ULTIMATE_PARENT
-
-one authoritative Tier-1 structural source may be sufficient for proposal.
-
-SUPPLIER / CUSTOMER
-
-explicit Tier-1 disclosure preferred.
-
-Tier-2 alone should normally require corroboration.
-
-CRITICAL_SUPPLIER / KEY_CUSTOMER
-
-must require explicit materiality/dependency/concentration evidence.
-
-TECHNOLOGY_DEPENDENCY
-
-must require explicit use/dependency/support evidence.
-
-Do not treat simple company-name co-occurrence as relationship evidence.
-
-==================================================
-6. RESEARCH PLAN
-==================================================
-
-Before execution produce a research plan:
-
-research_plan_id
-subject
-related entity if supplied
-relationship type
-
-sources planned
-source order
-minimum source tier
-minimum evidence count
-primary-source requirement
-multi-source requirement
-entity-resolution requirement
-
-Persist the plan.
-
-==================================================
-7. PROVIDER ABSTRACTION
-==================================================
-
-Normalize provider outputs.
-
-Each provider attempt should return:
-
-provider
-status
-
-documents_found
-claims_found
-identity_candidates
-evidence_candidates
-
-network_requests
-cache_hits
-
-error_category
-error_message_safe
-
-Statuses:
-
-SUCCESS
-NOT_FOUND
-NOT_APPLICABLE
-UNAVAILABLE
-ERROR
-
-The orchestrator should not need provider-specific response logic everywhere.
-
-==================================================
-8. ENTITY RESOLUTION GATE
-==================================================
-
-Before creating a relationship proposal:
-
-subject identity must be trusted.
-
-related entity identity must be trusted enough to become:
-
-existing entity
-
-or
-
-defensible EXTERNAL_ENTITY
-
-Do NOT create external entities from:
-
-search snippets
-name similarity only
-AI guesses
-local correlation only
-
-Identity evidence must support creation.
-
-==================================================
-9. CLAIM MODEL
-==================================================
-
-Create a structured discovered-claim object.
-
-Fields/concepts:
-
-claim_id
-research_run_id
-subject_entity_key
-candidate_related_entity_key nullable
-relationship_type
-direction
-
-claim_text
-source_document_id
-evidence_snippet_id
-
-source_tier
-evidence_strength
-
-current/historical/unknown
-claim_status
-
-A discovered claim is NOT yet a production relationship.
-
-==================================================
-10. CONTRADICTION HANDLING
-==================================================
-
-The orchestrator must compare evidence.
-
-Examples:
-
-Source A says parent = X.
-Source B says parent = Y.
-
-Outcome:
-
-CONFLICT
-
-not:
-
-pick whichever appears first.
-
-Historical vs current differences must also be preserved.
-
-==================================================
-11. STOPPING RULES
-==================================================
-
-Research should stop when:
-
-required evidence threshold is satisfied
-
-OR
-
-all permitted source channels exhausted
-
-OR
-
-identity cannot be resolved
-
-OR
-
-policy prohibits weaker fallback
-
-OR
-
-provider availability prevents completion
-
-Persist why research stopped.
-
-==================================================
-12. AI ROLE CONTRACT
-==================================================
-
-Prepare integration points for Helix AI, but do not require AI execution yet.
-
-AI will later be allowed to:
-
-extract claims
-classify relationship type
-extract direction
-summarize evidence
-detect contradiction
-explain findings
-
-AI may NOT:
-
-be evidence
-create an entity without identity evidence
-upgrade a proposal to confirmed
-invent missing documents
-
-The orchestrator must remain usable with deterministic/provider extraction
-without AI.
-
-==================================================
-13. OUTPUT CONTRACT
-==================================================
-
-Research result should return:
-
-research_run_id
-research_plan
-subject
-related entity/entities
-relationship type
-
-outcome
-
-claims
-evidence
-source attempts
-
-identity_quality
-source_quality
-evidence_strength
-freshness
-consistency
-
-research_gaps
-
-recommended_next_action
-
-No single opaque confidence percentage.
-
-==================================================
-14. NO AUTOMATIC CONFIRMATION
-==================================================
-
-This phase must not directly create:
-
-CONFIRMED
-
-relationships.
-
-At most create:
-
-PROPOSAL_PENDING_REVIEW
-
-after evidence threshold passes.
-
-Review/promotion comes later.
-
-==================================================
-15. BOUNDED TESTS
-==================================================
-
-Use mocks/fixtures or existing cached provider data where possible.
-
-Prove scenarios:
-
-A. Tier-1 evidence found
-→ proposal
-
-B. preferred source not applicable
-→ fallback to next source
-
-C. Tier-2 weak evidence only
-→ insufficient evidence
-
-D. conflicting authoritative evidence
-→ conflict
-
-E. identity unresolved
-→ identity unresolved
-
-F. providers unavailable
-→ provider unavailable
-
-G. AI unavailable
-→ orchestrator still functions
-
-No broad production research.
-
-==================================================
-16. PRODUCTION SAFETY
-==================================================
-
-After tests:
-
-Production external entity count should remain unchanged unless an explicitly
-approved isolated identity fixture is rolled back.
-
-Production relationship count must remain:
-
-0
-
-Production event count:
-
-0
-
-No candidate promotion.
-
-No source file changes.
-
-==================================================
-17. REPORT
-==================================================
-
-Create:
-
-backend/data/CCR_RESEARCH_ORCHESTRATOR_REPORT.md
-
-Include:
-
-architecture
-research-plan contract
-source selection
-fallback rules
-evidence thresholds
-provider result contract
-identity gate
-claim model
-contradiction handling
-stopping rules
-AI boundary
-tests
-known limitations
-
-==================================================
-18. FINAL RESPONSE
-==================================================
-
-Return:
-
-CCR RESEARCH ORCHESTRATOR: PASS / FAIL
-
-PAIR RESEARCH:
-PASS / FAIL
-
-ENTITY DISCOVERY:
-PASS / FAIL
-
-SOURCE STRATEGY SELECTION:
-PASS / FAIL
-
-SOURCE FALLBACK:
-PASS / FAIL
-
-EVIDENCE THRESHOLDS:
-PASS / FAIL
-
-IDENTITY GATE:
-PASS / FAIL
-
-CLAIM MODEL:
-PASS / FAIL
-
-CONTRADICTION HANDLING:
-PASS / FAIL
-
-STOPPING RULES:
-PASS / FAIL
-
-AI OPTIONAL:
-PASS / FAIL
-
-TEST CASES:
-Tier-1 success:
-Fallback:
-Weak Tier-2:
-Conflict:
-Identity unresolved:
-Provider unavailable:
-
-PRODUCTION EXTERNAL ENTITIES CREATED:
-0 / FAIL
-
-PRODUCTION RELATIONSHIPS CREATED:
-0 / FAIL
-
-CANDIDATES PROMOTED:
-0 / FAIL
-
-EXTERNAL CALLS:
-<actual bounded count>
-
-FOREIGN KEYS:
-PASS / FAIL
-
-REPORT:
-backend/data/CCR_RESEARCH_ORCHESTRATOR_REPORT.md
-
-STOP.
+LENDING RELATIONSHIP INTELLIGENCE — ENGINEERING OPERATING CONTRACT
+
+Work ONLY in the current Lending repository.
+
+This is Lending, NOT CCR. Do not modify CCR code, CCR databases, CCR migrations, CCR routes, or CCR artifacts.
+
+Before changing anything:
+1. Inspect the current implementation.
+2. Reuse existing tables, modules, APIs, utilities, models, and frontend components where they already provide the required capability.
+3. Do NOT create parallel duplicate stores or another relationship universe.
+4. Identify current callers before changing an interface.
+5. Preserve backward compatibility unless this task explicitly authorizes a controlled migration.
+6. Use migrations for persistent schema changes.
+7. Never rewrite source CAM files.
+8. Never modify Customer_latest.parquet or thousandClients.csv.
+9. Never silently promote external research into CAM truth.
+10. Never silently convert review-required/rejected data into canonical data.
+11. Never hide loss of information through aggregation.
+12. Preserve raw evidence and lineage.
+13. A relationship type substitution must be explicit and traceable.
+14. Entity identity resolution and relationship classification are separate decisions.
+15. Do not use display names as permanent entity IDs.
+16. Do not claim external research succeeded if a provider failed.
+17. Fail closed when evidence, identity, or provider state is uncertain.
+18. Every persisted AI-created object must retain provenance and lifecycle metadata.
+19. All new behavior requires tests.
+20. Do not change production/deployment until explicitly requested.
+
+CURRENT GOVERNANCE THAT MUST BE PRESERVED DURING MIGRATION
+
+- CAM/V3 is authoritative for the CAM relationship lane.
+- External intelligence is supplemental unless explicitly reviewed/published under its own governed lane.
+- AI-published relationships are a governed AI projection, not CAM rows.
+- The normalized workbench is currently a separate governed projection.
+- Existing V2 fallback behavior must not silently become the new global truth.
+- Current source lanes may disagree. Preserve those disagreements and explain them.
+- The target architecture may provide a unified READ MODEL, but this must not erase source authority or provenance.
+
+KNOWN CURRENT PROBLEMS
+
+The current application has multiple relationship populations/stores:
+- Portfolio CAM/V3.
+- Conditional V2 fallback.
+- Normalized workbench.
+- Legacy external research.
+- V3-aware external overlay.
+- Published AI relationships.
+- Independent analytical/control populations.
+
+The redesign must converge these through canonical identity, evidence, relationship, lineage, and projection contracts rather than by blindly merging rows.
+
+BENCHMARK
+
+There is an existing manually adjudicated benchmark of 37 source-supported relationships across nine source document families, including cases involving:
+- Project Indigo / CoreWeave / NVIDIA / Meta.
+- N01.
+- Hut 8 / NVIDIA / Anthropic / Fluidstack.
+- Lambda / NVIDIA / Microsoft / Anthropic.
+- Applied Digital / CoreWeave / Oracle / Meta.
+- Serverfarm / Amdocs / Oracle / Meta / Manulife.
+- OpenAI and counterparties.
+- Cavalry / CyrusOne.
+- BO Westover / Blue Owl.
+
+Preserve this benchmark and use it for regression testing.
+
+OUTPUT REQUIREMENT FOR EVERY TASK
+
+At completion report:
+- What was inspected.
+- What was reused.
+- What was created.
+- Exact files changed.
+- Exact schema changes.
+- Migration/rollback approach.
+- Tests added.
+- Tests executed and results.
+- Data counts before/after where relevant.
+- Known limitations.
+- Remaining risks.
+- Recommended next task.
+
+Do not proceed into the next phase automatically.
+STOP after completing the requested task.
