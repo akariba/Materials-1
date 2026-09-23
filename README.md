@@ -1,773 +1,293 @@
-PROMPT 4C — LENDING NETWORK INTELLIGENCE + BOUNDED INTERACTIVE GRAPH
+CCR RELATIONSHIP PILOT — OUTCOME SEMANTICS AND POSITIVE-CONTROL READINESS
 
-Continue from the completed Prompt 4A and Prompt 4B implementations and their reports:
+Work only in the CURRENT CCR repository.
 
-backend/data/LENDING_PROMPT4A_EXECUTIVE_HOME_REPORT.md
-backend/data/LENDING_PROMPT4B_PORTFOLIO_CLIENT_REPORT.md
+Read first:
 
-The Common Operating Contract remains fully in force.
+backend/data/CCR_3M_RELATIONSHIP_PILOT_REPORT.md
 
-Do NOT redo Prompt 4A.
-Do NOT redo Prompt 4B.
-Do NOT start Prompt 4D or later work.
+Also inspect the code, schemas, enums, tests, research-run records,
+candidate-claim records, provider audit records, and relationship proposal
+logic used by the bounded 3M relationship pilot.
 
-Prompt 4C owns only:
+This is a focused remediation and readiness task.
 
-1. /lending/network
-2. bounded relationship-network visualization
-3. deterministic graph/map interactions
-4. entity/network drill-down behavior
-5. network explainability
-6. network-specific performance and loading behavior
-7. visual productization of relationship intelligence
+Do NOT start portfolio-scale discovery.
+Do NOT run a broad CCR crawl.
+Do NOT modify Lending.
+Do NOT weaken evidence requirements.
+Do NOT create synthetic relationships.
+Do NOT convert rejected claims into accepted relationships.
+Do NOT use AI/Helix to manufacture evidence.
+Do NOT mutate existing Phase-2 protected source assets.
+Do NOT redesign the frontend.
 
-Do NOT redesign Relationship Explorer in this prompt.
-Do NOT redesign Intelligence / AI authoring.
-Do NOT redesign External Research.
-Do NOT redesign Review.
-Do NOT change CAM/V3 authority.
-Do NOT create a new universal relationship database.
-Do NOT merge CAM, normalized, AI, and external lanes into one truth layer.
-Do NOT introduce inferred credit-risk scores.
+OBJECTIVE
 
-==================================================
-1. PRODUCT INTENT
-==================================================
+Use the completed 3M pilot as a negative-control benchmark and correct any
+semantic ambiguity revealed by that pilot before running a positive-control
+relationship benchmark.
 
-Transform the current Network page from a technical bounded graph view into a senior-user relationship intelligence workspace.
+The 3M pilot must remain a PASS and its substantive decisions must remain
+unchanged:
 
-The user should be able to enter Network and understand, without configuration knowledge:
-
-- where portfolio exposure is concentrated,
-- which clients have trusted CAM relationships,
-- what entities those clients connect to,
-- what relationship families are present,
-- which relationships require review,
-- where external or AI supplemental information exists,
-- what evidence supports a relationship,
-- which entities deserve investigation next,
-- and how to move into the relevant governed workflow.
-
-The Network page should feel like an institutional relationship-intelligence product.
-
-It must remain accurate, explainable, bounded, and read-only.
+- no parent relationship was established;
+- unnamed upstream suppliers did not create governed entities or relationships;
+- NEOGEN identity resolution did not by itself establish a customer relationship;
+- no weak relationship was forced;
+- no synthetic edge was created.
 
 ==================================================
-2. AUTHORITY MODEL
+1. RECONSTRUCT THE THREE PILOT DECISIONS
 ==================================================
 
-Preserve exactly:
+Trace each 3M research question from:
 
-- CAM/V3 is authoritative for current Lending CAM relationship truth.
-- V2 is fallback/history only under the existing client-specific rules.
-- Normalized workbench is a separate governed projection.
-- External research is supplemental.
-- Published AI relationships are a separate governed projection.
-- Review-required does not mean invalid and does not mean high credit risk.
-- External proposals are not CAM truth.
-- AI relationships are not CAM rows.
-- No automatic mutation occurs from Network.
+research question
+→ provider strategy
+→ provider response
+→ evidence
+→ candidate claim
+→ entity resolution
+→ relationship-semantic evaluation
+→ governed outcome
+→ persistence decision.
 
-Every graph edge and node must retain its source/authority identity.
+Produce an exact trace for:
 
-Do not visually imply that all visible edges have equivalent authority.
+A. parent / ultimate parent
+B. supplier / critical supplier / source of inputs
+C. customer / key customer / strategic partner
 
-==================================================
-3. PERFORMANCE BOUNDARY
-==================================================
-
-Network must not load or adapt the entire 32,957-row normalized history merely to render the initial page.
-
-The existing unified semantic-group implementation is known to adapt the approximately 2.8 GB normalized artifact before applying a result limit.
-
-Do NOT use that implementation for ordinary initial Network rendering.
-
-First inspect the existing Network APIs and current frontend request path.
-
-Prefer existing bounded sources such as:
-
-- portfolio CAM/V3 relationship projection,
-- bounded client relationship endpoints,
-- existing portfolio/client exposure reads,
-- existing status/review reads.
-
-If a new backend read is genuinely required for Network, it must be:
-
-- read-only,
-- Lending-only,
-- bounded before expensive processing,
-- explicitly source-scoped,
-- paginated or limited,
-- deterministic,
-- CAM/V3-safe,
-- covered by regression tests.
-
-Do not create a second relationship store.
-
-Do not optimize or rewrite unrelated normalized-history infrastructure.
+Do not infer fields that are not persisted.
 
 ==================================================
-4. NETWORK PAGE STRUCTURE
+2. AUDIT OUTCOME SEMANTICS
 ==================================================
 
-Refine /lending/network into the following high-level composition:
+Determine whether the current outcome/status vocabulary correctly distinguishes:
 
-A. Network command header
-B. Executive network indicators
-C. Main interactive network canvas
-D. Context / investigation panel
-E. Deterministic filters and layers
-F. Selected-entity / selected-relationship inspector
-G. Bounded underlying-record table
+- provider returned no record;
+- related entity not identified;
+- entity identified but identity resolution failed;
+- entity resolved successfully but relationship was not established;
+- relationship type unsupported by evidence;
+- relationship direction unresolved;
+- insufficient evidence;
+- conflicting evidence;
+- relationship proposal pending review;
+- confirmed relationship.
 
-The experience should be visually lighter and more sophisticated than the existing screen.
+In particular inspect the 3M / NEOGEN trace.
 
-Avoid excessive form controls above the graph.
+If NEOGEN was successfully identity-resolved, do not classify the failure
+as ENTITY/IDENTITY_UNRESOLVED merely because the proposed customer
+relationship or direction was not proven.
 
-Senior users should see intelligence first and configuration second.
+Inspect the apparent reporting distinction between:
 
-==================================================
-5. NETWORK COMMAND HEADER
-==================================================
+- rejected/insufficient candidate claims = 2
 
-Provide a compact command area containing:
+and
 
-- Network title and short purpose statement.
-- Current scope.
-- Active authority/source lanes.
-- Current filter summary.
-- Global client/entity search.
-- Reset view.
-- Optional layout/view selector.
+- insufficient-evidence governed outcome count = 0.
 
-Search must remain deterministic.
-
-Search must not invoke AI or external providers.
-
-Where appropriate support search by:
-
-- client name,
-- CAGID,
-- entity name,
-- governed entity identifier.
+Determine whether this is intentional and correctly modeled or whether the
+vocabulary/report aggregation is conflating claim disposition with research-run
+outcome.
 
 ==================================================
-6. EXECUTIVE NETWORK INDICATORS
+3. DEFINE THE GOVERNED FAILURE TAXONOMY
 ==================================================
 
-Add a compact indicator strip above or adjacent to the network canvas.
+Reuse existing statuses/enums where they already express the required meaning.
 
-Use only deterministic metrics actually supported by loaded data.
+Do NOT create duplicate concepts.
 
-Possible metrics include:
+Only if required, minimally extend the governed vocabulary so the system can
+distinguish concepts such as:
 
-- visible portfolio clients,
-- visible connected entities,
-- canonical CAM/V3 relationships,
-- review-required relationships,
-- relationship families represented,
-- visible countries,
-- visible high-exposure clients,
-- supplemental external/AI counts when those layers are explicitly enabled.
+NOT_FOUND
+ENTITY_UNRESOLVED
+RELATIONSHIP_NOT_ESTABLISHED
+DIRECTION_UNRESOLVED
+INSUFFICIENT_RELATIONSHIP_EVIDENCE
+CONFLICT_REVIEW_REQUIRED
+PROPOSAL_PENDING_REVIEW
+CONFIRMED
 
-Never present:
+Names may differ if the repository already has canonical equivalents.
 
-- synthetic credit score,
-- inferred materiality score,
-- inferred systemic-risk score,
-- unsupported relationship strength score.
+Document exact meaning and allowed lifecycle transitions for each status.
 
-Each metric should be clickable where useful to filter or focus the graph.
+Do not collapse:
 
-==================================================
-7. MAIN NETWORK CANVAS
-==================================================
+entity identity quality
+relationship evidence quality
+relationship direction
+provider status
+candidate-claim disposition
+proposal state
+relationship confirmation
 
-Create a visually strong interactive relationship canvas.
-
-The canvas should support:
-
-- pan,
-- zoom,
-- fit-to-view,
-- reset,
-- entity selection,
-- edge selection,
-- neighborhood expansion,
-- collapse,
-- hover details,
-- keyboard-accessible selection where practical.
-
-Use the current React application.
-
-Reuse the existing graph library if technically sound.
-
-Do not introduce a major new visualization dependency unless required.
-
-If existing SVG/React graph rendering can support the requirement cleanly, prefer it.
-
-The graph should feel fluid but should not use decorative animation that suggests unsupported analysis.
+into one field.
 
 ==================================================
-8. NODE VISUAL LANGUAGE
+4. PRESERVE 3M DECISIONS
 ==================================================
 
-Nodes must encode deterministic meaning.
+After any semantic remediation, replay/rebuild the bounded 3M pilot from the
+same persisted inputs.
 
-At minimum distinguish:
+Expected substantive result remains:
 
-- portfolio client,
-- related governed entity,
-- V2 fallback/history context if visible,
-- external supplemental entity/context if enabled,
-- published governed AI context if enabled.
+Parent:
+- no governed parent relationship created.
 
-Suggested visual dimensions:
+Supplier/source of inputs:
+- source evidence exists;
+- no individual supplier endpoint established;
+- no supplier relationship created.
 
-NODE SIZE
-- May reflect reported exposure only for portfolio clients where reported OSUC is available.
-- Must not imply risk.
-- Non-client entities should use a neutral standard size unless another deterministic metric exists.
+NEOGEN:
+- preserve successful identity resolution if it exists;
+- do not establish CUSTOMER / KEY_CUSTOMER unless the evidence actually proves it;
+- represent the failure reason accurately.
 
-NODE BORDER / BADGE
-- CAM/V3 authoritative
-- review required
-- supplemental external
-- governed AI
-- fallback/history
+Expected aggregate result:
 
-NODE LABEL
-- entity/client name
-- optional compact secondary identifier
+- accepted relationships: 0
+- confirmed relationships: 0
+- synthetic edges: 0
+- AI evidence: 0
+- production relationship mutation: 0
 
-Do not encode too many dimensions simultaneously.
-
-Use a restrained, institutional palette.
+The semantic labels may become more precise, but the evidence decision must not
+be weakened.
 
 ==================================================
-9. EDGE VISUAL LANGUAGE
+5. BUILD POSITIVE-CONTROL SELECTION LOGIC
 ==================================================
 
-Edges must preserve actual relationship semantics.
+Do NOT yet run broad discovery.
 
-Visually encode, where available:
+Identify 3–5 candidate positive-control relationship cases already supported by
+existing CCR repository evidence or already-persisted admissible provider data.
 
-- relationship type/family,
-- direction,
-- connectivity,
-- authority/source lane,
-- review status.
+A positive-control case must have:
 
-Use arrowheads for governed directional relationships when direction is supported.
+- a validated CCR subject identity;
+- an explicit related legal entity;
+- admissible source evidence;
+- an explicit relationship statement;
+- sufficient relationship type evidence;
+- sufficient direction evidence where direction is required;
+- deterministic entity resolution;
+- no need to infer the relationship from weak contextual language.
 
-Use a non-directional treatment where direction is bidirectional.
+Prefer cases exercising different relationship families, for example:
 
-If direction is unresolved, render it explicitly as unresolved.
+- parent / subsidiary;
+- guarantor / guarantee;
+- explicitly named supplier;
+- explicitly named customer;
+- financing/lender;
+- ownership/control.
 
-Do not infer direction.
+Do not select a case merely because an old candidate row exists.
 
-Use line styling carefully:
+Verify the underlying evidence first.
 
-- authoritative CAM/V3: primary trusted treatment
-- review-required: visible attention treatment
-- external supplemental: clearly supplemental
-- governed AI: clearly separate
-- V2 fallback/history: historical/fallback treatment
+For each candidate provide:
 
-The legend must explain these meanings.
+- subject;
+- related entity;
+- expected relationship type;
+- expected direction;
+- source;
+- exact evidence basis;
+- identity basis;
+- why it qualifies as a positive control;
+- which provider path would be exercised.
 
-==================================================
-10. PURPOSEFUL MOTION
-==================================================
-
-The product may use subtle motion to make the network understandable.
-
-Permitted examples:
-
-- brief highlight pulse on a newly selected node,
-- smooth focus transition,
-- animated path tracing when the user explicitly asks to inspect a relationship path,
-- subtle edge illumination during selection.
-
-Do NOT continuously animate the graph.
-
-Do NOT create moving particles that imply transaction flow, money flow, exposure flow, contagion, or causal propagation unless such data actually exists.
-
-Visual elegance must never invent meaning.
+Rank them by benchmark usefulness, not by commercial importance.
 
 ==================================================
-11. MAP / GEOGRAPHY MODE
+6. PROVIDER STRATEGY READINESS
 ==================================================
 
-The existing product already uses portfolio geography.
+For the selected positive-control candidates, identify which existing provider
+strategies are sufficient:
 
-If current data and implementation allow it without introducing new authority assumptions, Network may provide a geographic network mode.
+- existing SEC cache;
+- additional official SEC retrieval;
+- GLEIF Level 1;
+- GLEIF Level 2;
+- existing governed web adapter;
+- other already-governed source.
 
-Examples:
+Do NOT execute broad web search in this task.
 
-- portfolio clients positioned by known country,
-- relationship arcs between client-country and related-entity country when both locations are genuinely available,
-- country-level aggregation at broad zoom,
-- entity-level expansion after selection.
+Do NOT enable Stylus, Helix, or generic AI unless already part of an explicitly
+governed test path.
 
-However:
-
-- do not geocode unknown entities by inference,
-- do not fabricate headquarters,
-- do not infer legal domicile,
-- do not convert source country into headquarters unless that is what the field means.
-
-If geographic coordinates are not reliably available, retain the existing map for portfolio geography and make the relationship canvas the primary Network visualization.
-
-Document the decision.
+Document where the current strategy has deterministic fallback capability and
+where it does not.
 
 ==================================================
-12. NETWORK LAYERS
+7. TESTS
 ==================================================
 
-Provide an understandable layer control.
+Add or update focused regression tests covering at least:
 
-Recommended user-facing language:
+- provider NOT_FOUND is not entity unresolved;
+- unnamed related entity cannot create a relationship;
+- successfully resolved entity can still fail relationship proof;
+- unresolved direction cannot silently become directed;
+- rejected candidate claim cannot become confirmed relationship;
+- accepted relationship requires admissible evidence;
+- synthetic edge count remains zero unless an explicitly governed synthetic
+  mechanism exists;
+- 3M negative-control decisions remain unchanged.
 
-- Portfolio exposure
-- CAM relationships
-- Review required
-- External research
-- Governed AI
-- Fallback/history
-
-Do not expose internal storage architecture as the primary user language.
-
-However, source authority must remain inspectable.
-
-Initial/default view should prioritize:
-
-1. portfolio clients,
-2. CAM/V3 trusted relationships,
-3. review-required CAM/V3 context.
-
-External and AI overlays should be opt-in or clearly supplemental unless current product contract explicitly enables them.
+All existing Phase-2 immutability/integrity tests must continue to pass.
 
 ==================================================
-13. SENIOR-USER PRESETS
-==================================================
-
-Introduce deterministic Network presets.
-
-Presets are view configurations, not new data or AI analysis.
-
-Examples:
-
-- Portfolio overview
-- Largest exposures
-- CAM relationship network
-- Review required
-- Relationship concentration
-- Geographic view
-
-A preset may adjust:
-
-- filters,
-- zoom,
-- relationship families,
-- visible node classes,
-- layout mode.
-
-A preset must not:
-
-- mutate data,
-- call an AI provider,
-- invoke external research,
-- generate proposals,
-- create risk conclusions.
-
-Presets should make the application useful immediately for senior users who do not want to configure graph controls.
-
-==================================================
-14. SELECTED NODE INSPECTOR
-==================================================
-
-Selecting a node should open a focused contextual panel rather than requiring immediate navigation away.
-
-For portfolio clients show available deterministic context such as:
-
-- client name,
-- CAGID,
-- reported OSUC,
-- portfolio share/rank,
-- CAM count,
-- connected-entity count,
-- review-required count,
-- sector,
-- country,
-- relevant relationship counts.
-
-For non-client entities show only fields genuinely available.
-
-Provide clear actions such as:
-
-- Open Client Detail
-- Focus Network
-- Open Relationships
-- Open Review if relevant
-- Research Relationship
-- Open Governed Intelligence
-
-These are navigation actions only.
-
-No external research or AI should execute merely by opening or selecting a node.
-
-==================================================
-15. SELECTED RELATIONSHIP INSPECTOR
-==================================================
-
-Selecting an edge should expose a compact evidence-backed relationship explanation.
-
-Where available show:
-
-- subject,
-- related entity,
-- relationship type,
-- family,
-- direction,
-- state,
-- connectivity,
-- authority/source lane,
-- quality/review status,
-- evidence count,
-- source count,
-- source document,
-- source location/page,
-- exact excerpt when available.
-
-Include:
-
-“Why am I seeing this?”
-
-The answer must be deterministic and based on actual projection/source fields.
-
-Do not generate a speculative credit interpretation.
-
-If exact evidence is unavailable in the Network projection, say so and provide a handoff to Relationship Explorer / Intelligence rather than fabricating it.
-
-==================================================
-16. RELATIONSHIP FAMILIES
-==================================================
-
-The Network should help users understand real-world relationship categories holistically.
-
-Use the actual governed taxonomy.
-
-Where appropriate group relationship types into understandable families for visualization, while retaining the exact governed relationship type underneath.
-
-Examples may include only if supported by current taxonomy/data:
-
-- Ownership & Capital
-- Commercial
-- Credit Support
-- Financing
-- Market / Competitive
-- Strategic / Operational
-- M&A / Corporate Actions
-
-Do not silently remap taxonomy.
-
-If a family is UI-derived, explicitly preserve the exact source relationship type in the inspector.
-
-==================================================
-17. NETWORK ATTENTION SIGNALS
-==================================================
-
-Add deterministic attention signals, not risk scoring.
-
-Examples:
-
-- large reported exposure with no CAM relationships,
-- review-required relationship,
-- unresolved direction,
-- unresolved state,
-- multiple relationship types for the same endpoint pair,
-- concentration of relationships around a portfolio client,
-- source/evidence limitation.
-
-Each signal must provide:
-
-- what condition was detected,
-- which deterministic fields caused it,
-- what the user can inspect next.
-
-Do not label these as risk alerts unless the underlying source explicitly provides a risk classification.
-
-==================================================
-18. BOUNDED EXPANSION
-==================================================
-
-Graph exploration must remain bounded.
-
-Initial graph:
-- use a reasonable bounded number of nodes/edges.
-
-When the user expands a node:
-- fetch only that entity/client's bounded first-degree context where possible.
-
-Do not automatically recursively traverse the complete graph.
-
-Provide explicit controls for further expansion.
-
-If a result is truncated, visibly state:
-
-“Showing X of Y available relationships”
-
-where Y is known.
-
-Do not imply completeness if the API response is bounded.
-
-==================================================
-19. UNDERLYING RECORD TABLE
-==================================================
-
-Retain a compact underlying-record table below the canvas.
-
-It should be synchronized with current graph scope and selection.
-
-Columns may include where available:
-
-- source lane
-- subject
-- related entity
-- relationship type
-- family
-- state
-- direction
-- connectivity
-- evidence count
-- review state
-
-Rows should be clickable and focus the graph.
-
-Do not render thousands of rows at once.
-
-Use pagination or bounded rendering.
-
-==================================================
-20. EMPTY / UNKNOWN / PARTIAL STATES
-==================================================
-
-Provide explicit states for:
-
-- no CAM relationships,
-- no related entities,
-- no graph matches for current filters,
-- relationship endpoint unavailable,
-- source lane unavailable,
-- unresolved entity,
-- unresolved direction,
-- unresolved state,
-- truncated network,
-- supplemental-only context,
-- API failure.
-
-Distinguish:
-
-0
-Unknown
-Unavailable
-Not applicable
-Filtered out
-Not loaded
-Truncated
-
-These must not collapse to the same visual state.
-
-==================================================
-21. VISUAL DESIGN
-==================================================
-
-Continue the light executive design system from Prompts 4A and 4B.
-
-Desired qualities:
-
-- institutional,
-- modern,
-- premium,
-- spacious,
-- highly legible,
-- visually engaging,
-- restrained,
-- interactive.
-
-Use stronger visual emphasis only when the underlying data supports it.
-
-The network should be the visual center of the page.
-
-Avoid the current appearance of a large form beside a small graph.
-
-Move advanced controls into:
-
-- collapsible filter panel,
-- drawer,
-- compact toolbar,
-- popover,
-
-as appropriate.
-
-Senior users should see the network intelligence before seeing configuration complexity.
-
-==================================================
-22. CROSS-ROUTE HANDOFFS
-==================================================
-
-Preserve navigation to existing workflows.
-
-Network should hand off cleanly to:
-
-- /lending/client/{cagid}
-- /lending/relationships
-- /lending/review
-- /lending/external-research
-- /lending/workbench
-
-Do not redesign those destination workflows during Prompt 4C.
-
-Carry useful context through URL/search state where safe and already supported.
-
-Examples:
-
-- selected client,
-- selected entity,
-- relationship type,
-- review-required filter.
-
-Do not create hidden mutable cross-page state.
-
-==================================================
-23. NO AUTOMATIC AI / PROVIDER EXECUTION
-==================================================
-
-Ordinary Network loading and graph interaction must not automatically invoke:
-
-- AI generation,
-- AI definition generation,
-- external research,
-- Stylus,
-- SEC/web providers,
-- external proposal creation,
-- normalized full-history scans.
-
-“Research relationship” and “Governed Intelligence” are explicit handoffs.
-
-Provider execution occurs only after the user deliberately enters the appropriate workflow and invokes it.
-
-==================================================
-24. TESTING
-==================================================
-
-Add focused tests for any new bounded network backend/read contract.
-
-Regression coverage should verify:
-
-- CAM/V3 authority preserved,
-- source lanes preserved,
-- bounded initial graph,
-- deterministic grouping,
-- no duplicate endpoint/relationship corruption,
-- direction preserved,
-- unresolved direction preserved,
-- review-required state preserved,
-- supplemental lanes remain supplemental,
-- no full normalized-history loading for ordinary Network.
-
-Frontend validation should include:
-
-- build,
-- lint,
-- changed-file diagnostics,
-- graph render with CAM relationships,
-- graph render with review-required relationships,
-- graph render with zero relationships,
-- node selection,
-- edge selection,
-- filter application,
-- preset application,
-- reset view,
-- bounded expansion,
-- table synchronization,
-- responsive layout.
-
-==================================================
-25. REQUEST-TRACE VALIDATION
-==================================================
-
-Run the application locally and validate Network request behavior.
-
-Confirm initial /lending/network loading does NOT invoke:
-
-- AI generation,
-- external research execution,
-- provider execution,
-- external proposal creation,
-- the full normalized-history adaptation path.
-
-Record actual request traces in the report.
-
-==================================================
-26. HUMAN VISUAL REVIEW
-==================================================
-
-Open /lending/network in the browser after implementation.
-
-Inspect at least:
-
-- default portfolio network,
-- a high-exposure client,
-- a client with CAM relationships,
-- a client with review-required relationships,
-- a client/entity with no relationships,
-- filtered view,
-- selected node,
-- selected relationship,
-- narrow browser width.
-
-If automated DOM inspection is unavailable, explicitly document that human visual confirmation is required and leave the page open for inspection.
-
-==================================================
-27. REPORT
+8. REPORT
 ==================================================
 
 Create:
 
-backend/data/LENDING_PROMPT4C_NETWORK_REPORT.md
+backend/data/CCR_RELATIONSHIP_PILOT_SEMANTICS_REPORT.md
 
-Document:
+Include:
 
-- files changed,
-- graph architecture,
-- APIs used,
-- initial graph boundary,
-- expansion boundary,
-- source/authority handling,
-- node semantics,
-- edge semantics,
-- presets,
-- explainability behavior,
-- request traces,
-- performance results,
-- visual validation performed,
-- build/lint/test results,
-- any remaining limitations,
-- items intentionally deferred to Prompt 4D+.
+1. 3M trace reconstruction
+2. semantic problems found
+3. exact remediation performed
+4. schema/enums/status changes, if any
+5. before/after 3M outcome representation
+6. evidence-decision invariance confirmation
+7. positive-control candidate table
+8. recommended first positive-control case
+9. provider strategy for that case
+10. tests and validation
+11. protected-asset integrity results
+12. exact next-step command/prompt boundary
 
-The report must explicitly state whether the implementation ever adapts the complete normalized artifact during ordinary Network loading.
+The report must explicitly answer:
 
-If yes, Prompt 4C is NOT complete.
+- Was NEOGEN identity actually resolved?
+- If yes, why did the relationship fail?
+- Are candidate-claim disposition and research-run outcome currently distinct?
+- Can the engine distinguish “entity unresolved” from “relationship not proven”?
+- Which positive-control case should be executed next and why?
+- Can that case be executed without broad web/AI discovery?
 
-End the report with exactly:
+STOP after the report and focused remediation.
 
-READY FOR PROMPT 4D
+Do NOT run the positive-control pilot yet.
 
-STOP after Prompt 4C.
+End with exactly:
 
-Do not begin Relationship Explorer redesign.
-Do not begin governed Intelligence redesign.
-Do not begin External Research redesign.
-Do not begin Review redesign.
+READY FOR CCR POSITIVE-CONTROL RELATIONSHIP PILOT
