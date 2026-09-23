@@ -1,412 +1,321 @@
-CCR RELATIONSHIP INTELLIGENCE — 3M / SOLVENTUM POSITIVE CONTROL
+LENDING — REMOVE ALL CCR CONTAMINATION BEFORE PROMPT 4D
 
-Work only in the CURRENT CCR repository.
+Work only in the CURRENT Lending repository/worktree.
 
-Read first:
+This is a Lending-only correction.
 
-backend/data/CCR_RELATIONSHIP_PILOT_SEMANTICS_REPORT.md
-backend/data/CCR_3M_RELATIONSHIP_PILOT_REPORT.md
-backend/data/CCR_RESEARCH_ORCHESTRATOR_REPORT.md
-backend/data/CCR_RELATIONSHIP_EVIDENCE_PATH_POLICY.md
-
-This task is the FIRST positive-control relationship pilot.
-
-Use only the already identified candidate:
-
-3M CO
-↔
-SOLVENTUM CORP
-
-Target relationship type:
-
-MANUFACTURING_PARTNER
-
-Do NOT broaden to other entities.
-
-Do NOT run broad discovery.
-
-Do NOT create CONFIRMED relationships.
-
-Do NOT create production relationship_observations.
-
-Do NOT use AI as evidence.
-
-Do NOT use local correlation as evidence.
+DO NOT implement Prompt 4D yet.
 
 OBJECTIVE
 
-Prove that one real, strongly evidenced relationship can pass:
+The Lending product must contain no CCR dependency, CCR runtime path, CCR data dependency,
+CCR product semantics, CCR route ownership, CCR customer-master dependency, or CCR-derived
+authority.
+
+CCR is a completely separate product.
+
+The Lending application must stand independently without requiring, importing, reading,
+routing through, or reasoning from CCR assets.
+
+IMPORTANT
+
+Do not modify the CCR product itself.
+
+Do not delete legitimate CCR repository assets merely because they coexist in the monorepo.
+
+The requirement is:
+
+    CCR MUST NOT PARTICIPATE IN LENDING.
+
+Existing CCR files may remain elsewhere in the repository if they belong to the separate CCR
+product, but Lending code, Lending APIs, Lending routes, Lending loaders, Lending reports,
+Lending frontend, Lending tests, and Lending authority contracts must not depend on them.
+
+--------------------------------------------------
+1. FIRST — AUDIT ALL CCR REFERENCES
+--------------------------------------------------
+
+Search the complete Lending implementation for:
 
-identity
-→ source
-→ evidence
-→ direction
-→ taxonomy
-→ qualification
+    CCR
+    ccr
+    Customer_latest
+    Customer_latest.parquet
+    customer master
+    customer_master
+    /ccr
+    portfolio/ccr
+    ccr_clients
+    ccr relationship
+    relationships.py
 
-and reach:
+Inspect at minimum:
 
-PROPOSAL_PENDING_REVIEW
+    backend/app/
+    backend/data/
+    backend/tests/
+    frontend/src/
+    scripts/
+    Lending reports and architecture documents
 
-without writing a production confirmed relationship.
+Classify every occurrence as one of:
 
-==================================================
-1. PIN BOTH ENTITIES
-==================================================
+A. Separate CCR product asset
+B. Historical documentation only
+C. Shared legacy code
+D. Active Lending dependency
+E. Active Lending import
+F. Active Lending route
+G. Active Lending data read
+H. Active Lending API behavior
+I. Active Lending frontend behavior
+J. Test-only dependency
 
-Resolve both endpoints only from the existing CCR entity registry.
+Do not assume that a file is harmless simply because its name is legacy.
 
-Use the existing master-backed entities already identified in the semantics
-report.
+Trace actual imports, calls, routes, readers, and runtime paths.
 
-Confirm for each:
+--------------------------------------------------
+2. LENDING RUNTIME MUST HAVE ZERO CCR DEPENDENCIES
+--------------------------------------------------
 
-entity_key
-legal_name
-GFCID where present
-CAGID where present
-LEI where present
-identity class
-identity quality
-research eligibility
+Verify and enforce that ordinary Lending runtime paths do NOT:
 
-Expected:
+- import CCR-specific modules;
+- read backend/data/ccr;
+- read Customer_latest.parquet;
+- read CCR customer-master files;
+- read ccr_clients.sqlite3;
+- use CCR identifiers as Lending entity authority;
+- call CCR relationship engines;
+- use CCR relationship tables;
+- use CCR source discovery;
+- use CCR normalization;
+- use CCR proposal logic;
+- route through CCR endpoints;
+- redirect Lending users into CCR routes;
+- use CCR counts in Lending metrics;
+- use CCR entity populations in Lending denominators;
+- use CCR evidence in Lending relationship truth;
+- use CCR taxonomy as Lending taxonomy.
 
-3M CO = local/master-backed HIGH identity
+This applies to:
 
-SOLVENTUM CORP = local/master-backed HIGH identity
+    /lending
+    /lending/clients
+    /lending/client/{cagid}
+    /lending/network
+    /lending/relationships
+    /lending/workbench
+    /lending/review
+    /lending/external-research
+    all /api/lending/* routes
 
-Do not create an EXTERNAL_ENTITY for Solventum.
+--------------------------------------------------
+3. REMOVE LEGACY CCR ROUTING FROM LENDING
+--------------------------------------------------
 
-==================================================
-2. RESEARCH QUESTION
-==================================================
+Inspect frontend/src/App.tsx and all router definitions.
 
-Execute exactly one pair-research question:
+Lending must not own, advertise, redirect, alias, or expose routes such as:
 
-Does the admissible evidence establish a MANUFACTURING_PARTNER relationship
-between 3M CO and SOLVENTUM CORP?
+    /ccr
+    /portfolio/ccr
 
-Do not test:
+If those routes belong to the separate CCR product, leave the CCR application itself intact,
+but remove them from the Lending route family.
 
-CUSTOMER
-SUPPLIER
-SERVICE_PROVIDER
-STRATEGIC_PARTNER
+No Lending navigation item should point to CCR.
 
-in this run.
+No Lending fallback route should silently redirect CCR URLs into Lending.
 
-Those remain separate hypotheses.
+--------------------------------------------------
+4. REMOVE SHARED CCR BUSINESS LOGIC FROM LENDING
+--------------------------------------------------
 
-==================================================
-3. PRIMARY EVIDENCE
-==================================================
+Inspect:
 
-Use the existing cached official 2024 3M SEC 10-K identified in the prior
-pilot as the first source.
+    backend/app/core/relationships.py
 
-Do not retrieve another document unless the configured evidence policy
-requires corroboration.
+and any equivalent shared relationship modules.
 
-Source must remain:
+If that module contains mixed Lending and CCR business logic:
 
-TIER_1_AUTHORITATIVE_EXTERNAL
+- identify exactly what Lending currently imports;
+- isolate Lending behavior behind Lending-specific modules/contracts;
+- remove Lending dependence on CCR-specific branches;
+- do not rewrite or destroy CCR behavior;
+- do not create another duplicate relationship database.
 
-Preserve:
+The end state must make the product boundary explicit:
 
-source_document_id
-official URL
-filing/accession
-filing date
-content hash
-evidence excerpt
+    Lending logic -> Lending modules/data/contracts
+    CCR logic     -> CCR modules/data/contracts
 
-Do not use a search snippet.
+No Lending execution path should need a CCR conditional branch.
 
-==================================================
-4. EXACT CLAIM
-==================================================
+--------------------------------------------------
+5. DATA AUTHORITY
+--------------------------------------------------
 
-Extract only the claim supported by the filing.
+Lending authority remains:
 
-The claim must identify:
+    CAM/V3 = authoritative relationship truth.
 
-subject = 3M CO
-related entity = SOLVENTUM CORP
-relationship_type = MANUFACTURING_PARTNER
-direction
+Other currently governed Lending lanes may remain as previously established:
 
-The evidence must explicitly support manufacturing/commercial/supply
-arrangements sufficient for this taxonomy.
+    V2 fallback/history
+    normalized operational projection
+    external research supplemental lane
+    governed AI lane
 
-Do not interpret generic transition agreements or name co-occurrence as a
-manufacturing partnership.
+But these must remain Lending-specific.
 
-If the evidence does not specifically support MANUFACTURING_PARTNER:
+CCR customer master is NOT a Lending population source.
 
-return INSUFFICIENT_EVIDENCE.
+Customer_latest.parquet is NOT a Lending source.
 
-==================================================
-5. DIRECTION
-==================================================
+CCR entity resolution is NOT Lending entity resolution.
 
-Direction must be explicit.
+CCR relationship evidence is NOT Lending relationship evidence.
 
-Use:
+Do not use CCR data to fill gaps in Lending.
 
-SUBJECT_TO_RELATED
+--------------------------------------------------
+6. REPORT CLEANUP
+--------------------------------------------------
 
-only if the evidence and taxonomy contract support 3M → Solventum for the
-requested relationship.
+The current:
 
-If the relationship is inherently reciprocal under the configured taxonomy,
-store the configured reciprocal semantics explicitly.
+    LENDING_IMPLEMENTATION_REBASELINE.md
 
-Do not silently invent an inverse relationship.
+contains CCR-specific material.
 
-If direction cannot be governed:
+Rewrite the Lending baseline so it describes Lending only.
 
-DIRECTION_UNRESOLVED
+Remove sections such as:
 
-and do not qualify the proposal.
+    CCR contamination check
+    CCR/shared surfaces
+    CCR customer-master analysis
+    Customer_latest.parquet discussion
+    CCR-specific route discussion
 
-==================================================
-6. TEMPORAL SEMANTICS
-==================================================
+unless a single short architectural boundary statement is necessary.
 
-Preserve whether the filing evidence describes:
+If retained at all, the only permitted statement is conceptually:
 
-CURRENT
-HISTORICAL
-TRANSITIONAL
-UNKNOWN
+    "Lending is isolated from other product data domains."
 
-Do not call a transitional manufacturing arrangement permanently current
-without evidence.
+Do not make CCR part of the Lending architecture narrative.
 
-If the evidence is tied to the 3M/Solventum separation period, retain that
-temporal context.
+The Lending implementation report should be understandable without knowing CCR exists.
 
-==================================================
-7. CLAIM QUALIFICATION
-==================================================
+--------------------------------------------------
+7. VERIFY ZERO ACTIVE REFERENCES
+--------------------------------------------------
 
-The claim may qualify only if all gates pass:
+After remediation, run searches demonstrating that active Lending code contains no CCR
+dependency.
 
-subject identity resolved
-related identity resolved
-relationship type supported
-direction resolved
-admissible source
-explicit evidence
-evidence threshold met
-no contradiction
-review policy satisfied
+Report separately:
 
-Expected maximum state:
+1. CCR references remaining in separate CCR-owned directories.
+2. CCR references remaining in historical/archive documentation.
+3. CCR references remaining in ACTIVE Lending runtime code.
 
-PROPOSAL_PENDING_REVIEW
+The required value for #3 is:
 
-Never CONFIRMED.
+    0
 
-==================================================
-8. SECOND SOURCE
-==================================================
+Also report:
 
-Use a second authoritative source only if the existing configured
-MANUFACTURING_PARTNER policy requires it.
+- active Lending imports of CCR code = 0
+- Lending reads of CCR data = 0
+- Lending API calls into CCR = 0
+- Lending frontend CCR routes = 0
+- Lending CCR redirects = 0
+- Lending tests depending on CCR fixtures = 0
+- Customer_latest.parquet Lending reads = 0
 
-If required, prefer:
+--------------------------------------------------
+8. REGRESSION VALIDATION
+--------------------------------------------------
 
-official Solventum disclosure
-official 3M disclosure
-SEC filing
-other Tier-1 authoritative source
+Run the existing Lending regression suites.
 
-Do not introduce Tier-2 merely to force corroboration.
+At minimum validate:
 
-Do not lower evidence standards if no second source exists.
+- Home
+- Portfolio
+- Client Detail
+- Network
+- Lending status
+- CAM/V3 relationship projection
+- review summary
+- existing Prompt 4A
+- existing Prompt 4B
+- existing Prompt 4C
 
-==================================================
-9. PERSISTENCE
-==================================================
+Confirm that removal of CCR coupling does not change legitimate Lending counts or authority.
 
-Allowed research-layer persistence:
+Do not alter CAM/V3 authority.
 
-research plan
-research run
-research claim
-source document reference
-evidence snippet/reference
-semantic outcome
-proposal/review state if the existing model stores it outside production
-relationship_observations
+Do not fabricate replacement data.
 
-Do NOT create:
+Do not broaden the Lending population.
 
-production relationship_observations
-CONFIRMED relationship
-synthetic relationship
-external entity
-indirect path
-event
-stress scenario
-
-==================================================
-10. POSITIVE-CONTROL EXPECTATION
-==================================================
-
-This is a positive-control candidate, not a forced positive result.
-
-Expected if all evidence gates pass:
-
-PROPOSAL_PENDING_REVIEW
-
-Otherwise return the correct governed failure:
-
-INSUFFICIENT_EVIDENCE
-DIRECTION_UNRESOLVED
-RELATIONSHIP_NOT_ESTABLISHED
-CONFLICT_REVIEW_REQUIRED
-
-Do not change logic merely to achieve a proposal.
-
-==================================================
-11. QUALITY REVIEW
-==================================================
-
-Before qualifying the claim verify:
-
-3M is the correct subject
-Solventum is the correct counterparty
-both identities are resolved
-the quoted evidence supports manufacturing partnership
-the relationship type is not overstated
-direction is governed
-temporal meaning is preserved
-the source is admissible
-the source document and evidence excerpt are linked
-
-==================================================
-12. VALIDATION
-==================================================
-
-Run targeted positive-control tests first.
-
-Then run full backend regression.
-
-Expected:
-
-0 failed
-0 errors
-
-Confirm:
-
-Phase-2 protected hash unchanged
-canonical counts unchanged
-production relationship observations = 0
-confirmed relationships = 0
-external entities created = 0
-synthetic edges = 0
-AI evidence = 0
-foreign-key violations = 0
-SQLite integrity = ok
-
-==================================================
-13. REPORT
-==================================================
+--------------------------------------------------
+9. OUTPUT REPORT
+--------------------------------------------------
 
 Create:
 
-backend/data/CCR_3M_SOLVENTUM_POSITIVE_CONTROL_REPORT.md
+    backend/data/LENDING_CCR_ISOLATION_REPORT.md
 
 Include:
 
-entity identities
-research question
-taxonomy
-source document
-exact evidence excerpt
-direction decision
-temporal semantics
-qualification gates
-semantic outcome
-persistence performed
-quality review
-regression
+1. every CCR reference discovered;
+2. classification of each reference;
+3. whether it was removed, isolated, or retained outside Lending;
+4. files changed;
+5. runtime dependency verification;
+6. route verification;
+7. data-read verification;
+8. test results;
+9. final Lending authority statement.
 
-==================================================
-FINAL RESPONSE
-==================================================
+The report must end with exactly one of:
 
-CCR 3M / SOLVENTUM POSITIVE CONTROL: PASS / FAIL
+    LENDING CCR ISOLATION: PASS
+    LENDING CCR ISOLATION: FAIL
 
-SUBJECT:
-3M CO
+PASS requires zero active Lending dependency on CCR.
 
-RELATED ENTITY:
-SOLVENTUM CORP
+If PASS, the final line must be:
 
-RELATIONSHIP TYPE:
-MANUFACTURING_PARTNER
+    READY FOR PROMPT 4D
 
-SUBJECT IDENTITY:
-RESOLVED / FAIL
+If FAIL, stop and identify the exact remaining dependency.
 
-RELATED IDENTITY:
-RESOLVED / FAIL
+--------------------------------------------------
+STRICT NON-GOALS
+--------------------------------------------------
 
-PRIMARY SOURCE:
-<source>
+Do NOT:
 
-SOURCE TIER:
-<actual>
+- implement Prompt 4D;
+- redesign CCR;
+- modify CCR business data;
+- migrate CCR databases;
+- use Customer_latest.parquet;
+- merge CCR and Lending;
+- build a shared universal customer master;
+- create a universal relationship denominator;
+- call external providers;
+- perform SEC/GLEIF/web research;
+- change CAM/V3 authority;
+- invent replacement Lending data.
 
-EVIDENCE EXCERPT:
-<short exact excerpt>
-
-DIRECTION:
-<actual>
-
-TEMPORAL SEMANTICS:
-<actual>
-
-EVIDENCE THRESHOLD:
-PASS / FAIL
-
-SEMANTIC OUTCOME:
-<actual>
-
-PROPOSAL_PENDING_REVIEW:
-YES / NO
-
-PRODUCTION RELATIONSHIP OBSERVATIONS CREATED:
-0 / FAIL
-
-CONFIRMED RELATIONSHIPS CREATED:
-0 / FAIL
-
-EXTERNAL ENTITIES CREATED:
-0 / FAIL
-
-SYNTHETIC EDGES:
-0 / FAIL
-
-AI AS EVIDENCE:
-0 / FAIL
-
-REGRESSION
-passed:
-failed:
-errors:
-
-SQLITE INTEGRITY:
-PASS / FAIL
-
-FOREIGN KEYS:
-PASS / FAIL
-
-REPORT:
-backend/data/CCR_3M_SOLVENTUM_POSITIVE_CONTROL_REPORT.md
-
-STOP.
+The sole purpose of this task is to make Lending completely independent from CCR and to
+establish a clean Lending baseline before Prompt 4D.
