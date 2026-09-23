@@ -1,58 +1,49 @@
-Fix the Market Dev SSH authentication cleanly and safely.
+RELATIONSHIP INSTANCE
 
-Goal:
-VS Code / Copilot should connect to Market Dev without repeatedly asking for the Unix password.
+relationship_id
 
-Current target:
-Host: sd-f34e-972f.nam.nsroot.net
-User: ak54743
-Port: 22
+SUBJECT
+  subject_entity_id
+  subject_name
+  subject_type
 
-Requirements:
+RELATED ENTITY
+  related_entity_id
+  related_name
+  related_type
 
-1. Inspect the existing SSH setup first:
-   - C:\Users\ak54743\.ssh
-   - existing config
-   - existing Market Dev RSA key pair
-   - existing known_hosts
-   - Git-for-Windows OpenSSH client
+RELATIONSHIP
+  relationship_family
+  relationship_type
+  direction
+  state
+  effective_date
+  expiry_date
 
-2. Do NOT delete existing Helix keys or unrelated SSH keys.
+ORIGIN
+  CAM / Internal
+  AI Definition
+  External Research
+  External Overlay
 
-3. Verify the actual filename/path of the Market Dev public/private key instead of assuming it.
+GOVERNANCE
+  canonical
+  review_required
+  review_status
+  definition_id
+  definition_version
 
-4. Use standard OpenSSH public-key authentication.
-   - install ONLY the Market Dev public key into ~/.ssh/authorized_keys on Market Dev
-   - set correct Unix permissions
-   - never copy the private key to Unix
+EVIDENCE
+  evidence_count
+  independent_source_count
+  evidence_quality
+  source_documents[]
 
-5. Configure C:\Users\ak54743\.ssh\config with a clean alias:
+CONFIDENCE
+  confidence
+  confidence_method
 
-Host market-dev
-    HostName sd-f34e-972f.nam.nsroot.net
-    User ak54743
-    Port 22
-    IdentityFile <verified Market Dev private-key path>
-    IdentitiesOnly yes
-
-6. Configure VS Code Remote SSH to use the verified Git-for-Windows ssh.exe.
-
-7. Test:
-   ssh market-dev
-
-The desired result is:
-- no Unix password prompt
-- host-key verification works
-- VS Code Remote SSH works
-- Copilot can execute remote commands without repeatedly requesting the Unix password
-
-8. Do NOT store the Unix password in:
-   - scripts
-   - environment variables
-   - VS Code settings
-   - Copilot prompts
-   - plaintext files
-
-9. If corporate policy prevents public-key authentication, STOP and report the exact blocker rather than attempting an unsafe workaround.
-
-Make the necessary safe configuration changes, test them, and report exactly what changed.
+EXPOSURE CONTEXT
+  reported_osuc
+  country
+  sector
