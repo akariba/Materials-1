@@ -1,293 +1,412 @@
-CCR RELATIONSHIP PILOT — OUTCOME SEMANTICS AND POSITIVE-CONTROL READINESS
+CCR RELATIONSHIP INTELLIGENCE — 3M / SOLVENTUM POSITIVE CONTROL
 
 Work only in the CURRENT CCR repository.
 
 Read first:
 
+backend/data/CCR_RELATIONSHIP_PILOT_SEMANTICS_REPORT.md
 backend/data/CCR_3M_RELATIONSHIP_PILOT_REPORT.md
+backend/data/CCR_RESEARCH_ORCHESTRATOR_REPORT.md
+backend/data/CCR_RELATIONSHIP_EVIDENCE_PATH_POLICY.md
 
-Also inspect the code, schemas, enums, tests, research-run records,
-candidate-claim records, provider audit records, and relationship proposal
-logic used by the bounded 3M relationship pilot.
+This task is the FIRST positive-control relationship pilot.
 
-This is a focused remediation and readiness task.
+Use only the already identified candidate:
 
-Do NOT start portfolio-scale discovery.
-Do NOT run a broad CCR crawl.
-Do NOT modify Lending.
-Do NOT weaken evidence requirements.
-Do NOT create synthetic relationships.
-Do NOT convert rejected claims into accepted relationships.
-Do NOT use AI/Helix to manufacture evidence.
-Do NOT mutate existing Phase-2 protected source assets.
-Do NOT redesign the frontend.
+3M CO
+↔
+SOLVENTUM CORP
+
+Target relationship type:
+
+MANUFACTURING_PARTNER
+
+Do NOT broaden to other entities.
+
+Do NOT run broad discovery.
+
+Do NOT create CONFIRMED relationships.
+
+Do NOT create production relationship_observations.
+
+Do NOT use AI as evidence.
+
+Do NOT use local correlation as evidence.
 
 OBJECTIVE
 
-Use the completed 3M pilot as a negative-control benchmark and correct any
-semantic ambiguity revealed by that pilot before running a positive-control
-relationship benchmark.
+Prove that one real, strongly evidenced relationship can pass:
 
-The 3M pilot must remain a PASS and its substantive decisions must remain
-unchanged:
-
-- no parent relationship was established;
-- unnamed upstream suppliers did not create governed entities or relationships;
-- NEOGEN identity resolution did not by itself establish a customer relationship;
-- no weak relationship was forced;
-- no synthetic edge was created.
-
-==================================================
-1. RECONSTRUCT THE THREE PILOT DECISIONS
-==================================================
-
-Trace each 3M research question from:
-
-research question
-→ provider strategy
-→ provider response
+identity
+→ source
 → evidence
-→ candidate claim
-→ entity resolution
-→ relationship-semantic evaluation
-→ governed outcome
-→ persistence decision.
+→ direction
+→ taxonomy
+→ qualification
 
-Produce an exact trace for:
+and reach:
 
-A. parent / ultimate parent
-B. supplier / critical supplier / source of inputs
-C. customer / key customer / strategic partner
-
-Do not infer fields that are not persisted.
-
-==================================================
-2. AUDIT OUTCOME SEMANTICS
-==================================================
-
-Determine whether the current outcome/status vocabulary correctly distinguishes:
-
-- provider returned no record;
-- related entity not identified;
-- entity identified but identity resolution failed;
-- entity resolved successfully but relationship was not established;
-- relationship type unsupported by evidence;
-- relationship direction unresolved;
-- insufficient evidence;
-- conflicting evidence;
-- relationship proposal pending review;
-- confirmed relationship.
-
-In particular inspect the 3M / NEOGEN trace.
-
-If NEOGEN was successfully identity-resolved, do not classify the failure
-as ENTITY/IDENTITY_UNRESOLVED merely because the proposed customer
-relationship or direction was not proven.
-
-Inspect the apparent reporting distinction between:
-
-- rejected/insufficient candidate claims = 2
-
-and
-
-- insufficient-evidence governed outcome count = 0.
-
-Determine whether this is intentional and correctly modeled or whether the
-vocabulary/report aggregation is conflating claim disposition with research-run
-outcome.
-
-==================================================
-3. DEFINE THE GOVERNED FAILURE TAXONOMY
-==================================================
-
-Reuse existing statuses/enums where they already express the required meaning.
-
-Do NOT create duplicate concepts.
-
-Only if required, minimally extend the governed vocabulary so the system can
-distinguish concepts such as:
-
-NOT_FOUND
-ENTITY_UNRESOLVED
-RELATIONSHIP_NOT_ESTABLISHED
-DIRECTION_UNRESOLVED
-INSUFFICIENT_RELATIONSHIP_EVIDENCE
-CONFLICT_REVIEW_REQUIRED
 PROPOSAL_PENDING_REVIEW
-CONFIRMED
 
-Names may differ if the repository already has canonical equivalents.
-
-Document exact meaning and allowed lifecycle transitions for each status.
-
-Do not collapse:
-
-entity identity quality
-relationship evidence quality
-relationship direction
-provider status
-candidate-claim disposition
-proposal state
-relationship confirmation
-
-into one field.
+without writing a production confirmed relationship.
 
 ==================================================
-4. PRESERVE 3M DECISIONS
+1. PIN BOTH ENTITIES
 ==================================================
 
-After any semantic remediation, replay/rebuild the bounded 3M pilot from the
-same persisted inputs.
+Resolve both endpoints only from the existing CCR entity registry.
 
-Expected substantive result remains:
+Use the existing master-backed entities already identified in the semantics
+report.
 
-Parent:
-- no governed parent relationship created.
+Confirm for each:
 
-Supplier/source of inputs:
-- source evidence exists;
-- no individual supplier endpoint established;
-- no supplier relationship created.
+entity_key
+legal_name
+GFCID where present
+CAGID where present
+LEI where present
+identity class
+identity quality
+research eligibility
 
-NEOGEN:
-- preserve successful identity resolution if it exists;
-- do not establish CUSTOMER / KEY_CUSTOMER unless the evidence actually proves it;
-- represent the failure reason accurately.
+Expected:
 
-Expected aggregate result:
+3M CO = local/master-backed HIGH identity
 
-- accepted relationships: 0
-- confirmed relationships: 0
-- synthetic edges: 0
-- AI evidence: 0
-- production relationship mutation: 0
+SOLVENTUM CORP = local/master-backed HIGH identity
 
-The semantic labels may become more precise, but the evidence decision must not
-be weakened.
+Do not create an EXTERNAL_ENTITY for Solventum.
 
 ==================================================
-5. BUILD POSITIVE-CONTROL SELECTION LOGIC
+2. RESEARCH QUESTION
 ==================================================
 
-Do NOT yet run broad discovery.
+Execute exactly one pair-research question:
 
-Identify 3–5 candidate positive-control relationship cases already supported by
-existing CCR repository evidence or already-persisted admissible provider data.
+Does the admissible evidence establish a MANUFACTURING_PARTNER relationship
+between 3M CO and SOLVENTUM CORP?
 
-A positive-control case must have:
+Do not test:
 
-- a validated CCR subject identity;
-- an explicit related legal entity;
-- admissible source evidence;
-- an explicit relationship statement;
-- sufficient relationship type evidence;
-- sufficient direction evidence where direction is required;
-- deterministic entity resolution;
-- no need to infer the relationship from weak contextual language.
+CUSTOMER
+SUPPLIER
+SERVICE_PROVIDER
+STRATEGIC_PARTNER
 
-Prefer cases exercising different relationship families, for example:
+in this run.
 
-- parent / subsidiary;
-- guarantor / guarantee;
-- explicitly named supplier;
-- explicitly named customer;
-- financing/lender;
-- ownership/control.
-
-Do not select a case merely because an old candidate row exists.
-
-Verify the underlying evidence first.
-
-For each candidate provide:
-
-- subject;
-- related entity;
-- expected relationship type;
-- expected direction;
-- source;
-- exact evidence basis;
-- identity basis;
-- why it qualifies as a positive control;
-- which provider path would be exercised.
-
-Rank them by benchmark usefulness, not by commercial importance.
+Those remain separate hypotheses.
 
 ==================================================
-6. PROVIDER STRATEGY READINESS
+3. PRIMARY EVIDENCE
 ==================================================
 
-For the selected positive-control candidates, identify which existing provider
-strategies are sufficient:
+Use the existing cached official 2024 3M SEC 10-K identified in the prior
+pilot as the first source.
 
-- existing SEC cache;
-- additional official SEC retrieval;
-- GLEIF Level 1;
-- GLEIF Level 2;
-- existing governed web adapter;
-- other already-governed source.
+Do not retrieve another document unless the configured evidence policy
+requires corroboration.
 
-Do NOT execute broad web search in this task.
+Source must remain:
 
-Do NOT enable Stylus, Helix, or generic AI unless already part of an explicitly
-governed test path.
+TIER_1_AUTHORITATIVE_EXTERNAL
 
-Document where the current strategy has deterministic fallback capability and
-where it does not.
+Preserve:
 
-==================================================
-7. TESTS
-==================================================
+source_document_id
+official URL
+filing/accession
+filing date
+content hash
+evidence excerpt
 
-Add or update focused regression tests covering at least:
-
-- provider NOT_FOUND is not entity unresolved;
-- unnamed related entity cannot create a relationship;
-- successfully resolved entity can still fail relationship proof;
-- unresolved direction cannot silently become directed;
-- rejected candidate claim cannot become confirmed relationship;
-- accepted relationship requires admissible evidence;
-- synthetic edge count remains zero unless an explicitly governed synthetic
-  mechanism exists;
-- 3M negative-control decisions remain unchanged.
-
-All existing Phase-2 immutability/integrity tests must continue to pass.
+Do not use a search snippet.
 
 ==================================================
-8. REPORT
+4. EXACT CLAIM
+==================================================
+
+Extract only the claim supported by the filing.
+
+The claim must identify:
+
+subject = 3M CO
+related entity = SOLVENTUM CORP
+relationship_type = MANUFACTURING_PARTNER
+direction
+
+The evidence must explicitly support manufacturing/commercial/supply
+arrangements sufficient for this taxonomy.
+
+Do not interpret generic transition agreements or name co-occurrence as a
+manufacturing partnership.
+
+If the evidence does not specifically support MANUFACTURING_PARTNER:
+
+return INSUFFICIENT_EVIDENCE.
+
+==================================================
+5. DIRECTION
+==================================================
+
+Direction must be explicit.
+
+Use:
+
+SUBJECT_TO_RELATED
+
+only if the evidence and taxonomy contract support 3M → Solventum for the
+requested relationship.
+
+If the relationship is inherently reciprocal under the configured taxonomy,
+store the configured reciprocal semantics explicitly.
+
+Do not silently invent an inverse relationship.
+
+If direction cannot be governed:
+
+DIRECTION_UNRESOLVED
+
+and do not qualify the proposal.
+
+==================================================
+6. TEMPORAL SEMANTICS
+==================================================
+
+Preserve whether the filing evidence describes:
+
+CURRENT
+HISTORICAL
+TRANSITIONAL
+UNKNOWN
+
+Do not call a transitional manufacturing arrangement permanently current
+without evidence.
+
+If the evidence is tied to the 3M/Solventum separation period, retain that
+temporal context.
+
+==================================================
+7. CLAIM QUALIFICATION
+==================================================
+
+The claim may qualify only if all gates pass:
+
+subject identity resolved
+related identity resolved
+relationship type supported
+direction resolved
+admissible source
+explicit evidence
+evidence threshold met
+no contradiction
+review policy satisfied
+
+Expected maximum state:
+
+PROPOSAL_PENDING_REVIEW
+
+Never CONFIRMED.
+
+==================================================
+8. SECOND SOURCE
+==================================================
+
+Use a second authoritative source only if the existing configured
+MANUFACTURING_PARTNER policy requires it.
+
+If required, prefer:
+
+official Solventum disclosure
+official 3M disclosure
+SEC filing
+other Tier-1 authoritative source
+
+Do not introduce Tier-2 merely to force corroboration.
+
+Do not lower evidence standards if no second source exists.
+
+==================================================
+9. PERSISTENCE
+==================================================
+
+Allowed research-layer persistence:
+
+research plan
+research run
+research claim
+source document reference
+evidence snippet/reference
+semantic outcome
+proposal/review state if the existing model stores it outside production
+relationship_observations
+
+Do NOT create:
+
+production relationship_observations
+CONFIRMED relationship
+synthetic relationship
+external entity
+indirect path
+event
+stress scenario
+
+==================================================
+10. POSITIVE-CONTROL EXPECTATION
+==================================================
+
+This is a positive-control candidate, not a forced positive result.
+
+Expected if all evidence gates pass:
+
+PROPOSAL_PENDING_REVIEW
+
+Otherwise return the correct governed failure:
+
+INSUFFICIENT_EVIDENCE
+DIRECTION_UNRESOLVED
+RELATIONSHIP_NOT_ESTABLISHED
+CONFLICT_REVIEW_REQUIRED
+
+Do not change logic merely to achieve a proposal.
+
+==================================================
+11. QUALITY REVIEW
+==================================================
+
+Before qualifying the claim verify:
+
+3M is the correct subject
+Solventum is the correct counterparty
+both identities are resolved
+the quoted evidence supports manufacturing partnership
+the relationship type is not overstated
+direction is governed
+temporal meaning is preserved
+the source is admissible
+the source document and evidence excerpt are linked
+
+==================================================
+12. VALIDATION
+==================================================
+
+Run targeted positive-control tests first.
+
+Then run full backend regression.
+
+Expected:
+
+0 failed
+0 errors
+
+Confirm:
+
+Phase-2 protected hash unchanged
+canonical counts unchanged
+production relationship observations = 0
+confirmed relationships = 0
+external entities created = 0
+synthetic edges = 0
+AI evidence = 0
+foreign-key violations = 0
+SQLite integrity = ok
+
+==================================================
+13. REPORT
 ==================================================
 
 Create:
 
-backend/data/CCR_RELATIONSHIP_PILOT_SEMANTICS_REPORT.md
+backend/data/CCR_3M_SOLVENTUM_POSITIVE_CONTROL_REPORT.md
 
 Include:
 
-1. 3M trace reconstruction
-2. semantic problems found
-3. exact remediation performed
-4. schema/enums/status changes, if any
-5. before/after 3M outcome representation
-6. evidence-decision invariance confirmation
-7. positive-control candidate table
-8. recommended first positive-control case
-9. provider strategy for that case
-10. tests and validation
-11. protected-asset integrity results
-12. exact next-step command/prompt boundary
+entity identities
+research question
+taxonomy
+source document
+exact evidence excerpt
+direction decision
+temporal semantics
+qualification gates
+semantic outcome
+persistence performed
+quality review
+regression
 
-The report must explicitly answer:
+==================================================
+FINAL RESPONSE
+==================================================
 
-- Was NEOGEN identity actually resolved?
-- If yes, why did the relationship fail?
-- Are candidate-claim disposition and research-run outcome currently distinct?
-- Can the engine distinguish “entity unresolved” from “relationship not proven”?
-- Which positive-control case should be executed next and why?
-- Can that case be executed without broad web/AI discovery?
+CCR 3M / SOLVENTUM POSITIVE CONTROL: PASS / FAIL
 
-STOP after the report and focused remediation.
+SUBJECT:
+3M CO
 
-Do NOT run the positive-control pilot yet.
+RELATED ENTITY:
+SOLVENTUM CORP
 
-End with exactly:
+RELATIONSHIP TYPE:
+MANUFACTURING_PARTNER
 
-READY FOR CCR POSITIVE-CONTROL RELATIONSHIP PILOT
+SUBJECT IDENTITY:
+RESOLVED / FAIL
+
+RELATED IDENTITY:
+RESOLVED / FAIL
+
+PRIMARY SOURCE:
+<source>
+
+SOURCE TIER:
+<actual>
+
+EVIDENCE EXCERPT:
+<short exact excerpt>
+
+DIRECTION:
+<actual>
+
+TEMPORAL SEMANTICS:
+<actual>
+
+EVIDENCE THRESHOLD:
+PASS / FAIL
+
+SEMANTIC OUTCOME:
+<actual>
+
+PROPOSAL_PENDING_REVIEW:
+YES / NO
+
+PRODUCTION RELATIONSHIP OBSERVATIONS CREATED:
+0 / FAIL
+
+CONFIRMED RELATIONSHIPS CREATED:
+0 / FAIL
+
+EXTERNAL ENTITIES CREATED:
+0 / FAIL
+
+SYNTHETIC EDGES:
+0 / FAIL
+
+AI AS EVIDENCE:
+0 / FAIL
+
+REGRESSION
+passed:
+failed:
+errors:
+
+SQLITE INTEGRITY:
+PASS / FAIL
+
+FOREIGN KEYS:
+PASS / FAIL
+
+REPORT:
+backend/data/CCR_3M_SOLVENTUM_POSITIVE_CONTROL_REPORT.md
+
+STOP.
