@@ -1,418 +1,228 @@
-Perform a new READ-ONLY data discovery analysis focused only on:
+Perform a READ-ONLY extraction coverage benchmark.
 
-backend/Customer_latest.parquet
-backend/thousandClients.csv
-
-Do not redesign the UI.
-Do not modify either source file.
-Do not change the production database yet.
-Do not create relationship logic yet.
+Do not modify code, databases, UI, prompts, taxonomies, or deployment.
 
 PURPOSE
 
-I need to understand these two datasets well enough to design the correct Lending customer/entity database.
+The reconciliation audit established that the Lending application currently has several different relationship universes:
 
-Business understanding:
+- V3 strict portfolio artifact
+- V2 candidate extraction
+- normalized relationship store
 
-1. Customer_latest.parquet is believed to be the enterprise/master customer file.
-   It contains approximately 3.6 million customer records.
-   I have also heard that it may contain both active and inactive customers, but this has NOT been verified.
+The client has specifically questioned whether the current extraction is missing too many valid relationships.
 
-2. thousandClients.csv came from an exposure population.
-   It was originally introduced so the application would have a manageable set of lending clients with exposure data to start analysis and visualization.
+We now need to determine where valid relationships are being lost.
 
-Do not assume either statement is fully correct.
-Validate everything from the files.
-
-==================================================
-TASK 1 — PROFILE BOTH FILES
-==================================================
-
-For each file report:
-
-- row count
-- column count
-- complete column list
-- data types
-- null count and null percentage per column
-- distinct count for important columns
-- obvious identifier columns
-- name / legal-name columns
-- status columns
-- active/inactive indicators
-- country / region columns
-- sector / industry columns
-- hierarchy / parent / group columns
-- customer type / legal entity type columns
-- dates
-- exposure-related fields
-- any CAGID-like fields
-- any internal customer IDs
-- any external IDs
-
-Do not dump millions of records.
-
-Use efficient Parquet analysis using PyArrow, DuckDB, Polars or equivalent.
-Do not load the full 3.6M dataset into Python memory unnecessarily.
+Do not assume V3 is correct.
+Do not assume V2 is correct.
+Do not assume more relationships means better extraction.
 
 ==================================================
-TASK 2 — IDENTIFY THE CUSTOMER MASTER KEY
+1. SELECT BENCHMARK DOCUMENTS
 ==================================================
 
-Determine which columns in Customer_latest.parquet appear to function as:
+Use a small representative benchmark set from the existing CAM source documents.
 
-- primary customer identifier
-- CAGID
-- legal entity identifier
-- customer number
-- parent/group identifier
+Include CoreWeave-related source documents if available.
 
-For every candidate identifier calculate:
+Also identify any source documents involving entities such as NVIDIA or Anthropic if they actually exist in the repository.
 
-- non-null %
-- distinct %
-- duplicate count
-- duplicate examples
-- whether one identifier maps to several names
-- whether one name maps to several identifiers
+Do not invent documents or expected relationships.
 
-Do NOT assume a field is unique because its name looks like an ID.
+Use approximately 5-10 source documents, enough to represent different relationship families.
 
 ==================================================
-TASK 3 — UNDERSTAND ACTIVE / INACTIVE POPULATION
+2. BUILD A SOURCE-DOCUMENT RELATIONSHIP INVENTORY
 ==================================================
 
-Search the master file for any fields that may indicate:
+For each selected document, inspect the actual source content and identify relationship statements present in the document.
 
-- ACTIVE
-- INACTIVE
-- CLOSED
-- TERMINATED
-- ARCHIVED
-- CURRENT
-- customer lifecycle status
-- effective/end dates
-- relationship status
-- account/customer status
+For every relationship record:
 
-Report the actual values and counts.
+- subject entity
+- related entity
+- relationship wording
+- relationship type suggested by the source
+- direction if explicit
+- state if explicit
+- source document
+- supporting text/reference
+- whether an amount or commitment is stated
 
-If no explicit active/inactive field exists, say so.
+This is a benchmark inventory only.
 
-Do not infer active status from missing exposure.
+Do not apply the current V3 relevance restrictions when constructing this inventory.
 
-==================================================
-TASK 4 — ANALYZE THE EXPOSURE CLIENT FILE
-==================================================
-
-Profile thousandClients.csv independently.
-
-Determine exactly what a row represents.
-
-Examples to investigate:
-
-- one row per client?
-- one row per CAGID?
-- one row per exposure?
-- one row per facility?
-- one row per customer-sector combination?
-- multiple rows per client?
-
-Identify:
-
-- client identifier
-- client name
-- reported exposure
-- CAM count
-- country
-- sector
-- risk fields
-- classifications
-- any source-system identifier
-
-Calculate unique-client counts using every plausible key.
+Do not create relationships that are not supported by the source.
 
 ==================================================
-TASK 5 — MATCH THE TWO FILES
+3. COMPARE AGAINST V3
 ==================================================
 
-Determine how thousandClients.csv relates to Customer_latest.parquet.
+For every benchmark relationship determine:
 
-Test candidate joins in this order where fields exist:
+- found in V3
+- not found in V3
+- partially represented
+- represented under another relationship type
+- entity resolution mismatch
+- direction mismatch
 
-1. exact CAGID / customer ID
-2. other exact internal identifiers
-3. normalized identifier
-4. exact legal/customer name
-5. normalized name
-
-Name normalization may be used ONLY for analysis.
-
-Examples:
-- uppercase
-- trim whitespace
-- remove harmless punctuation
-- normalize repeated spaces
-
-Do NOT merge records based only on fuzzy names.
-
-For every matching method report:
-
-MATCHED
-UNMATCHED
-AMBIGUOUS
-ONE-TO-ONE
-ONE-TO-MANY
-MANY-TO-ONE
-
-Provide percentages.
-
-Example expected report structure:
-
-Exposure clients                  1,000
-Exact ID matches                    xxx
-Unique master matches               xxx
-Ambiguous master matches            xxx
-Name-only potential matches         xxx
-No master match                     xxx
-
-Use actual results only.
+Report V3 coverage per document and overall.
 
 ==================================================
-TASK 6 — INVESTIGATE ONE-TO-MANY CASES
+4. COMPARE AGAINST V2
 ==================================================
 
-For exposure clients matching multiple master rows, determine why.
+For the same benchmark relationships determine:
 
-Look for patterns such as:
-
-- same CAGID with multiple records
-- different legal entities
-- branches
-- historical versions
-- active/inactive duplicates
-- country variants
-- aliases
-- parent/child structures
-- duplicate ingestion
-- source-system duplicates
-
-Give representative examples without changing the data.
+- found in V2
+- missing
+- duplicate
+- unresolved endpoint
+- fragment endpoint
+- relationship_key missing
+- taxonomy mismatch
+- review-required
+- canonical
+- rejected
 
 ==================================================
-TASK 7 — COMPARE ATTRIBUTES
+5. COMPARE AGAINST NORMALIZED STORE
 ==================================================
 
-For matched clients compare overlapping attributes between the two files.
+For the same benchmark determine whether each relationship exists in the normalized store and its final state:
 
-Examples where available:
+- validated
+- review-required
+- rejected
 
-Name
-Country
-Sector
-Industry
-Region
-Customer type
-Parent/group
-Status
+For rejected benchmark relationships, identify the actual rejection reason(s).
 
-For each overlapping field calculate:
+Pay particular attention to:
 
-- exact agreement %
-- null in exposure / populated in master
-- populated in exposure / null in master
-- conflicting value %
-- representative conflicts
-
-This will tell us which dataset should be authoritative for each attribute.
+- no strict narrative evidence
+- low extraction confidence
+- missing/conflicting state
+- missing direction
+- taxonomy mismatch
+- entity-resolution problems
 
 ==================================================
-TASK 8 — UNDERSTAND POPULATION COVERAGE
+6. TRACE LOSS THROUGH THE PIPELINE
 ==================================================
 
-Determine:
+For every valid benchmark relationship that does not reach the final visible V3 portfolio view, classify where it was lost:
 
-A. How many Customer master entities exist overall.
-
-B. How many appear in thousandClients.csv.
-
-C. How many master entities have exposure represented by thousandClients.csv.
-
-D. Whether thousandClients.csv appears to be:
-   - a true 1,000-client sample,
-   - top-exposure clients,
-   - a filtered population,
-   - or something else.
-
-Do not assume the filename describes the real row/client count.
+A. not extracted
+B. extracted but entity resolution failed
+C. extracted but taxonomy mapping failed
+D. extracted but evidence gate failed
+E. extracted but confidence gate failed
+F. extracted but state/direction gate failed
+G. extracted but deduplicated incorrectly
+H. valid but outside V3 source/scope policy
+I. valid in another store but excluded from global portfolio API
+J. other — explain
 
 ==================================================
-TASK 9 — DISCOVER MASTER-DATA STRUCTURE
+7. RELATIONSHIP FAMILY COVERAGE
 ==================================================
 
-Look for fields in Customer_latest.parquet that could support future relationship intelligence.
+Compare benchmark coverage by family.
 
-Specifically identify potential data for:
+At minimum inspect where applicable:
 
-OWNERSHIP
-- parent customer
-- ultimate parent
-- group
-- legal hierarchy
+- Commercial
+- Financing
+- Credit support
+- Ownership / control
+- Ownership / capital
+- Concentration
+- Operational dependency
+- Supplier / supply-chain dependency
+- Investment
+- Off-taker / customer
+- Guarantor
+- Lender / agent bank
 
-GEOGRAPHY
-- country
-- incorporation country
-- operating country
-- region
-
-ENTITY CLASSIFICATION
-- entity type
-- customer type
-- legal form
-
-INDUSTRY
-- sector
-- industry
-- subsector
-
-IDENTITY
-- legal name
-- alternate name
-- identifiers
-
-STATUS
-- active/inactive/current/historical
-
-Do not create relationships yet.
-
-Just identify what the master can support.
+Identify relationships that the source clearly contains but the current taxonomy cannot represent cleanly.
 
 ==================================================
-TASK 10 — DATA QUALITY
+8. COREWEAVE / NVIDIA EXAMPLE
 ==================================================
 
-For Customer_latest.parquet report:
+If supported by repository sources, explicitly trace the relationships involving CoreWeave and NVIDIA.
 
-- duplicate IDs
-- duplicate normalized names
-- missing IDs
-- missing names
-- suspicious placeholder names
-- missing countries
-- missing sectors
-- conflicting classifications
-- unexpectedly repeated records
-- potentially historical versions
+If Anthropic is supported by repository sources, include it.
 
-For thousandClients.csv do the equivalent analysis.
+For each pair answer:
 
-==================================================
-TASK 11 — DATABASE DESIGN RECOMMENDATION
-==================================================
+- Is there source evidence?
+- Which source?
+- Which relationship type?
+- Was it extracted?
+- Which store contains it?
+- What state is it in?
+- If rejected or absent from V3, why?
 
-Based ONLY on the analysis, propose the future logical model.
-
-Do not implement it yet.
-
-I expect something conceptually similar to:
-
-CUSTOMER_MASTER
-    customer_id
-    cagid
-    legal_name
-    entity_type
-    status
-    country
-    sector
-    parent_id
-    ultimate_parent_id
-    source
-
-EXPOSURE
-    exposure_id
-    customer_id
-    reported_osuc
-    as_of_date
-    source
-
-CUSTOMER_ALIAS / IDENTIFIER
-    customer_id
-    identifier_type
-    identifier_value
-    source
-
-but derive the recommendation from the actual files.
-
-Explicitly state which dataset should be authoritative for:
-
-- customer identity
-- customer name
-- country
-- sector
-- lifecycle status
-- hierarchy
-- exposure
+Do not use general market knowledge to create a relationship that is absent from the available sources.
 
 ==================================================
-IMPORTANT
+9. QUANTIFY COVERAGE
 ==================================================
 
-Do NOT assume that every 3.6M customer should appear in the Lending application.
+Return benchmark metrics:
 
-Separate these concepts:
+SOURCE-SUPPORTED RELATIONSHIPS
+V3 FOUND
+V3 MISSED
+V2 FOUND
+NORMALIZED FOUND
+NORMALIZED VALIDATED
+NORMALIZED REVIEW
+NORMALIZED REJECTED
 
-MASTER CUSTOMER UNIVERSE
+Calculate a simple benchmark recall for each extraction layer.
 
-vs
+Also report precision problems found during manual inspection, but do not claim statistical portfolio-wide precision from this small benchmark.
 
-LENDING / EXPOSURE POPULATION
+==================================================
+10. ANSWER THESE QUESTIONS DIRECTLY
+==================================================
 
-vs
+A. Is V3's strict source/scope policy materially suppressing legitimate relationships?
 
-RELATIONSHIP-CONNECTED ENTITIES
+B. Are legitimate relationships being lost primarily during extraction, entity resolution, taxonomy mapping, or quality gating?
 
-A master customer can exist without current Lending exposure.
+C. Does V2 provide useful high-recall candidate coverage that could feed a governed pipeline?
 
-Likewise a related entity may eventually need to be represented even if it has no Lending exposure.
+D. Are large numbers of normalized rejections actually valid relationships being rejected too aggressively?
 
-This distinction is critical to the database design.
+E. Which current relationship families appear most under-extracted?
+
+F. What specific changes should be tested next — without implementing them yet?
 
 ==================================================
 OUTPUT
 ==================================================
 
-Return a structured report:
+Return:
 
-1. EXECUTIVE FINDINGS
-2. CUSTOMER_MASTER PROFILE
-3. EXPOSURE FILE PROFILE
-4. CANDIDATE IDENTIFIERS
-5. ACTIVE / INACTIVE ANALYSIS
-6. MATCHING RESULTS
-7. ONE-TO-MANY / AMBIGUOUS MATCHES
-8. ATTRIBUTE AGREEMENT
-9. MASTER POPULATION VS EXPOSURE POPULATION
-10. DATA QUALITY ISSUES
-11. USEFUL MASTER-DATA RELATIONSHIP FIELDS
-12. AUTHORITATIVE SOURCE RECOMMENDATION
-13. PROPOSED DATABASE MODEL
-14. QUESTIONS / UNKNOWN DATA
-15. RECOMMENDED NEXT STEP
+1. EXECUTIVE FINDING
+2. BENCHMARK DOCUMENT SET
+3. SOURCE-SUPPORTED RELATIONSHIP INVENTORY
+4. V3 COVERAGE
+5. V2 COVERAGE
+6. NORMALIZED STORE COVERAGE
+7. LOSS-POINT ANALYSIS
+8. TAXONOMY GAPS
+9. COREWEAVE / NVIDIA TRACE
+10. BENCHMARK METRICS
+11. ROOT CAUSES OF MISSED RELATIONSHIPS
+12. RECOMMENDED EXTRACTION EXPERIMENTS
 
-Also create compact analysis artifacts under a new analysis/output folder:
+Do not implement fixes.
 
-- schema_customer_master.csv
-- schema_exposure_clients.csv
-- match_summary.csv
-- unmatched_exposure_clients.csv
-- ambiguous_matches.csv
-- attribute_reconciliation.csv
-- customer_data_discovery_report.md
-
-Do not export millions of master rows.
-
-Do not modify source files.
-
-Stop after the analysis and recommendation.
-Do not build the new database yet.
+Stop after the benchmark and diagnosis.
