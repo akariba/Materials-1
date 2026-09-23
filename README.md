@@ -1,84 +1,318 @@
-LENDING RELATIONSHIP INTELLIGENCE — ENGINEERING OPERATING CONTRACT
+Apply the LENDING RELATIONSHIP INTELLIGENCE — ENGINEERING OPERATING CONTRACT.
 
-Work ONLY in the current Lending repository.
+TASK: FINAL READ-ONLY FOUNDATION AUDIT
 
-This is Lending, NOT CCR. Do not modify CCR code, CCR databases, CCR migrations, CCR routes, or CCR artifacts.
+READ ONLY.
 
-Before changing anything:
-1. Inspect the current implementation.
-2. Reuse existing tables, modules, APIs, utilities, models, and frontend components where they already provide the required capability.
-3. Do NOT create parallel duplicate stores or another relationship universe.
-4. Identify current callers before changing an interface.
-5. Preserve backward compatibility unless this task explicitly authorizes a controlled migration.
-6. Use migrations for persistent schema changes.
-7. Never rewrite source CAM files.
-8. Never modify Customer_latest.parquet or thousandClients.csv.
-9. Never silently promote external research into CAM truth.
-10. Never silently convert review-required/rejected data into canonical data.
-11. Never hide loss of information through aggregation.
-12. Preserve raw evidence and lineage.
-13. A relationship type substitution must be explicit and traceable.
-14. Entity identity resolution and relationship classification are separate decisions.
-15. Do not use display names as permanent entity IDs.
-16. Do not claim external research succeeded if a provider failed.
-17. Fail closed when evidence, identity, or provider state is uncertain.
-18. Every persisted AI-created object must retain provenance and lifecycle metadata.
-19. All new behavior requires tests.
-20. Do not change production/deployment until explicitly requested.
+Do not modify:
+- source code
+- databases
+- JSON artifacts
+- parquet
+- CSV
+- configuration
+- frontend
+- deployment
+- tests
 
-CURRENT GOVERNANCE THAT MUST BE PRESERVED DURING MIGRATION
+No migrations.
+No external calls.
+No SEC calls.
+No web calls.
+No Stylus calls.
+No AI-generation calls.
 
-- CAM/V3 is authoritative for the CAM relationship lane.
-- External intelligence is supplemental unless explicitly reviewed/published under its own governed lane.
-- AI-published relationships are a governed AI projection, not CAM rows.
-- The normalized workbench is currently a separate governed projection.
-- Existing V2 fallback behavior must not silently become the new global truth.
-- Current source lanes may disagree. Preserve those disagreements and explain them.
-- The target architecture may provide a unified READ MODEL, but this must not erase source authority or provenance.
+PURPOSE
 
-KNOWN CURRENT PROBLEMS
+Produce the final engineering map needed before consolidating Lending Relationship Intelligence.
 
-The current application has multiple relationship populations/stores:
-- Portfolio CAM/V3.
-- Conditional V2 fallback.
-- Normalized workbench.
-- Legacy external research.
-- V3-aware external overlay.
-- Published AI relationships.
-- Independent analytical/control populations.
+We already know the application exposes several independent relationship universes. I now need an exact implementation-level map of how to construct a canonical foundation WITHOUT destroying source-lane governance.
 
-The redesign must converge these through canonical identity, evidence, relationship, lineage, and projection contracts rather than by blindly merging rows.
+Inspect at minimum:
 
-BENCHMARK
+Backend:
+- lending_portfolio.py
+- lending_relationship_database.py
+- lending_ai_relationships.py
+- lending_external_research.py
+- lending_external_overlay.py
+- workbench.py
+- all related models/schema utilities
+- migration scripts
+- tests
+- SQLite databases and their schemas
+- V2/V3 JSON artifacts and reports
 
-There is an existing manually adjudicated benchmark of 37 source-supported relationships across nine source document families, including cases involving:
-- Project Indigo / CoreWeave / NVIDIA / Meta.
-- N01.
-- Hut 8 / NVIDIA / Anthropic / Fluidstack.
-- Lambda / NVIDIA / Microsoft / Anthropic.
-- Applied Digital / CoreWeave / Oracle / Meta.
-- Serverfarm / Amdocs / Oracle / Meta / Manulife.
-- OpenAI and counterparties.
-- Cavalry / CyrusOne.
-- BO Westover / Blue Owl.
+Frontend:
+- PortfolioAnalytics.tsx
+- AICreateRelationship.tsx
+- LendingIntelligenceViews.tsx
+- ReviewQueue components
+- Client Detail
+- Network
+- Relationship Explorer
+- External Research
+- Workbench
+- route configuration
 
-Preserve this benchmark and use it for regression testing.
+Also inspect every relationship/entity/evidence table before proposing anything new.
 
-OUTPUT REQUIREMENT FOR EVERY TASK
+==================================================
+A. ENTITY MODEL
+==================================================
 
-At completion report:
-- What was inspected.
-- What was reused.
-- What was created.
-- Exact files changed.
-- Exact schema changes.
-- Migration/rollback approach.
-- Tests added.
-- Tests executed and results.
-- Data counts before/after where relevant.
-- Known limitations.
-- Remaining risks.
-- Recommended next task.
+Report every current entity concept and store.
 
-Do not proceed into the next phase automatically.
-STOP after completing the requested task.
+For each report:
+- table/artifact
+- primary key
+- CAGID handling
+- legal name
+- display name
+- aliases
+- external/non-CAGID entities
+- source
+- identity status
+- resolution method
+- whether identity is stable
+- relationship foreign keys pointing to it
+
+Identify:
+- null entity IDs
+- null CAGIDs
+- unresolved entities
+- aliases masquerading as entities
+- document subjects masquerading as legal entities
+- SPVs/project entities
+- truncated names
+- prose-fragment entities
+
+Answer:
+
+1. Is there already a viable universal entity registry?
+2. If yes, what must be extended?
+3. If no, which existing table is the safest foundation?
+4. Which current foreign keys prevent external entities from participating?
+5. Which identity fields are trustworthy enough for canonical identity?
+
+==================================================
+B. RELATIONSHIP MODEL
+==================================================
+
+Map every existing relationship representation.
+
+For each store identify:
+- relationship ID/key
+- subject endpoint
+- related endpoint
+- relationship type
+- family
+- direction
+- state
+- connectivity
+- source lane
+- origin
+- quality status
+- review status
+- canonical status
+- evidence linkage
+- source linkage
+- amount/materiality
+- confidence
+- temporal dates
+- API visibility
+- UI visibility
+
+Identify which stores are:
+- observations
+- candidate relationships
+- canonical relationships
+- review queues
+- projections
+- legacy artifacts
+
+Do not treat them as interchangeable.
+
+==================================================
+C. OBSERVATION → DECISION LINEAGE
+==================================================
+
+Determine exactly what is persisted for:
+
+source document
+→ raw observation
+→ entity mention
+→ entity resolution
+→ candidate relationship
+→ taxonomy mapping
+→ evidence assessment
+→ direction/state assessment
+→ deduplication/reconciliation
+→ canonical/review/rejected result
+→ API projection
+→ UI projection
+
+For each transition classify as:
+
+PERSISTED_AND_LINKED
+PERSISTED_NOT_LINKED
+DERIVABLE
+LOST
+UNKNOWN
+
+Explicitly identify why the existing 37 benchmark rows cannot always be traced through the complete lifecycle.
+
+==================================================
+D. TAXONOMIES
+==================================================
+
+Inventory every relationship vocabulary:
+- V3 taxonomy
+- normalized taxonomy
+- internal/governed taxonomy
+- external research preset
+- AI definition vocabulary
+- frontend labels
+
+Produce a crosswalk.
+
+Highlight:
+- exact equivalents
+- broader/narrower substitutions
+- missing mappings
+- ambiguous mappings
+- types appearing only in one store
+- UI labels that imply semantics not persisted in data
+
+Pay special attention to:
+- supplier
+- technology_dependency
+- strategic_partner
+- contracted_customer
+- guarantor
+- backleverage_financing
+- lender
+- equity_investor
+- parent_company
+- subsidiary
+- sponsor
+- service_provider
+- competitor
+- concentration/offtaker semantics
+
+==================================================
+E. EVIDENCE MODEL
+==================================================
+
+Inventory:
+- documents
+- document versions
+- excerpts
+- evidence IDs
+- source subject
+- page/location
+- source role
+- evidence strength
+- independent source count
+- embedded evidence
+- external claims
+- exact excerpts
+
+Determine which evidence fields are lost when moving from raw V3 to portfolio projections.
+
+==================================================
+F. EXTERNAL RESEARCH
+==================================================
+
+Map both:
+1. legacy pairwise research
+2. V3-aware overlay
+
+Report:
+- inputs
+- cache behavior
+- provider adapters
+- persistence
+- evidence
+- proposals
+- conflicts
+- entity matching
+- review lifecycle
+- API exposure
+- UI exposure
+- failure behavior
+
+Identify the safest future orchestration point for:
+CAM → SEC → Stylus/Web fallback/corroboration.
+
+==================================================
+G. AI RELATIONSHIP DEFINITIONS
+==================================================
+
+Map:
+Describe
+→ Configure
+→ Save Draft
+→ Preview
+→ Approval
+→ Publish
+→ AI instances
+
+Report exact persisted objects/tables and identify whether the existing mechanism can support a governed relationship-definition/preset library.
+
+==================================================
+H. TARGET REUSE PLAN
+==================================================
+
+For each required future capability classify existing components:
+
+REUSE_AS_IS
+EXTEND
+MIGRATE
+DEPRECATE_LATER
+DO_NOT_USE
+
+Required capabilities:
+- canonical entity registry
+- identifier/alias registry
+- portfolio membership
+- observations
+- evidence
+- canonical relationships
+- relationship lineage
+- taxonomy registry
+- taxonomy mappings
+- external findings
+- AI definitions
+- events/signals
+- review decisions
+- unified read projection
+
+==================================================
+I. DELIVERABLE
+==================================================
+
+Create:
+
+backend/data/LENDING_FOUNDATION_AUDIT.md
+
+The report must contain:
+
+1. Current-state architecture.
+2. Exact authoritative stores.
+3. Complete table/artifact inventory.
+4. Source → API → UI matrix.
+5. Identity gaps.
+6. Relationship gaps.
+7. Evidence gaps.
+8. Lineage gaps.
+9. Taxonomy gaps.
+10. Reusable components.
+11. Components to retire eventually.
+12. Proposed canonical foundation at conceptual level ONLY.
+13. Exact migration dependencies.
+14. Risks if implementation starts before each dependency is addressed.
+
+Do not implement the proposed architecture.
+
+STOP.
