@@ -1,336 +1,441 @@
+CCR RELATIONSHIP FOUNDATION — RELATIONSHIP UNIVERSE MODEL
 
-Perform a READ-ONLY CURRENT-STATE EXPLAINABILITY AND UI FLOW AUDIT of the Lending Relationship Intelligence application.
+Work only in the CURRENT CCR repository.
 
-DO NOT modify code.
-DO NOT redesign the UI yet.
-DO NOT change databases, APIs, mappings, relationship logic, extraction rules, or deployment.
-DO NOT propose a new architecture yet.
+Read first:
 
-The purpose is to document exactly how the application works TODAY so that we can redesign it safely afterward.
+backend/data/CCR_CANONICAL_DATA_MODEL_REPORT.md
 
-We already completed the relationship-data reconciliation and loss-attribution analysis.
+Inspect the current schema of:
 
-Now inspect the frontend + backend together and answer:
+backend/data/ccr_relationship_intelligence.sqlite3
 
-1. What exactly does the user see?
-2. Where does each visible value come from?
-3. What does each status actually mean?
-4. What happens when the user clicks/drills/actions something?
-5. Where is explainability currently missing or misleading?
-6. How does AI Create Relationship currently work end-to-end?
+Also inspect existing Phase-3 tables before creating anything.
 
-==================================================
-PART 1 — CURRENT SCREEN INVENTORY
-==================================================
+Do NOT duplicate tables that already provide the required capability.
 
-Inspect all Lending surfaces, including at minimum:
+No SEC calls.
+No GLEIF calls.
+No Web calls.
+No Helix/AI calls.
+No frontend work.
+No relationship discovery yet.
 
-- Overview
-- Clients
-- Client Detail
-- Network
-- Relationship Explorer
-- Review Queue
-- External Research
-- AI Create Relationship / governed relationship workflow
+OBJECTIVE
 
-For each screen produce a table:
+Prepare the canonical entity model so future externally discovered entities
+can participate in CCR relationships even when they are not CCR exposure
+subjects.
 
-Screen
-UI section/component
-What the user sees
-Frontend component/file
-API endpoint called
-Backend function
-Underlying data/store
-Relationship universe used:
-  - V3
-  - V2 fallback
-  - normalized
-  - external overlay
-  - AI definition/instance
-  - mixed
-Filters applied
-Statuses displayed
-User actions available
-Navigation/drill-down target
+The target model is:
 
-Verify from code. Do not infer.
+CCR SUBJECT
+    ↓
+CANONICAL ENTITY
+    ↔
+RELATIONSHIP
+    ↔
+CANONICAL / EXTERNAL ENTITY
+
+A relationship endpoint must NOT require membership in ccr_subjects.
 
 ==================================================
-PART 2 — EXPLAINABILITY INVENTORY
+1. ENTITY UNIVERSE
 ==================================================
 
-For every relationship displayed to the user, determine which of the following are currently visible or accessible:
+Use the existing:
 
-- subject entity
-- related entity
-- relationship type
-- relationship family
-- direction
-- lifecycle/state
-- canonical/review status
-- evidence count
-- evidence excerpt
-- source document
-- page/paragraph/source location
-- extraction confidence
-- quality confidence
-- entity-resolution method
-- taxonomy mapping/substitution
-- rejection/review reason
-- source lane
-- discovery origin
-- V2/V3/normalized provenance
-- global API visibility
-- external research provenance
-- AI-generated vs governed-source relationship
-- publication status
-- audit/version history
+entity_registry
 
-Classify each field:
+as the universal entity table.
 
-VISIBLE DIRECTLY
-VISIBLE AFTER CLICK
-AVAILABLE IN BACKEND BUT NOT UI
-NOT STORED
-UNKNOWN
+Confirm it supports:
 
-This is critical.
+MASTER_BACKED
+DETERMINISTIC_MASTER_MATCH
+CCR_ONLY_ENTITY
+EXTERNAL_ENTITY
+
+Do not populate fake external entities.
+
+Document:
+
+ccr_subject != entity
+
+A CCR subject belongs to the CCR source population.
+
+An entity is a node in the broader relationship universe.
 
 ==================================================
-PART 3 — TRACE REAL RELATIONSHIPS END-TO-END
+2. EXTERNAL ENTITY CONTRACT
 ==================================================
 
-Use several relationships from our benchmark and trace them through the ACTUAL application.
+Define how a future SEC/GLEIF/Web discovered company becomes:
 
-At minimum trace:
+EXTERNAL_ENTITY
 
-1. Lambda -> NVIDIA : supplier
-2. Lambda -> NVIDIA : strategic_partner
-3. Applied Digital -> CoreWeave : contracted_customer
-4. Serverfarm -> Meta : contracted_customer
-5. BO Westover -> Blue Owl NLT : guarantor
-6. Project Indigo -> CoreWeave : parent_company or guarantor
+Required fields/concepts:
 
-For every example show:
+entity_key
+entity_class = EXTERNAL_ENTITY
 
-SOURCE
-  ↓
-raw/extracted candidate if available
-  ↓
-entity resolution
-  ↓
-taxonomy mapping
-  ↓
-evidence/quality evaluation
-  ↓
-state/direction
-  ↓
-canonical/review decision
-  ↓
-scope/publication
-  ↓
-API
-  ↓
-screen(s) where user sees it
+legal_name
+normalized_name
+country
 
-At every stage state:
+lei
+cik
+ticker
+website/domain where verified
 
-- actual stored value
-- actual status
-- whether transition evidence exists
-- whether the UI exposes it
-- whether the user can understand WHY the final result looks the way it does
+identity_quality
+identity_status
 
-If a transition was not persisted, write UNKNOWN.
-Do not reconstruct a transition from assumptions.
+created_from_source
+created_from_research_run
+
+review_required
+
+Do NOT create external entities from local similarity/correlation alone.
+
+External entities require defensible identity evidence.
 
 ==================================================
-PART 4 — USER WORKFLOW
+3. ENTITY IDENTIFIERS
 ==================================================
 
-Document the current workflow from a user's perspective.
+Inspect existing identifier_aliases / external_identity tables.
 
-Example:
+Reuse them if possible.
 
-Portfolio Overview
-→ select client
-→ Client Detail
-→ view relationships
-→ open Network
-→ inspect relationship
-→ open evidence
-→ review / approve / reject
+Ensure the model can represent multiple identifiers per entity:
 
-Determine whether this workflow actually works today.
+GFCID
+CAGID
+LEI
+CIK
+TICKER
+DOMAIN
+LEGAL_NAME_ALIAS
+OTHER
 
-For each step state:
+Fields/concepts:
 
-- what the user expects
-- what actually happens
-- what data universe is used
-- whether the same relationship ID survives the transition
-- whether context is preserved
-- whether counts reconcile
-- whether the user can reach evidence
-- whether the user can understand why something is review-required/rejected/canonical
+entity_key
+identifier_type
+identifier_value
+normalized_value
 
-Highlight dead ends and context switches.
+source
+quality
+verified
+is_primary
 
-==================================================
-PART 5 — REVIEW QUEUE SEMANTICS
-==================================================
+Do not create uniqueness rules that incorrectly collapse entities.
 
-This needs special attention.
+LEI and CIK may be strongly identifying where valid.
 
-Determine exactly what causes something to appear in Review Queue today.
-
-Compare:
-
-- V3 review-required
-- normalized review-required
-- normalized rejected
-- external proposals/conflicts
-- AI-created relationships
-
-Show which are included and excluded.
-
-Explain whether a user looking at Review Queue could reasonably assume it contains ALL relationships requiring human review.
-
-Do not make a product recommendation yet. Just establish the facts.
+CAGID remains non-unique.
 
 ==================================================
-PART 6 — AI CREATE RELATIONSHIP CURRENT FLOW
+4. ENTITY NAME ALIASES
 ==================================================
 
-Inspect the AI Create Relationship UI and backend exactly as implemented.
+Ensure the model supports:
 
-Trace:
+official legal name
+former name
+trade name
+source alias
+normalized name
 
-Describe
-→ Configure
-→ Preview
-→ Publish
+A name alias does NOT automatically create entity equivalence.
 
-For every stage document:
+Persist:
 
-- user inputs
-- AI inputs
-- deterministic inputs
-- prompt/configuration used
-- API call
-- generated object/schema
-- validation
-- preview behavior
-- persistence behavior
-- publish behavior
-- versioning
-- audit history
-- relationship instances created
-- impact on Network / Explorer / Review Queue
-
-Also determine:
-
-- Are AI definitions currently persisted?
-- Are versions persisted?
-- Are instances persisted?
-- Does publishing actually modify anything visible?
-- Is CAM immutable?
-- What happens when the user leaves the workflow?
-- What is the purpose of Save Draft?
-- What does Preview Impact actually calculate?
-- What does Publish actually do today?
-
-If a Preset/external research configuration is referenced by the application, identify the integration point.
-Do not invent external preset behavior if it is outside the repository.
+entity_key
+name
+normalized_name
+alias_type
+source
+verified
 
 ==================================================
-PART 7 — COUNT AND SEMANTIC CONSISTENCY
+5. RELATIONSHIP TAXONOMY
 ==================================================
 
-For the same client or relationship, compare what is shown on:
+Create or validate a configurable relationship type catalogue.
 
-Overview
-Clients
-Client Detail
-Network
-Relationship Explorer
-Review Queue
+Initial types:
 
-Identify situations where:
+PARENT
+SUBSIDIARY
+ULTIMATE_PARENT
 
-- counts differ
-- status labels differ
-- relationship types differ
-- a relationship is visible on one screen but absent from another
-- V2 fallback appears on one screen but not another
-- normalized status conflicts with V3 publication state
+SUPPLIER
+CRITICAL_SUPPLIER
+CUSTOMER
+KEY_CUSTOMER
 
-Give concrete examples.
+INVESTOR
+SPONSOR
 
-==================================================
-PART 8 — CURRENT EXPLAINABILITY GAPS
-==================================================
+LENDER
+FINANCING_RELATIONSHIP
 
-Do NOT redesign.
+STRATEGIC_PARTNER
+JOINT_VENTURE
 
-Rank the current gaps by severity:
+TECHNOLOGY_PROVIDER
+TECHNOLOGY_DEPENDENCY
 
-CRITICAL
-HIGH
-MEDIUM
-LOW
+INFRASTRUCTURE_PROVIDER
+INFRASTRUCTURE_DEPENDENCY
 
-Examples of the kind of issues to investigate:
+SERVICE_PROVIDER
 
-- relationship displayed without source
-- review-required without reason
-- rejected interpreted as false
-- taxonomy substitution invisible
-- entity alias invisible
-- V2/V3 provenance invisible
-- evidence inaccessible
-- multiple universes presented as one
-- counts with different denominators
-- AI-created relationship indistinguishable from CAM-derived relationship
-- no relationship history
-- no transition/audit trail
+MANUFACTURING_PARTNER
+DISTRIBUTOR
+SOURCE_OF_INPUTS
 
-Only report a gap when supported by code/data/UI evidence.
+OTHER_EVIDENCE_BACKED_RELATIONSHIP
+
+Taxonomy availability does NOT assert that a relationship exists.
 
 ==================================================
-PART 9 — DELIVERABLE
+6. RELATIONSHIP ENDPOINT MODEL
 ==================================================
 
-Return:
+Create or adapt a relationship observation structure so every relationship
+can reference:
 
-A. Executive current-state summary
+subject_entity_key
+related_entity_key
 
-B. Screen → API → Store matrix
+Both foreign keys point to entity_registry.
 
-C. Current user workflow diagram
+Neither endpoint must belong to ccr_subjects.
 
-D. Relationship lifecycle diagram
+Relationship direction must be explicit.
 
-E. Explainability-field coverage matrix
+Examples:
 
-F. Review Queue semantics
+A --SUPPLIER_OF--> B
 
-G. AI Create Relationship current lifecycle
+A --PARENT_OF--> B
 
-H. Six benchmark relationship traces
+A --TECHNOLOGY_PROVIDER_TO--> B
 
-I. Cross-screen inconsistencies
+Do not infer inverse meaning silently.
 
-J. Ranked explainability gaps
+==================================================
+7. RELATIONSHIP OBSERVATION STATES
+==================================================
 
-K. Exact files/functions/endpoints responsible
+Use explicit states:
 
-L. A short section titled:
+EXTERNAL_OBSERVATION
+PROPOSAL_PENDING_REVIEW
+CONFIRMED
+CONFLICT
+HISTORICAL
+REJECTED
 
-"WHAT MUST BE UNDERSTOOD BEFORE REDESIGN"
+Do not store local research candidates here.
 
-Do not implement any fixes.
+Research candidates remain in the existing correlation candidate layer.
 
-This task is forensic documentation of the existing product.
+Candidate != relationship observation.
+
+==================================================
+8. EVIDENCE REQUIREMENT
+==================================================
+
+A relationship observation must be attachable to one or more evidence records.
+
+Inspect existing:
+
+source_documents
+evidence_snippets
+research_runs
+
+Reuse these.
+
+Ensure future relationship observations can link to:
+
+evidence_id
+source_document_id
+research_run_id
+
+A relationship cannot become CONFIRMED merely from:
+
+same sector
+same country
+same name pattern
+candidate score
+AI statement without source evidence
+
+==================================================
+9. GLEIF STRUCTURAL OBSERVATIONS
+==================================================
+
+Inspect existing:
+
+gleif_relationship_observations
+
+Do NOT merge them automatically into confirmed generic PARENT relationships.
+
+Define the future mapping contract:
+
+GLEIF direct accounting consolidating parent
+→ candidate PARENT structural observation
+
+GLEIF ultimate accounting consolidating parent
+→ candidate ULTIMATE_PARENT structural observation
+
+Preserve exact GLEIF semantics and evidence source.
+
+No network calls in this task.
+
+==================================================
+10. CCR MEMBERSHIP VIEW
+==================================================
+
+Create a simple query/view that answers:
+
+Is this entity a CCR subject?
+
+For example:
+
+entity_ccr_membership
+
+Fields:
+
+entity_key
+is_ccr_subject
+ccr_subject_key
+current_ccr_scope
+review_required
+
+External entities should return:
+
+is_ccr_subject = false
+
+This will make frontend graph filtering straightforward later.
+
+==================================================
+11. VALIDATION FIXTURES
+==================================================
+
+Use database-only test fixtures / transactions.
+
+Do NOT invent production relationships.
+
+Prove the schema can represent:
+
+A. CCR entity → CCR entity relationship
+
+B. CCR entity → external entity relationship
+
+C. external entity → CCR entity relationship
+
+D. external entity → external entity relationship
+
+Rollback or isolate fixtures from production business tables after tests.
+
+Production relationship count must remain unchanged.
+
+==================================================
+12. TESTS
+==================================================
+
+Prove:
+
+CCR subjects = 16,769 unchanged
+
+Canonical entities = 16,767 unchanged
+
+Production EXTERNAL_ENTITY count = 0
+
+Production relationships created = 0
+
+A relationship endpoint can reference an external entity
+
+A relationship endpoint does not require ccr_subject membership
+
+Research candidate cannot be treated as relationship
+
+CAGID remains non-unique
+
+Review-required CCR subjects remain research-disabled
+
+Foreign keys pass
+
+Source files unchanged
+
+No external network calls
+
+==================================================
+13. REPORT
+==================================================
+
+Create:
+
+backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
+
+Include:
+
+entity vs CCR-subject distinction
+external entity contract
+identifier model
+relationship taxonomy
+relationship endpoint model
+evidence requirements
+GLEIF mapping contract
+CCR membership view
+tests
+
+FINAL RESPONSE:
+
+CCR RELATIONSHIP UNIVERSE MODEL: PASS / FAIL
+
+CCR SUBJECTS:
+actual
+
+CANONICAL ENTITIES:
+actual
+
+EXTERNAL ENTITIES CREATED:
+0 / FAIL
+
+PRODUCTION RELATIONSHIPS CREATED:
+0 / FAIL
+
+CCR→CCR ENDPOINT TEST:
+PASS / FAIL
+
+CCR→EXTERNAL ENDPOINT TEST:
+PASS / FAIL
+
+EXTERNAL→CCR ENDPOINT TEST:
+PASS / FAIL
+
+EXTERNAL→EXTERNAL ENDPOINT TEST:
+PASS / FAIL
+
+CANDIDATE / RELATIONSHIP SEPARATION:
+PASS / FAIL
+
+EVIDENCE LINK CONTRACT:
+PASS / FAIL
+
+FOREIGN KEYS:
+PASS / FAIL
+
+EXTERNAL CALLS:
+0 / FAIL
+
+REPORT:
+backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
+
+STOP.
