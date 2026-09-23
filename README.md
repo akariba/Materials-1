@@ -1,228 +1,155 @@
-Perform a READ-ONLY extraction coverage benchmark.
+CCR DATA FOUNDATION — IDENTITY EXCEPTION RESOLUTION
 
-Do not modify code, databases, UI, prompts, taxonomies, or deployment.
+Work only in the CURRENT CCR repository.
 
-PURPOSE
+This is CCR, not Lending.
 
-The reconciliation audit established that the Lending application currently has several different relationship universes:
+Read the existing discovery outputs:
 
-- V3 strict portfolio artifact
-- V2 candidate extraction
-- normalized relationship store
+analysis/output/customer_data_discovery_report.md
+analysis/output/unmatched_exposure_clients.csv
+analysis/output/ambiguous_matches.csv
+analysis/output/attribute_reconciliation.csv
+analysis/output/match_summary.csv
 
-The client has specifically questioned whether the current extraction is missing too many valid relationships.
+Also inspect the actual source schemas as needed:
 
-We now need to determine where valid relationships are being lost.
+Customer_latest.parquet
+thousandClients.csv
 
-Do not assume V3 is correct.
-Do not assume V2 is correct.
-Do not assume more relationships means better extraction.
+DO NOT modify either source file.
+DO NOT modify production SQLite.
+DO NOT work on frontend.
+DO NOT run SEC, GLEIF, Web or AI.
+DO NOT create relationships.
 
-==================================================
-1. SELECT BENCHMARK DOCUMENTS
-==================================================
+OBJECTIVE
 
-Use a small representative benchmark set from the existing CAM source documents.
+Explain and, where defensible, resolve the:
 
-Include CoreWeave-related source documents if available.
+- 8 unmatched exposure clients
+- 6 ambiguous matches
 
-Also identify any source documents involving entities such as NVIDIA or Anthropic if they actually exist in the repository.
+against the 3.6M customer master.
 
-Do not invent documents or expected relationships.
+For each exception inspect all available identity fields including where present:
 
-Use approximately 5-10 source documents, enough to represent different relationship families.
+GFCID
+CAGID
+legal name
+normalized legal name
+country
+entity/client type
+LEI
+owner/reference fields
+active/inactive/history indicators
+other stable internal identifiers
 
-==================================================
-2. BUILD A SOURCE-DOCUMENT RELATIONSHIP INVENTORY
-==================================================
+For each row classify the root cause as one of:
 
-For each selected document, inspect the actual source content and identify relationship statements present in the document.
+MASTER_HISTORY
+IDENTIFIER_CONFLICT
+DUPLICATE_MASTER_ENTITY
+NAME_VARIANT
+INACTIVE/HISTORICAL_RECORD
+ONE_TO_MANY
+MISSING_MASTER_RECORD
+BAD_SOURCE_IDENTIFIER
+OTHER
 
-For every relationship record:
+Then assign one of:
 
-- subject entity
-- related entity
-- relationship wording
-- relationship type suggested by the source
-- direction if explicit
-- state if explicit
-- source document
-- supporting text/reference
-- whether an amount or commitment is stated
+RESOLVED_EXACT
+RESOLVED_DETERMINISTIC
+REVIEW_REQUIRED
+UNRESOLVED
 
-This is a benchmark inventory only.
+IMPORTANT
 
-Do not apply the current V3 relevance restrictions when constructing this inventory.
+Do not resolve an entity using fuzzy name similarity alone.
 
-Do not create relationships that are not supported by the source.
+A deterministic resolution must have a defensible identifier or combination
+of identity attributes.
 
-==================================================
-3. COMPARE AGAINST V3
-==================================================
+Do not silently collapse distinct legal entities.
 
-For every benchmark relationship determine:
+For the 44 historical legal-entity conflict groups, inspect why they were
+classified that way and confirm whether they represent:
 
-- found in V3
-- not found in V3
-- partially represented
-- represented under another relationship type
-- entity resolution mismatch
-- direction mismatch
+- repeated snapshots of the same legal entity
+- genuine multiple legal entities
+- historical identifier reuse
+- inactive/current record combinations
+- another pattern
 
-Report V3 coverage per document and overall.
+Do not change all 44 records. This task is analysis first.
 
-==================================================
-4. COMPARE AGAINST V2
-==================================================
+Create:
 
-For the same benchmark relationships determine:
+analysis/output/ccr_identity_exception_resolution.csv
 
-- found in V2
-- missing
-- duplicate
-- unresolved endpoint
-- fragment endpoint
-- relationship_key missing
-- taxonomy mismatch
-- review-required
-- canonical
-- rejected
+Columns:
 
-==================================================
-5. COMPARE AGAINST NORMALIZED STORE
-==================================================
+source_row_or_client
+source_gfcid
+source_cagid
+source_name
+candidate_master_gfcid
+candidate_master_cagid
+candidate_master_name
+root_cause
+resolution_status
+resolution_method
+evidence_fields
+notes
 
-For the same benchmark determine whether each relationship exists in the normalized store and its final state:
+Also create:
 
-- validated
-- review-required
-- rejected
+analysis/output/CCR_IDENTITY_EXCEPTION_REPORT.md
 
-For rejected benchmark relationships, identify the actual rejection reason(s).
+The report should contain:
 
-Pay particular attention to:
+1. 8 unmatched — root causes
+2. 6 ambiguous — root causes
+3. deterministic resolutions found
+4. still unresolved
+5. interpretation of the 44 historical conflict groups
+6. any source-data defect
+7. recommended canonical handling
 
-- no strict narrative evidence
-- low extraction confidence
-- missing/conflicting state
-- missing direction
-- taxonomy mismatch
-- entity-resolution problems
+FINAL RESPONSE:
 
-==================================================
-6. TRACE LOSS THROUGH THE PIPELINE
-==================================================
+CCR IDENTITY EXCEPTION ANALYSIS: PASS / FAIL
 
-For every valid benchmark relationship that does not reach the final visible V3 portfolio view, classify where it was lost:
+UNMATCHED
+Original: 8
+Deterministically resolved:
+Review required:
+Still unresolved:
 
-A. not extracted
-B. extracted but entity resolution failed
-C. extracted but taxonomy mapping failed
-D. extracted but evidence gate failed
-E. extracted but confidence gate failed
-F. extracted but state/direction gate failed
-G. extracted but deduplicated incorrectly
-H. valid but outside V3 source/scope policy
-I. valid in another store but excluded from global portfolio API
-J. other — explain
+AMBIGUOUS
+Original: 6
+Deterministically resolved:
+Review required:
+Still unresolved:
 
-==================================================
-7. RELATIONSHIP FAMILY COVERAGE
-==================================================
+HISTORICAL CONFLICT GROUPS
+Count:
+Same-entity history:
+True multi-entity:
+Identifier reuse:
+Other:
 
-Compare benchmark coverage by family.
+SOURCE FILES MODIFIED:
+0 / FAIL
 
-At minimum inspect where applicable:
+PRODUCTION DB MODIFIED:
+0 / FAIL
 
-- Commercial
-- Financing
-- Credit support
-- Ownership / control
-- Ownership / capital
-- Concentration
-- Operational dependency
-- Supplier / supply-chain dependency
-- Investment
-- Off-taker / customer
-- Guarantor
-- Lender / agent bank
+REPORT:
+<path>
 
-Identify relationships that the source clearly contains but the current taxonomy cannot represent cleanly.
+CSV:
+<path>
 
-==================================================
-8. COREWEAVE / NVIDIA EXAMPLE
-==================================================
-
-If supported by repository sources, explicitly trace the relationships involving CoreWeave and NVIDIA.
-
-If Anthropic is supported by repository sources, include it.
-
-For each pair answer:
-
-- Is there source evidence?
-- Which source?
-- Which relationship type?
-- Was it extracted?
-- Which store contains it?
-- What state is it in?
-- If rejected or absent from V3, why?
-
-Do not use general market knowledge to create a relationship that is absent from the available sources.
-
-==================================================
-9. QUANTIFY COVERAGE
-==================================================
-
-Return benchmark metrics:
-
-SOURCE-SUPPORTED RELATIONSHIPS
-V3 FOUND
-V3 MISSED
-V2 FOUND
-NORMALIZED FOUND
-NORMALIZED VALIDATED
-NORMALIZED REVIEW
-NORMALIZED REJECTED
-
-Calculate a simple benchmark recall for each extraction layer.
-
-Also report precision problems found during manual inspection, but do not claim statistical portfolio-wide precision from this small benchmark.
-
-==================================================
-10. ANSWER THESE QUESTIONS DIRECTLY
-==================================================
-
-A. Is V3's strict source/scope policy materially suppressing legitimate relationships?
-
-B. Are legitimate relationships being lost primarily during extraction, entity resolution, taxonomy mapping, or quality gating?
-
-C. Does V2 provide useful high-recall candidate coverage that could feed a governed pipeline?
-
-D. Are large numbers of normalized rejections actually valid relationships being rejected too aggressively?
-
-E. Which current relationship families appear most under-extracted?
-
-F. What specific changes should be tested next — without implementing them yet?
-
-==================================================
-OUTPUT
-==================================================
-
-Return:
-
-1. EXECUTIVE FINDING
-2. BENCHMARK DOCUMENT SET
-3. SOURCE-SUPPORTED RELATIONSHIP INVENTORY
-4. V3 COVERAGE
-5. V2 COVERAGE
-6. NORMALIZED STORE COVERAGE
-7. LOSS-POINT ANALYSIS
-8. TAXONOMY GAPS
-9. COREWEAVE / NVIDIA TRACE
-10. BENCHMARK METRICS
-11. ROOT CAUSES OF MISSED RELATIONSHIPS
-12. RECOMMENDED EXTRACTION EXPERIMENTS
-
-Do not implement fixes.
-
-Stop after the benchmark and diagnosis.
+STOP.
