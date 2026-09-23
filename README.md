@@ -1,441 +1,496 @@
-CCR RELATIONSHIP FOUNDATION — RELATIONSHIP UNIVERSE MODEL
+CCR RELATIONSHIP INTELLIGENCE — EVIDENCE + PATH POLICY FOUNDATION
 
 Work only in the CURRENT CCR repository.
 
 Read first:
 
 backend/data/CCR_CANONICAL_DATA_MODEL_REPORT.md
+backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
 
-Inspect the current schema of:
+Inspect the existing Phase-3:
 
-backend/data/ccr_relationship_intelligence.sqlite3
+source policy
+research runs
+source_documents
+evidence_snippets
+GLEIF relationship observations
+correlation candidate tables
+relationship taxonomy
 
-Also inspect existing Phase-3 tables before creating anything.
-
-Do NOT duplicate tables that already provide the required capability.
+Do NOT duplicate existing tables unnecessarily.
 
 No SEC calls.
 No GLEIF calls.
 No Web calls.
 No Helix/AI calls.
 No frontend work.
-No relationship discovery yet.
+No production relationship discovery.
 
 OBJECTIVE
 
-Prepare the canonical entity model so future externally discovered entities
-can participate in CCR relationships even when they are not CCR exposure
-subjects.
+Create the policy/schema foundation for a high-quality intelligence system
+supporting:
 
-The target model is:
+DIRECT RELATIONSHIPS
+INDIRECT PATHS
+HIDDEN EXTERNALLY DISCOVERED RELATIONSHIPS
+LOCAL CORRELATIONS
+OBSERVED EVENTS
+STRESS SCENARIOS
 
-CCR SUBJECT
-    ↓
-CANONICAL ENTITY
-    ↔
-RELATIONSHIP
-    ↔
-CANONICAL / EXTERNAL ENTITY
-
-A relationship endpoint must NOT require membership in ccr_subjects.
+All must remain distinct.
 
 ==================================================
-1. ENTITY UNIVERSE
+1. DIRECT RELATIONSHIP
 ==================================================
 
-Use the existing:
+Define DIRECT as:
 
-entity_registry
-
-as the universal entity table.
-
-Confirm it supports:
-
-MASTER_BACKED
-DETERMINISTIC_MASTER_MATCH
-CCR_ONLY_ENTITY
-EXTERNAL_ENTITY
-
-Do not populate fake external entities.
-
-Document:
-
-ccr_subject != entity
-
-A CCR subject belongs to the CCR source population.
-
-An entity is a node in the broader relationship universe.
-
-==================================================
-2. EXTERNAL ENTITY CONTRACT
-==================================================
-
-Define how a future SEC/GLEIF/Web discovered company becomes:
-
-EXTERNAL_ENTITY
-
-Required fields/concepts:
-
-entity_key
-entity_class = EXTERNAL_ENTITY
-
-legal_name
-normalized_name
-country
-
-lei
-cik
-ticker
-website/domain where verified
-
-identity_quality
-identity_status
-
-created_from_source
-created_from_research_run
-
-review_required
-
-Do NOT create external entities from local similarity/correlation alone.
-
-External entities require defensible identity evidence.
-
-==================================================
-3. ENTITY IDENTIFIERS
-==================================================
-
-Inspect existing identifier_aliases / external_identity tables.
-
-Reuse them if possible.
-
-Ensure the model can represent multiple identifiers per entity:
-
-GFCID
-CAGID
-LEI
-CIK
-TICKER
-DOMAIN
-LEGAL_NAME_ALIAS
-OTHER
-
-Fields/concepts:
-
-entity_key
-identifier_type
-identifier_value
-normalized_value
-
-source
-quality
-verified
-is_primary
-
-Do not create uniqueness rules that incorrectly collapse entities.
-
-LEI and CIK may be strongly identifying where valid.
-
-CAGID remains non-unique.
-
-==================================================
-4. ENTITY NAME ALIASES
-==================================================
-
-Ensure the model supports:
-
-official legal name
-former name
-trade name
-source alias
-normalized name
-
-A name alias does NOT automatically create entity equivalence.
-
-Persist:
-
-entity_key
-name
-normalized_name
-alias_type
-source
-verified
-
-==================================================
-5. RELATIONSHIP TAXONOMY
-==================================================
-
-Create or validate a configurable relationship type catalogue.
-
-Initial types:
-
-PARENT
-SUBSIDIARY
-ULTIMATE_PARENT
-
-SUPPLIER
-CRITICAL_SUPPLIER
-CUSTOMER
-KEY_CUSTOMER
-
-INVESTOR
-SPONSOR
-
-LENDER
-FINANCING_RELATIONSHIP
-
-STRATEGIC_PARTNER
-JOINT_VENTURE
-
-TECHNOLOGY_PROVIDER
-TECHNOLOGY_DEPENDENCY
-
-INFRASTRUCTURE_PROVIDER
-INFRASTRUCTURE_DEPENDENCY
-
-SERVICE_PROVIDER
-
-MANUFACTURING_PARTNER
-DISTRIBUTOR
-SOURCE_OF_INPUTS
-
-OTHER_EVIDENCE_BACKED_RELATIONSHIP
-
-Taxonomy availability does NOT assert that a relationship exists.
-
-==================================================
-6. RELATIONSHIP ENDPOINT MODEL
-==================================================
-
-Create or adapt a relationship observation structure so every relationship
-can reference:
-
-subject_entity_key
-related_entity_key
-
-Both foreign keys point to entity_registry.
-
-Neither endpoint must belong to ccr_subjects.
-
-Relationship direction must be explicit.
+an evidence-backed relationship edge between two identified entities.
 
 Examples:
 
-A --SUPPLIER_OF--> B
+SUPPLIER
+CUSTOMER
+PARENT
+LENDER
+TECHNOLOGY_PROVIDER
 
-A --PARENT_OF--> B
+A direct relationship must have admissible evidence supporting that exact edge.
 
-A --TECHNOLOGY_PROVIDER_TO--> B
-
-Do not infer inverse meaning silently.
-
-==================================================
-7. RELATIONSHIP OBSERVATION STATES
-==================================================
-
-Use explicit states:
-
-EXTERNAL_OBSERVATION
-PROPOSAL_PENDING_REVIEW
-CONFIRMED
-CONFLICT
-HISTORICAL
-REJECTED
-
-Do not store local research candidates here.
-
-Research candidates remain in the existing correlation candidate layer.
-
-Candidate != relationship observation.
-
-==================================================
-8. EVIDENCE REQUIREMENT
-==================================================
-
-A relationship observation must be attachable to one or more evidence records.
-
-Inspect existing:
-
-source_documents
-evidence_snippets
-research_runs
-
-Reuse these.
-
-Ensure future relationship observations can link to:
-
-evidence_id
-source_document_id
-research_run_id
-
-A relationship cannot become CONFIRMED merely from:
+Do not allow:
 
 same sector
 same country
-same name pattern
+name similarity
 candidate score
-AI statement without source evidence
+AI assertion
+
+to create a direct relationship.
 
 ==================================================
-9. GLEIF STRUCTURAL OBSERVATIONS
+2. INDIRECT RELATIONSHIP
 ==================================================
 
-Inspect existing:
+Define INDIRECT as:
 
-gleif_relationship_observations
+a path composed of two or more defensible relationship edges.
 
-Do NOT merge them automatically into confirmed generic PARENT relationships.
+Example:
 
-Define the future mapping contract:
+CCR Client A
+→ Technology Provider B
+→ Critical Supplier C
 
-GLEIF direct accounting consolidating parent
-→ candidate PARENT structural observation
+The system may state:
 
-GLEIF ultimate accounting consolidating parent
-→ candidate ULTIMATE_PARENT structural observation
+"A has an indirect two-hop path to C."
 
-Preserve exact GLEIF semantics and evidence source.
+Do NOT create a synthetic:
 
-No network calls in this task.
+A → C
 
-==================================================
-10. CCR MEMBERSHIP VIEW
-==================================================
+relationship edge.
 
-Create a simple query/view that answers:
-
-Is this entity a CCR subject?
-
-For example:
-
-entity_ccr_membership
-
-Fields:
-
-entity_key
-is_ccr_subject
-ccr_subject_key
-current_ccr_scope
-review_required
-
-External entities should return:
-
-is_ccr_subject = false
-
-This will make frontend graph filtering straightforward later.
+The path itself is the analytical object.
 
 ==================================================
-11. VALIDATION FIXTURES
+3. HIDDEN RELATIONSHIP
 ==================================================
 
-Use database-only test fixtures / transactions.
+Define:
 
-Do NOT invent production relationships.
+HIDDEN_DIRECT
 
-Prove the schema can represent:
+A real direct relationship absent from internal CCR data but discovered from
+external admissible evidence.
 
-A. CCR entity → CCR entity relationship
+HIDDEN_INDIRECT
 
-B. CCR entity → external entity relationship
+A newly discovered multi-hop path assembled from defensible underlying edges.
 
-C. external entity → CCR entity relationship
-
-D. external entity → external entity relationship
-
-Rollback or isolate fixtures from production business tables after tests.
-
-Production relationship count must remain unchanged.
+"HIDDEN" must never mean unsupported inference.
 
 ==================================================
-12. TESTS
+4. SOURCE QUALITY TIERS
+==================================================
+
+Create/validate:
+
+TIER_0_INTERNAL
+
+Validated CCR/master/internal authoritative data.
+
+TIER_1_AUTHORITATIVE_EXTERNAL
+
+Examples:
+SEC
+GLEIF
+regulators
+government
+stock exchanges
+official company filings
+official investor relations
+official company disclosures
+
+TIER_2_HIGH_QUALITY_SECONDARY
+
+Established financial/business journalism and high-quality specialist sources.
+
+TIER_3_CORROBORATIVE
+
+Specialist corroborating sources that normally should not establish a material
+relationship alone.
+
+INADMISSIBLE
+
+Examples:
+search snippets
+anonymous posts
+low-quality aggregators
+SEO pages
+AI-generated pages
+unverified scraped copies
+
+Search results are discovery aids, not evidence.
+
+==================================================
+5. RELATIONSHIP-SPECIFIC SOURCE STRATEGY
+==================================================
+
+Create configurable preferred source strategies.
+
+Examples:
+
+PARENT / ULTIMATE_PARENT
+GLEIF
+→ SEC
+→ authoritative corporate/regulatory Web
+
+SUBSIDIARY
+SEC
+→ GLEIF
+→ authoritative corporate Web
+
+SUPPLIER / CRITICAL_SUPPLIER
+SEC
+→ official company disclosure
+→ high-quality secondary Web
+
+CUSTOMER / KEY_CUSTOMER
+SEC
+→ official company disclosure
+→ high-quality secondary Web
+
+TECHNOLOGY_DEPENDENCY
+SEC
+→ official company disclosure
+→ high-quality Web
+
+INVESTOR / SPONSOR
+SEC/regulatory
+→ official corporate source
+→ high-quality Web
+
+LENDER / FINANCING
+SEC
+→ official disclosures
+→ high-quality Web
+
+STRATEGIC_PARTNER / JV
+official company/regulatory
+→ SEC
+→ high-quality Web
+
+This is configuration only.
+
+No external execution yet.
+
+==================================================
+6. EVIDENCE DIMENSIONS
+==================================================
+
+Do NOT create one opaque confidence percentage.
+
+Model separately:
+
+IDENTITY_QUALITY
+SOURCE_QUALITY
+EVIDENCE_STRENGTH
+FRESHNESS
+CONSISTENCY
+RELATIONSHIP_STATUS
+
+Suggested controlled values:
+
+HIGH
+MEDIUM
+LOW
+UNKNOWN
+
+where appropriate.
+
+Relationship status should remain separately governed.
+
+==================================================
+7. RELATIONSHIP LIFECYCLE
+==================================================
+
+Support:
+
+DISCOVERED_CLAIM
+EVIDENCE_COLLECTED
+PROPOSAL_PENDING_REVIEW
+CONFIRMED
+INSUFFICIENT_EVIDENCE
+CONFLICT
+REJECTED
+HISTORICAL
+
+RESEARCH_CANDIDATE remains outside the factual relationship lifecycle.
+
+Do not automatically promote between states.
+
+==================================================
+8. PATH MODEL
+==================================================
+
+Create or validate structures capable of storing:
+
+path_id
+path_type
+
+origin_entity_key
+destination_entity_key
+
+hop_count
+
+created_from_event_id nullable
+created_from_research_run nullable
+
+and ordered path hops:
+
+path_id
+hop_number
+from_entity_key
+relationship_observation_id
+to_entity_key
+
+Every hop must point to a defensible stored relationship observation.
+
+No synthetic hops.
+
+==================================================
+9. EVENT CONTRACT
+==================================================
+
+Prepare schema/contracts only.
+
+Support:
+
+OBSERVED_EVENT
+
+Something that actually happened and must have evidence.
+
+STRESS_SCENARIO
+
+A hypothetical analyst scenario.
+
+Never mix them.
+
+Possible future event links:
+
+event → entity
+event → country
+event → sector
+event → industry
+event → theme
+event → relationship path
+event → CCR subject/entity
+
+Do not populate production events yet.
+
+==================================================
+10. EVENT TRANSMISSION
+==================================================
+
+Future event impact must preserve paths.
+
+Example:
+
+RATE SHOCK
+→ refinancing pressure
+→ company B
+→ financing relationship
+→ CCR client A
+
+or:
+
+TAIWAN DISRUPTION
+→ semiconductor entity B
+→ supplier relationship
+→ CCR client A
+
+Do not create relationship edges merely because an event may propagate through
+them.
+
+==================================================
+11. CORRELATION SEPARATION
+==================================================
+
+Existing local correlation rows remain:
+
+RESEARCH_CANDIDATE
+
+They answer:
+
+"Who should we research?"
+
+Relationships answer:
+
+"What can we substantiate?"
+
+Events answer:
+
+"What happened or what scenario are we testing?"
+
+Paths answer:
+
+"How could effects transmit?"
+
+These four objects must remain distinct.
+
+==================================================
+12. AI POLICY
+==================================================
+
+Persist/document the following rules:
+
+AI MAY:
+
+- choose research strategy
+- extract structured claims
+- resolve context
+- summarize evidence
+- compare sources
+- detect contradictions
+- explain direct/indirect paths
+- analyze events/scenarios
+
+AI MAY NOT:
+
+- be treated as evidence
+- create a confirmed relationship without admissible evidence
+- turn correlation into relationship
+- invent missing path hops
+- invent a source
+- silently upgrade supplier to critical supplier
+
+==================================================
+13. VALIDATION
 ==================================================
 
 Prove:
 
-CCR subjects = 16,769 unchanged
+CCR subjects unchanged = 16,769
 
-Canonical entities = 16,767 unchanged
+Canonical entities unchanged = 16,767
 
-Production EXTERNAL_ENTITY count = 0
+Production external entities unchanged = 0
 
 Production relationships created = 0
 
-A relationship endpoint can reference an external entity
+Production events created = 0
 
-A relationship endpoint does not require ccr_subject membership
+Synthetic path hops = 0
 
-Research candidate cannot be treated as relationship
+Candidates promoted to relationships = 0
 
-CAGID remains non-unique
+AI evidence rows = 0
 
-Review-required CCR subjects remain research-disabled
+External calls = 0
 
-Foreign keys pass
+Foreign keys = PASS
 
-Source files unchanged
-
-No external network calls
+Source hashes unchanged
 
 ==================================================
-13. REPORT
+14. REPORT
 ==================================================
 
 Create:
 
-backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
+backend/data/CCR_RELATIONSHIP_EVIDENCE_PATH_POLICY.md
 
 Include:
 
-entity vs CCR-subject distinction
-external entity contract
-identifier model
-relationship taxonomy
-relationship endpoint model
-evidence requirements
-GLEIF mapping contract
-CCR membership view
-tests
+direct definition
+indirect definition
+hidden-direct definition
+hidden-indirect definition
+source tiers
+relationship-specific source strategy
+evidence dimensions
+relationship lifecycle
+path model
+event vs stress distinction
+correlation separation
+AI policy
+validation
 
 FINAL RESPONSE:
 
-CCR RELATIONSHIP UNIVERSE MODEL: PASS / FAIL
+CCR RELATIONSHIP EVIDENCE/PATH POLICY: PASS / FAIL
 
-CCR SUBJECTS:
-actual
+DIRECT MODEL:
+PASS / FAIL
 
-CANONICAL ENTITIES:
-actual
+INDIRECT PATH MODEL:
+PASS / FAIL
 
-EXTERNAL ENTITIES CREATED:
+HIDDEN DIRECT MODEL:
+PASS / FAIL
+
+HIDDEN INDIRECT MODEL:
+PASS / FAIL
+
+SOURCE TIERS:
+PASS / FAIL
+
+RELATIONSHIP SOURCE STRATEGIES:
+PASS / FAIL
+
+EVIDENCE DIMENSIONS:
+PASS / FAIL
+
+RELATIONSHIP LIFECYCLE:
+PASS / FAIL
+
+EVENT / STRESS CONTRACT:
+PASS / FAIL
+
+CORRELATION SEPARATION:
+PASS / FAIL
+
+AI AS EVIDENCE:
+0 / FAIL
+
+SYNTHETIC PATH HOPS:
 0 / FAIL
 
 PRODUCTION RELATIONSHIPS CREATED:
 0 / FAIL
 
-CCR→CCR ENDPOINT TEST:
-PASS / FAIL
-
-CCR→EXTERNAL ENDPOINT TEST:
-PASS / FAIL
-
-EXTERNAL→CCR ENDPOINT TEST:
-PASS / FAIL
-
-EXTERNAL→EXTERNAL ENDPOINT TEST:
-PASS / FAIL
-
-CANDIDATE / RELATIONSHIP SEPARATION:
-PASS / FAIL
-
-EVIDENCE LINK CONTRACT:
-PASS / FAIL
-
-FOREIGN KEYS:
-PASS / FAIL
+PRODUCTION EVENTS CREATED:
+0 / FAIL
 
 EXTERNAL CALLS:
 0 / FAIL
 
+FOREIGN KEYS:
+PASS / FAIL
+
 REPORT:
-backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
+backend/data/CCR_RELATIONSHIP_EVIDENCE_PATH_POLICY.md
 
 STOP.
