@@ -1,155 +1,398 @@
-CCR DATA FOUNDATION — IDENTITY EXCEPTION RESOLUTION
+CCR DATA FOUNDATION — IDENTITY EXCEPTION DEEP DIVE
 
-Work only in the CURRENT CCR repository.
+Use the analysis ALREADY completed.
 
-This is CCR, not Lending.
+Do not rerun the entire 3.6M master discovery unless a specific value needs
+verification.
 
-Read the existing discovery outputs:
+Read:
 
-analysis/output/customer_data_discovery_report.md
+analysis/output/CCR_IDENTITY_EXCEPTION_REPORT.md
+analysis/output/ccr_identity_exception_resolution.csv
 analysis/output/unmatched_exposure_clients.csv
 analysis/output/ambiguous_matches.csv
 analysis/output/attribute_reconciliation.csv
 analysis/output/match_summary.csv
 
-Also inspect the actual source schemas as needed:
+This is CCR ONLY.
 
-Customer_latest.parquet
-thousandClients.csv
+Do not modify:
+- Customer_latest.parquet
+- thousandClients.csv
+- production SQLite
+- frontend
+- relationship logic
 
-DO NOT modify either source file.
-DO NOT modify production SQLite.
-DO NOT work on frontend.
-DO NOT run SEC, GLEIF, Web or AI.
-DO NOT create relationships.
+No SEC.
+No GLEIF.
+No Web.
+No AI enrichment.
 
 OBJECTIVE
 
-Explain and, where defensible, resolve the:
+Expand the current identity-exception analysis enough that we can decide how
+the canonical CCR database should treat every exception.
 
-- 8 unmatched exposure clients
-- 6 ambiguous matches
+The previous summary was too high level.
 
-against the 3.6M customer master.
+==================================================
+1. THE 8 UNMATCHED CLIENTS
+==================================================
 
-For each exception inspect all available identity fields including where present:
+Create a table with ONE ROW PER unmatched CCR client.
 
+Show every useful available identity field:
+
+source row count
 GFCID
 CAGID
 legal name
-normalized legal name
+normalized name
 country
-entity/client type
+client/entity type
+industry/sector
+LEI if present
+beneficial-owner/reference fields if present
+exposure record count
+
+For each client show:
+
+MASTER GFCID MATCH:
+YES / NO
+
+MASTER CAGID MATCH:
+YES / NO
+
+MASTER EXACT LEGAL NAME MATCH:
+YES / NO
+
+MASTER NORMALIZED NAME MATCH:
+YES / NO
+
+MASTER LEI MATCH:
+YES / NO / NOT AVAILABLE
+
+Then explain:
+
+WHY IT IS UNMATCHED
+
+Classify likely interpretation:
+
+NEW_OR_ABSENT_MASTER_ENTITY
+STALE_SOURCE_IDENTIFIER
+SPV_OR_SPECIAL_ENTITY
+SOURCE_DATA_DEFECT
+NAME/IDENTIFIER QUALITY ISSUE
+UNKNOWN
+
+Do not resolve based on guesswork.
+
+Most importantly answer:
+
+Should this CCR entity still receive its own canonical CCR entity record even
+though it is absent from the 3.6M master?
+
+YES / NO / REVIEW
+
+Give reason.
+
+==================================================
+2. THE 6 AMBIGUOUS CLIENTS
+==================================================
+
+Create a section for each of the six cases.
+
+For each show:
+
+SOURCE CLIENT
+- GFCID
+- CAGID
+- legal name
+- country
+- other identifiers
+
+ALL MASTER CANDIDATES
+
+For every competing master candidate show:
+
+master GFCID
+master CAGID
+legal name
+country
+entity type
 LEI
-owner/reference fields
-active/inactive/history indicators
-other stable internal identifiers
+active/status fields
+other differentiating fields
 
-For each row classify the root cause as one of:
+Then explain exactly WHY the CAGID is one-to-many.
 
-MASTER_HISTORY
+For the 4 deterministically resolved cases show:
+
+SELECTED MASTER RECORD
+RESOLUTION RULE
+FIELDS THAT PROVED THE MATCH
+WHY OTHER CANDIDATES WERE REJECTED
+
+For the 2 review-required cases show:
+
+CANDIDATE A
+CANDIDATE B
+...
+WHAT IS IDENTICAL
+WHAT IS DIFFERENT
+WHAT INFORMATION IS MISSING
+WHAT WOULD RESOLVE THE CASE
+
+Do not use fuzzy name matching as decisive evidence.
+
+==================================================
+3. THE 44 HISTORICAL CONFLICT GROUPS
+==================================================
+
+The previous output:
+
+TRUE MULTI-ENTITY = 5
+OTHER = 39
+
+is too coarse.
+
+Reclassify ALL 44 groups into more informative categories.
+
+Try categories such as:
+
+TRUE_MULTI_ENTITY
+COSMETIC_NAME_VARIANT
+SHARED_CAGID
+SHARED_GFCID
+HIERARCHY_PROPAGATION
+OWNER_REFERENCE_PROPAGATION
+PLACEHOLDER_NAME
+DUPLICATE_MASTER_ROW
+LEGAL_NAME_VARIANT
+COUNTRY_VARIANT
+ENTITY_TYPE_VARIANT
 IDENTIFIER_CONFLICT
-DUPLICATE_MASTER_ENTITY
-NAME_VARIANT
-INACTIVE/HISTORICAL_RECORD
-ONE_TO_MANY
-MISSING_MASTER_RECORD
-BAD_SOURCE_IDENTIFIER
+INSUFFICIENT_INFORMATION
 OTHER
 
-Then assign one of:
+Use additional categories if the data requires them.
 
-RESOLVED_EXACT
-RESOLVED_DETERMINISTIC
+Goal:
+
+OTHER should be used only when genuinely unavoidable.
+
+For every category report:
+
+group count
+record count
+representative examples
+database implication
+
+Then provide a separate detailed table for the 5 TRUE_MULTI_ENTITY groups.
+
+For each group show all entities and identifiers.
+
+==================================================
+4. MASTER SNAPSHOT LIMITATION
+==================================================
+
+The current master appears to contain snapshot:
+
+20260806
+
+Explain clearly what CAN and CANNOT be inferred from having only this snapshot.
+
+In particular distinguish:
+
+CURRENT DUPLICATE / CONFLICT
+
+from:
+
+HISTORICAL IDENTIFIER REUSE
+
+Do not call something historical reuse unless actual historical records prove
+it.
+
+==================================================
+5. ATTRIBUTE RECONCILIATION
+==================================================
+
+Summarize the important differences between:
+
+thousandClients.csv
+
+and
+
+Customer_latest.parquet
+
+for matched clients.
+
+For each overlapping identity/reference field report:
+
+field
+same count
+different count
+CCR null / master populated
+CCR populated / master null
+conflict count
+recommended authority
+
+Examples:
+
+legal name
+country
+industry
+sector
+entity type
+LEI
+owner/reference fields
+
+Do not include exposure-only fields as master identity conflicts.
+
+==================================================
+6. CANONICAL MODEL DECISION
+==================================================
+
+Based on the evidence, recommend how the CCR canonical model should handle:
+
+A. master-matched CCR client
+
+B. CCR client absent from master
+
+C. deterministic one-to-many resolution
+
+D. unresolved ambiguous identity
+
+E. true multi-entity shared identifier
+
+F. cosmetic name variants
+
+G. hierarchy / owner-reference propagation
+
+Do not implement yet.
+
+Use concepts such as:
+
+CANONICAL
+CCR_ONLY_ENTITY
 REVIEW_REQUIRED
-UNRESOLVED
+IDENTIFIER_ALIAS
+MASTER_REFERENCE
+EXTERNAL_ENTITY
 
-IMPORTANT
+where appropriate.
 
-Do not resolve an entity using fuzzy name similarity alone.
+==================================================
+7. POPULATION RECONCILIATION
+==================================================
 
-A deterministic resolution must have a defensible identifier or combination
-of identity attributes.
+Give a precise proposed population bridge.
 
-Do not silently collapse distinct legal entities.
+Start from:
 
-For the 44 historical legal-entity conflict groups, inspect why they were
-classified that way and confirm whether they represent:
+16,769 unique CCR source GFCIDs
 
-- repeated snapshots of the same legal entity
-- genuine multiple legal entities
-- historical identifier reuse
-- inactive/current record combinations
-- another pattern
+Show:
 
-Do not change all 44 records. This task is analysis first.
+exact master matched
+deterministically resolved ambiguous
+CCR-only unmatched
+review-required ambiguous
+other excluded/duplicate cases if any
+
+Then calculate the recommended number of canonical CCR subject entities.
+
+Do not force this number to equal the old 16,755.
+
+Derive it from the analysis.
+
+==================================================
+8. CREATE UPDATED REPORT
+==================================================
 
 Create:
 
-analysis/output/ccr_identity_exception_resolution.csv
-
-Columns:
-
-source_row_or_client
-source_gfcid
-source_cagid
-source_name
-candidate_master_gfcid
-candidate_master_cagid
-candidate_master_name
-root_cause
-resolution_status
-resolution_method
-evidence_fields
-notes
+analysis/output/CCR_IDENTITY_EXCEPTION_DEEP_DIVE.md
 
 Also create:
 
-analysis/output/CCR_IDENTITY_EXCEPTION_REPORT.md
+analysis/output/ccr_historical_conflict_groups.csv
 
-The report should contain:
+Columns should include:
 
-1. 8 unmatched — root causes
-2. 6 ambiguous — root causes
-3. deterministic resolutions found
-4. still unresolved
-5. interpretation of the 44 historical conflict groups
-6. any source-data defect
-7. recommended canonical handling
+group_id
+classification
+gfcid
+cagid
+legal_name
+country
+lei
+entity_type
+record_count
+reason
+canonical_recommendation
 
-FINAL RESPONSE:
+Do not overwrite the previous report.
 
-CCR IDENTITY EXCEPTION ANALYSIS: PASS / FAIL
+==================================================
+9. FINAL RESPONSE
+==================================================
 
-UNMATCHED
-Original: 8
-Deterministically resolved:
+Return:
+
+CCR IDENTITY DEEP DIVE: PASS / FAIL
+
+UNMATCHED CLIENTS
+Total: 8
+CCR-only entities recommended:
+Source defects:
 Review required:
-Still unresolved:
-
-AMBIGUOUS
-Original: 6
-Deterministically resolved:
-Review required:
-Still unresolved:
-
-HISTORICAL CONFLICT GROUPS
-Count:
-Same-entity history:
-True multi-entity:
-Identifier reuse:
 Other:
 
-SOURCE FILES MODIFIED:
-0 / FAIL
+AMBIGUOUS
+Total: 6
+Deterministically resolved: 4
+Review required: 2
 
-PRODUCTION DB MODIFIED:
-0 / FAIL
+For each review-required case:
+<one-line description>
+
+44 CONFLICT GROUPS
+True multi-entity:
+Cosmetic name variant:
+Shared identifier:
+Hierarchy/owner propagation:
+Duplicate row:
+Placeholder:
+Identifier conflict:
+Insufficient information:
+Other:
+
+PROPOSED CCR CANONICAL POPULATION
+Source unique CCR clients:
+Master matched:
+Deterministic resolutions:
+CCR-only canonical entities:
+Review-required:
+Recommended canonical subject count:
+
+MOST IMPORTANT DATA MODEL IMPLICATIONS
+1.
+2.
+3.
+4.
+5.
 
 REPORT:
-<path>
+analysis/output/CCR_IDENTITY_EXCEPTION_DEEP_DIVE.md
 
-CSV:
-<path>
+DETAIL CSV:
+analysis/output/ccr_historical_conflict_groups.csv
+
+SOURCE MODIFICATIONS:
+0 / FAIL
+
+PRODUCTION DB MODIFICATIONS:
+0 / FAIL
 
 STOP.
