@@ -1,369 +1,438 @@
-PROMPT 4B — LENDING PORTFOLIO + CLIENT EXPERIENCE REFINEMENT
+CCR RELATIONSHIP INTELLIGENCE — FIRST EVIDENCE-BACKED RELATIONSHIP PILOT
 
-Continue from the completed Prompt 4A implementation and its authoritative report:
+Work only in the CURRENT CCR repository.
 
-backend/data/LENDING_PROMPT4A_EXECUTIVE_HOME_REPORT.md
+Read first:
 
-The Common Operating Contract remains in force. Do NOT reinterpret, replace, or relax it.
+backend/data/CCR_EXTERNAL_PROVIDER_READINESS_REPORT.md
+backend/data/CCR_RESEARCH_ORCHESTRATOR_REPORT.md
+backend/data/CCR_RELATIONSHIP_EVIDENCE_PATH_POLICY.md
+backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
 
-Prompt 4A is complete.
-Do NOT redo Prompt 4A.
-Do NOT start Prompt 4C or later work.
+Use the already validated pilot CCR entity:
+
+3M CO
+GFCID: 0000426083
+CIK: 66740
+Ticker: MMM
+
+Do NOT broaden to additional CCR clients.
+
+Do NOT create CONFIRMED relationships.
+
+Do NOT use AI as evidence.
+
+Do NOT lower evidence standards.
 
 OBJECTIVE
 
-Productize the Portfolio and Client Detail journeys for senior lending users while preserving the trusted Lending authority model established in Prompts 1–4A.
-
-The intended user journey is:
+Prove the complete relationship pipeline for one well-identified CCR entity
+using real admissible evidence.
 
-HOME
-→ PORTFOLIO
-→ CLIENT DETAIL
-→ NETWORK
-→ RELATIONSHIPS
-→ INTELLIGENCE
-→ REVIEW
+Run a maximum of 3 relationship analyses for 3M.
 
-Prompt 4B owns only:
+==================================================
+1. USE EXISTING VERIFIED IDENTITY
+==================================================
 
-1. Portfolio experience refinement.
-2. Client population/navigation refinement.
-3. Client Detail experience refinement.
-4. Deterministic exposure/CAM/relationship-context handoffs from these screens.
-5. Senior-user visual hierarchy, explainability, loading/error/empty states, and bounded performance.
-
-Do NOT implement Network redesign.
-Do NOT implement graph interactions beyond existing navigation.
-Do NOT redesign Relationship Explorer.
-Do NOT redesign governed Intelligence/AI authoring.
-Do NOT redesign External Research.
-Do NOT redesign Review.
-Do NOT change CAM/V3 authority.
-Do NOT introduce a new relationship store.
-Do NOT create inferred risk scores or unsupported credit conclusions.
+Reuse the validated identity:
 
-AUTHORITY
+CCR entity
+GFCID
+CAGID
+LEI
+CIK
+Ticker
 
-Preserve exactly:
-
-- CAM/V3 is authoritative for the Lending CAM relationship layer.
-- V2 is client-specific fallback/history only.
-- Normalized workbench remains a separate governed projection.
-- External research remains supplemental.
-- Governed AI remains a separate governed lane.
-- Portfolio analytics remains read-only.
-- Reported OSUC remains source-reported/supplemental according to the existing API contract.
-- CAM coverage means the deterministic source-population CAM measure already defined by the backend; it must not be relabeled as document freshness.
-- Relationship review status is not a credit-risk rating.
-- No unsupported materiality thresholds may be invented.
+Do not re-resolve unless required for validation.
 
-DATA BOUNDARY
+Identity quality must remain HIGH.
 
-Use existing deterministic Lending portfolio APIs wherever possible.
+==================================================
+2. RELATIONSHIP QUESTIONS
+==================================================
 
-Do not load the 32,957-row normalized relationship history in Portfolio or Client Detail.
+Run at most three evidence-oriented analyses:
 
-Do not invoke:
+A. PARENT / ULTIMATE_PARENT
 
-- AI generation endpoints,
-- AI authoring endpoints,
-- external research execution,
-- provider calls,
-- external proposal creation,
-- the unbounded unified relationship assertion read,
+Use GLEIF Level-2 if applicable.
 
-during ordinary Portfolio or Client Detail loading.
+B. SUPPLIER / CRITICAL_SUPPLIER / SOURCE_OF_INPUTS
 
-Existing deeper workflows may retain those capabilities when explicitly opened by the user.
+Use the retrieved SEC filings first.
 
-PART A — PORTFOLIO EXPERIENCE
+C. CUSTOMER / KEY_CUSTOMER or STRATEGIC_PARTNER
 
-Refine /lending/clients into a senior-user portfolio workspace.
+Use SEC filings first.
 
-The page should immediately answer:
+If a selected relationship type is clearly not applicable to the filings,
+return NOT_FOUND or INSUFFICIENT_EVIDENCE.
 
-1. Which clients matter most by reported exposure?
-2. Which large exposures have CAM coverage?
-3. Which large exposures have no CAM coverage?
-4. Which clients have relationship records requiring review?
-5. Where are concentration patterns visible?
-6. Which clients deserve investigation next?
-7. Why is each item being surfaced?
+Do not force three proposals.
 
-Preserve deterministic ranking by the backend/reporting contract.
+==================================================
+3. SEC DOCUMENT SET
+==================================================
 
-Improve the visual hierarchy so that the page contains, at minimum:
-
-A. Portfolio command/header area
-- Portfolio population count.
-- Portfolio reported OSUC context.
-- CAM coverage context.
-- Current deterministic filters.
-- Clear CAM/V3 authority messaging.
-- Search by client name or CAGID.
-- No excessive technical wording in the primary view.
+Use the already retrieved official SEC filings where valid.
 
-B. Executive attention strip
-Surface bounded, deterministic attention views such as:
+Additional SEC retrieval is allowed only if required for the three bounded
+questions.
 
-- Largest exposures.
-- Largest uncovered exposures.
-- Largest exposures with review-required relationship records.
-- Clients with CAM coverage.
-- Clients without CAM coverage.
+Maximum additional filings:
 
-These are navigation/attention aids, not risk rankings.
+3
 
-Do not create a composite score.
+Source tier:
 
-C. Client population
-Provide an efficient, visually strong, sortable/filterable client population.
+TIER_1_AUTHORITATIVE_EXTERNAL
 
-At minimum retain or support:
+==================================================
+4. GLEIF LEVEL-2
+==================================================
 
-- Client / CAGID
-- Reported OSUC
-- Portfolio share
-- CAM count / CAM coverage state
-- Sector
-- Country
-- Risk rating if already supplied by the source
-- Credit classification if already supplied by the source
-- Relationship coverage
-- Review-required count
+For the parent / ultimate-parent question only:
 
-Do not fabricate missing values.
+perform bounded official GLEIF Level-2 research.
 
-Use explicit Unknown / Not available semantics where appropriate.
+Preserve exact GLEIF semantics:
 
-D. Filters
-Retain and improve deterministic filtering for relevant existing dimensions, including where available:
+direct accounting consolidating parent
 
-- Search
-- Sector
-- Country
-- CAM yes/no
-- CAM count
-- Risk rating
-- Credit classification
-- Relationship coverage
-- Reported OSUC sorting
+ultimate accounting consolidating parent
 
-Filters must remain deterministic and must not invoke AI.
+Do not translate these automatically into generic ownership claims.
 
-E. Investigation handoffs
-Rows/cards should support clear navigation to:
+Possible outcomes:
 
-- Client Detail
-- Relevant relationship context where appropriate
-- Review when review-required records exist
+PROPOSAL_PENDING_REVIEW
+NOT_FOUND
+NOT_APPLICABLE
+INSUFFICIENT_EVIDENCE
 
-Do not perform mutations from Portfolio.
+==================================================
+5. CLAIM EXTRACTION
+==================================================
 
-PART B — CLIENT DETAIL
+Extract candidate relationship claims only where the source explicitly supports
+them.
 
-Refine /lending/client/{cagid} into a strong lending-client intelligence page.
+For every claim capture:
 
-The page must preserve the client-specific deterministic contract and should answer:
+subject entity
+related entity name
+relationship type
+direction
 
-1. Who is this client?
-2. What is our reported exposure?
-3. What share of the portfolio does it represent?
-4. What CAM coverage exists?
-5. What trusted relationships exist?
-6. What requires review?
-7. What relationship/network context is available?
-8. What evidence or external investigation can the user deliberately open next?
+source document
+source section if available
+evidence snippet
 
-Build a clear senior-user hierarchy.
+source tier
+evidence strength
+freshness
 
-At minimum include:
+current / historical / unknown
 
-A. Client identity header
-- Legal/display name from source.
-- CAGID.
-- Sector.
-- Country.
-- Existing source classifications.
-- CAM coverage badge/count.
-- Explicit authority/source semantics.
+Do not treat ordinary name co-occurrence as relationship evidence.
 
-B. Exposure summary
-- Reported OSUC.
-- Portfolio share/rank where available.
-- CAM count.
-- Relationship counts.
-- Review-required count.
+==================================================
+6. RELATED ENTITY RESOLUTION
+==================================================
 
-Do not create inferred materiality labels unless supported by existing deterministic data.
+For every named related entity:
 
-C. Relationship snapshot
-Use the bounded client relationship read already defined by the Lending contract.
-
-Show compact grouped relationship context by useful deterministic dimensions such as:
-
-- endpoint pair,
-- relationship type,
-- state,
-- direction,
-- connectivity,
-- authority/source lane,
-- review status.
-
-Do not silently merge CAM, external, normalized, and AI rows into one authority class.
-
-D. Explainability
-For relationship/context cards provide a compact:
-
-“Why am I seeing this?”
-
-It should use actual available fields such as:
-
-- authoritative source lane,
-- relationship type,
-- state,
-- direction,
-- evidence count,
-- source count where available,
-- review status,
-- inclusion rule / projection boundary.
-
-Do not create unsupported narrative conclusions.
-
-E. Investigation actions
-Provide deliberate handoffs such as:
-
-- Open Network
-- Open Relationships
-- Open Review when applicable
-- Research relationship
-- Open governed Intelligence/Assist where appropriate
-
-These buttons navigate to the relevant governed workflow.
-
-They must NOT automatically invoke AI generation or external research.
-
-PART C — VISUAL DESIGN
-
-Continue the light executive visual language established in Prompt 4A.
-
-Target:
-
-- professional institutional-credit application,
-- light background,
-- strong whitespace,
-- restrained color,
-- sharp typography,
-- clear hierarchy,
-- sophisticated but not decorative,
-- highly readable on a large desktop monitor,
-- responsive at narrower widths.
-
-Improve interaction quality with:
-
-- clear hover states,
-- selected-row states,
-- concise badges,
-- purposeful tooltips,
-- smooth deterministic transitions where useful,
-- loading skeletons,
-- strong empty states,
-- recoverable error states.
-
-Do not add visual effects that imply analytical meaning not present in the data.
-
-Reserve stronger attention styling for genuine deterministic conditions such as:
-
-- review required,
-- missing CAM coverage,
-- supplemental/external lane,
-- unavailable/unknown data.
-
-PART D — PERFORMANCE
-
-Portfolio and Client Detail must remain bounded.
-
-Do not load the full normalized history.
+attempt governed identity resolution.
 
 Prefer:
 
-- paginated portfolio client reads,
-- bounded client relationship reads,
-- cached existing deterministic portfolio summaries where already available.
+LEI
+CIK
+official legal name
+verified ticker
+official domain
 
-Do not fix the large unified semantic-group endpoint as part of Prompt 4B unless a minimal change is strictly required to prevent Portfolio/Client Detail from calling it.
+If identity cannot be resolved sufficiently:
 
-If encountered, document it for Prompt 4C/later.
+IDENTITY_UNRESOLVED
 
-PART E — EMPTY, UNKNOWN, AND FAILURE STATES
+Do not create an external entity from name similarity alone.
 
-Senior users must never face an unexplained blank panel.
+==================================================
+7. EXTERNAL ENTITY CREATION
+==================================================
 
-Implement explicit states for:
+A new EXTERNAL_ENTITY may be created only when:
 
-- no relationships,
-- no CAM coverage,
-- no review items,
-- unknown/supplemental OSUC semantics,
-- unavailable relationship data,
-- API/read failure,
-- incomplete source fields.
+identity evidence is defensible
 
-Always distinguish:
+and
 
-- zero,
-- unknown,
-- unavailable,
-- not applicable,
-- filtered out.
+the entity is required for an evidence-backed relationship proposal.
 
-Do not convert these into one generic “0”.
+Persist provenance.
 
-PART F — VALIDATION
+Do not create unrelated discovered names as entities.
 
-Before declaring completion:
+==================================================
+8. MATERIALITY GUARDRAIL
+==================================================
 
-1. Run frontend build.
-2. Run scoped lint.
-3. Check changed-file diagnostics.
-4. Smoke-test:
-   - /lending/clients
-   - at least one client with CAM relationships
-   - at least one client without relationships
-   - at least one client with review-required relationships
-5. Confirm Portfolio and Client Detail ordinary loading do not invoke:
-   - AI generation,
-   - external research execution,
-   - provider calls,
-   - external proposal creation,
-   - unbounded normalized relationship reads.
-6. Confirm CAM/V3 authority language remains intact.
-7. Confirm existing Home, Network, Relationships, Intelligence, Review, and External Research routes still resolve.
-8. Confirm no CCR/customer-master work was introduced.
+Do not assign:
 
-PART G — REPORT
+CRITICAL_SUPPLIER
+KEY_CUSTOMER
+TECHNOLOGY_DEPENDENCY
+
+unless the evidence explicitly establishes:
+
+materiality
+dependency
+concentration
+criticality
+or equivalent language.
+
+Otherwise use the lower-order relationship type or return insufficient evidence.
+
+==================================================
+9. RELATIONSHIP DIRECTION
+==================================================
+
+Direction must match the evidence.
+
+Examples:
+
+Supplier X supplies 3M:
+
+X --SUPPLIER_OF--> 3M
+
+3M depends on X:
+
+3M --TECHNOLOGY_DEPENDENCY--> X
+
+Parent X consolidates 3M:
+
+X --PARENT_OF--> 3M
+
+Do not silently infer inverse relationships.
+
+==================================================
+10. RELATIONSHIP STATE
+==================================================
+
+At most create:
+
+PROPOSAL_PENDING_REVIEW
+
+Never:
+
+CONFIRMED
+
+during this task.
+
+If threshold fails:
+
+INSUFFICIENT_EVIDENCE
+NOT_FOUND
+IDENTITY_UNRESOLVED
+CONFLICT
+NOT_APPLICABLE
+
+==================================================
+11. DIRECT / HIDDEN DIRECT
+==================================================
+
+Every accepted proposal from external evidence that was absent from internal
+CCR relationship data may be classified:
+
+HIDDEN_DIRECT
+
+This means:
+
+externally discovered evidence-backed direct relationship.
+
+It does NOT mean inferred or synthetic.
+
+==================================================
+12. INDIRECT PATHS
+==================================================
+
+If two or more accepted direct proposals happen to form a valid path:
+
+record the path separately.
+
+Do not create a synthetic shortcut edge.
+
+No path hop may use unsupported relationships.
+
+==================================================
+13. AI / HELIX
+==================================================
+
+If Helix is available, it may assist with:
+
+document section classification
+candidate claim extraction
+relationship taxonomy classification
+direction extraction
+contradiction detection
+evidence summarization
+
+But AI output must never be stored as source evidence.
+
+All accepted claims must point to admissible source documents.
+
+==================================================
+14. QUALITY REVIEW
+==================================================
+
+Before persisting any proposal verify:
+
+source supports exact relationship
+entities match
+direction correct
+relationship type not overstated
+current/historical meaning preserved
+materiality requirement respected
+
+If uncertain:
+
+INSUFFICIENT_EVIDENCE
+
+Prefer no relationship over a weak relationship.
+
+==================================================
+15. VALIDATION
+==================================================
+
+Report:
+
+relationship questions = <= 3
+
+SEC documents used
+
+GLEIF Level-2 requests
+
+candidate claims
+
+accepted claims
+
+rejected claims
+
+external entities created
+
+relationship proposals
+
+hidden-direct relationships
+
+indirect paths
+
+confirmed relationships = 0
+
+synthetic edges = 0
+
+AI evidence = 0
+
+==================================================
+16. REPORT
+==================================================
 
 Create:
 
-backend/data/LENDING_PROMPT4B_PORTFOLIO_CLIENT_REPORT.md
+backend/data/CCR_3M_RELATIONSHIP_PILOT_REPORT.md
 
-The report must document:
+For each question show:
 
-- files changed,
-- Portfolio UX implemented,
-- Client Detail UX implemented,
-- APIs used,
-- authority semantics,
-- empty/unknown states,
-- performance decisions,
-- screenshots/routes manually inspected if available,
-- build/lint/diagnostic results,
-- remaining items intentionally deferred to Prompt 4C+.
+question
+provider strategy
+documents inspected
+candidate claims
+accepted/rejected evidence
+entity resolution
+governed outcome
 
-End the report with exactly:
+Also include an Evidence Table:
 
-READY FOR PROMPT 4C
+Relationship
+Subject
+Related entity
+Direction
+Source
+Evidence strength
+Identity quality
+Status
 
-STOP after Prompt 4B.
+==================================================
+17. FINAL RESPONSE
+==================================================
 
-Do not begin Network redesign or any Prompt 4C work.
+Return:
+
+CCR 3M RELATIONSHIP PILOT: PASS / FAIL
+
+SUBJECT:
+3M CO
+
+QUESTIONS:
+actual
+
+SEC DOCUMENTS USED:
+actual
+
+GLEIF LEVEL-2 REQUESTS:
+actual
+
+CLAIMS
+Discovered:
+Accepted:
+Rejected:
+
+EXTERNAL ENTITIES CREATED:
+actual
+
+RELATIONSHIP PROPOSALS:
+actual
+
+HIDDEN DIRECT:
+actual
+
+INDIRECT PATHS:
+actual
+
+OUTCOMES
+Proposal pending review:
+Insufficient evidence:
+Not found:
+Not applicable:
+Identity unresolved:
+Conflict:
+
+QUALITY
+Unsupported claims accepted:
+0 / FAIL
+
+Wrong entity matches:
+0 / FAIL
+
+Overstated critical/key relationships:
+0 / FAIL
+
+AI AS EVIDENCE:
+0 / FAIL
+
+CONFIRMED RELATIONSHIPS:
+0 / FAIL
+
+SYNTHETIC EDGES:
+0 / FAIL
+
+REGRESSION
+passed:
+failed:
+errors:
+
+REPORT:
+backend/data/CCR_3M_RELATIONSHIP_PILOT_REPORT.md
+
+STOP.
