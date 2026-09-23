@@ -1,1354 +1,1010 @@
-LENDING TOTAL UI RECONSTRUCTION
-PHASE U0 — MASTER PRODUCT + UX + FRONTEND ARCHITECTURE BLUEPRINT
+CCR ADVANCED FRONTEND — ANALYST INTELLIGENCE WORKSPACE / PHASE UI-1
 
-Work only in the CURRENT Lending repository.
+Work ONLY in the CURRENT CCR repository.
 
-THIS IS LENDING ONLY.
+This task replaces the current CCR frontend visual architecture.
 
-CCR IS OUT OF SCOPE.
+Do NOT modify:
+- canonical CCR business data
+- relationship semantics
+- evidence thresholds
+- research-orchestrator logic
+- source-policy rules
+- protected Phase-2 data
+- production relationship states
 
-Do not inspect, import, depend on, reference, or use CCR data, CCR customer master,
-CCR routes, CCR relationship logic, or CCR product semantics for this work.
+Do NOT invent:
+- relationships
+- exposure totals
+- active/inactive client states
+- AI insights
+- events
+- risk scores
 
-==================================================
-MISSION
-==================================================
+Use real CCR data only.
 
-Design the complete replacement user experience for Lending Relationship Intelligence.
+Minimal read-only backend/API additions are allowed ONLY when required to expose
+already-existing CCR database information to the frontend.
 
-This is NOT a restyling exercise.
-
-The existing Lending frontend is a FUNCTIONAL REFERENCE ONLY for:
-
-- working routes;
-- existing capabilities;
-- backend APIs;
-- authority semantics;
-- data contracts;
-- governance rules;
-- validated workflows.
-
-It is NOT the design baseline.
-
-Do NOT preserve the current:
-
-- navigation structure;
-- card layouts;
-- page compositions;
-- map design;
-- network layout;
-- table-first interaction model;
-- filter placement;
-- visual hierarchy;
-- spacing system;
-- component organization;
-- old dashboard appearance;
-
-unless the new product architecture independently justifies it.
-
-The goal is a completely reconstructed institutional-grade Lending intelligence
-application that is substantially more advanced, visually sophisticated,
-interactive, clear, explainable and usable by senior lending professionals.
-
-DO NOT IMPLEMENT THE NEW UI IN THIS TASK.
-
-Produce the master architecture and reconstruction blueprint first.
+Do not create new business facts.
 
 ==================================================
 READ FIRST
 ==================================================
 
-Inspect all currently available Lending implementation reports, especially where present:
+Read these reports if present:
 
-backend/data/LENDING_IMPLEMENTATION_REBASELINE.md
-backend/data/LENDING_PROMPT4A_EXECUTIVE_HOME_REPORT.md
-backend/data/LENDING_PROMPT4B_PORTFOLIO_CLIENT_REPORT.md
-backend/data/LENDING_PROMPT4C_NETWORK_REPORT.md
-backend/data/LENDING_CCR_ISOLATION_REPORT.md
+backend/data/CCR_CANONICAL_DATA_MODEL_REPORT.md
+backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
+backend/data/CCR_RELATIONSHIP_EVIDENCE_PATH_POLICY.md
+backend/data/CCR_RESEARCH_ORCHESTRATOR_REPORT.md
+backend/data/CCR_EXTERNAL_PROVIDER_READINESS_REPORT.md
+backend/data/CCR_RELATIONSHIP_PILOT_SEMANTICS_REPORT.md
+backend/data/CCR_3M_RELATIONSHIP_PILOT_REPORT.md
 
-Also inspect the actual current code.
+Inspect:
 
-At minimum inspect:
-
-frontend/package.json
-frontend/src/App*
-frontend/src/main*
-frontend/src/components/
-frontend/src/pages/
-frontend/src/services/
-frontend/src/hooks/
-frontend/src/styles/
-frontend/src/index.css
-
-and relevant Lending backend routers/services/contracts under:
-
+frontend/
 backend/app/
+existing CCR APIs
+existing CSS/design system
+countries.geojson
+current client/network/research/review pages
 
-Do not rely only on reports.
-Verify repository truth.
-
-==================================================
-NON-NEGOTIABLE DATA / GOVERNANCE CONTRACT
-==================================================
-
-The reconstruction must preserve validated Lending semantics.
-
-CAM/V3
-= authoritative Lending relationship truth.
-
-V2
-= fallback/history only.
-
-Normalized operational/workbench data
-= separate governed projection.
-
-External research
-= supplemental.
-
-SEC / Web / Stylus evidence
-= supplemental unless explicitly governed through the existing process.
-
-Governed AI
-= separate governed lane.
-
-Review-required
-= workflow state, NOT risk.
-
-Reported OSUC
-= source-reported exposure metric.
-
-Do not invent:
-
-- risk scores;
-- materiality scores;
-- systemic-risk scores;
-- relationship-strength scores;
-- probabilities;
-- loss estimates;
-- causal flows;
-- exposure flows;
-- unsupported relationship direction;
-- unsupported entity geography;
-- unsupported relationship completeness.
-
-Zero, Unknown, Unavailable, Not Loaded, Filtered Out and Truncated must remain
-distinct states.
-
-Ordinary page loading must NOT automatically invoke:
-
-- AI generation;
-- SEC research;
-- Web research;
-- Stylus/provider execution;
-- external proposals;
-- expensive full-history relationship adaptation.
-
-Research must be an explicit user action.
+Preserve working routes and backend functionality where practical.
 
 ==================================================
-PRODUCT DESIGN TARGET
+OBJECTIVE
 ==================================================
 
-The new application should feel like a modern institutional intelligence system,
-not a collection of admin pages.
+Transform the existing CCR application into an advanced institutional
+relationship-intelligence workspace.
 
-Target characteristics:
+The product should visually feel like:
 
-- light, premium institutional design;
-- high information density without clutter;
-- strong typography and hierarchy;
-- large analytical canvases;
-- minimal unnecessary borders;
-- sophisticated map and network interaction;
-- smooth but restrained motion;
-- advanced drill-down;
-- strong search;
-- contextual inspectors;
-- evidence-first explainability;
-- persistent investigation context;
-- minimal configuration burden for senior users.
+credit intelligence
++
+entity intelligence
++
+relationship graph
++
+global exposure monitor
++
+research workstation
 
-The experience should help a senior Lending user answer:
+NOT:
 
-1. Where is our exposure?
-2. Which clients matter most?
-3. How are clients connected?
-4. What relationships are governed by CAM?
-5. Which relationships require review?
-6. What external evidence exists?
-7. What is missing?
-8. What changed?
-9. Why am I seeing this?
-10. What should I investigate next?
-11. What evidence supports the relationship?
-12. Where did that evidence come from?
+a collection of simple form pages.
+
+The selected CCR entity should become the persistent analytical context across
+the application.
 
 ==================================================
-PROPOSE THE NEW INFORMATION ARCHITECTURE
+1. GLOBAL APPLICATION SHELL
 ==================================================
 
-Design the entire Lending product from scratch.
+Replace the current page-centric shell with:
 
-Evaluate and propose a coherent architecture that may include surfaces such as:
+LEFT NAVIGATION
++
+TOP COMMAND BAR
++
+MAIN ANALYTICAL CANVAS
++
+RIGHT INTELLIGENCE INSPECTOR
++
+OPTIONAL BOTTOM DETAIL DRAWER
 
-- Executive Intelligence
-- Portfolio
-- Geographic Intelligence
-- Client 360
-- Network Intelligence
-- Relationship Intelligence
-- Evidence / Lineage
-- Events / Developments
-- Attention / Review
-- External Research
-- Governed AI / Relationship Studio
+Desktop-first.
 
-Do not mechanically use those names if better product names exist.
+Target primary desktop widths:
 
-Determine:
+1440px
+1600px
+1920px
 
-- global navigation;
-- secondary navigation;
-- contextual navigation;
-- breadcrumb model;
-- global search;
-- persistent investigation context;
-- client/entity switching;
-- cross-page handoff behavior;
-- URL-backed state.
+Still remain usable on smaller laptop screens.
 
-The user should never feel that each page is a disconnected application.
+Layout concept:
 
-==================================================
-EXECUTIVE HOME
-==================================================
-
-Design a completely new executive opening experience.
-
-The first screen should immediately communicate:
-
-- portfolio exposure;
-- client population;
-- CAM coverage;
-- relationship coverage;
-- attention/review workload;
-- meaningful deterministic signals;
-- geographic context;
-- relationship ecosystem context;
-- recent developments where supported.
-
-Do not simply recreate the current dashboard with prettier cards.
-
-Propose a strong command-center composition with:
-
-- executive indicators;
-- major geographic visualization;
-- small relationship-network preview;
-- investigation signals;
-- exposure concentration;
-- coverage gaps;
-- attention items;
-- recent relationship/evidence changes if supported;
-- clear next actions.
-
-Every signal must state its deterministic basis.
+┌────────────────────────────────────────────────────────────────────────┐
+│ CCR RELATIONSHIP INTELLIGENCE        Search / Command       AI Analyst │
+├────────────┬───────────────────────────────────────┬───────────────────┤
+│ NAVIGATION │                                       │                   │
+│            │          ANALYTICAL CANVAS            │    INSPECTOR      │
+│ Portfolio  │                                       │                   │
+│ Entities   │                                       │ Evidence / Entity │
+│ Network    │                                       │ Research / Event  │
+│ Radar      │                                       │                   │
+│ Events     │                                       │                   │
+│ Research   │                                       │                   │
+│ Evidence   │                                       │                   │
+│ Review     │                                       │                   │
+├────────────┴───────────────────────────────────────┴───────────────────┤
+│ Contextual bottom drawer: exposure / evidence / history / research     │
+└────────────────────────────────────────────────────────────────────────┘
 
 ==================================================
-ADVANCED GEOGRAPHIC INTELLIGENCE
+2. VISUAL LANGUAGE
 ==================================================
 
-The geographic map should become a major Lending analytical surface.
+Build a sophisticated analytical visual system.
 
-Evaluate the current frontend/backend and recommend an appropriate implementation,
-potentially using technologies such as:
+Use:
 
-- MapLibre GL;
-- deck.gl;
-- WebGL overlays;
-- clustering;
-- aggregation;
-- arc layers;
-- density layers;
+clean institutional typography
+dense but readable information hierarchy
+thin separators
+subtle card elevation
+controlled use of color
+compact badges
+micro-labels
+high information density
 
-but only introduce technologies justified by the repository and desired capability.
+Avoid:
 
-The map architecture should support, where reliable data exists:
+giant empty cards
+marketing-style landing pages
+oversized slogans
+decorative gradients
+cartoon icons
+excessive rounded cards
+large unused white space
 
-- portfolio exposure;
-- client geography;
-- related entity geography;
-- country aggregation;
-- sector filtering;
-- relationship arcs;
-- ecosystem highlighting;
-- selected-client focus;
-- selected-entity focus;
-- event highlighting;
-- geographic drill-down.
+The workspace should resemble a serious professional analytical platform.
 
-NEVER infer coordinates, domicile or headquarters where source data does not support them.
+Use a neutral light analytical theme initially.
 
-Define what happens when geography is unavailable.
+Prepare CSS tokens for future dark mode.
 
-Design interactions between:
+Create shared design tokens for:
 
-MAP
-NETWORK
-CLIENT 360
-RELATIONSHIP DETAIL
-
-A selection on one surface should be capable of constraining/focusing the others.
-
-==================================================
-NETWORK EXPERIENCE — SIGNATURE PRODUCT FEATURE
-==================================================
-
-The Lending network must become one of the signature experiences.
-
-Create TWO network experiences:
-
-1. COMPACT NETWORK PREVIEW
-2. FULL NETWORK INTELLIGENCE
-
---------------------------------------------------
-COMPACT NETWORK PREVIEW
---------------------------------------------------
-
-Use on surfaces such as:
-
-- Executive Home;
-- Client 360;
-- relevant investigation views.
-
-It should normally show only a small understandable ecosystem.
-
-For example:
-
-selected entity
-+ most relevant first-degree relationships
-+ limited important second-order context where justified.
-
-It must NOT become a hairball.
-
-Provide a clear:
-
-EXPAND NETWORK
-
-action.
-
---------------------------------------------------
-FULL NETWORK INTELLIGENCE
---------------------------------------------------
-
-Design a dedicated large network workspace.
-
-Required capabilities should include:
-
-- pan;
-- zoom;
-- fit;
-- reset;
-- semantic zoom;
-- search;
-- focus;
-- node selection;
-- edge selection;
-- neighborhood expansion;
-- branch collapse;
-- controlled first-degree expansion;
-- optional second-degree expansion;
-- relationship-family filtering;
-- source-layer filtering;
-- review filtering;
-- exposure filtering;
-- sector filtering;
-- geography filtering;
-- path investigation where supported;
-- graph/table synchronization;
-- entity inspector;
-- relationship inspector;
-- evidence drill-down.
-
-The network must NEVER default to rendering the entire relationship universe.
-
-Use progressive disclosure.
-
-Investigate suitable graph technologies already installed or potentially appropriate,
-for example:
-
-- Sigma.js;
-- Cytoscape.js;
-- WebGL-based graph layers;
-- another justified high-performance React-compatible graph engine.
-
-Do not recommend a library merely because it is fashionable.
-
-Explain why the chosen architecture fits Lending.
+background
+surface
+surface-elevated
+border
+text-primary
+text-secondary
+muted
+positive
+warning
+negative
+information
+selected
+evidence-backed
+proposal
+candidate
+external-entity
 
 ==================================================
-NETWORK CLARITY — HARD ACCEPTANCE RULE
+3. LEFT NAVIGATION
 ==================================================
 
-The graph must remain understandable.
+Replace current navigation with:
 
-Design for:
+01 Portfolio
+02 Entities
+03 Network
+04 Radar
+05 Events
+06 Research
+07 Evidence
+08 Review
 
-- collision avoidance;
-- stable selection;
-- deterministic grouping;
-- intelligent label visibility;
-- semantic zoom;
-- edge aggregation where justified;
-- node clustering where justified;
-- progressive expansion;
-- bounded graph size;
-- visible truncation;
-- relationship-family grouping;
-- clear center/focus entity;
-- explicit current investigation scope.
+At bottom:
 
-Do NOT scatter disconnected entities around the canvas.
+Provider Status
+System Status
 
-Every primary-canvas node must have a visible reason for participating in the
-current investigation.
+Provider status should display current actual CCR state:
 
-If an entity is not connected under the current governed scope, do not show it as
-an arbitrary floating node.
-
-Instead expose the state:
-
-NO GOVERNED CONNECTION CURRENTLY ESTABLISHED
-
-and distinguish the reason:
-
-- no CAM relationship;
-- identity unresolved;
-- relationship evidence unavailable;
-- direction unresolved;
-- state unresolved;
-- filtered out;
-- supplemental layer disabled;
-- research not performed;
-- graph bounded/truncated.
-
-==================================================
-NETWORK EDGE PROVENANCE — HARD RULE
-==================================================
-
-EVERY VISIBLE RELATIONSHIP EDGE MUST IDENTIFY ITS SOURCE DIRECTLY ON THE EDGE.
-
-Examples:
-
-CAM
-
+GLEIF
 SEC
-
-WEB
-
+Web
 AI
 
-V2
+Never fabricate READY states.
 
-CAM + SEC
+Read existing provider-status API/data.
 
-CAM + WEB
+==================================================
+4. TOP COMMAND BAR
+==================================================
 
-SEC + WEB
+Create a persistent top bar containing:
 
-CAM + SEC + WEB
+CCR logo/title
 
-The user must not need to open a tooltip just to know where a relationship came from.
+global entity search
+
+current selected entity chip
+
+country filter if applicable
+
+research status indicator
+
+provider health indicator
+
+AI Analyst button
+
+command palette trigger
 
 Example:
 
-COREWEAVE
-      |
-Supplier · CAM
-      |
-NVIDIA
+[ CCR INTELLIGENCE ]
 
-or:
+Search entity / GFCID / CAGID / LEI / CIK / ticker...
 
-ENTITY A
-      |
-Customer · SEC
-      |
-ENTITY B
+[ 3M CO × ]
 
-or:
+Providers  ● GLEIF  ● SEC  ○ WEB
 
-ENTITY A
-      |
-Strategic Partner · CAM + SEC
-      |
-ENTITY B
+[ AI Analyst ]
 
-The exact source semantics must remain correct.
+Keyboard shortcut:
 
-SEC-only must not look like CAM.
+Ctrl/Cmd + K
 
-Web-only must not look like CAM.
-
-AI must not look like CAM.
-
-V2 history must not look like CAM.
-
-If CAM is corroborated by SEC:
-
-CAM + SEC
-
-may be displayed.
-
-If several source classes support the same governed relationship, define an
-unambiguous compact provenance label.
-
-For dense zoom levels, define shorter edge-label behavior while preserving direct
-source visibility.
+for command/entity search.
 
 ==================================================
-NETWORK EDGE MEANING
+5. GLOBAL ENTITY CONTEXT
 ==================================================
 
-Every relationship edge must expose:
+Create a central SelectedEntityContext.
 
-- exact relationship type;
-- optional UI relationship family;
-- direction;
-- relationship state;
-- connectivity;
-- authority/source lane;
-- evidence count;
-- source count;
-- review state;
-- provenance;
-- why this edge is visible.
+When a user chooses a client/entity:
 
-Where appropriate, direction should be visible with arrowheads.
+entity remains selected while navigating between:
 
-Do not infer direction.
-
-If direction is unresolved, render it explicitly as unresolved.
-
-Do not use animated particles to imply money flow, operational flow or causality
-unless the data genuinely supports such meaning.
-
-==================================================
-NODE MEANING
-==================================================
-
-Define distinct visual semantics for:
-
-- portfolio client;
-- governed related entity;
-- review-related entity;
-- external supplemental entity;
-- governed AI/proposed entity;
-- historical/fallback entity.
-
-For portfolio clients:
-
-node size MAY reflect reported exposure.
-
-If so, explicitly state:
-
-SIZE = REPORTED EXPOSURE
-
-and never imply that size means risk.
-
-Non-client entities should not be sized by invented importance.
-
-Design badges/halos/borders for:
-
-- CAM;
-- review;
-- external;
-- AI;
-- V2 history;
-
-without creating excessive visual noise.
-
-==================================================
-NO CONNECTION → RESEARCH CONNECTION
-==================================================
-
-A missing governed connection must not become a dead end.
-
-Design a first-class:
-
-RESEARCH CONNECTION
-
-workflow.
-
-Example:
-
-COREWEAVE ↔ ENTITY X
-
-No governed connection currently established.
-
-Current state:
-
-CAM: no relationship available
-SEC: not researched
-WEB: not researched
-
-Actions:
-
-SEARCH SEC
-SEARCH WEB
-RUN EXTERNAL RESEARCH
-
-The application should automatically carry:
-
-- subject entity;
-- counterparty;
-- known identities;
-- current relationship hypothesis if one exists;
-- current CAM context;
-- missing evidence;
-- relevant dates;
-- current investigation state.
-
-Do NOT require the senior user to re-enter all this information.
-
-Research is still an EXPLICIT user action.
-
-Do not automatically run SEC/Web/provider requests merely because an edge is missing.
-
-==================================================
-EXTERNAL RESEARCH LIFECYCLE
-==================================================
-
-Design the lifecycle visually:
-
-No governed connection
-        ↓
-Research connection
-        ↓
-SEC / Web / Stylus
-        ↓
-Evidence discovered
-        ↓
-Entity validation
-        ↓
-Relationship-semantic validation
-        ↓
-Supplemental relationship / proposal
-        ↓
-Review where required
-        ↓
-Governed state
-
-External evidence must not silently mutate CAM.
-
-Define how a newly discovered supplemental relationship appears in the graph.
-
-It should be immediately distinguishable from CAM.
-
-==================================================
-CLIENT 360 — COMPLETE RECONSTRUCTION
-==================================================
-
-The existing Client Detail page is NOT the design baseline.
-
-Design a completely new Client 360.
-
-It should tell the story of the client.
-
-Consider:
-
-- client identity;
-- reported exposure;
-- share/rank;
-- sector;
-- geography;
-- CAM coverage;
-- relationship ecosystem;
-- attention signals;
-- major counterparties;
-- relationship families;
-- recent developments;
-- evidence coverage;
-- external research;
-- review state.
-
-A compact client network should be a major visual section.
-
-Provide EXPAND NETWORK.
-
-Design how the user moves from:
-
-Client
-→ Relationship
-→ Evidence
-→ Research
-→ Review
-
-without losing context.
-
-==================================================
-RELATIONSHIP INTELLIGENCE WORKSPACE
-==================================================
-
-Do not rebuild the existing Relationship Explorer as another table-heavy page.
-
-Design a forensic relationship investigation workspace.
-
-Consider a composition such as:
-
-LEFT
-relationship/entity navigator
-
-CENTER
-relationship visualization / evidence / lineage
-
-RIGHT
-contextual inspector
-
-The workspace should make it easy to answer:
-
-- what is the relationship?
-- who are the endpoints?
-- which direction?
-- what state?
-- what source?
-- why was it classified this way?
-- what evidence supports it?
-- what evidence conflicts?
-- what is under review?
-- what changed?
-- why not another taxonomy?
-- which source document supports it?
-
-Design explicit assertion/evidence lineage.
-
-==================================================
-WHY AM I SEEING THIS?
-==================================================
-
-Create a reusable explainability pattern throughout the product.
-
-Important objects should have:
-
-WHY AM I SEEING THIS?
-
-This should explain deterministic factors such as:
-
-- source;
-- scope;
-- authority lane;
-- relationship type;
-- endpoint identity;
-- direction;
-- review state;
-- evidence count;
-- filters;
-- graph truncation;
-- external inclusion.
-
-Do not use generic AI prose when deterministic explanation is available.
-
-==================================================
-EVIDENCE EXPERIENCE
-==================================================
-
-Design evidence as a first-class object.
-
-Users should be able to move:
-
-relationship
-→ assertion
-→ evidence
-→ source document
-→ exact source location/excerpt
-
-without leaving the investigation.
-
-Design:
-
-- source cards;
-- source badges;
-- evidence timeline where appropriate;
-- exact excerpts;
-- document identifiers;
-- publication/as-of dates;
-- conflicting evidence;
-- corroborating evidence;
-- unavailable evidence states.
-
-==================================================
-ATTENTION / REVIEW
-==================================================
-
-Reconstruct Review into a more useful ATTENTION CENTER.
-
-Do not present 28 repetitive cards with equal visual importance.
-
-Design deterministic categories such as:
-
-- relationship review;
-- evidence gaps;
-- identity questions;
-- direction/state questions;
-- external conflicts;
-- external proposals;
-- governed AI approval.
-
-Only use categories genuinely supported by data.
-
-Do not classify something as high risk merely because it requires review.
-
-Every item should explain:
-
-WHY THIS REQUIRES ATTENTION
-
-and provide immediate access to evidence.
-
-==================================================
-AI EXPERIENCE
-==================================================
-
-AI should become an integrated assistant, not another difficult configuration page.
-
-Design a persistent:
-
-ASK LENDING INTELLIGENCE
-
-experience.
-
-Examples:
-
-Show me what connects NVIDIA to my largest exposures.
-
-Show relationships under review for my largest technology clients.
-
-Which portfolio clients have no CAM relationship intelligence?
-
-Find external evidence for this relationship.
-
-The UI response should preferably manipulate the product:
-
-- focus map;
-- focus network;
-- set filters;
-- open relevant clients;
-- highlight relationships;
-- show evidence;
-
-rather than return only prose.
-
-AI must respect governance.
-
-Normal AI interaction must not silently create governed relationship truth.
-
-==================================================
-AI CREATE RELATIONSHIP
-==================================================
-
-Simplify relationship definition for senior users.
-
-Primary experience:
-
-DESCRIBE THE RELATIONSHIP YOU WANT TO IDENTIFY
-
-Example:
-
-Companies materially dependent on the same GPU supplier.
-
-The system may propose:
-
-relationship name;
-relationship family;
-endpoint semantics;
-evidence requirements;
-direction;
-qualification logic;
-review behavior.
-
-Then show:
-
-PREVIEW
-
-before:
-
-APPROVE / PUBLISH
-
-Keep advanced configuration available behind:
-
-ADVANCED CONFIGURATION
-
-Do not force senior users to understand every low-level schema field.
-
-==================================================
-EVENTS / DEVELOPMENTS
-==================================================
-
-Design an Events / Developments concept that can eventually support, where governed
-data exists:
-
-- refinancing;
-- acquisitions;
-- major contracts;
-- supplier disruption;
-- ratings actions;
-- regulatory developments;
-- earnings developments;
-- interest-rate context;
-- bankruptcy;
-- operational disruption;
-- geopolitical events.
-
-Do not fabricate event capability if the backend does not currently support it.
-
-Explicitly classify this part of the blueprint as one of:
-
-READY NOW
-PARTIALLY READY
-FUTURE DATA/ENGINE REQUIRED
-
-Design how an event could highlight affected clients and relationship paths without
-claiming guaranteed credit impact.
-
-==================================================
-FRONTEND TECHNOLOGY REVIEW
-==================================================
-
-Audit the current frontend stack first.
-
-Then make a justified recommendation for the reconstruction.
-
-Evaluate technologies such as, only where appropriate:
-
-React + TypeScript
-TanStack Query
-TanStack Table
-React Virtual
-Zustand
-MapLibre GL
-deck.gl
-Sigma.js
-Cytoscape.js
-Apache ECharts
-Framer Motion
-Web Workers
-
-Do NOT add dependencies in this task.
-
-For each recommended technology explain:
-
-- capability;
-- why Lending needs it;
-- whether something already installed can provide it;
-- bundle/performance implications;
-- implementation risk;
-- whether adoption is necessary or optional.
-
-Prefer the smallest high-quality stack that achieves the design.
-
-==================================================
-DESIGN SYSTEM
-==================================================
-
-Specify a new design system.
-
-Direction:
-
-LIGHT
-PREMIUM
-INSTITUTIONAL
-INTELLIGENCE-ORIENTED
-CLEAR
-HIGH-END ENTERPRISE ANALYTICS
-
-Avoid generic Bootstrap/admin-dashboard appearance.
-
-Define:
-
-- typography;
-- spacing;
-- page grid;
-- shell;
-- navigation;
-- command bar;
-- surfaces;
-- borders;
-- elevation;
-- drawers;
-- inspectors;
-- tooltips;
-- badges;
-- tables;
-- charts;
-- map controls;
-- graph controls;
-- empty states;
-- loading states;
-- error states;
-- source labels;
-- review labels.
-
-Color semantics must be restrained and meaningful.
-
-For example, conceptually:
-
-neutral/navy
-= primary institutional UI
-
-blue/teal
-= analytical emphasis
-
-amber
-= review/attention
-
-red
-= explicit conflict/error only
-
-Do not assign colors that imply risk where no risk classification exists.
-
-==================================================
-MOTION
-==================================================
-
-Define restrained purposeful motion for:
-
-- map transitions;
-- graph focus;
-- neighborhood expansion;
-- panel transitions;
-- investigation handoffs;
-- loading skeletons.
-
-Do not use decorative continuous animation that suggests live data or economic flow
-when none exists.
-
-Support reduced-motion preferences.
-
-==================================================
-PERFORMANCE ARCHITECTURE
-==================================================
-
-The new experience must remain fast with growing data.
-
-Design:
-
-- code splitting;
-- lazy loading;
-- bounded APIs;
-- pagination;
-- virtualization;
-- graph edge/node caps;
-- progressive graph fetch;
-- first-degree neighborhood loading;
-- controlled expansion;
-- server-side aggregation;
-- caching;
-- stale-time strategy;
-- cancelable requests;
-- Web Workers where justified.
-
-The browser must never load multi-gigabyte normalized artifacts.
-
-Do not design the UI around unbounded 32,957-row relationship adaptation.
-
-If a desired experience needs a new bounded read API, identify it explicitly.
-
-Do not implement it yet.
-
-==================================================
-STATE MODEL
-==================================================
-
-Design explicit visual treatment for:
-
-0
-
-Unknown
-
-Unavailable
-
-Not Applicable
-
-Not Loaded
-
-Filtered Out
-
-Truncated
-
-No CAM Relationship
-
-Review Required
-
-Supplemental Only
-
-Identity Unresolved
-
-Direction Unresolved
-
-State Unresolved
-
-Evidence Unavailable
-
-API Failure
-
-Never collapse these into one generic empty state.
-
-==================================================
-RESPONSIVE + ACCESSIBILITY
-==================================================
-
-The primary environment is a professional desktop / large monitor.
-
-Design for that first.
-
-Also specify behavior for:
-
-- laptop;
-- narrower desktop;
-- tablet-width where practical.
-
-Ensure:
-
-- keyboard navigation;
-- visible focus;
-- accessible map/graph alternatives;
-- screen-reader labels;
-- contrast;
-- reduced motion;
-- non-color-only status communication.
-
-==================================================
-RECONSTRUCTION STRATEGY
-==================================================
-
-Do NOT recommend destroying the working frontend and replacing it in one uncontrolled change.
-
-Design a staged reconstruction.
-
-Prefer a parallel/new shell or feature-flagged approach so the existing application remains
-available until replacement surfaces pass validation.
-
-Propose implementation phases.
-
-A possible sequence to evaluate:
-
-U1 — Design system + new shell
-U2 — Executive Intelligence
-U3 — Geographic Intelligence
-U4 — Client 360
-U5 — Network Intelligence
-U6 — Relationship Intelligence
-U7 — Attention / Review
-U8 — Research + AI integration
-U9 — Events / advanced analytics
-U10 — performance/accessibility/release hardening
-
-You may propose a better sequence after inspecting dependencies.
-
-Each phase must have clear acceptance criteria.
-
-==================================================
-BACKEND GAP ANALYSIS
-==================================================
-
-For every major new UX capability classify backend readiness:
-
-READY NOW
-
-NEEDS SMALL BOUNDED READ API
-
-NEEDS BACKEND ENHANCEMENT
-
-FUTURE CAPABILITY
-
-Examples to analyze:
-
-executive metrics;
-map aggregation;
-country/sector drill-down;
-network preview;
-first-degree graph expansion;
-graph counts;
-source provenance;
-CAM + SEC combinations;
-evidence excerpts;
-relationship lineage;
-entity search;
-path exploration;
-events;
-external research handoff;
-AI interaction;
-attention/review categories.
-
-Do not invent APIs that already exist.
-
-Inspect current repository first.
-
-==================================================
-VISUAL WIREFRAME SPECIFICATION
-==================================================
-
-For each major surface, provide a textual/ASCII wireframe showing:
-
-- page hierarchy;
-- major regions;
-- map/network placement;
-- command controls;
-- inspectors;
-- indicators;
-- evidence areas;
-- interactions.
-
-At minimum:
-
-Executive Intelligence
 Portfolio
-Geographic Intelligence
-Client 360
-Network Intelligence
-Relationship Intelligence
-Attention Center
-External Research
-AI Relationship Studio
+Entity
+Network
+Radar
+Events
+Research
+Evidence
+Review
 
-These are architecture wireframes, not final pixel-perfect designs.
+Persist entity key in URL.
+
+Example:
+
+?entity=MASTER:0000426083
+
+Reloading the browser should preserve selected entity.
+
+Do not use GFCID alone as universal entity identity if the canonical entity_key
+is available.
 
 ==================================================
-FINAL REPORT
+6. PORTFOLIO PAGE
+==================================================
+
+Rebuild Overview into:
+
+PORTFOLIO INTELLIGENCE
+
+Top KPI strip should use real values.
+
+Possible cards:
+
+CCR Subjects
+Canonical Entities
+Exposure Records
+Research-Ready
+Entities with LEI
+Relationship Proposals
+Evidence Documents
+Open Research Gaps
+
+Do not display monetary totals because exposure amount semantics remain unknown.
+
+Display:
+
+Exposure Records
+
+not:
+
+Total Exposure $
+
+unless semantics become governed later.
+
+==================================================
+7. GLOBAL WORLD MAP
+==================================================
+
+Use the existing countries.geojson.
+
+Build a proper recognizable interactive world map.
+
+Do NOT use abstract polygon approximations.
+
+Map must support analytical layer switching.
+
+Initial available layers:
+
+CCR Population
+Identity Coverage
+Research Readiness
+Evidence Coverage
+
+Future disabled layers:
+
+Relationships
+Events
+Stress
+
+If a layer has no populated production data, show it disabled or with a
+clear zero-data state.
+
+Country representation:
+
+fill intensity or bubbles based on CCR subject count.
+
+Hover:
+
+country
+CCR subjects
+canonical entities if available
+LEI coverage
+research-ready count
+
+Click:
+
+select country and filter the rest of the page.
+
+Map controls:
+
+[ Population ]
+[ Identity ]
+[ Research ]
+[ Evidence ]
+
+Add:
+
+Reset view
+Fit data
+Legend
+
+==================================================
+8. PORTFOLIO ANALYTICS PANELS
+==================================================
+
+Below the map create compact analytical panels.
+
+A. COUNTRY CONCENTRATION
+
+Top countries by CCR subject count.
+
+Horizontal bars.
+
+B. INDUSTRY / RMI MIX
+
+Use real available classification.
+
+Do not infer taxonomy equivalence where it is unresolved.
+
+C. IDENTITY COVERAGE
+
+Breakdown:
+
+master-backed
+deterministic match
+CCR-only
+review required
+
+D. IDENTIFIER COVERAGE
+
+LEI
+CIK
+ticker
+domain where verified
+
+E. RESEARCH READINESS
+
+ready
+discovery required
+review blocked
+unknown
+
+Use actual CCR data.
+
+==================================================
+9. ENTITY PAGE
+==================================================
+
+Selecting an entity opens a rich analytical entity workspace.
+
+Header:
+
+3M CO
+
+badges:
+
+CCR SUBJECT
+MASTER BACKED
+HIGH IDENTITY
+RESEARCH ELIGIBLE
+
+Identifiers:
+
+GFCID
+CAGID
+LEI
+CIK
+Ticker
+Country
+
+Use compact copy buttons.
+
+Do not overload header.
+
+==================================================
+10. ENTITY SUMMARY STRIP
+==================================================
+
+Create cards:
+
+Exposure Records
+Identifiers
+Relationship Observations
+Research Claims
+Evidence Documents
+Research Runs
+Events
+
+Use actual counts.
+
+Zero is valid.
+
+Example:
+
+RELATIONSHIP OBSERVATIONS
+0
+No evidence-backed production observations
+
+Do not hide zeros.
+
+==================================================
+11. ENTITY TABS
+==================================================
+
+Entity workspace tabs:
+
+Intelligence
+Exposure
+Relationships
+Evidence
+Research
+Timeline
+
+INTELLIGENCE should be default.
+
+==================================================
+12. INTELLIGENCE VIEW
+==================================================
+
+Create a three-column analytical composition.
+
+LEFT:
+
+Entity profile
+identity
+country
+industry
+CCR membership
+
+CENTER:
+
+Relationship Radar placeholder/data visualization
+
+RIGHT:
+
+Research & evidence state
+
+Relationship Radar dimensions:
+
+Corporate Structure
+Supply
+Customer
+Finance
+Technology
+Infrastructure
+Services
+Strategic
+
+Important:
+
+Radar does NOT mean numeric risk score.
+
+Each dimension should show states such as:
+
+EVIDENCED
+PROPOSAL
+RESEARCHING
+CANDIDATE
+NO DATA
+
+Never fabricate percentages.
+
+==================================================
+13. EXPOSURE VIEW
+==================================================
+
+Display actual source exposure/facility rows.
+
+Show:
+
+facility ID
+facility type
+facility description
+direct exposure field
+contingent exposure field
+other raw amount fields
+
+BUT clearly label:
+
+Units / currency / additivity not governed
+
+Do not aggregate these fields into misleading totals.
+
+Provide:
+
+row count
+facility count
+facility-type distribution
+raw exposure distribution only where technically safe
+
+==================================================
+14. RELATIONSHIPS VIEW
+==================================================
+
+Prepare the full relationship interface now even if production relationship
+count is zero.
+
+Show three separate layers:
+
+EVIDENCE-BACKED
+PROPOSALS
+RESEARCH CANDIDATES
+
+Never merge them.
+
+Relationship row/card:
+
+related entity
+relationship type
+direction
+state
+source tier
+evidence count
+freshness
+review state
+
+If none exist:
+
+"No evidence-backed relationships currently stored."
+
+Do NOT create demo edges.
+
+==================================================
+15. RIGHT INTELLIGENCE INSPECTOR
+==================================================
+
+Create a persistent contextual inspector.
+
+Default tabs:
+
+ENTITY
+EVIDENCE
+RESEARCH
+SOURCE
+
+When entity selected:
+
+identity details
+
+When relationship selected:
+
+relationship type
+direction
+status
+counterparty
+evidence documents
+evidence snippets
+source tier
+research run
+
+When map country selected:
+
+country analytics
+
+When research run selected:
+
+run status
+plan
+providers
+outcome
+
+Inspector width:
+
+approximately 330–400px desktop.
+
+Resizable if practical.
+
+==================================================
+16. RESEARCH STATUS EXPERIENCE
+==================================================
+
+Build a compact reusable research-status component.
+
+Statuses:
+
+READY
+RUNNING
+PROPOSAL_PENDING_REVIEW
+INSUFFICIENT_EVIDENCE
+NOT_FOUND
+PROVIDER_UNAVAILABLE
+IDENTITY_UNRESOLVED
+RELATED_ENTITY_UNRESOLVED
+DIRECTION_UNRESOLVED
+CONFLICT_REVIEW_REQUIRED
+
+Each should have:
+
+consistent badge
+tooltip
+plain-language description
+
+Do not use generic red "error" for governed research outcomes such as
+NOT_FOUND.
+
+==================================================
+17. EMPTY STATES
+==================================================
+
+Empty states must be analytical.
+
+BAD:
+
+"No data."
+
+GOOD:
+
+"No evidence-backed relationships currently stored.
+145 correlation candidates exist in the separate research-candidate layer."
+
+Use actual counts when available.
+
+Never imply candidate = relationship.
+
+==================================================
+18. AI ANALYST SURFACE
+==================================================
+
+Create the visual shell for an AI Analyst.
+
+Do NOT yet make autonomous calls.
+
+Button:
+
+AI Analyst
+
+opens right-side expandable panel.
+
+Suggested future prompts:
+
+Explain this entity
+Summarize available evidence
+What relationship gaps remain?
+Which research questions are unresolved?
+Explain this network
+Assess this event against this entity
+
+For now:
+
+wire only to existing safe AI endpoint if already present.
+
+If no production AI endpoint exists:
+
+show controlled "AI integration not configured" state.
+
+Do not fake responses.
+
+==================================================
+19. RESEARCH ACTION
+==================================================
+
+Entity header should contain:
+
+[ Research Entity ]
+
+Click opens modal/drawer with:
+
+relationship type
+research scope
+source strategy
+minimum tier
+research instructions
+
+This should use the existing Research Orchestrator API if available.
+
+Do not create a second research system.
+
+No automatic research on page load.
+
+==================================================
+20. PERFORMANCE
+==================================================
+
+Do not load all 16k+ entities into the browser.
+
+Use backend pagination/search.
+
+Entity search should debounce.
+
+Tables should paginate or virtualize.
+
+Map country aggregation should come from compact aggregate API data.
+
+Avoid expensive full-graph fetches.
+
+==================================================
+21. API CONTRACT
+==================================================
+
+Inspect existing APIs first.
+
+Reuse them.
+
+If needed, add ONLY read-oriented endpoints such as:
+
+GET /api/portfolio/summary
+
+GET /api/portfolio/geography
+
+GET /api/entities/search
+
+GET /api/entities/{entity_key}
+
+GET /api/entities/{entity_key}/exposure
+
+GET /api/entities/{entity_key}/relationships
+
+GET /api/entities/{entity_key}/research
+
+GET /api/entities/{entity_key}/evidence
+
+GET /api/providers/status
+
+Do not duplicate existing routes.
+
+Do not change database schema in this task unless absolutely unavoidable.
+
+==================================================
+22. FRONTEND ARCHITECTURE
+==================================================
+
+Refactor into reusable components.
+
+Suggested structure:
+
+frontend/src/
+  app/
+  components/
+    shell/
+    navigation/
+    command/
+    map/
+    charts/
+    entity/
+    relationship/
+    research/
+    evidence/
+    inspector/
+    tables/
+    badges/
+  pages/
+    PortfolioPage
+    EntityPage
+    NetworkPage
+    RadarPage
+    EventsPage
+    ResearchPage
+    EvidencePage
+    ReviewPage
+  state/
+  api/
+  styles/
+
+Follow current project framework conventions if structure differs.
+
+Do not rewrite the entire frontend framework unnecessarily.
+
+==================================================
+23. UX DETAILS
+==================================================
+
+Add:
+
+loading skeletons
+error boundaries
+tooltips
+keyboard focus states
+sticky table headers
+sortable tables
+copy identifier action
+breadcrumbs
+URL-preserved filters
+responsive inspector behavior
+
+Use subtle motion only for:
+
+drawer open/close
+selection
+map zoom
+panel transitions
+
+No flashy animation.
+
+==================================================
+24. DATA TRUTH BANNER
+==================================================
+
+Add a small non-intrusive data-governance banner where relevant:
+
+"Relationship candidates are research leads, not evidence."
+
+On exposure view:
+
+"Exposure amount units and additive semantics are not yet governed."
+
+On research:
+
+"External research runs only after explicit user action."
+
+These should be compact, not giant warnings.
+
+==================================================
+25. REMOVE CURRENT WEAK DESIGN
+==================================================
+
+Replace:
+
+large marketing headers
+excess blank white space
+simple stacked cards
+form-like main pages
+decorative placeholder network pages
+
+with analytical layouts.
+
+Keep only reusable useful components.
+
+Do not preserve poor layout merely for visual backward compatibility.
+
+==================================================
+26. FIRST-PASS ROUTES
+==================================================
+
+Fully implement in this phase:
+
+Portfolio
+Entities / Entity Intelligence
+
+Build functional shell/placeholders connected to actual state for:
+
+Network
+Radar
+Events
+Research
+Evidence
+Review
+
+Do not attempt the advanced graph/event engines in this task.
+
+Those come in UI-2.
+
+==================================================
+27. VALIDATION
+==================================================
+
+Run:
+
+frontend TypeScript validation
+frontend production build
+backend regression
+API smoke tests
+
+Test:
+
+portfolio loads
+map renders
+country click works
+entity search works
+entity selection persists
+entity page loads
+tabs work
+exposure loads
+relationship zero-state is correct
+research state loads
+provider pulse loads
+inspector works
+
+No fake relationship data.
+
+==================================================
+28. REPORT
 ==================================================
 
 Create:
 
-backend/data/LENDING_UI_RECONSTRUCTION_BLUEPRINT.md
+backend/data/CCR_ADVANCED_FRONTEND_UI1_REPORT.md
 
-The report must include:
+Include:
 
-1. Executive product vision
-2. Existing frontend diagnosis
-3. Capabilities worth preserving
-4. Components/layouts that should be replaced
-5. Proposed information architecture
-6. Navigation model
-7. Design system
-8. Executive Home architecture
-9. Geographic Intelligence architecture
-10. Network Preview architecture
-11. Full Network Intelligence architecture
-12. Network anti-hairball strategy
-13. Node semantics
-14. Edge semantics
-15. DIRECT EDGE PROVENANCE LABEL rules
-16. CAM / SEC / WEB / AI / V2 visual semantics
-17. No-connection / Research Connection workflow
-18. Client 360 architecture
-19. Relationship Intelligence architecture
-20. Evidence / lineage experience
-21. Attention Center
-22. External Research experience
-23. AI assistant
-24. AI relationship creation
-25. Events / future intelligence
-26. frontend technology recommendation
-27. performance architecture
-28. accessibility
-29. responsive behavior
-30. backend readiness matrix
-31. required bounded API enhancements
-32. staged reconstruction plan
-33. acceptance criteria per implementation phase
-34. known limitations
-35. explicit deferred capabilities
-
-Also include visual ASCII wireframes for all principal surfaces.
+UI architecture
+routes
+components
+API reuse/additions
+screens implemented
+data sources
+performance approach
+known limitations
+validation results
 
 ==================================================
-MANDATORY QUESTIONS TO ANSWER
+FINAL RESPONSE
 ==================================================
 
-The report must explicitly answer:
+CCR ADVANCED FRONTEND UI-1: PASS / FAIL
 
-1. What should the completely reconstructed Lending product look and feel like?
+PORTFOLIO:
+PASS / FAIL
 
-2. Which existing frontend concepts should be discarded?
+WORLD MAP:
+PASS / FAIL
 
-3. Which existing functional capabilities should be preserved?
+ENTITY SEARCH:
+PASS / FAIL
 
-4. What technology should power the geographic map and why?
+ENTITY INTELLIGENCE:
+PASS / FAIL
 
-5. What technology should power the relationship network and why?
+EXPOSURE VIEW:
+PASS / FAIL
 
-6. How will the graph prevent a hairball?
+RELATIONSHIP LAYERS:
+PASS / FAIL
 
-7. What is the maximum/default network scope before progressive expansion?
+INTELLIGENCE INSPECTOR:
+PASS / FAIL
 
-8. How will a small Network Preview differ from Full Network Intelligence?
+RESEARCH ACTION:
+PASS / FAIL
 
-9. How will edge labels visibly show:
-   CAM
-   SEC
-   WEB
-   AI
-   V2
-   combinations such as CAM + SEC?
+AI ANALYST SHELL:
+PASS / FAIL
 
-10. What happens visually when there is NO governed connection?
+REAL CCR DATA ONLY:
+PASS / FAIL
 
-11. How does the user launch SEC/Web/Stylus research from that missing connection?
+FAKE RELATIONSHIPS:
+0 / FAIL
 
-12. How are supplemental research results shown without pretending they are CAM?
+FRONTEND BUILD:
+PASS / FAIL
 
-13. How does a user move from:
-    Map
-    → Network
-    → Client
-    → Relationship
-    → Evidence
-    → Source
-    → Research
-    → Review
-    without losing context?
+BACKEND REGRESSION:
+passed:
+failed:
+errors:
 
-14. Which capabilities are ready using today's APIs?
+REPORT:
+backend/data/CCR_ADVANCED_FRONTEND_UI1_REPORT.md
 
-15. Which require small bounded backend APIs?
+Also provide the local URL to open the redesigned CCR application.
 
-16. Which should be deferred?
-
-17. How should the reconstruction be implemented without destabilizing the
-    currently working Lending application?
-
-==================================================
-STRICT NON-GOALS
-==================================================
-
-DO NOT:
-
-- implement the reconstruction yet;
-- modify backend business logic;
-- modify source data;
-- change CAM/V3 authority;
-- change relationship truth;
-- create synthetic relationships;
-- create synthetic metrics;
-- create risk scores;
-- add external relationships;
-- run SEC;
-- run Web research;
-- run Stylus;
-- run AI generation;
-- modify CCR;
-- read CCR as a Lending source;
-- introduce dependencies in package.json;
-- start page-by-page coding.
-
-This task is the architecture/design blueprint only.
-
-==================================================
-STOP CONDITION
-==================================================
-
-Stop after the report.
-
-Do not start U1.
-
-The final line of the report must be exactly:
-
-READY FOR LENDING UI RECONSTRUCTION U1
+STOP.
