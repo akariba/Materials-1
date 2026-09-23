@@ -1,319 +1,414 @@
-CCR DATA FOUNDATION — EXPOSURE & CLIENT ACTIVITY ANALYSIS
+CCR DATA FOUNDATION — CANONICAL SUBJECT / ENTITY MIGRATION
 
 Work only in the CURRENT CCR repository.
 
-This is CCR only.
+Read:
+
+analysis/output/CCR_IDENTITY_EXCEPTION_DEEP_DIVE.md
+analysis/output/CCR_EXPOSURE_ACTIVITY_ANALYSIS.md
+analysis/output/ccr_identity_exception_resolution.csv
+analysis/output/ccr_historical_conflict_groups.csv
+analysis/output/ccr_exposure_row_patterns.csv
+
+Inspect:
+
+backend/data/ccr_relationship_intelligence.sqlite3
 
 Do not modify:
-- Customer_latest.parquet
-- thousandClients.csv
-- production SQLite
-- frontend
-- relationship logic
 
+Customer_latest.parquet
+thousandClients.csv
+backend/data/ccr_clients.sqlite3
+
+No frontend work.
 No SEC.
 No GLEIF.
 No Web.
-No AI enrichment.
-
-Read the existing discovery/deep-dive reports first.
+No AI.
+No relationship creation.
 
 OBJECTIVE
 
-Determine exactly what the 25,000 rows in:
-
-thousandClients.csv
-
-represent, why 16,769 unique GFCIDs produce 25,000 rows, and whether the
-available data supports a governed client/activity classification.
-
-Do NOT invent ACTIVE / INACTIVE definitions.
+Migrate the validated identity/exposure conclusions into the CCR relationship
+database using an ADDITIVE migration.
 
 ==================================================
-1. ROW-GRAIN ANALYSIS
-==================================================
-
-Identify the likely business grain of one row.
-
-Test whether rows appear to represent:
-
-FACILITY
-PRODUCT
-NETTING_SET
-EXPOSURE
-ACCOUNT
-LEGAL_ENTITY
-DATE_SNAPSHOT
-OTHER
-
-Use column combinations and duplicate patterns.
-
-Report:
-
-25,000 total rows
-16,769 unique GFCIDs
-distribution of rows per GFCID
-
-Show:
-
-clients with 1 row
-2 rows
-3 rows
-4 rows
-5+ rows
-maximum rows for one GFCID
-
-For the top 20 multi-row clients show which fields differ between rows.
-
-==================================================
-2. COLUMN SEMANTICS
-==================================================
-
-For all 18 columns classify:
-
-IDENTITY
-GROUPING
-EXPOSURE
-FACILITY
-PRODUCT
-DATE
-STATUS
-CLASSIFICATION
-REFERENCE
-UNKNOWN
-
-For each numeric field report:
-
-min
-max
-median
-null count
-negative count
-zero count
-distinct count
-
-Do not assume currency or units.
-
-==================================================
-3. DATE / STATUS FIELDS
-==================================================
-
-Identify every field that might indicate:
-
-as-of date
-effective date
-maturity date
-close date
-open date
-facility status
-account status
-client status
-credit status
-
-For each report:
-
-field
-values
-distribution
-business interpretation if defensible
-confidence
-
-Do not reinterpret unclear fields.
-
-==================================================
-4. MASTER ACTIVITY SIGNALS
-==================================================
-
-Inspect the 21-column Customer_latest.parquet schema for any fields that could
-represent:
-
-active/inactive
-credit managed
-client lifecycle
-current/historical
-closed/open
-status
-snapshot date
-
-Especially inspect:
-
-credit_managed_flag
-
-Determine its observed values.
-
-Compare it between:
-
-A. the 16,769 CCR source clients
-B. a representative/master-wide population
-
-Report whether CCR clients are concentrated in one value.
-
-Do NOT rename credit_managed_flag to active/inactive unless repository
-documentation proves that meaning.
-
-==================================================
-5. CCR PRESENCE VS MASTER
-==================================================
-
-For the 16,769 CCR subjects classify:
-
-MASTER_BACKED
-CCR_ONLY
-REVIEW_REQUIRED
-
-Then determine whether exposure-file presence itself should mean:
-
-CURRENT_CCR_POPULATION
-
-This is a scope label only.
-
-It must not automatically mean:
-
-ACTIVE_CLIENT
-
-unless proven.
-
-==================================================
-6. POSSIBLE ACTIVITY MODEL
-==================================================
-
-Based only on evidence, propose the safest lifecycle/scope states.
-
-Potential concepts:
-
-CURRENT_CCR_SCOPE
-MASTER_ONLY
-CCR_ONLY
-REVIEW_REQUIRED
-CURRENT_EXPOSURE_PRESENT
-NO_CURRENT_CCR_EXPOSURE
-UNKNOWN_ACTIVITY
-
-Only recommend states supported by available data.
-
-If ACTIVE / INACTIVE cannot be proven, say so explicitly.
-
-==================================================
-7. MULTI-ROW PATTERNS
-==================================================
-
-Determine the main causes of multiple rows per GFCID.
-
-Create categories such as:
-
-MULTIPLE_FACILITIES
-MULTIPLE_PRODUCTS
-MULTIPLE_ACCOUNTS
-MULTIPLE_DATES
-MULTIPLE_EXPOSURE_TYPES
-IDENTICAL_DUPLICATE
-UNKNOWN
-
-Report client count and row count for each.
-
-==================================================
-8. DUPLICATES
-==================================================
-
-Check:
-
-exact duplicate rows
-duplicate GFCID + same relevant business attributes
-duplicate rows differing only in non-business metadata
-
-Do not delete anything.
-
-Report whether any rows appear redundant.
-
-==================================================
-9. RECOMMENDATION
-==================================================
-
-Answer:
-
-A. What does one `thousandClients.csv` row most likely represent?
-
-B. Why are there 25,000 rows for 16,769 clients?
-
-C. Can we defensibly identify active clients?
-
-D. Can we defensibly identify current CCR exposure population?
-
-E. Which fields can be used in the canonical database?
-
-F. Which fields remain UNKNOWN and must not be used for scoring?
-
-==================================================
-10. OUTPUT
+1. CCR SUBJECT REGISTRY
 ==================================================
 
 Create:
 
-analysis/output/CCR_EXPOSURE_ACTIVITY_ANALYSIS.md
+ccr_subjects
 
-and:
+Exactly one row per source CCR GFCID.
 
-analysis/output/ccr_exposure_row_patterns.csv
+Expected:
+16,769 rows.
+
+Fields:
+
+ccr_subject_key
+source_gfcid
+source_cagid
+source_legal_name
+
+entity_key nullable
+
+identity_class
+resolution_status
+resolution_method
+
+current_ccr_scope
+current_exposure_present
+
+credit_managed_flag
+credit_managed_semantics
+
+research_allowed
+review_required
+
+created_at
+
+Rules:
+
+current_ccr_scope = true
+for all subjects present in thousandClients.csv.
+
+current_exposure_present = true
+means only that at least one row exists in this source extract.
+
+Do NOT create ACTIVE_CLIENT or INACTIVE_CLIENT.
+
+Set:
+
+credit_managed_semantics =
+'MANAGED_SCOPE_ATTRIBUTE_UNCONFIRMED'
+
+==================================================
+2. ENTITY REGISTRY
+==================================================
+
+Create or extend:
+
+entity_registry
+
+Entity classes:
+
+MASTER_BACKED
+DETERMINISTIC_MASTER_MATCH
+CCR_ONLY_ENTITY
+EXTERNAL_ENTITY
+
+Do not populate EXTERNAL_ENTITY yet.
+
+Populate:
+
+16,755 MASTER_BACKED exact matches
+
+4 DETERMINISTIC_MASTER_MATCH records
+
+8 CCR_ONLY_ENTITY records
+
+Expected canonical entities:
+
+16,767
+
+Fields should include:
+
+entity_key
+entity_class
+
+master_gfcid
+master_cagid
+
+legal_name
+normalized_name
+
+country
+industry
+sector
+lei
+
+identity_quality
+research_eligibility
+
+created_at
+
+Do not fabricate missing master fields.
+
+==================================================
+3. CCR-ONLY ENTITY KEYS
+==================================================
+
+For the 8 CCR-only subjects create stable non-master keys such as:
+
+CCRONLY:<source_gfcid>
+
+Do not create fake master GFCIDs.
+
+Classify research readiness carefully.
+
+Masked/private-bank subjects:
+INSUFFICIENT_IDENTITY
+
+Other sufficiently identified CCR-only subjects:
+DISCOVERY_REQUIRED
+
+==================================================
+4. REVIEW-REQUIRED SUBJECTS
+==================================================
+
+Keep both unresolved ambiguous subjects in ccr_subjects.
+
+Do not select a canonical master entity.
+
+Set:
+
+entity_key = NULL where appropriate
+review_required = true
+research_allowed = false
+resolution_status = REVIEW_REQUIRED
+
+Create:
+
+identity_candidate_matches
+
+Store all competing master candidates and reasons.
+
+==================================================
+5. EXPOSURE SOURCE ROWS
+==================================================
+
+Preserve all 25,000 rows.
+
+Do not deduplicate.
+
+Each row must link to:
+
+ccr_subject_key
+
+and, where trusted:
+
+entity_key
+
+Treat row grain as:
+
+SOURCE_EXPOSURE_LINE
+
+not as guaranteed one-row-per-facility.
+
+Preserve existing source fields including:
+
+FACILITY_ID
+FACILITY_TYPE
+FACILITY_DESCRIPTION
+
+DIRECT_EXPOSURE
+CONTINGENT_EXPOSURE
+TOTAL_EXPOSURE
+OSUC_AMOUNT
+OUTSTANDING_AMOUNT
+MTM_AMOUNT
+
+RISK_RATING
+
+country / region / industry classifications
+
+==================================================
+6. EXPOSURE SEMANTICS
+==================================================
+
+Persist explicit metadata:
+
+currency = UNKNOWN
+amount_unit = UNKNOWN
+amount_as_of_period = UNKNOWN
+additive_semantics = UNKNOWN
+facility_lifecycle_status = UNKNOWN
+
+Do not aggregate monetary values.
+
+Safe structural aggregates are allowed:
+
+exposure_row_count
+distinct_facility_id_count
+distinct_facility_type_count
+
+Label these as structural counts.
+
+==================================================
+7. DUPLICATE HANDLING
+==================================================
+
+Do not delete the 8 exact duplicate groups / 16 rows.
+
+Persist a diagnostic flag such as:
+
+exact_source_duplicate_candidate
+
+This means:
+
+potential duplicate requiring source-owner clarification.
+
+It does NOT mean:
+
+delete.
+
+==================================================
+8. IDENTIFIER RULES
+==================================================
+
+Enforce/document:
+
+GFCID:
+strong master entity reference
+
+CAGID:
+grouping identifier, not unique entity key
+
+legal_entity_id:
+not unique entity key
+
+No UNIQUE constraint on:
+
+CAGID
+legal_entity_id
+
+Do not collapse true multi-entity records.
+
+==================================================
+9. MASTER CONFLICT REGISTRY
+==================================================
+
+Persist the validated current-snapshot conflict groups.
+
+Categories:
+
+COSMETIC_NAME_VARIANT
+SHARED_IDENTIFIER
+TRUE_MULTI_ENTITY
+HIERARCHY_PROPAGATION
+INSUFFICIENT_INFORMATION
+PLACEHOLDER_NAME
+
+Call them:
+
+CURRENT_SNAPSHOT_CONFLICTS
+
+not historical identifier reuse.
+
+==================================================
+10. VALIDATION
+==================================================
+
+Prove:
+
+CCR source subjects = 16,769
+
+Canonical entities = 16,767
+
+Master-backed exact = 16,755
+
+Deterministic master matches = 4
+
+CCR-only entities = 8
+
+Review-required subjects = 2
+
+Exposure rows = 25,000
+
+All exposure rows linked to ccr_subject_key = 25,000
+
+Review-required research-enabled = 0
+
+ACTIVE_CLIENT rows created = 0
+
+INACTIVE_CLIENT rows created = 0
+
+Monetary aggregation created = 0
+
+Source duplicate rows deleted = 0
+
+Relationships created = 0
+
+External calls = 0
+
+Foreign-key integrity = PASS
+
+Source files unchanged = PASS
+
+==================================================
+11. REPORT
+==================================================
+
+Create:
+
+backend/data/CCR_CANONICAL_DATA_MODEL_REPORT.md
+
+Include:
+
+population bridge
+schema added
+entity classes
+CCR-only treatment
+review-required treatment
+exposure row treatment
+duplicate handling
+activity/scope semantics
+credit_managed_flag treatment
+amount restrictions
+tests
 
 FINAL RESPONSE:
 
-CCR EXPOSURE / ACTIVITY ANALYSIS: PASS / FAIL
+CCR CANONICAL DATA MODEL: PASS / FAIL
 
-SOURCE ROWS:
-25,000 / actual
+CCR SUBJECTS:
+actual
 
-UNIQUE GFCIDS:
-16,769 / actual
+CANONICAL ENTITIES:
+actual
 
-ROW GRAIN:
-<best-supported interpretation>
+MASTER EXACT:
+actual
 
-ROWS PER CLIENT
-1 row:
-2 rows:
-3 rows:
-4 rows:
-5+ rows:
-Maximum:
+DETERMINISTIC:
+actual
 
-MAIN MULTI-ROW CAUSES:
-1.
-2.
-3.
+CCR ONLY:
+actual
 
-EXACT DUPLICATE ROWS:
+REVIEW REQUIRED:
+actual
 
-STATUS FIELDS FOUND:
-<list>
+EXPOSURE ROWS:
+actual
 
-CREDIT_MANAGED_FLAG
-Values:
-CCR distribution:
-Master distribution:
-Can mean ACTIVE/INACTIVE: YES / NO
+EXPOSURE ROWS LINKED TO SUBJECT:
+actual
 
-CAN DEFINE ACTIVE CLIENT:
-YES / NO
-
-CAN DEFINE CURRENT CCR SCOPE:
-YES / NO
-
-RECOMMENDED STATES:
-<list>
-
-UNKNOWN SEMANTICS:
-<list>
-
-SOURCE FILES MODIFIED:
+ACTIVE/INACTIVE STATES:
 0 / FAIL
 
-PRODUCTION DB MODIFIED:
+MONETARY AGGREGATION:
 0 / FAIL
+
+DUPLICATE SOURCE ROWS DELETED:
+0 / FAIL
+
+REVIEW SUBJECTS RESEARCH ENABLED:
+0 / FAIL
+
+RELATIONSHIPS CREATED:
+0 / FAIL
+
+EXTERNAL CALLS:
+0 / FAIL
+
+FOREIGN KEYS:
+PASS / FAIL
 
 REPORT:
-analysis/output/CCR_EXPOSURE_ACTIVITY_ANALYSIS.md
-
-CSV:
-analysis/output/ccr_exposure_row_patterns.csv
+backend/data/CCR_CANONICAL_DATA_MODEL_REPORT.md
 
 STOP.
