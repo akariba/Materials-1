@@ -1,416 +1,438 @@
-CCR ADVANCED UI RECONSTRUCTION — STAGE 2
-PORTFOLIO + GLOBAL MAP + ENTITY INTELLIGENCE
+CCR UI-2 — STAGE 2
+HUMAN-DESIGNED ANALYST WORKSPACE
 
-Continue in the CURRENT CCR repository.
+Work only in the existing CCR repository.
 
-Stage 1 is the visual/workspace foundation.
+Do not change backend business semantics.
+Do not fabricate relationships, events, risk scores, exposure totals,
+AI results, evidence, provider readiness or analytical conclusions.
 
-Do not revert it.
+Preserve all existing real-data safeguards.
 
-This is an IMPLEMENTATION task.
-Do not stop after describing the design.
+OBJECTIVE
 
-Keep working until the screens below are implemented and validated.
+The existing dark UI still looks like a generic AI-generated dashboard.
 
-No fabricated data.
+Redesign the PRESENTATION SYSTEM so it looks like a deliberately designed
+institutional intelligence application built for professional analysts.
 
-==================================================
-1. PORTFOLIO PAGE
-==================================================
+This is NOT a color/theme exercise.
 
-Completely reconstruct Portfolio.
+The objective is:
 
-It must become the main command center.
+- stronger information hierarchy
+- fewer generic cards
+- less repeated visual structure
+- higher analytical density
+- deliberate use of whitespace
+- bespoke analytical components
+- contextual information instead of KPI-card grids
+- stronger typography hierarchy
+- better entity-centric navigation
+- better use of the entire viewport
+- more professional interaction patterns
 
-Top area:
+DESIGN PRINCIPLE
 
-PORTFOLIO INTELLIGENCE
+Do not make every information group a bordered rectangle.
 
-Compact snapshot line:
-snapshot date / data freshness / provider posture
+Use a mixture of:
 
-KPI row:
+- inline metrics
+- data tables
+- split panes
+- timelines
+- evidence strips
+- expandable rows
+- segmented controls
+- contextual drawers
+- analytical canvases
+- relationship legends
+- compact status markers
+- semantic grouping
+- progressive disclosure
 
-CCR SUBJECTS
-CANONICAL ENTITIES
-EXPOSURE RECORDS
-RESEARCH CANDIDATES
-EVIDENCE DOCUMENTS
-RELATIONSHIP OBSERVATIONS
+Cards should be used only where they materially improve comprehension.
 
-Use actual values.
+REMOVE THE “AI DASHBOARD” LOOK
 
-Zero must display as zero.
+Avoid:
 
-Do not make zero disappear.
+- excessive glowing borders
+- neon everywhere
+- identical KPI cards
+- excessive rounded rectangles
+- large empty boxes
+- decorative gauges
+- decorative circles
+- fake charts
+- giant empty vertical regions
+- centered empty-state messages occupying large panels
+- repeated title/subtitle/card patterns
+- visual effects without analytical meaning
 
-==================================================
-2. WORLD MAP AS PRIMARY VISUAL
-==================================================
+TYPOGRAPHY
 
-The existing world map must become the dominant analytical visualization.
+Create a clear editorial hierarchy.
 
-Use:
-frontend/public/countries.geojson
+Entity/page title:
+large but compact.
 
-Make it visually rich.
+Section headings:
+small institutional uppercase or concise human-readable section labels.
 
-Dark basemap.
+Metadata:
+small muted typography.
 
-Country borders subtle.
+Important values:
+high contrast but not oversized dashboard typography.
 
-Data layer colors should glow slightly but remain professional.
+Tables:
+dense and highly readable.
 
-Layers:
+The interface should feel designed for sustained professional use.
 
-POPULATION
-IDENTITY
-RESEARCH
-EVIDENCE
+ENTITY HEADER
 
-If later supported:
-RELATIONSHIPS
-EVENTS
-STRESS
+Create a reusable entity header.
 
-but keep disabled when data unavailable.
-
-==================================================
-3. MAP INTERACTIONS
-==================================================
-
-Hover:
-
-country
-CCR entity count
-share of CCR population
-LEI coverage
-research-ready count
-evidence-document count if available
-
-Click:
-
-select country.
-
-Country selection must:
-
-highlight country
-filter lower analytical panels
-update inspector
-
-Double click or button:
-zoom to country
-
-Controls:
-
-Reset
-Fit Data
-Zoom +
-Zoom -
-Layer selector
-Legend
-
-==================================================
-4. MAP VISUALIZATION
-==================================================
-
-Do not make every country the same pale color.
-
-Use proper quantitative intensity.
-
-Use CCR population as default.
-
-When Identity selected:
-visualize identifier/LEI coverage where defensible.
-
-When Research selected:
-visualize research readiness/count.
-
-When Evidence selected:
-visualize source-backed evidence count where available.
-
-No fabricated relationship arcs.
-
-==================================================
-5. PORTFOLIO ANALYTICS BELOW MAP
-==================================================
-
-Use compact 2x2 / 3x2 analytical panels.
-
-A. COUNTRY CONCENTRATION
-
-bar chart:
-top 10 countries
-
-B. ENTITY CLASS
-
-MASTER_BACKED
-DETERMINISTIC_MASTER_MATCH
-CCR_ONLY_ENTITY
-REVIEW_REQUIRED
-EXTERNAL_ENTITY if present
-
-C. IDENTIFIER COVERAGE
-
-LEI
-CIK
-Ticker
-Domain
-
-D. RESEARCH POSTURE
-
-candidates
-plans
-claims
-evidence
-unresolved
-
-E. INDUSTRY / CLASSIFICATION
-
-Use actual available values only.
-
-F. SOURCE / PROVIDER POSTURE
-
-SEC
-GLEIF
-Web
-AI
-
-==================================================
-6. ENTITIES PAGE
-==================================================
-
-Current table is functional but visually weak.
-
-Rebuild it as dense institutional entity search.
-
-Header:
-
-ENTITIES
-
-Subhead:
-Universal canonical entity registry.
-
-Filter bar:
-
-Search
-Entity class
-Country
-Identity quality
-CCR membership
-Research state
-
-Add clear filters button.
-
-Table:
-
-ENTITY
-CLASS
-COUNTRY
-IDENTIFIERS
-CCR
-EXPOSURE ROWS
-RESEARCH
-EVIDENCE
-RELATIONSHIPS
-
-Use pagination/server query.
-
-Use compact status indicators.
-
-Clicking row:
-select entity + navigate to intelligence.
-
-==================================================
-7. ENTITY INTELLIGENCE PAGE
-==================================================
-
-Create a dedicated entity intelligence route/page.
-
-Do not rely only on the right inspector.
-
-Suggested route:
-
-/entity/:entityKey
-
-Header:
+When an entity is selected show, where available:
 
 LEGAL NAME
-Ticker if available
-Country
-Entity class
-CCR membership
-Identity quality
-
-Actions:
-
-Research Entity
-Open Network
-Open Evidence
-AI Analyst
-
-==================================================
-8. ENTITY INTELLIGENCE HEADER METRICS
-==================================================
-
-Compact metrics:
-
-Exposure Records
-Research Candidates
-Research Plans
-Evidence Documents
-Relationship Observations
-Events
-
-Actual values only.
-
-==================================================
-9. ENTITY INTELLIGENCE TABS
-==================================================
-
-INTELLIGENCE
-EXPOSURE
-RELATIONSHIPS
-EVIDENCE
-RESEARCH
-TIMELINE
-
-==================================================
-10. INTELLIGENCE TAB
-==================================================
-
-Build a serious summary surface.
-
-LEFT:
-
-ENTITY PROFILE
-
-legal name
-country
-industry/RMI
 entity class
-CCR membership
-identity quality
-research eligibility
-
-Identifiers:
-
+country
+industry/sector
 GFCID
 CAGID
 LEI
 CIK
-Ticker
-Domain
+ticker
+identity quality/status
 
-CENTER:
+Below it show compact inline counts:
 
-RELATIONSHIP RADAR SUMMARY
+Relationships
+Research
+Evidence
+Events
+Reviews
 
-Corporate
-Supply
-Customer
-Finance
-Technology
-Infrastructure
-Services
-Strategic
+Do NOT render these as six large cards.
 
-For each:
-EVIDENCED
-PROPOSAL
-RESEARCHING
-CANDIDATE
-NO DATA
+WORKSPACE GRID
 
-No percentages.
+Use a professional multi-pane structure.
 
-RIGHT:
+LEFT
+navigation and analytical layers.
 
-RESEARCH POSTURE
+CENTER
+primary analytical workspace.
 
-provider readiness
-latest run
-plans
-claims
-evidence
-unresolved questions
-review requirements
+RIGHT
+contextual inspector / AI / evidence.
 
-==================================================
-11. EXPOSURE TAB
-==================================================
+Allow contextual panels to collapse so the analytical canvas can use nearly
+the full browser width.
 
-Make source rows useful.
+NETWORK PAGE
 
-Summary:
+Do not use the current circular orbit layout.
 
-record count
-distinct facility IDs
-facility types
-direct-exposure rows
-contingent-exposure rows
+Prepare a semantic analytical graph canvas.
 
-Table:
+Selected entity is the anchor.
 
-facility ID
-facility type
-facility description
-direct exposure
-contingent exposure
-OSUC
-outstanding
-total exposure
+Relationship groups should be visually organized around semantic categories:
 
-Do not aggregate monetary values.
+OWNERSHIP
+SUPPLIERS
+CUSTOMERS
+PARTNERS
+FINANCING
+TECHNOLOGY
+INFRASTRUCTURE
+OTHER
 
-Banner:
+Solid edges:
+evidence-backed observations only.
 
-"Source amount units, currency and additive semantics are not governed."
+Dotted edges:
+research candidates only.
 
-==================================================
-12. RESPONSIVE BEHAVIOR
-==================================================
+Each visible edge must preserve:
+relationship type
+direction
+state
+source/evidence availability
 
-At 1920:
-map + side analytics can coexist.
+Never visually imply an unsupported relationship.
 
-At 1440:
-map remains dominant.
+The graph canvas must be capable of expanding to almost full browser size.
 
-At laptop widths:
-inspector may overlay rather than permanently consume width.
+Add view modes:
 
-==================================================
-13. ACCEPTANCE
-==================================================
+GRAPH
+VALUE CHAIN
+OWNERSHIP
+GEOGRAPHY
+EVIDENCE
+TIMELINE
 
-Validate:
+Only activate modes supported by existing data.
 
-Portfolio loads.
-World map renders.
-Country hover works.
-Country click filters.
-Country selection updates inspector.
-Entity search works.
-Entity filters work.
-Entity page opens.
-Entity tabs work.
-Exposure rows load.
-No fake relationship/event/risk data.
-Build passes.
-Backend regression remains green.
+ENTITY INSPECTOR
+
+Redesign the right panel into meaningful sections rather than stacked cards.
+
+Use tabs:
+
+OVERVIEW
+IDENTITY
+RELATIONSHIPS
+RESEARCH
+EVIDENCE
+SOURCES
+
+Use dense key/value presentation.
+
+No fabricated values.
+
+EMPTY STATES
+
+Redesign empty states to be compact.
+
+Example:
+
+Events
+No persisted events.
+Approved event ingestion has not yet populated this entity.
+
+Do not create a 500px empty rectangle around this message.
+
+PORTFOLIO
+
+Replace the KPI-card-grid feeling with an institutional command view.
+
+Use:
+
+compact metric strip
+large map
+analytical table or distribution section
+research/evidence posture
+identity coverage
+provider state
+
+Map should remain the visual anchor.
+
+ENTITIES
+
+Make this feel like a professional entity browser.
+
+Use:
+sticky table header
+dense rows
+hover state
+selected-row state
+keyboard navigation where practical
+server-backed search
+column alignment
+compact identifier presentation
+
+Avoid excessive badge pills.
+
+RADAR
+
+Redesign the layout even when persisted radar data is unavailable.
+
+Prepare areas for:
+
+theme pressure
+signal timeline
+entity candidate signals
+event categories
+monitoring state
+
+When data is unavailable, show compact unavailable states.
+
+Do not fabricate radar values.
+
+EVENTS
+
+Use a timeline/event-stream information architecture.
+
+Left:
+event stream.
+
+Center:
+event detail.
+
+Right/context:
+affected entities / evidence / provenance.
+
+Again, no large empty generic cards.
+
+RESEARCH
+
+Make research resemble an investigation workbench.
+
+Use:
+
+research question
+provider/source status
+evidence collected
+claim state
+identity state
+direction state
+review state
+
+Prefer rows/timeline/progress structures over cards.
+
+EVIDENCE
+
+Design an evidence ledger.
+
+Columns should support where available:
+
+Source
+Document
+Date
+Tier
+Admissibility
+Related entity
+Relationship
+Research run
+Evidence status
+
+Clicking evidence should open a contextual evidence reader.
+
+AI ENTRY POINT
+
+Do not treat AI as a standalone decorative button.
+
+Prepare the existing AI drawer as a contextual analytical companion.
+
+It should visually receive:
+
+selected entity
+current page
+visible graph scope
+current filters
+available evidence
+research context
+
+Do NOT create new AI backend behavior in this stage.
+
+If AI is unconfigured, clearly show that status.
+
+VISUAL STYLE
+
+Institutional intelligence terminal.
+
+Dark neutral navy/graphite surfaces.
+
+Use accent colors sparingly and semantically:
+
+teal = verified / available / primary interaction
+orange = attention / unresolved
+purple = research candidate
+red = error/unavailable
+
+Avoid neon glow.
+
+Use subtle separators and depth rather than borders around everything.
+
+Use restrained 2–6px radii.
+
+No excessive shadows.
+
+No gradients unless extremely subtle and functional.
+
+VALIDATION
+
+Preserve:
+
+all existing navigation
+entity selection
+URL-selected entity state
+map rendering
+search
+research reads
+evidence reads
+provider state
+AI status reads
+backend API contracts
+database hashes
+relationship safeguards
+
+Run:
+
+frontend build
+frontend lint
+backend regression
+API smoke tests
 
 Create:
 
 backend/data/CCR_ADVANCED_FRONTEND_UI2_STAGE2_REPORT.md
 
-FINAL RESPONSE:
+The report must list:
 
-CCR UI2 STAGE 2: PASS / FAIL
-PORTFOLIO: PASS / FAIL
-WORLD MAP: PASS / FAIL
-COUNTRY INTERACTION: PASS / FAIL
-ENTITY REGISTRY: PASS / FAIL
-ENTITY INTELLIGENCE: PASS / FAIL
-EXPOSURE: PASS / FAIL
-REAL DATA ONLY: PASS / FAIL
+pages changed
+components redesigned
+design-system changes
+removed generic-card patterns
+network-canvas changes
+empty-state changes
+entity-header implementation
+inspector implementation
+validation results
+known remaining limitations
+
+FINAL RESPONSE
+
+CCR UI-2 STAGE 2: PASS / FAIL
+
+PORTFOLIO:
+PASS / FAIL
+
+ENTITY BROWSER:
+PASS / FAIL
+
+ENTITY HEADER:
+PASS / FAIL
+
+NETWORK ANALYTICAL CANVAS:
+PASS / FAIL
+
+RADAR WORKBENCH:
+PASS / FAIL
+
+EVENT TIMELINE:
+PASS / FAIL
+
+RESEARCH WORKBENCH:
+PASS / FAIL
+
+EVIDENCE LEDGER:
+PASS / FAIL
+
+INSPECTOR:
+PASS / FAIL
+
+AI CONTEXT SHELL:
+PASS / FAIL
+
+NO FABRICATED DATA:
+PASS / FAIL
+
+FRONTEND BUILD:
+PASS / FAIL
+
+BACKEND REGRESSION:
+passed / failed / errors
+
+REPORT:
+backend/data/CCR_ADVANCED_FRONTEND_UI2_STAGE2_REPORT.md
+
+STOP.
