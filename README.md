@@ -1,526 +1,416 @@
-CCR ADVANCED UI RECONSTRUCTION — STAGE 1
-VISUAL SYSTEM + ANALYTICAL WORKSPACE SHELL
+CCR ADVANCED UI RECONSTRUCTION — STAGE 2
+PORTFOLIO + GLOBAL MAP + ENTITY INTELLIGENCE
 
-Work ONLY in the current CCR repository.
+Continue in the CURRENT CCR repository.
+
+Stage 1 is the visual/workspace foundation.
+
+Do not revert it.
 
 This is an IMPLEMENTATION task.
+Do not stop after describing the design.
 
-Do not merely inspect, propose, summarize, or write a report.
-Continue modifying and validating the application until the required UI is
-implemented and the acceptance criteria below pass.
+Keep working until the screens below are implemented and validated.
 
-The existing UI-1 application is functional and must be preserved as the
-technical/data foundation.
-
-DO NOT change:
-
-- canonical CCR business data
-- protected Phase-2 data
-- relationship semantics
-- evidence semantics
-- research semantics
-- candidate semantics
-- source-policy semantics
-- provider execution behavior
-- database truth
-- production relationship counts
-- API meaning
-
-Do not fabricate:
-
-- relationships
-- events
-- AI output
-- exposure totals
-- risk scores
-- active/inactive states
-- source readiness
+No fabricated data.
 
 ==================================================
-CURRENT PROBLEM
+1. PORTFOLIO PAGE
 ==================================================
 
-The current UI is structurally correct but visually inadequate.
+Completely reconstruct Portfolio.
 
-Problems to fix:
+It must become the main command center.
 
-1. Too much blank white space.
-2. Low visual hierarchy.
-3. Pages feel disconnected.
-4. The interface resembles a technical administration console rather than an
-   institutional relationship-intelligence platform.
-5. Right inspector consumes too much permanent screen width.
-6. The global navigation is visually weak.
-7. Analytical content lacks density.
-8. Empty states occupy large areas with almost no analytical value.
-9. Network/Radar/Events/Research currently appear like unfinished placeholders.
-10. The visual system does not communicate relationship layers, research state,
-    evidence state, source confidence, provider state, or selected context
-    strongly enough.
-11. The current application is far lighter and flatter than the desired
-    intelligence-workstation experience.
+Top area:
 
-==================================================
-TARGET EXPERIENCE
-==================================================
+PORTFOLIO INTELLIGENCE
 
-Reconstruct the interface into a premium institutional analytical product.
+Compact snapshot line:
+snapshot date / data freshness / provider posture
 
-Think:
+KPI row:
 
-- Bloomberg-style information density
-- modern graph intelligence platform
-- credit-risk workstation
-- Palantir-like analytical workspace
-- sophisticated relationship/network investigation interface
+CCR SUBJECTS
+CANONICAL ENTITIES
+EXPOSURE RECORDS
+RESEARCH CANDIDATES
+EVIDENCE DOCUMENTS
+RELATIONSHIP OBSERVATIONS
 
-Do NOT imitate any product directly.
+Use actual values.
 
-The visual goal is:
+Zero must display as zero.
 
-DARK ANALYTICAL WORKSPACE
-+
-HIGH INFORMATION DENSITY
-+
-STRONG ENTITY CONTEXT
-+
-WORLD / NETWORK VISUALIZATION
-+
-EVIDENCE / RESEARCH TRACEABILITY
-+
-LOW WASTED SPACE
+Do not make zero disappear.
 
 ==================================================
-1. DEFAULT THEME
+2. WORLD MAP AS PRIMARY VISUAL
 ==================================================
 
-Make DARK MODE the default.
+The existing world map must become the dominant analytical visualization.
 
-Use approximately:
+Use:
+frontend/public/countries.geojson
 
-page background:
-#071018 / #08131c family
+Make it visually rich.
 
-primary surface:
-#0d1822
+Dark basemap.
 
-secondary surface:
-#111f2b
+Country borders subtle.
 
-raised surface:
-#152633
+Data layer colors should glow slightly but remain professional.
 
-border:
-rgba(130,165,185,0.18)
+Layers:
 
-primary text:
-#edf5f7
-
-secondary text:
-#a7bbc5
-
-muted:
-#6f8793
-
-teal:
-#2fc5b4
-
-blue:
-#4fa3ff
-
-purple:
-#9b7cff
-
-orange:
-#f0a34a
-
-red:
-#eb6464
-
-green:
-#49c885
-
-Do not scatter hard-coded colors everywhere.
-
-Create centralized design tokens.
-
-Use status colors consistently.
-
-==================================================
-2. GLOBAL WORKSPACE LAYOUT
-==================================================
-
-Reconstruct the application shell as:
-
-LEFT RAIL
-+
-TOP COMMAND BAR
-+
-MAIN ANALYTICAL CANVAS
-+
-COLLAPSIBLE RIGHT INSPECTOR
-+
-OPTIONAL BOTTOM CONTEXT DRAWER
-
-Target 1920x1080 first.
-
-Must remain usable at 1440 width.
-
-LEFT RAIL:
-
-width approximately 210–230px expanded.
-
-Sections:
-
-PORTFOLIO
-ENTITIES
-NETWORK
-RADAR
-EVENTS
+POPULATION
+IDENTITY
 RESEARCH
 EVIDENCE
-REVIEW
 
-Bottom:
+If later supported:
+RELATIONSHIPS
+EVENTS
+STRESS
 
-PROVIDERS
-SYSTEM
-
-Use icons + labels.
-
-Active destination must be visually strong.
-
-Allow rail collapse to icon-only mode.
+but keep disabled when data unavailable.
 
 ==================================================
-3. TOP COMMAND BAR
+3. MAP INTERACTIONS
 ==================================================
 
-Create one strong persistent command bar.
+Hover:
 
-Left:
+country
+CCR entity count
+share of CCR population
+LEI coverage
+research-ready count
+evidence-document count if available
 
-CCR / RELATIONSHIP INTELLIGENCE
+Click:
 
-Center:
+select country.
 
-global entity search
+Country selection must:
 
-Placeholder:
+highlight country
+filter lower analytical panels
+update inspector
 
-Search entity, GFCID, CAGID, LEI, CIK, ticker...
+Double click or button:
+zoom to country
 
-Right:
+Controls:
 
-selected entity context
-provider pulse
-AI Analyst
-workspace controls
-
-Selected entity chip must remain visible.
-
-Example:
-
-07 Holdings, LLC
-MASTER:1034329369
-
-Clicking it should open entity quick context.
+Reset
+Fit Data
+Zoom +
+Zoom -
+Layer selector
+Legend
 
 ==================================================
-4. ENTITY CONTEXT
+4. MAP VISUALIZATION
 ==================================================
 
-Keep current selected entity URL behavior.
+Do not make every country the same pale color.
 
-Do not lose selected entity when navigating.
+Use proper quantitative intensity.
 
-Make selection feel like the permanent investigation context.
+Use CCR population as default.
 
-At the top of analytical pages show a compact context row:
+When Identity selected:
+visualize identifier/LEI coverage where defensible.
+
+When Research selected:
+visualize research readiness/count.
+
+When Evidence selected:
+visualize source-backed evidence count where available.
+
+No fabricated relationship arcs.
+
+==================================================
+5. PORTFOLIO ANALYTICS BELOW MAP
+==================================================
+
+Use compact 2x2 / 3x2 analytical panels.
+
+A. COUNTRY CONCENTRATION
+
+bar chart:
+top 10 countries
+
+B. ENTITY CLASS
+
+MASTER_BACKED
+DETERMINISTIC_MASTER_MATCH
+CCR_ONLY_ENTITY
+REVIEW_REQUIRED
+EXTERNAL_ENTITY if present
+
+C. IDENTIFIER COVERAGE
+
+LEI
+CIK
+Ticker
+Domain
+
+D. RESEARCH POSTURE
+
+candidates
+plans
+claims
+evidence
+unresolved
+
+E. INDUSTRY / CLASSIFICATION
+
+Use actual available values only.
+
+F. SOURCE / PROVIDER POSTURE
+
+SEC
+GLEIF
+Web
+AI
+
+==================================================
+6. ENTITIES PAGE
+==================================================
+
+Current table is functional but visually weak.
+
+Rebuild it as dense institutional entity search.
+
+Header:
+
+ENTITIES
+
+Subhead:
+Universal canonical entity registry.
+
+Filter bar:
+
+Search
+Entity class
+Country
+Identity quality
+CCR membership
+Research state
+
+Add clear filters button.
+
+Table:
 
 ENTITY
 CLASS
 COUNTRY
-IDENTITY QUALITY
-CCR MEMBERSHIP
-RESEARCH STATUS
-
-Do not repeat large entity cards everywhere.
-
-==================================================
-5. INSPECTOR BEHAVIOR
-==================================================
-
-Current inspector is too permanently dominant.
-
-Change it to:
-
-COLLAPSIBLE
-RESIZABLE if practical
-
-Default width:
-340px
-
-Closed state:
-48px vertical handle
-
-Inspector tabs:
-
-OVERVIEW
-IDENTITY
-RELATIONSHIPS
+IDENTIFIERS
+CCR
+EXPOSURE ROWS
 RESEARCH
 EVIDENCE
-SOURCE
+RELATIONSHIPS
 
-Inspector content changes based on selection.
+Use pagination/server query.
 
-If nothing special is selected:
-show selected entity overview.
+Use compact status indicators.
 
-If a map country is selected:
-show country analytics.
-
-If a graph node is selected:
-show entity details.
-
-If an edge is selected:
-show relationship/evidence details.
-
-If a research run is selected:
-show run details.
+Clicking row:
+select entity + navigate to intelligence.
 
 ==================================================
-6. PAGE DENSITY
+7. ENTITY INTELLIGENCE PAGE
 ==================================================
 
-Remove giant empty areas.
+Create a dedicated entity intelligence route/page.
 
-Use a responsive analytical grid.
+Do not rely only on the right inspector.
 
-Cards should typically be:
+Suggested route:
 
-compact
-12–20px padding
-6–10px radius maximum
-subtle borders
+/entity/:entityKey
 
-Avoid huge rounded cards.
+Header:
 
-Avoid giant page headings.
+LEGAL NAME
+Ticker if available
+Country
+Entity class
+CCR membership
+Identity quality
 
-Page title should usually fit within 60–90px vertical space.
+Actions:
 
-==================================================
-7. TYPOGRAPHY
-==================================================
-
-Use a serious analytical hierarchy.
-
-Page title:
-28–34px
-
-section heading:
-14–18px
-
-micro-label:
-10–11px uppercase
-
-body:
-12–14px
-
-table:
-11–13px
-
-numeric KPIs:
-22–30px
-
-Use monospace only for:
-
-IDs
-run IDs
-hashes
-technical provenance
+Research Entity
+Open Network
+Open Evidence
+AI Analyst
 
 ==================================================
-8. STATUS SYSTEM
+8. ENTITY INTELLIGENCE HEADER METRICS
 ==================================================
 
-Create reusable semantic badges.
+Compact metrics:
 
-RELATIONSHIP STATES:
+Exposure Records
+Research Candidates
+Research Plans
+Evidence Documents
+Relationship Observations
+Events
 
-CONFIRMED
+Actual values only.
+
+==================================================
+9. ENTITY INTELLIGENCE TABS
+==================================================
+
+INTELLIGENCE
+EXPOSURE
+RELATIONSHIPS
+EVIDENCE
+RESEARCH
+TIMELINE
+
+==================================================
+10. INTELLIGENCE TAB
+==================================================
+
+Build a serious summary surface.
+
+LEFT:
+
+ENTITY PROFILE
+
+legal name
+country
+industry/RMI
+entity class
+CCR membership
+identity quality
+research eligibility
+
+Identifiers:
+
+GFCID
+CAGID
+LEI
+CIK
+Ticker
+Domain
+
+CENTER:
+
+RELATIONSHIP RADAR SUMMARY
+
+Corporate
+Supply
+Customer
+Finance
+Technology
+Infrastructure
+Services
+Strategic
+
+For each:
+EVIDENCED
 PROPOSAL
+RESEARCHING
 CANDIDATE
-HISTORICAL
-CONFLICT
-REJECTED
-NO_DATA
+NO DATA
 
-RESEARCH STATES:
+No percentages.
 
-READY
-RUNNING
-PROPOSAL_PENDING_REVIEW
-INSUFFICIENT_EVIDENCE
-NOT_FOUND
-PROVIDER_UNAVAILABLE
-IDENTITY_UNRESOLVED
-RELATED_ENTITY_UNRESOLVED
-DIRECTION_UNRESOLVED
-CONFLICT_REVIEW_REQUIRED
+RIGHT:
 
-PROVIDER STATES:
+RESEARCH POSTURE
 
-READY
-AVAILABLE
-DEGRADED
-UNAVAILABLE
-NOT_CONFIGURED
-
-Do not map all states to generic red/green.
+provider readiness
+latest run
+plans
+claims
+evidence
+unresolved questions
+review requirements
 
 ==================================================
-9. DATA-TRUTH BANNERS
+11. EXPOSURE TAB
 ==================================================
 
-Keep important governance warnings.
+Make source rows useful.
 
-But redesign them as compact inline banners.
+Summary:
 
-Examples:
+record count
+distinct facility IDs
+facility types
+direct-exposure rows
+contingent-exposure rows
 
-Exposure:
-"Currency, units and additive semantics are not governed."
+Table:
 
-Candidates:
-"Research candidates are leads, not relationship evidence."
+facility ID
+facility type
+facility description
+direct exposure
+contingent exposure
+OSUC
+outstanding
+total exposure
 
-AI:
-"AI is an analytical assistant, not relationship evidence."
+Do not aggregate monetary values.
 
-No giant warning boxes.
+Banner:
 
-==================================================
-10. EMPTY STATE DESIGN
-==================================================
-
-Current empty states waste too much space.
-
-Replace them with compact analytical empty states.
-
-Example:
-
-NO GOVERNED EVENTS
-
-0 source-backed events are currently stored.
-
-Available signals:
-• 49 source documents
-• 144 research candidates
-• provider research available where configured
-
-[Open Research]
-
-Do NOT invent event data.
+"Source amount units, currency and additive semantics are not governed."
 
 ==================================================
-11. LOADING / INTERACTION
+12. RESPONSIVE BEHAVIOR
 ==================================================
 
-Add:
+At 1920:
+map + side analytics can coexist.
 
-skeleton loaders
-hover states
-keyboard focus
-compact tooltips
-sticky table headers
-smooth inspector transitions
-selected row highlighting
-selected graph-node highlighting
-URL-preserved filters
+At 1440:
+map remains dominant.
 
-Keep animations restrained.
+At laptop widths:
+inspector may overlay rather than permanently consume width.
 
 ==================================================
-12. REMOVE OLD VISUAL SYSTEM
+13. ACCEPTANCE
 ==================================================
 
-Do not keep the current washed-out styling mounted underneath.
+Validate:
 
-Identify old UI-1 visual classes and replace or isolate them.
+Portfolio loads.
+World map renders.
+Country hover works.
+Country click filters.
+Country selection updates inspector.
+Entity search works.
+Entity filters work.
+Entity page opens.
+Entity tabs work.
+Exposure rows load.
+No fake relationship/event/risk data.
+Build passes.
+Backend regression remains green.
 
-Do not break old backend behavior.
+Create:
 
-==================================================
-13. VALIDATION
-==================================================
-
-Run:
-
-npm run build
-npm run lint
-
-Run backend regression.
-
-Fix all new frontend TypeScript/lint errors caused by this stage.
-
-Do not stop because of one pre-existing warning if it is unrelated.
-
-==================================================
-14. ACCEPTANCE CHECK
-==================================================
-
-Before stopping, verify manually or programmatically:
-
-- Dark workspace loads.
-- Left rail works.
-- Left rail collapses.
-- Top command bar works.
-- Selected entity persists across navigation.
-- Inspector opens/closes.
-- Existing Portfolio page renders inside new shell.
-- Existing Entities page renders inside new shell.
-- Existing Network page renders inside new shell.
-- Existing Radar page renders inside new shell.
-- Existing Events page renders inside new shell.
-- Existing Research page renders inside new shell.
-- Existing Evidence page renders inside new shell.
-- Existing Review page renders inside new shell.
-- No fake data introduced.
-- Backend data unchanged.
-- Frontend production build passes.
-
-Create/update:
-
-backend/data/CCR_ADVANCED_FRONTEND_UI2_STAGE1_REPORT.md
+backend/data/CCR_ADVANCED_FRONTEND_UI2_STAGE2_REPORT.md
 
 FINAL RESPONSE:
 
-CCR UI2 STAGE 1: PASS / FAIL
-
-WORKSPACE SHELL:
-PASS / FAIL
-
-DARK ANALYTICAL DESIGN:
-PASS / FAIL
-
-COLLAPSIBLE INSPECTOR:
-PASS / FAIL
-
-ENTITY CONTEXT PERSISTENCE:
-PASS / FAIL
-
-FRONTEND BUILD:
-PASS / FAIL
-
-BACKEND REGRESSION:
-passed:
-failed:
-errors:
-
-FAKE DATA CREATED:
-0 / FAIL
-
-STOP ONLY AFTER IMPLEMENTATION AND VALIDATION ARE COMPLETE.
+CCR UI2 STAGE 2: PASS / FAIL
+PORTFOLIO: PASS / FAIL
+WORLD MAP: PASS / FAIL
+COUNTRY INTERACTION: PASS / FAIL
+ENTITY REGISTRY: PASS / FAIL
+ENTITY INTELLIGENCE: PASS / FAIL
+EXPOSURE: PASS / FAIL
+REAL DATA ONLY: PASS / FAIL
