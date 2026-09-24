@@ -1,1010 +1,727 @@
-CCR ADVANCED FRONTEND — ANALYST INTELLIGENCE WORKSPACE / PHASE UI-1
+LENDING TOTAL UI RECONSTRUCTION — U1
+BUILD THE NEW PRODUCT NOW
 
-Work ONLY in the CURRENT CCR repository.
+Work only in the CURRENT Lending repository.
 
-This task replaces the current CCR frontend visual architecture.
+READ FIRST:
 
-Do NOT modify:
-- canonical CCR business data
-- relationship semantics
-- evidence thresholds
-- research-orchestrator logic
-- source-policy rules
-- protected Phase-2 data
-- production relationship states
+backend/data/LENDING_UI_RECONSTRUCTION_BLUEPRINT.md
 
-Do NOT invent:
-- relationships
-- exposure totals
-- active/inactive client states
-- AI insights
-- events
-- risk scores
+The U0 blueprint is APPROVED.
 
-Use real CCR data only.
-
-Minimal read-only backend/API additions are allowed ONLY when required to expose
-already-existing CCR database information to the frontend.
-
-Do not create new business facts.
+THIS IS NOT A PLANNING TASK.
+THIS IS NOT A REPORT-ONLY TASK.
+START WRITING FRONTEND CODE.
 
 ==================================================
-READ FIRST
+MISSION
 ==================================================
 
-Read these reports if present:
+Begin the TOTAL reconstruction of the Lending frontend.
 
-backend/data/CCR_CANONICAL_DATA_MODEL_REPORT.md
-backend/data/CCR_RELATIONSHIP_UNIVERSE_MODEL_REPORT.md
-backend/data/CCR_RELATIONSHIP_EVIDENCE_PATH_POLICY.md
-backend/data/CCR_RESEARCH_ORCHESTRATOR_REPORT.md
-backend/data/CCR_EXTERNAL_PROVIDER_READINESS_REPORT.md
-backend/data/CCR_RELATIONSHIP_PILOT_SEMANTICS_REPORT.md
-backend/data/CCR_3M_RELATIONSHIP_PILOT_REPORT.md
+The existing Lending UI is only a functional reference for:
 
-Inspect:
+- working APIs;
+- routes;
+- data contracts;
+- authority rules;
+- validated functionality.
 
-frontend/
-backend/app/
-existing CCR APIs
-existing CSS/design system
-countries.geojson
-current client/network/research/review pages
+It is NOT the visual baseline.
 
-Preserve working routes and backend functionality where practical.
+The finished U1 must visibly look like a NEW premium institutional
+Lending Intelligence product.
+
+Do not merely improve CSS on the existing pages.
 
 ==================================================
-OBJECTIVE
+U1 MUST BUILD
 ==================================================
 
-Transform the existing CCR application into an advanced institutional
-relationship-intelligence workspace.
+Build and mount:
 
-The product should visually feel like:
+1. NEW Lending Intelligence application shell
+2. NEW institutional left navigation rail
+3. NEW global search / command bar
+4. NEW persistent context strip
+5. NEW Executive Intelligence landing page
+6. NEW metric/exposure/coverage presentation
+7. NEW Attention / Investigation area
+8. NEW shiny Geographic Intelligence preview
+9. NEW compact Relationship Network preview
+10. NEW contextual inspector drawer
+11. NEW source-lane / authority visual system
+12. NEW persistent "Ask Lending Intelligence" access point
+13. Responsive desktop/laptop layouts
+14. Explicit loading / unavailable / zero / truncated states
 
-credit intelligence
-+
-entity intelligence
-+
-relationship graph
-+
-global exposure monitor
-+
-research workstation
-
-NOT:
-
-a collection of simple form pages.
-
-The selected CCR entity should become the persistent analytical context across
-the application.
+The implementation must be mounted on the active Lending route.
 
 ==================================================
-1. GLOBAL APPLICATION SHELL
+ROUTES
 ==================================================
 
-Replace the current page-centric shell with:
+Make:
 
-LEFT NAVIGATION
-+
-TOP COMMAND BAR
-+
-MAIN ANALYTICAL CANVAS
-+
-RIGHT INTELLIGENCE INSPECTOR
-+
-OPTIONAL BOTTOM DETAIL DRAWER
+/lending
 
-Desktop-first.
+the NEW Executive Intelligence landing experience.
 
-Target primary desktop widths:
+Also support:
 
-1440px
-1600px
-1920px
+/lending/intelligence
 
-Still remain usable on smaller laptop screens.
+for the same Executive Intelligence experience if compatible with the
+existing router.
 
-Layout concept:
+Preserve existing working routes during migration.
 
-┌────────────────────────────────────────────────────────────────────────┐
-│ CCR RELATIONSHIP INTELLIGENCE        Search / Command       AI Analyst │
-├────────────┬───────────────────────────────────────┬───────────────────┤
-│ NAVIGATION │                                       │                   │
-│            │          ANALYTICAL CANVAS            │    INSPECTOR      │
-│ Portfolio  │                                       │                   │
-│ Entities   │                                       │ Evidence / Entity │
-│ Network    │                                       │ Research / Event  │
-│ Radar      │                                       │                   │
-│ Events     │                                       │                   │
-│ Research   │                                       │                   │
-│ Evidence   │                                       │                   │
-│ Review     │                                       │                   │
-├────────────┴───────────────────────────────────────┴───────────────────┤
-│ Contextual bottom drawer: exposure / evidence / history / research     │
-└────────────────────────────────────────────────────────────────────────┘
+New primary navigation should represent:
 
-==================================================
-2. VISUAL LANGUAGE
-==================================================
-
-Build a sophisticated analytical visual system.
-
-Use:
-
-clean institutional typography
-dense but readable information hierarchy
-thin separators
-subtle card elevation
-controlled use of color
-compact badges
-micro-labels
-high information density
-
-Avoid:
-
-giant empty cards
-marketing-style landing pages
-oversized slogans
-decorative gradients
-cartoon icons
-excessive rounded cards
-large unused white space
-
-The workspace should resemble a serious professional analytical platform.
-
-Use a neutral light analytical theme initially.
-
-Prepare CSS tokens for future dark mode.
-
-Create shared design tokens for:
-
-background
-surface
-surface-elevated
-border
-text-primary
-text-secondary
-muted
-positive
-warning
-negative
-information
-selected
-evidence-backed
-proposal
-candidate
-external-entity
-
-==================================================
-3. LEFT NAVIGATION
-==================================================
-
-Replace current navigation with:
-
-01 Portfolio
-02 Entities
-03 Network
-04 Radar
-05 Events
-06 Research
-07 Evidence
-08 Review
-
-At bottom:
-
-Provider Status
-System Status
-
-Provider status should display current actual CCR state:
-
-GLEIF
-SEC
-Web
-AI
-
-Never fabricate READY states.
-
-Read existing provider-status API/data.
-
-==================================================
-4. TOP COMMAND BAR
-==================================================
-
-Create a persistent top bar containing:
-
-CCR logo/title
-
-global entity search
-
-current selected entity chip
-
-country filter if applicable
-
-research status indicator
-
-provider health indicator
-
-AI Analyst button
-
-command palette trigger
-
-Example:
-
-[ CCR INTELLIGENCE ]
-
-Search entity / GFCID / CAGID / LEI / CIK / ticker...
-
-[ 3M CO × ]
-
-Providers  ● GLEIF  ● SEC  ○ WEB
-
-[ AI Analyst ]
-
-Keyboard shortcut:
-
-Ctrl/Cmd + K
-
-for command/entity search.
-
-==================================================
-5. GLOBAL ENTITY CONTEXT
-==================================================
-
-Create a central SelectedEntityContext.
-
-When a user chooses a client/entity:
-
-entity remains selected while navigating between:
-
-Portfolio
-Entity
-Network
-Radar
-Events
-Research
-Evidence
-Review
-
-Persist entity key in URL.
-
-Example:
-
-?entity=MASTER:0000426083
-
-Reloading the browser should preserve selected entity.
-
-Do not use GFCID alone as universal entity identity if the canonical entity_key
-is available.
-
-==================================================
-6. PORTFOLIO PAGE
-==================================================
-
-Rebuild Overview into:
-
-PORTFOLIO INTELLIGENCE
-
-Top KPI strip should use real values.
-
-Possible cards:
-
-CCR Subjects
-Canonical Entities
-Exposure Records
-Research-Ready
-Entities with LEI
-Relationship Proposals
-Evidence Documents
-Open Research Gaps
-
-Do not display monetary totals because exposure amount semantics remain unknown.
-
-Display:
-
-Exposure Records
-
-not:
-
-Total Exposure $
-
-unless semantics become governed later.
-
-==================================================
-7. GLOBAL WORLD MAP
-==================================================
-
-Use the existing countries.geojson.
-
-Build a proper recognizable interactive world map.
-
-Do NOT use abstract polygon approximations.
-
-Map must support analytical layer switching.
-
-Initial available layers:
-
-CCR Population
-Identity Coverage
-Research Readiness
-Evidence Coverage
-
-Future disabled layers:
-
-Relationships
-Events
-Stress
-
-If a layer has no populated production data, show it disabled or with a
-clear zero-data state.
-
-Country representation:
-
-fill intensity or bubbles based on CCR subject count.
-
-Hover:
-
-country
-CCR subjects
-canonical entities if available
-LEI coverage
-research-ready count
-
-Click:
-
-select country and filter the rest of the page.
-
-Map controls:
-
-[ Population ]
-[ Identity ]
-[ Research ]
-[ Evidence ]
-
-Add:
-
-Reset view
-Fit data
-Legend
-
-==================================================
-8. PORTFOLIO ANALYTICS PANELS
-==================================================
-
-Below the map create compact analytical panels.
-
-A. COUNTRY CONCENTRATION
-
-Top countries by CCR subject count.
-
-Horizontal bars.
-
-B. INDUSTRY / RMI MIX
-
-Use real available classification.
-
-Do not infer taxonomy equivalence where it is unresolved.
-
-C. IDENTITY COVERAGE
-
-Breakdown:
-
-master-backed
-deterministic match
-CCR-only
-review required
-
-D. IDENTIFIER COVERAGE
-
-LEI
-CIK
-ticker
-domain where verified
-
-E. RESEARCH READINESS
-
-ready
-discovery required
-review blocked
-unknown
-
-Use actual CCR data.
-
-==================================================
-9. ENTITY PAGE
-==================================================
-
-Selecting an entity opens a rich analytical entity workspace.
-
-Header:
-
-3M CO
-
-badges:
-
-CCR SUBJECT
-MASTER BACKED
-HIGH IDENTITY
-RESEARCH ELIGIBLE
-
-Identifiers:
-
-GFCID
-CAGID
-LEI
-CIK
-Ticker
-Country
-
-Use compact copy buttons.
-
-Do not overload header.
-
-==================================================
-10. ENTITY SUMMARY STRIP
-==================================================
-
-Create cards:
-
-Exposure Records
-Identifiers
-Relationship Observations
-Research Claims
-Evidence Documents
-Research Runs
-Events
-
-Use actual counts.
-
-Zero is valid.
-
-Example:
-
-RELATIONSHIP OBSERVATIONS
-0
-No evidence-backed production observations
-
-Do not hide zeros.
-
-==================================================
-11. ENTITY TABS
-==================================================
-
-Entity workspace tabs:
-
-Intelligence
-Exposure
-Relationships
-Evidence
-Research
-Timeline
-
-INTELLIGENCE should be default.
-
-==================================================
-12. INTELLIGENCE VIEW
-==================================================
-
-Create a three-column analytical composition.
-
-LEFT:
-
-Entity profile
-identity
-country
-industry
-CCR membership
-
-CENTER:
-
-Relationship Radar placeholder/data visualization
-
-RIGHT:
-
-Research & evidence state
-
-Relationship Radar dimensions:
-
-Corporate Structure
-Supply
-Customer
-Finance
-Technology
-Infrastructure
-Services
-Strategic
-
-Important:
-
-Radar does NOT mean numeric risk score.
-
-Each dimension should show states such as:
-
-EVIDENCED
-PROPOSAL
-RESEARCHING
-CANDIDATE
-NO DATA
-
-Never fabricate percentages.
-
-==================================================
-13. EXPOSURE VIEW
-==================================================
-
-Display actual source exposure/facility rows.
-
-Show:
-
-facility ID
-facility type
-facility description
-direct exposure field
-contingent exposure field
-other raw amount fields
-
-BUT clearly label:
-
-Units / currency / additivity not governed
-
-Do not aggregate these fields into misleading totals.
-
-Provide:
-
-row count
-facility count
-facility-type distribution
-raw exposure distribution only where technically safe
-
-==================================================
-14. RELATIONSHIPS VIEW
-==================================================
-
-Prepare the full relationship interface now even if production relationship
-count is zero.
-
-Show three separate layers:
-
-EVIDENCE-BACKED
-PROPOSALS
-RESEARCH CANDIDATES
-
-Never merge them.
-
-Relationship row/card:
-
-related entity
-relationship type
-direction
-state
-source tier
-evidence count
-freshness
-review state
-
-If none exist:
-
-"No evidence-backed relationships currently stored."
-
-Do NOT create demo edges.
-
-==================================================
-15. RIGHT INTELLIGENCE INSPECTOR
-==================================================
-
-Create a persistent contextual inspector.
-
-Default tabs:
-
-ENTITY
-EVIDENCE
+EXECUTIVE
+PORTFOLIO
+GEOGRAPHY
+NETWORK
+RELATIONSHIPS
+ATTENTION
 RESEARCH
-SOURCE
+STUDIO
 
-When entity selected:
-
-identity details
-
-When relationship selected:
-
-relationship type
-direction
-status
-counterparty
-evidence documents
-evidence snippets
-source tier
-research run
-
-When map country selected:
-
-country analytics
-
-When research run selected:
-
-run status
-plan
-providers
-outcome
-
-Inspector width:
-
-approximately 330–400px desktop.
-
-Resizable if practical.
+Do not expose Events as an active capability unless supported by actual data.
 
 ==================================================
-16. RESEARCH STATUS EXPERIENCE
+VISUAL DIRECTION
 ==================================================
 
-Build a compact reusable research-status component.
+Use a LIGHT premium institutional design.
 
-Statuses:
+The application should feel closer to a modern intelligence terminal than
+an admin dashboard.
 
-READY
-RUNNING
-PROPOSAL_PENDING_REVIEW
-INSUFFICIENT_EVIDENCE
-NOT_FOUND
-PROVIDER_UNAVAILABLE
-IDENTITY_UNRESOLVED
-RELATED_ENTITY_UNRESOLVED
-DIRECTION_UNRESOLVED
-CONFLICT_REVIEW_REQUIRED
+Visual character:
 
-Each should have:
+- warm near-white background;
+- white analytical surfaces;
+- deep ink/navy typography;
+- sophisticated blue/teal accents;
+- generous whitespace;
+- very clean separators;
+- restrained shadows;
+- large analytical canvases;
+- editorial hierarchy;
+- compact high-information controls;
+- minimal unnecessary cards.
 
-consistent badge
-tooltip
-plain-language description
+Authority/source colors:
 
-Do not use generic red "error" for governed research outcomes such as
-NOT_FOUND.
+CAM/V3        = petrol / teal
+Review        = amber
+SEC           = blue
+WEB           = ochre / gold
+Governed AI   = violet
+V2/history    = slate
+Error/conflict = red only when actually supported
 
-==================================================
-17. EMPTY STATES
-==================================================
-
-Empty states must be analytical.
-
-BAD:
-
-"No data."
-
-GOOD:
-
-"No evidence-backed relationships currently stored.
-145 correlation candidates exist in the separate research-candidate layer."
-
-Use actual counts when available.
-
-Never imply candidate = relationship.
+Do NOT use red for exposure.
+Do NOT imply risk through color.
 
 ==================================================
-18. AI ANALYST SURFACE
+NEW PRODUCT SHELL
 ==================================================
 
-Create the visual shell for an AI Analyst.
+Build a completely new shell.
 
-Do NOT yet make autonomous calls.
-
-Button:
-
-AI Analyst
-
-opens right-side expandable panel.
-
-Suggested future prompts:
-
-Explain this entity
-Summarize available evidence
-What relationship gaps remain?
-Which research questions are unresolved?
-Explain this network
-Assess this event against this entity
-
-For now:
-
-wire only to existing safe AI endpoint if already present.
-
-If no production AI endpoint exists:
-
-show controlled "AI integration not configured" state.
-
-Do not fake responses.
-
-==================================================
-19. RESEARCH ACTION
-==================================================
-
-Entity header should contain:
-
-[ Research Entity ]
-
-Click opens modal/drawer with:
-
-relationship type
-research scope
-source strategy
-minimum tier
-research instructions
-
-This should use the existing Research Orchestrator API if available.
-
-Do not create a second research system.
-
-No automatic research on page load.
-
-==================================================
-20. PERFORMANCE
-==================================================
-
-Do not load all 16k+ entities into the browser.
-
-Use backend pagination/search.
-
-Entity search should debounce.
-
-Tables should paginate or virtualize.
-
-Map country aggregation should come from compact aggregate API data.
-
-Avoid expensive full-graph fetches.
-
-==================================================
-21. API CONTRACT
-==================================================
-
-Inspect existing APIs first.
-
-Reuse them.
-
-If needed, add ONLY read-oriented endpoints such as:
-
-GET /api/portfolio/summary
-
-GET /api/portfolio/geography
-
-GET /api/entities/search
-
-GET /api/entities/{entity_key}
-
-GET /api/entities/{entity_key}/exposure
-
-GET /api/entities/{entity_key}/relationships
-
-GET /api/entities/{entity_key}/research
-
-GET /api/entities/{entity_key}/evidence
-
-GET /api/providers/status
-
-Do not duplicate existing routes.
-
-Do not change database schema in this task unless absolutely unavoidable.
-
-==================================================
-22. FRONTEND ARCHITECTURE
-==================================================
-
-Refactor into reusable components.
-
-Suggested structure:
-
-frontend/src/
-  app/
-  components/
-    shell/
-    navigation/
-    command/
-    map/
-    charts/
-    entity/
-    relationship/
-    research/
-    evidence/
-    inspector/
-    tables/
-    badges/
-  pages/
-    PortfolioPage
-    EntityPage
-    NetworkPage
-    RadarPage
-    EventsPage
-    ResearchPage
-    EvidencePage
-    ReviewPage
-  state/
-  api/
-  styles/
-
-Follow current project framework conventions if structure differs.
-
-Do not rewrite the entire frontend framework unnecessarily.
-
-==================================================
-23. UX DETAILS
-==================================================
-
-Add:
-
-loading skeletons
-error boundaries
-tooltips
-keyboard focus states
-sticky table headers
-sortable tables
-copy identifier action
-breadcrumbs
-URL-preserved filters
-responsive inspector behavior
-
-Use subtle motion only for:
-
-drawer open/close
-selection
-map zoom
-panel transitions
-
-No flashy animation.
-
-==================================================
-24. DATA TRUTH BANNER
-==================================================
-
-Add a small non-intrusive data-governance banner where relevant:
-
-"Relationship candidates are research leads, not evidence."
-
-On exposure view:
-
-"Exposure amount units and additive semantics are not yet governed."
-
-On research:
-
-"External research runs only after explicit user action."
-
-These should be compact, not giant warnings.
-
-==================================================
-25. REMOVE CURRENT WEAK DESIGN
-==================================================
-
-Replace:
-
-large marketing headers
-excess blank white space
-simple stacked cards
-form-like main pages
-decorative placeholder network pages
-
-with analytical layouts.
-
-Keep only reusable useful components.
-
-Do not preserve poor layout merely for visual backward compatibility.
-
-==================================================
-26. FIRST-PASS ROUTES
-==================================================
-
-Fully implement in this phase:
-
-Portfolio
-Entities / Entity Intelligence
-
-Build functional shell/placeholders connected to actual state for:
-
-Network
-Radar
-Events
-Research
-Evidence
-Review
-
-Do not attempt the advanced graph/event engines in this task.
-
-Those come in UI-2.
-
-==================================================
-27. VALIDATION
-==================================================
-
-Run:
-
-frontend TypeScript validation
-frontend production build
-backend regression
-API smoke tests
-
-Test:
-
-portfolio loads
-map renders
-country click works
-entity search works
-entity selection persists
-entity page loads
-tabs work
-exposure loads
-relationship zero-state is correct
-research state loads
-provider pulse loads
-inspector works
-
-No fake relationship data.
-
-==================================================
-28. REPORT
-==================================================
-
-Create:
-
-backend/data/CCR_ADVANCED_FRONTEND_UI1_REPORT.md
+LEFT RAIL
 
 Include:
 
-UI architecture
-routes
-components
-API reuse/additions
-screens implemented
-data sources
-performance approach
-known limitations
-validation results
+Lending Intelligence
+
+Executive
+Portfolio
+Geography
+Network
+Relationships
+Attention
+Research
+Studio
+
+Requirements:
+
+- polished active state;
+- collapsible behavior;
+- keyboard accessible;
+- strong premium visual hierarchy;
+- no recreation of the old horizontal menu.
+
+TOP COMMAND BAR
+
+Include:
+
+- global Lending search;
+- current scope;
+- CAM/V3 authority status;
+- attention indicator;
+- ASK LENDING INTELLIGENCE access.
+
+CONTEXT STRIP
+
+Show compactly:
+
+- current population/scope;
+- selected focus where applicable;
+- active source lanes;
+- filters;
+- bounded/truncated state;
+- as-of information where actually available;
+- read-only/explicit-action state.
 
 ==================================================
-FINAL RESPONSE
+EXECUTIVE INTELLIGENCE
 ==================================================
 
-CCR ADVANCED FRONTEND UI-1: PASS / FAIL
+Rebuild the Landing page entirely.
 
-PORTFOLIO:
-PASS / FAIL
+Do not preserve the old dashboard layout.
 
-WORLD MAP:
-PASS / FAIL
+Create a strong top-level Executive Intelligence experience.
 
-ENTITY SEARCH:
-PASS / FAIL
+Use real existing Lending API values.
 
-ENTITY INTELLIGENCE:
-PASS / FAIL
+Present a concise metric band using meaningful existing values such as:
 
-EXPOSURE VIEW:
-PASS / FAIL
+- portfolio clients;
+- reported OSUC;
+- clients with CAM;
+- clients without CAM;
+- canonical CAM/V3 relationships;
+- review-required CAM/V3 relationships.
 
-RELATIONSHIP LAYERS:
-PASS / FAIL
+Do NOT fabricate values.
 
-INTELLIGENCE INSPECTOR:
-PASS / FAIL
+Reported OSUC must visibly state:
 
-RESEARCH ACTION:
-PASS / FAIL
+SOURCE-REPORTED / SUPPLEMENTAL
 
-AI ANALYST SHELL:
-PASS / FAIL
+Review-required must state:
 
-REAL CCR DATA ONLY:
-PASS / FAIL
+WORKFLOW STATE — NOT RISK
 
-FAKE RELATIONSHIPS:
-0 / FAIL
+CAM coverage must not imply CAM freshness.
 
-FRONTEND BUILD:
-PASS / FAIL
+==================================================
+ATTENTION / INVESTIGATION
+==================================================
 
-BACKEND REGRESSION:
-passed:
-failed:
-errors:
+Create a premium editorial attention surface.
 
-REPORT:
-backend/data/CCR_ADVANCED_FRONTEND_UI1_REPORT.md
+Use only deterministic existing conditions such as:
 
-Also provide the local URL to open the redesigned CCR application.
+- review-required CAM/V3 relationships;
+- large reported exposure without CAM;
+- missing relationship information;
+- unresolved context;
+- evidence limitations.
 
-STOP.
+Do not invent:
+
+HIGH RISK
+MEDIUM RISK
+LOW RISK
+
+Every attention item should answer:
+
+WHY AM I SEEING THIS?
+
+and provide a relevant action.
+
+==================================================
+SHINY GEOGRAPHIC INTELLIGENCE PREVIEW
+==================================================
+
+This is a major visual requirement.
+
+Create an attractive, modern geographic intelligence preview on the
+Executive page.
+
+It should visually approach a premium global intelligence map:
+
+- polished world geometry;
+- soft luminous points/markers where actual data supports locations;
+- restrained glow;
+- cluster/aggregation behavior where useful;
+- elegant hover/focus states;
+- region/country context;
+- reported exposure and/or client counts;
+- clean controls;
+- high-quality zoom/focus behavior.
+
+The surrounding UI remains LIGHT.
+
+The map itself MAY use a darker high-contrast visualization surface if that
+produces the premium luminous global-map treatment requested.
+
+Do not create fake cities or coordinates.
+
+Do not infer headquarters.
+
+Do not infer country risk.
+
+Do not draw relationship arcs unless both endpoint geography and relationship
+data actually support the arc.
+
+If current geography only supports country-level data, use country-level
+mapping honestly.
+
+Add:
+
+OPEN GEOGRAPHIC INTELLIGENCE →
+
+Full Geography reconstruction will be a later phase.
+
+==================================================
+COMPACT NETWORK PREVIEW
+==================================================
+
+Build a beautiful compact network preview.
+
+This is NOT the final full-screen Network workspace.
+
+The compact graph should show:
+
+- one selected/focus entity;
+- first-degree governed relationships;
+- at most 13 visible nodes including focus;
+- at most 24 visible edges;
+- no disconnected nodes;
+- clean deterministic positioning;
+- no graph hairball;
+- no continuous force-layout motion.
+
+If no safe focus exists:
+
+show:
+
+SELECT A CLIENT TO EXPLORE ITS RELATIONSHIP ECOSYSTEM
+
+with bounded client search.
+
+==================================================
+NETWORK SOURCE LABELS — HARD REQUIREMENT
+==================================================
+
+EVERY visible relationship line must display provenance directly on the edge.
+
+Examples:
+
+Supplier · CAM
+
+Parent · CAM
+
+Customer · SEC
+
+Strategic Partner · WEB
+
+Relationship · AI
+
+Historical · V2
+
+Supplier · CAM + SEC
+
+Do not rely on colors alone.
+
+If actual production data currently contains only CAM relationships, show CAM.
+
+Do NOT create fake SEC, Web, AI, or V2 examples merely to demonstrate styling.
+
+==================================================
+NETWORK INTERACTION
+==================================================
+
+Click node:
+
+- focus/highlight node;
+- open useful client/entity context.
+
+Click relationship edge:
+
+open InspectorDrawer.
+
+Inspector should show available real fields:
+
+- subject;
+- related entity;
+- relationship type;
+- direction;
+- state;
+- connectivity;
+- source;
+- review state;
+- evidence count;
+- source references;
+- WHY AM I SEEING THIS?
+
+==================================================
+EXPAND NETWORK
+==================================================
+
+The compact network must have a prominent:
+
+EXPAND NETWORK →
+
+control.
+
+Navigate to:
+
+/lending/network?focus=<safe-focus-id>
+
+Preserve investigation context.
+
+The full-screen advanced Network Intelligence canvas will be built in the
+NEXT reconstruction phase.
+
+Do not implement a fake full network in U1.
+
+==================================================
+NO CONNECTION
+==================================================
+
+Do NOT show random isolated graph nodes.
+
+If a selected client has no governed connection:
+
+display:
+
+NO GOVERNED CONNECTION CURRENTLY ESTABLISHED
+
+Then show the actual known reason, where supported:
+
+- no CAM relationship;
+- review-only state;
+- identity unresolved;
+- evidence unavailable;
+- supplemental lane disabled;
+- filtered out;
+- graph truncated;
+- research not performed.
+
+Provide:
+
+RESEARCH CONNECTION →
+
+Do not automatically invoke a provider.
+
+==================================================
+ASK LENDING INTELLIGENCE
+==================================================
+
+Build a persistent AI entry point in the shell:
+
+ASK LENDING INTELLIGENCE
+
+It should appear in the command bar and be available from the new
+Executive experience.
+
+Clicking it opens a polished right-side assistant drawer while keeping the
+current page visible.
+
+The assistant drawer must be designed to eventually understand UI context.
+
+Create the UI-context contract now, including safe state such as:
+
+- active route;
+- selected client/entity;
+- selected relationship;
+- current filters;
+- source lanes;
+- geographic scope;
+- selected network node;
+- selected network edge;
+- current bounded/truncated state.
+
+If an existing governed AI read interface can safely answer a question without
+changing authority semantics, wire it appropriately.
+
+Otherwise build the assistant UI/context infrastructure now and clearly identify
+unavailable actions rather than fabricating responses.
+
+The assistant must NEVER silently create relationship truth.
+
+Example future query:
+
+"What is the relationship between NVIDIA and TSMC?"
+
+Expected product behavior:
+
+1. Search current Lending governed/supplemental relationship data.
+2. If a relationship exists:
+   - focus the entities;
+   - highlight the edge;
+   - show exact relationship type;
+   - show CAM / SEC / WEB / AI / V2 provenance;
+   - offer Evidence.
+3. If no governed connection exists:
+   display:
+
+   NO GOVERNED CONNECTION CURRENTLY ESTABLISHED
+
+   and offer:
+
+   RESEARCH CONNECTION
+
+Do not answer from generic model knowledge and silently create a Lending edge.
+
+==================================================
+AI UI ACTION MODEL
+==================================================
+
+Prepare the frontend architecture so Ask Lending Intelligence can eventually
+perform safe UI actions such as:
+
+- navigate;
+- search;
+- focus client;
+- focus entity;
+- set filters;
+- select relationship;
+- focus network;
+- show geography;
+- open evidence;
+- open inspector;
+- explain visible deterministic information.
+
+These are READ/NAVIGATION actions.
+
+Do NOT add hidden provider execution.
+
+Actions such as:
+
+- SEC research;
+- Web research;
+- Stylus/provider call;
+- creating proposals;
+- approving;
+- publishing;
+- changing review state;
+
+must remain explicit user-confirmed actions.
+
+==================================================
+SHARED COMPONENTS
+==================================================
+
+Do not continue growing the existing monolithic page implementation.
+
+Create a clean reconstruction structure under frontend/src.
+
+Use repository conventions, but establish reusable equivalents of:
+
+ProductShell
+PrimaryRail
+CommandBar
+CommandSearch
+ContextStrip
+MetricBand
+SourceLaneBadge
+AuthorityBadge
+StateBadge
+BoundedResultNotice
+InspectorDrawer
+NetworkLegend
+AskLendingDrawer
+EmptyState
+UnavailableState
+
+Do not create meaningless wrapper components.
+
+==================================================
+DATA CONTRACT
+==================================================
+
+Use only bounded existing Lending APIs.
+
+Preserve:
+
+CAM/V3
+= authoritative Lending relationship truth.
+
+V2
+= fallback/history.
+
+External SEC/Web
+= supplemental.
+
+Governed AI
+= separate governed lane.
+
+Review-required
+= workflow state, not risk.
+
+Reported OSUC
+= source-reported/supplemental.
+
+Do NOT read or depend on:
+
+CCR
+Customer_latest
+CCR customer master
+CCR relationship data.
+
+==================================================
+PERFORMANCE
+==================================================
+
+Ordinary /lending load must NOT:
+
+- load full normalized 32,957-row history;
+- adapt the ~2.8 GB normalized artifact;
+- call broad semantic groups that materialize everything first;
+- run AI generation;
+- call SEC;
+- call Web;
+- call Stylus;
+- invoke external providers;
+- create proposals;
+- mutate data.
+
+Use bounded existing API reads.
+
+==================================================
+STATE SEMANTICS
+==================================================
+
+Visually distinguish:
+
+LOADING
+EMPTY
+NOT ESTABLISHED
+REVIEW REQUIRED
+UNRESOLVED
+SUPPLEMENTAL
+NOT PERFORMED
+DISABLED
+TRUNCATED
+UNAVAILABLE
+ERROR
+
+Do not show 0 until a successful bounded request establishes 0.
+
+==================================================
+RESPONSIVE DESIGN
+==================================================
+
+Prioritize professional large displays.
+
+Validate at minimum:
+
+- large monitor;
+- 1440px desktop;
+- standard laptop;
+- narrow desktop/tablet-like width.
+
+Rail may collapse at narrower sizes.
+
+Inspector may become a bottom sheet.
+
+Map/network must remain usable.
+
+==================================================
+VALIDATION
+==================================================
+
+After implementation:
+
+1. run frontend build;
+2. run lint;
+3. fix all NEW errors;
+4. start the application;
+5. open /lending;
+6. visually inspect the page;
+7. verify real data;
+8. test navigation;
+9. test search;
+10. test geographic preview;
+11. focus a client in the compact network;
+12. click an edge;
+13. verify inspector;
+14. verify direct CAM/SEC/WEB provenance labels;
+15. open Ask Lending Intelligence drawer;
+16. test responsive widths;
+17. inspect request traces.
+
+Confirm ordinary page load made NO automatic:
+
+AI
+SEC
+Web
+Stylus
+provider
+proposal
+mutation
+full-normalized-history
+
+requests.
+
+==================================================
+IMPLEMENTATION REPORT
+==================================================
+
+Only AFTER implementation is finished, create:
+
+backend/data/LENDING_UI_U1_IMPLEMENTATION_REPORT.md
+
+Keep the report concise.
+
+Include:
+
+- frontend files created/changed;
+- new shell structure;
+- Executive Intelligence implementation;
+- geographic preview;
+- compact network;
+- edge provenance behavior;
+- Ask Lending Intelligence implementation;
+- APIs used;
+- request trace;
+- build/lint results;
+- visual/browser validation;
+- limitations;
+- remaining U2 work.
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+U1 is NOT complete unless:
+
+[ ] /lending visibly looks like a completely new product
+[ ] old dashboard composition is replaced
+[ ] new rail exists
+[ ] new command bar exists
+[ ] context strip exists
+[ ] Executive Intelligence uses real data
+[ ] shiny geographic preview is visible
+[ ] compact relationship network is visible
+[ ] graph contains no arbitrary disconnected nodes
+[ ] CAM appears directly on CAM edges
+[ ] SEC appears directly on actual SEC edges
+[ ] WEB appears directly on actual Web edges
+[ ] source lanes cannot masquerade as CAM
+[ ] edge Inspector works
+[ ] Expand Network exists
+[ ] Research Connection state exists
+[ ] Ask Lending Intelligence drawer is mounted
+[ ] ordinary load invokes no provider/AI generation
+[ ] build passes
+[ ] no NEW lint errors
+
+DO THE IMPLEMENTATION NOW.
+
+Do not return another blueprint.
+Do not ask for permission to code.
+
+Inspect -> code -> run -> visually validate -> test -> report.
+
+End exactly:
+
+READY FOR LENDING UI RECONSTRUCTION U2
