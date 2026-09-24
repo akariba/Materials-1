@@ -1,438 +1,483 @@
-CCR UI-2 — STAGE 2
-HUMAN-DESIGNED ANALYST WORKSPACE
+LENDING UI RECONSTRUCTION — U1.5
+VISUAL REBUILD + ADVANCED FRONTEND EXPERIENCE
 
-Work only in the existing CCR repository.
+Work in the CURRENT Lending repository.
 
-Do not change backend business semantics.
-Do not fabricate relationships, events, risk scores, exposure totals,
-AI results, evidence, provider readiness or analytical conclusions.
+The U1 implementation is functionally correct and must be preserved.
 
-Preserve all existing real-data safeguards.
+READ:
 
-OBJECTIVE
+backend/data/LENDING_UI_RECONSTRUCTION_BLUEPRINT.md
+backend/data/LENDING_UI_U1_IMPLEMENTATION_REPORT.md
 
-The existing dark UI still looks like a generic AI-generated dashboard.
+THIS TASK IS A FRONTEND VISUAL AND INTERACTION RECONSTRUCTION.
 
-Redesign the PRESENTATION SYSTEM so it looks like a deliberately designed
-institutional intelligence application built for professional analysts.
+DO NOT redo backend architecture.
+DO NOT change CAM/V3 authority.
+DO NOT change API contracts unless a tiny frontend compatibility fix is unavoidable.
+DO NOT touch CCR.
 
-This is NOT a color/theme exercise.
+==================================================
+MISSION
+==================================================
 
-The objective is:
+The current U1 is structurally correct but visually too basic.
 
-- stronger information hierarchy
-- fewer generic cards
-- less repeated visual structure
-- higher analytical density
-- deliberate use of whitespace
-- bespoke analytical components
-- contextual information instead of KPI-card grids
-- stronger typography hierarchy
-- better entity-centric navigation
-- better use of the entire viewport
-- more professional interaction patterns
+Reconstruct the frontend so it looks and feels like a premium institutional
+relationship-intelligence platform.
 
-DESIGN PRINCIPLE
+The current appearance is NOT acceptable as the final design.
 
-Do not make every information group a bordered rectangle.
+The target is much closer to:
 
-Use a mixture of:
+- institutional intelligence terminal;
+- high-end research platform;
+- interactive relationship command center;
+- sophisticated map/network analytical product;
 
-- inline metrics
-- data tables
-- split panes
-- timelines
-- evidence strips
-- expandable rows
-- segmented controls
-- contextual drawers
-- analytical canvases
-- relationship legends
-- compact status markers
-- semantic grouping
-- progressive disclosure
+and NOT:
 
-Cards should be used only where they materially improve comprehension.
+- report page;
+- document viewer;
+- plain SaaS dashboard;
+- stack of white cards;
+- administrative portal.
 
-REMOVE THE “AI DASHBOARD” LOOK
+==================================================
+DO NOT PRESERVE THE CURRENT VISUAL COMPOSITION
+==================================================
 
-Avoid:
+Preserve the DATA and FUNCTIONAL contracts.
 
-- excessive glowing borders
-- neon everywhere
-- identical KPI cards
-- excessive rounded rectangles
-- large empty boxes
-- decorative gauges
-- decorative circles
-- fake charts
-- giant empty vertical regions
-- centered empty-state messages occupying large panels
-- repeated title/subtitle/card patterns
-- visual effects without analytical meaning
+Do NOT preserve:
 
-TYPOGRAPHY
+- current vertical page stacking;
+- current sparse card layout;
+- current typography hierarchy;
+- current pale low-impact map styling;
+- current empty-looking network area;
+- current oversized empty Ask drawer;
+- current simplistic navigation presentation.
 
-Create a clear editorial hierarchy.
+You are explicitly expected to redesign the visible composition.
 
-Entity/page title:
-large but compact.
+==================================================
+EXECUTIVE PAGE — NEW DESKTOP COMPOSITION
+==================================================
 
-Section headings:
-small institutional uppercase or concise human-readable section labels.
+Recompose /lending into a high-density desktop intelligence canvas.
 
-Metadata:
-small muted typography.
-
-Important values:
-high contrast but not oversized dashboard typography.
-
-Tables:
-dense and highly readable.
-
-The interface should feel designed for sustained professional use.
-
-ENTITY HEADER
-
-Create a reusable entity header.
-
-When an entity is selected show, where available:
-
-LEGAL NAME
-entity class
-country
-industry/sector
-GFCID
-CAGID
-LEI
-CIK
-ticker
-identity quality/status
-
-Below it show compact inline counts:
-
-Relationships
-Research
-Evidence
-Events
-Reviews
-
-Do NOT render these as six large cards.
-
-WORKSPACE GRID
-
-Use a professional multi-pane structure.
+On a large monitor, the first viewport should show approximately:
 
 LEFT
-navigation and analytical layers.
+institutional navigation rail
 
-CENTER
-primary analytical workspace.
+TOP
+global command/search bar + Ask Lending Intelligence
 
-RIGHT
-contextual inspector / AI / evidence.
+MAIN TOP
+executive metric band / attention summary
 
-Allow contextual panels to collapse so the analytical canvas can use nearly
-the full browser width.
+MAIN CENTER-LEFT
+large shiny global geographic intelligence map
 
-NETWORK PAGE
+MAIN CENTER-RIGHT
+relationship ecosystem / compact network
 
-Do not use the current circular orbit layout.
+BOTTOM OR SECONDARY ROW
+exposure / coverage / attention / sector intelligence
 
-Prepare a semantic analytical graph canvas.
+Do not force the user to scroll through several screens before seeing the
+map and network.
 
-Selected entity is the anchor.
+The map and network should be visible much earlier.
 
-Relationship groups should be visually organized around semantic categories:
+==================================================
+SHINY GLOBAL MAP
+==================================================
 
-OWNERSHIP
-SUPPLIERS
-CUSTOMERS
-PARTNERS
-FINANCING
-TECHNOLOGY
-INFRASTRUCTURE
-OTHER
+The map must become a visually impressive analytical surface.
 
-Solid edges:
-evidence-backed observations only.
+The surrounding application remains LIGHT.
 
-Dotted edges:
-research candidates only.
+The map canvas itself may be DARK / DEEP NAVY to achieve strong contrast.
 
-Each visible edge must preserve:
-relationship type
-direction
-state
-source/evidence availability
+Design target:
 
-Never visually imply an unsupported relationship.
+- deep navy map background;
+- luminous teal/blue/gold markers;
+- soft glow;
+- clear selected-country highlighting;
+- elegant hover labels;
+- subtle geographic grid/texture if appropriate;
+- smooth zoom/focus transitions;
+- client/exposure aggregation;
+- mapped/unmapped disclosure;
+- strong visual presence.
 
-The graph canvas must be capable of expanding to almost full browser size.
+Do NOT create fake geography.
 
-Add view modes:
+Do NOT infer country risk.
 
-GRAPH
-VALUE CHAIN
-OWNERSHIP
-GEOGRAPHY
-EVIDENCE
-TIMELINE
+Do NOT fabricate city-level coordinates.
 
-Only activate modes supported by existing data.
+Where only country-level geography exists, render polished country-level
+aggregation honestly.
 
-ENTITY INSPECTOR
+The map should look like a signature intelligence visualization, not a muted SVG.
 
-Redesign the right panel into meaningful sections rather than stacked cards.
+==================================================
+RELATIONSHIP NETWORK PREVIEW
+==================================================
 
-Use tabs:
+The compact network should look like a real advanced graph when a focus exists.
 
-OVERVIEW
-IDENTITY
-RELATIONSHIPS
-RESEARCH
-EVIDENCE
-SOURCES
+Use:
 
-Use dense key/value presentation.
+- strong central focus node;
+- radial / deterministic first-degree positioning;
+- generous spacing;
+- clean edge routing;
+- high-quality labels;
+- source provenance directly on edges;
+- subtle glow/focus treatment;
+- hover/focus states;
+- selected edge emphasis;
+- node badges;
+- clear relationship-family differentiation.
 
-No fabricated values.
+Every visible relationship edge must show:
 
-EMPTY STATES
+RELATIONSHIP TYPE · SOURCE
 
-Redesign empty states to be compact.
+Examples:
 
-Example:
+Supplier · CAM
+Customer · SEC
+Strategic Partner · WEB
+Relationship · AI
+Historical · V2
+Supplier · CAM + SEC
 
-Events
-No persisted events.
-Approved event ingestion has not yet populated this entity.
+No disconnected nodes.
 
-Do not create a 500px empty rectangle around this message.
+No hairball.
 
+No continuous force animation.
+
+If there is no focus, replace the large empty box with a high-quality
+client-selection state, including suggested deterministic entry points such as
+top exposures with governed relationships.
+
+Do not fabricate relationship examples.
+
+==================================================
+NETWORK PREVIEW → FULL NETWORK
+==================================================
+
+Make the entire Network Preview clearly interactive.
+
+Provide a visible:
+
+EXPAND NETWORK
+
+control.
+
+The preview should visually communicate that it is a window into a much larger
+Network Intelligence workspace.
+
+==================================================
+ASK LENDING INTELLIGENCE — REDESIGN
+==================================================
+
+The current large empty drawer is not sufficient.
+
+Redesign Ask Lending Intelligence as a real contextual copilot.
+
+When closed:
+- compact persistent button/chip in shell.
+
+When open:
+- right-side intelligence panel;
+- conversation area;
+- current-context summary;
+- suggested prompts;
+- action chips;
+- source/governance indicators.
+
+Suggested prompts may be derived from capability, not fabricated answers.
+
+Examples:
+
+"What relationships are visible for this client?"
+"Show only CAM relationships."
+"Why is this edge visible?"
+"Show evidence for the selected relationship."
+"Which top exposures have no CAM?"
+"Open this client in Network."
+
+The panel must remain context-aware.
+
+It should feel like an intelligence copilot, not a textarea in an empty drawer.
+
+DO NOT fabricate AI answers when no answer service is wired.
+
+If the response service is unavailable, the UI should still demonstrate:
+- context;
+- supported UI actions;
+- safe handoffs;
+- unavailable state.
+
+==================================================
+LEFT NAVIGATION
+==================================================
+
+Upgrade the institutional rail.
+
+It should be compact, high quality, icon-led, visually distinct, and usable on
+large screens.
+
+Use:
+
+EXECUTIVE
 PORTFOLIO
-
-Replace the KPI-card-grid feeling with an institutional command view.
-
-Use:
-
-compact metric strip
-large map
-analytical table or distribution section
-research/evidence posture
-identity coverage
-provider state
-
-Map should remain the visual anchor.
-
-ENTITIES
-
-Make this feel like a professional entity browser.
-
-Use:
-sticky table header
-dense rows
-hover state
-selected-row state
-keyboard navigation where practical
-server-backed search
-column alignment
-compact identifier presentation
-
-Avoid excessive badge pills.
-
-RADAR
-
-Redesign the layout even when persisted radar data is unavailable.
-
-Prepare areas for:
-
-theme pressure
-signal timeline
-entity candidate signals
-event categories
-monitoring state
-
-When data is unavailable, show compact unavailable states.
-
-Do not fabricate radar values.
-
-EVENTS
-
-Use a timeline/event-stream information architecture.
-
-Left:
-event stream.
-
-Center:
-event detail.
-
-Right/context:
-affected entities / evidence / provenance.
-
-Again, no large empty generic cards.
-
+GEOGRAPHY
+NETWORK
+RELATIONSHIPS
+ATTENTION
 RESEARCH
+STUDIO
 
-Make research resemble an investigation workbench.
+Include:
+- premium active state;
+- subtle hover;
+- readable icon + label;
+- collapsed mode;
+- section spacing;
+- no generic bootstrap look.
+
+==================================================
+TYPOGRAPHY
+==================================================
+
+The current page looks too much like an editorial report.
+
+Keep institutional sophistication but move toward an intelligence-terminal
+typography system.
+
+Use a modern system sans / existing approved system font.
+
+Avoid excessive serif display typography.
+
+Use stronger scale contrast:
+
+- large executive title;
+- compact metric numerals;
+- clear table typography;
+- dense analytical labels;
+- restrained microcopy.
+
+==================================================
+SURFACES
+==================================================
+
+Reduce excessive bordered white rectangles.
 
 Use:
 
-research question
-provider/source status
-evidence collected
-claim state
-identity state
-direction state
-review state
+- canvas regions;
+- soft tonal backgrounds;
+- subtle separators;
+- grouped analytical areas;
+- slim metric bands;
+- floating inspectors;
+- overlays where appropriate.
 
-Prefer rows/timeline/progress structures over cards.
+Cards should be used only when they communicate a meaningful object.
 
-EVIDENCE
+==================================================
+ADVANCED FRONTEND INTERACTION
+==================================================
 
-Design an evidence ledger.
+Improve:
 
-Columns should support where available:
+- hover states;
+- map focus;
+- graph focus;
+- selection transitions;
+- drawer transitions;
+- contextual highlighting;
+- linked map/network selection;
+- filter chips;
+- animated-but-restrained counters where appropriate;
+- skeleton/loading transitions.
 
-Source
-Document
-Date
-Tier
-Admissibility
-Related entity
-Relationship
-Research run
-Evidence status
+Do not use decorative continuous animation.
 
-Clicking evidence should open a contextual evidence reader.
+==================================================
+RESPONSIVE LARGE-SCREEN PRIORITY
+==================================================
 
-AI ENTRY POINT
+Optimize primarily for:
 
-Do not treat AI as a standalone decorative button.
+1920×1080
+2560×1440
+large professional monitors
 
-Prepare the existing AI drawer as a contextual analytical companion.
+At these sizes, use horizontal analytical composition.
 
-It should visually receive:
+Do not waste horizontal space with a narrow centered column.
 
-selected entity
-current page
-visible graph scope
-current filters
-available evidence
-research context
+Allow the main intelligence canvas to use most of the viewport.
 
-Do NOT create new AI backend behavior in this stage.
+At laptop width, adapt into a more stacked layout.
 
-If AI is unconfigured, clearly show that status.
+==================================================
+PORTFOLIO VISUAL CONSISTENCY
+==================================================
 
-VISUAL STYLE
+The current /lending/clients page still visually belongs to the legacy product.
 
-Institutional intelligence terminal.
+Bring the Portfolio route into the NEW shell and visual system.
 
-Dark neutral navy/graphite surfaces.
+Do NOT redesign all deep Portfolio functionality in this task.
 
-Use accent colors sparingly and semantically:
+But ensure:
 
-teal = verified / available / primary interaction
-orange = attention / unresolved
-purple = research candidate
-red = error/unavailable
+- new rail;
+- new command bar;
+- new context strip;
+- typography;
+- spacing;
+- surfaces;
+- buttons;
+- source badges;
 
-Avoid neon glow.
+are visually consistent.
 
-Use subtle separators and depth rather than borders around everything.
+No route should suddenly look like the old product when navigating from
+Executive to Portfolio.
 
-Use restrained 2–6px radii.
+==================================================
+VISUAL QUALITY BAR
+==================================================
 
-No excessive shadows.
+The final result must NOT look like:
 
-No gradients unless extremely subtle and functional.
+- a generic admin dashboard;
+- a report document;
+- a simple wireframe;
+- a CSS-only reskin.
 
-VALIDATION
+It should visibly demonstrate:
 
-Preserve:
+- custom visual composition;
+- polished map;
+- polished network;
+- premium controls;
+- intentional spacing;
+- strong hover/focus states;
+- contextual inspectors;
+- high-end information hierarchy.
 
-all existing navigation
-entity selection
-URL-selected entity state
-map rendering
-search
-research reads
-evidence reads
-provider state
-AI status reads
-backend API contracts
-database hashes
-relationship safeguards
+==================================================
+USE CURRENT DATA
+==================================================
 
-Run:
+Do not fabricate:
+- numbers;
+- clients;
+- relationships;
+- SEC findings;
+- Web findings;
+- AI findings;
+- geography.
 
-frontend build
-frontend lint
-backend regression
-API smoke tests
+Use only current bounded Lending reads.
 
-Create:
+==================================================
+VALIDATE VISUALLY
+==================================================
 
-backend/data/CCR_ADVANCED_FRONTEND_UI2_STAGE2_REPORT.md
+This task REQUIRES actual browser inspection.
 
-The report must list:
+Open /lending at:
 
-pages changed
-components redesigned
-design-system changes
-removed generic-card patterns
-network-canvas changes
-empty-state changes
-entity-header implementation
-inspector implementation
-validation results
-known remaining limitations
+- 1920×1080 or similar large desktop;
+- 1440px desktop;
+- laptop width.
 
-FINAL RESPONSE
+Inspect:
 
-CCR UI-2 STAGE 2: PASS / FAIL
+- map appearance;
+- network appearance;
+- shell density;
+- spacing;
+- typography;
+- Ask drawer;
+- Portfolio shell consistency.
 
-PORTFOLIO:
-PASS / FAIL
+Do not claim completion based only on successful TypeScript compilation.
 
-ENTITY BROWSER:
-PASS / FAIL
+If browser tooling is unavailable, manually use the available running UI and
+document the limitation.
 
-ENTITY HEADER:
-PASS / FAIL
+==================================================
+DO NOT START FULL NETWORK U2
+==================================================
 
-NETWORK ANALYTICAL CANVAS:
-PASS / FAIL
+Do not build the final full-screen Network Intelligence workspace yet.
 
-RADAR WORKBENCH:
-PASS / FAIL
+This task is the U1 visual-quality correction.
 
-EVENT TIMELINE:
-PASS / FAIL
+Preserve the future U2 handoff.
 
-RESEARCH WORKBENCH:
-PASS / FAIL
+==================================================
+IMPLEMENTATION
+==================================================
 
-EVIDENCE LEDGER:
-PASS / FAIL
+WRITE CODE.
 
-INSPECTOR:
-PASS / FAIL
+Do not produce another proposal before implementing.
 
-AI CONTEXT SHELL:
-PASS / FAIL
+You are expected to substantially modify:
 
-NO FABRICATED DATA:
-PASS / FAIL
+- Lending shell components;
+- Executive page composition;
+- map presentation;
+- compact network presentation;
+- Ask drawer;
+- shared visual system;
+- Portfolio shell integration;
+- responsive CSS.
 
-FRONTEND BUILD:
-PASS / FAIL
+Then:
 
-BACKEND REGRESSION:
-passed / failed / errors
+build
+lint
+run
+inspect visually
+iterate until materially improved
 
-REPORT:
-backend/data/CCR_ADVANCED_FRONTEND_UI2_STAGE2_REPORT.md
+==================================================
+FINAL REPORT
+==================================================
 
-STOP.
+Only after implementation create:
+
+backend/data/LENDING_UI_U1_5_VISUAL_RECONSTRUCTION_REPORT.md
+
+Include:
+- major visual changes;
+- files changed;
+- screenshots/visual validation description;
+- map treatment;
+- network treatment;
+- Ask Lending treatment;
+- large-screen layout behavior;
+- build/lint results;
+- known limitations.
+
+End exactly:
+
+READY FOR LENDING FULL NETWORK U2
