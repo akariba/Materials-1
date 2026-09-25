@@ -1,328 +1,459 @@
-CLIENT CORRELATION — STAGE 2A.5
-PROVIDER READINESS + BOUNDED UNRESOLVED RELATIONSHIP RECOVERY
+CLIENT CORRELATION — STAGE 2A.6
+BOUNDED MULTI-HOP / HIDDEN RELATIONSHIP DISCOVERY
 
-Stage 2A.4 is complete.
+Work only in the CURRENT clean-reset repository.
 
-Current bounded 3M state:
+Do not redesign the frontend.
+Do not modify Customer_latest.parquet.
+Do not alter the 3.67M Client Universe identity model.
+Do not perform a portfolio-wide external research run.
+Do not fabricate relationships, identities, evidence, paths, or scores.
 
-- 14 candidates
-- 7 named candidates
-- 6 generic descriptors retained unresolved
-- 1 no-evidence finding
-- 2 external entities
-- 2 accepted relationship observations in bounded graph
-- 4 named endpoints still unresolved
-- 0 paths
-- 0 fuzzy merges
-- 0 synthetic shortcut edges
+CURRENT VERIFIED FOUNDATION
 
-IMPORTANT PROVIDER STATE FROM STAGE 2A.4:
-
-GLEIF: operational
-SEC: NOT CALLED because SEC_USER_AGENT is not configured
-Approved Web: NOT_CONFIGURED
+- Client Universe: 3,670,650 clients.
+- GFCID is the unique client-grain source identity.
+- Stage 2A.5 completed successfully.
+- SEC, approved Web, and GLEIF are READY.
+- Accepted relationship observations currently exist.
+- Solventum and Cabot provide positive-control relationships.
+- Replay/idempotence is working.
+- No fuzzy merges.
+- No synthetic shortcuts.
+- No source-master modification.
+- Current hidden paths: 0.
 
 OBJECTIVE
 
-Do NOT broaden research to the 3.67M universe.
+Prove that the system can discover genuine evidence-backed MULTI-HOP relationships starting from one selected Client Universe client.
 
-First make the preserved SEC and approved Web provider paths operational,
-then rerun a tightly bounded recovery pass only against:
+This stage is NOT about discovering as many relationships as possible.
 
-1. the four remaining named unresolved endpoints from Stage 2A.4;
-2. the existing Solventum candidate findings;
-3. the existing Cabot finding only as a regression/control case.
+It is about establishing a defensible graph-expansion architecture that can later scale safely.
 
-Do not perform new broad discovery.
+PRIMARY PILOT SUBJECT
 
-==================================================
-1. SEC READINESS
-==================================================
+Use the existing bounded 3M subject already used by Stages 2A.3–2A.5.
 
-Inspect the preserved SEC provider implementation and configuration.
+Do not create a new unrelated pilot.
 
-Use environment/configuration only.
+CORE PRINCIPLE
 
-Do NOT hard-code identity credentials or personal secrets.
+SEARCH BROADLY.
+ACCEPT NARROWLY.
+EXPAND ONLY FROM ACCEPTED EDGES.
 
-Configure the SEC User-Agent through the supported environment/config path.
+A candidate edge must NEVER be used as a graph hop.
 
-The User-Agent must comply with the existing SEC provider implementation
-and SEC access requirements.
+A multi-hop path does NOT create a synthetic direct relationship between the path endpoints.
 
-Perform a minimal SEC connectivity/readiness test.
+Example:
 
-Report:
+3M -> Solventum -> Entity X
 
-SEC configuration state
-SEC transport state
-HTTP status
-TLS verification state
-provider readiness
+does NOT mean:
 
-Do not disable TLS verification.
-Do not bypass approved network/proxy configuration.
+3M -> Entity X
 
-==================================================
-2. APPROVED WEB READINESS
-==================================================
+unless independent admissible evidence separately establishes that direct relationship.
 
-Inspect the preserved approved Web provider implementation.
+--------------------------------------------------
+1. GRAPH EXPANSION MODEL
+--------------------------------------------------
 
-Determine exactly why it reports NOT_CONFIGURED.
+Implement bounded graph traversal from the selected subject.
 
-Use the application's existing approved integration/configuration boundary.
+Initial maximum depth:
 
-Do NOT introduce direct arbitrary public-internet calls from business logic.
+DEPTH 0:
+selected Client Universe subject
 
-Do NOT create a parallel scraper.
+DEPTH 1:
+existing accepted relationships of subject
 
-If the provider requires configuration not available in the repository,
-report the exact missing configuration.
+DEPTH 2:
+accepted relationships discovered around accepted Depth-1 entities
 
-If it can be activated safely from existing configuration/environment,
-activate and perform one bounded readiness request.
+DEPTH 3:
+accepted relationships discovered around accepted Depth-2 entities
 
-Report:
+Maximum depth = 3.
 
-Web provider state
-transport state
-configuration required
-allowed source classes
-successful bounded request YES/NO
+Make depth configurable but default to 3.
 
-==================================================
-3. GLEIF REGRESSION
-==================================================
+Do not go beyond depth 3 in this stage.
 
-Run one minimal GLEIF identity request to confirm the existing working path
-has not regressed.
+--------------------------------------------------
+2. BRANCHING CONTROL
+--------------------------------------------------
 
-Do not redesign GLEIF.
+Prevent graph explosion.
 
-==================================================
-4. BOUNDED RECOVERY SET
-==================================================
+For every expandable entity:
 
-Read the Stage 2A.4 persisted resolution results.
+- consider only evidence-backed relationship observations;
+- rank/select only the strongest relevant accepted relationships;
+- maximum expansion fan-out = 5 accepted edges per entity;
+- candidates do not consume the accepted expansion allowance;
+- unresolved generic descriptors must never be expansion nodes;
+- NO_EVIDENCE records must never be expansion nodes.
 
-Create an exact worklist containing ONLY:
+Make fan-out configurable.
 
-- four remaining named unresolved endpoints;
-- Solventum relationship candidates;
-- Cabot accepted relationship as the positive control.
+Default:
 
-Do not send generic descriptors such as unnamed suppliers, unnamed lenders,
-unnamed insurers, or unnamed technology providers to external providers.
+max_depth = 3
+max_accepted_edges_per_node = 5
 
-==================================================
-5. IDENTITY RECOVERY
-==================================================
+--------------------------------------------------
+3. ENTITY RESOLUTION ORDER
+--------------------------------------------------
 
-For each unresolved named endpoint:
+For every discovered named entity:
 
-first repeat exact Client Universe resolution;
+FIRST:
+attempt exact resolution into the 3.67M Client Universe.
 
-then use, where applicable:
+Use exact supported identity fields only:
+- client_id
+- GFCID
+- deterministic source_master_id
+- exact normalized legal/canonical name
+- approved aliases
+- exact known legal entity identifiers
 
-GLEIF
-SEC
-approved Web
+NO fuzzy matching.
 
-Identity resolution and relationship evidence are separate gates.
+If no defensible Client Universe match exists:
 
-Resolve identity using authoritative identifiers where possible:
+SECOND:
+attempt governed external identity resolution using available approved providers.
 
-LEI
-CIK
-official legal name
-regulatory registration
-official domain
+Only create/reuse an external entity when identity acceptance gates pass.
 
-No fuzzy merge.
-No entity creation from similarity alone.
+If identity remains unresolved:
 
-==================================================
-6. RELATIONSHIP EVIDENCE RECOVERY
-==================================================
+retain the relationship as candidate/unresolved.
 
-For each named endpoint whose identity becomes sufficiently resolved:
+Do not create an entity merely from descriptive text.
 
-retrieve evidence specifically for the EXISTING candidate relationship type.
+--------------------------------------------------
+4. EXTERNAL RESEARCH
+--------------------------------------------------
 
-Do not invent a new relationship type merely to obtain acceptance.
+Research may use only approved provider infrastructure already implemented:
 
-Search broadly enough to find admissible evidence but accept narrowly.
+- SEC_FILINGS
+- R2D2_WEB / approved Web
+- GLEIF
 
-Apply the existing evidence hierarchy and Stage 2A.2 acceptance rules.
+Reuse:
+- cache
+- provenance
+- evidence quality
+- source policies
+- identity gates
+- AsOfDate
+- replay protection
+- provider audit logging
 
-SEC filings should be preferred where the relationship is documented there.
+Do not bypass the existing provider layer.
 
-Approved Web may provide independent corroboration from permitted sources.
+Do not make direct uncontrolled internet calls.
 
-GLEIF identity/parent data may support identity or ownership relationships
-where explicitly supported, but must not be generalized to unrelated
-relationship types.
+--------------------------------------------------
+5. PATH DEFINITION
+--------------------------------------------------
 
-==================================================
-7. SOLVENTUM CONTROL
-==================================================
+Create a hidden/multi-hop path only when EVERY hop is an accepted relationship observation.
 
-The existing Solventum external identity is already resolved.
+Example valid path:
 
-Re-evaluate the persisted Solventum candidates using the now-operational
-SEC/Web source combination.
+Client A
+ --accepted relationship-->
+ External Entity B
+ --accepted relationship-->
+ Client C
 
-Do NOT promote merely because identity is known.
+or
 
-Promote only if the actual claimed relationship type, direction,
-and semantics are directly supported.
+Client A
+ -> Client B
+ -> External C
+ -> Client D
 
-If not, retain as candidate and state exactly which evidence requirement fails.
+Each path must preserve:
 
-==================================================
-8. CABOT CONTROL
-==================================================
+- ordered node IDs
+- ordered relationship observation IDs
+- relationship type per hop
+- direction per hop
+- connectivity per hop
+- evidence references per hop
+- evidence quality per hop
+- relationship status per hop
+- source channel per hop
+- AsOfDate
+- created/retrieved timestamps
+- path depth
+- path endpoint classifications
+- whether endpoint is Client Universe or external
 
-Replay the accepted Cabot relationship.
+--------------------------------------------------
+6. HIDDEN CLIENT-TO-CLIENT CORRELATION
+--------------------------------------------------
 
-It must remain one observation.
+A particularly important result is:
 
-No duplicate observation.
-No duplicate external entity.
-No duplicate evidence objects.
+CLIENT UNIVERSE CLIENT
+    ->
+one or more accepted intermediaries
+    ->
+ANOTHER CLIENT UNIVERSE CLIENT
 
-==================================================
-9. GENERIC ENDPOINT SAFETY
-==================================================
+Classify this as:
 
-The six generic descriptors from Stage 2A.4 must remain unresolved descriptors.
+HIDDEN_CLIENT_PATH
 
-Do not create entities for:
+Do NOT classify it as a direct relationship.
 
-unnamed supplier groups
-unnamed lender syndicates
-unnamed insurers
-unnamed ERP/IT vendors
-generic counterparty descriptions
+Also support:
 
-Generic descriptor entities created MUST equal 0.
+CLIENT_TO_EXTERNAL_PATH
+EXTERNAL_TO_CLIENT_PATH
+EXTERNAL_TO_EXTERNAL_PATH
 
-==================================================
-10. PATH RECALCULATION
-==================================================
+but Client-to-Client hidden paths are the primary business outcome.
 
-After the bounded recovery pass, recompute evidence-backed paths using only
-accepted relationship observations.
+--------------------------------------------------
+7. PATH STRENGTH
+--------------------------------------------------
 
-Candidates may be visually/research connected later but cannot form accepted
-hidden paths.
+Do not invent a numerical AI score.
 
-Do not create an A->C relationship simply because A->B->C exists.
+Path strength must be based on existing governed relationship/evidence properties.
 
-Report:
+The strength of a multi-hop path must never exceed its weakest hop.
 
-accepted direct edges
-candidate edges
-evidence-backed paths
-synthetic shortcut edges
+If any hop later becomes invalid/unaccepted, the path must no longer qualify as accepted.
 
-Synthetic shortcut edges MUST equal 0.
+Store path state explicitly.
 
-==================================================
-11. IDEMPOTENCE
-==================================================
+Suggested states:
 
-Replay this exact bounded Stage 2A.5 operation once.
+ACCEPTED_PATH
+CANDIDATE_PATH
+INVALIDATED_PATH
 
-Second execution must produce no duplicate:
+For this stage, only ACCEPTED_PATH may be treated as a validated hidden correlation.
 
-external entities
-identity records
-relationship observations
-candidate records
-evidence objects
-paths
+--------------------------------------------------
+8. CYCLE / DUPLICATE CONTROL
+--------------------------------------------------
 
-==================================================
-12. REPORT
-==================================================
+Implement:
+
+- visited entity control per traversal;
+- no immediate A -> B -> A loops;
+- deterministic path fingerprints;
+- duplicate path suppression;
+- deterministic replay;
+- canonical path ordering only where semantics permit;
+- preserve direction.
+
+Do not merge semantically different paths merely because endpoints match.
+
+--------------------------------------------------
+9. STORAGE ARCHITECTURE
+--------------------------------------------------
+
+Keep the storage design scalable and adapter-driven.
+
+Do not couple application logic directly to SQLite.
+
+Add repository contracts/interfaces for:
+
+- graph neighbors
+- accepted observations
+- path persistence
+- traversal runs
+- expansion frontier
+- path retrieval
+
+SQLite remains the current local adapter.
+
+The design must remain migratable later to PostgreSQL / graph-capable storage without rewriting business logic.
+
+Do NOT migrate databases in this stage.
+
+--------------------------------------------------
+10. TRAVERSAL RUN MODEL
+--------------------------------------------------
+
+Persist a bounded traversal run with:
+
+- traversal_run_id
+- root client_id
+- root GFCID
+- max_depth
+- fanout limit
+- AsOfDate
+- started_at
+- completed_at
+- status
+- provider attempts
+- nodes evaluated
+- accepted edges inspected
+- candidates encountered
+- new identities resolved
+- new accepted observations
+- paths found
+- hidden Client Universe endpoint paths found
+- replay fingerprint
+
+Exact replay must not create duplicate provider attempts, entities, observations, evidence, or paths.
+
+--------------------------------------------------
+11. BOUNDED 3M PILOT
+--------------------------------------------------
+
+Run ONE bounded pilot.
+
+Root:
+existing 3M Client Universe entity.
+
+Start from the currently accepted graph.
+
+Expand accepted related entities.
+
+Try to reach at least depth 2.
+
+Depth 3 may be used only where the evidence permits it.
+
+Do NOT loosen acceptance criteria merely to create a path.
+
+A correct result of zero hidden paths is acceptable if the evidence does not support them.
+
+The purpose is to prove architecture and traversal correctness.
+
+--------------------------------------------------
+12. REQUIRED API
+--------------------------------------------------
+
+Add bounded read APIs only as necessary, such as:
+
+GET /api/relationships/{client_id}/network
+
+GET /api/relationships/{client_id}/paths
+
+GET /api/relationships/{client_id}/neighbors
+
+GET /api/relationship-traversals/{traversal_run_id}
+
+Support depth parameter only within the governed maximum.
+
+Example:
+
+?depth=1
+?depth=2
+?depth=3
+
+Never return millions of nodes.
+
+Use bounded pagination / cursors where appropriate.
+
+--------------------------------------------------
+13. REQUIRED TESTS
+--------------------------------------------------
+
+Test at minimum:
+
+- accepted edge can be traversed;
+- candidate edge cannot be traversed;
+- NO_EVIDENCE cannot be traversed;
+- unresolved generic descriptor cannot become a node;
+- exact Client Universe resolution is preferred over external entity creation;
+- external entity created only after identity gates pass;
+- 2-hop accepted path persistence;
+- 3-hop accepted path persistence;
+- weakest-hop rule;
+- path does not create a synthetic direct relationship;
+- cycle prevention;
+- duplicate path prevention;
+- replay/idempotence;
+- direction preservation;
+- same endpoints with different semantic paths remain distinct;
+- no fuzzy identity merge;
+- source master remains unchanged;
+- provider errors do not generate accepted relationships;
+- depth limit enforced;
+- fan-out limit enforced.
+
+Run the complete backend regression suite afterward.
+
+--------------------------------------------------
+14. REPORT
+--------------------------------------------------
 
 Create:
 
-backend/data/PROVIDER_READINESS_RELATIONSHIP_RECOVERY_STAGE_2A5_REPORT.md
+backend/data/HIDDEN_RELATIONSHIP_DISCOVERY_STAGE_2A6_REPORT.md
 
-Include:
+Report:
 
-PROVIDER READINESS
+CLIENT UNIVERSE ROWS:
+ROOT SUBJECT:
+ROOT CLIENT_ID:
+ROOT GFCID:
 
-GLEIF
-SEC
-Approved Web
+MAX DEPTH:
+FANOUT:
 
-For each:
-configuration
-connectivity
-transport
-readiness
-failure reason if unavailable
+TRAVERSAL STATUS:
 
-BOUNDED ENTITY TABLE
+NODES EVALUATED:
+CLIENT UNIVERSE NODES:
+EXTERNAL NODES:
 
-Endpoint
-Initial state
-Internal client match
-GLEIF result
-SEC identity result
-Web identity result
-Final identity state
-Strong identifiers
+ACCEPTED EDGES INSPECTED:
+NEW ACCEPTED EDGES:
+CANDIDATES RETAINED:
+UNRESOLVED ENTITIES:
 
-RELATIONSHIP TABLE
+SEC ATTEMPTS:
+WEB ATTEMPTS:
+GLEIF ATTEMPTS:
 
-Subject
-Related entity
-Relationship type
-Initial state
-SEC evidence
-Web evidence
-GLEIF evidence where applicable
-Evidence quality
-Direction support
-Final state
-Reason
+2-HOP PATHS:
+3-HOP PATHS:
+HIDDEN CLIENT-TO-CLIENT PATHS:
 
-FINAL COUNTS
+SYNTHETIC DIRECT RELATIONSHIPS CREATED: 0 / FAIL
+FUZZY MERGES: 0 / FAIL
+MASTER CLIENT ROWS MODIFIED: 0 / FAIL
+GENERIC DESCRIPTORS USED AS NODES: 0 / FAIL
+CANDIDATE EDGES USED IN ACCEPTED PATHS: 0 / FAIL
 
-named endpoints tested
-resolved internal endpoints
-resolved external endpoints
-remaining unresolved named endpoints
-accepted observations before run
-newly promoted observations
-accepted observations after run
-remaining candidates
-generic descriptors retained
-paths
-synthetic shortcuts
-fuzzy merges
-duplicate records after replay
+REPLAY:
+PASS / FAIL
 
-PASS REQUIREMENTS
+FULL BACKEND TESTS:
+PASS / FAIL
 
-Customer_latest.parquet modified = NO
-fuzzy merges = 0
-generic descriptor entities created = 0
-synthetic shortcut edges = 0
-duplicate records after replay = 0
-Cabot regression = PASS
-SEC readiness = report actual result
-Web readiness = report actual result
-GLEIF regression = PASS
+SCALABLE REPOSITORY BOUNDARY:
+PASS / FAIL
 
-STOP.
+Then show the most informative discovered path, if any, as:
 
-Do not research the full 3.67M universe.
-Do not build the network UI.
-Do not add AI workflows.
-Do not redesign the relationship model.
+ROOT
+  -> relationship type / direction / evidence source
+ENTITY
+  -> relationship type / direction / evidence source
+ENTITY
+
+If no valid hidden path is discovered, report that honestly.
+
+Do not fabricate one to obtain a successful-looking result.
+
+STOP after Stage 2A.6.
+Do not build the network UI yet.
