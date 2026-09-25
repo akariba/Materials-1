@@ -1,421 +1,404 @@
-CCR — TODAY DELIVERY BATCH 1
-RUNTIME HARDENING + CLEAN REGRESSION + SAFE READ PATHS
+CCR CLIENT CORRELATION — CLEAN RESET
 
-Work only in the CURRENT CCR repository.
+This is a CONTROLLED CLEANUP task.
 
-Read first:
+The product is being reset around ONE primary objective:
 
-backend/data/CCR_FINAL_DELIVERY_READINESS_AUDIT.md
+3.6M CLIENT MASTER
+→ CLIENT CORRELATION
+→ RELATIONSHIP DISCOVERY
+→ SEC / WEB / GLEIF EVIDENCE
+→ INTERACTIVE NETWORK MAP
 
-This is an IMPLEMENTATION task.
+The previous ~16k CCR-centered application is no longer the product foundation.
 
-Do not redesign the frontend.
-Do not fabricate relationships.
-Do not fabricate events.
-Do not fabricate evidence.
-Do not alter Phase-2 protected business data.
-Do not rebaseline protected hashes.
-Do not create synthetic production intelligence.
-Do not weaken evidence standards.
+Do not build anything new yet.
 
-OBJECTIVE
+Do not redesign anything yet.
 
-Remove the technical blockers identified by the final delivery audit and
-prove the CURRENT product works as a running application.
+First remove/archive the accumulated product noise while preserving valuable
+source data and reusable infrastructure.
 
 ==================================================
-1. FIX THE BROKEN BACKEND TEST GATE
+0. SAFETY FIRST
 ==================================================
 
-Inspect:
+Before deleting anything:
 
-backend/tests/test_distance_map.py
+1. Confirm this is a Git repository.
+2. Record current branch and commit.
+3. Create a recoverable Git checkpoint/tag or clean reset branch.
+4. Do not destroy uncommitted user work without preserving it.
+5. Produce an inventory of what will be kept and what will be removed.
 
-The audit found invalid Python syntax at line 1.
+Do NOT delete any authoritative source data.
 
-Determine whether this is:
-
-A. an obsolete/dead test,
-B. a corrupted copied fixture,
-C. an active test that should still exist.
-
-Do not blindly delete it.
-
-If obsolete:
-- quarantine/remove it from the active backend test collection in a clean,
-  explainable way.
-
-If active:
-- repair the syntax while preserving the intended assertions.
-
-Then require:
-
-python -m pytest backend/tests -q
-
-to collect normally.
-
-Do NOT use an exclusion flag in the final validation.
-
-Expected:
-
-0 collection errors
-0 failed tests
-0 errors
+Do NOT delete Git history.
 
 ==================================================
-2. REMOVE GET-SIDE DATABASE MUTATION
+1. PRESERVE THESE ASSETS
 ==================================================
 
-The audit identified:
+Identify and preserve:
 
-GET /api/ccr/relationship-config
+A. REAL MASTER CLIENT DATA
 
-as potentially calling a store method that opens the SQLite database writable
-and may create/seed configuration tables.
+Especially inspect and preserve:
 
-This is not acceptable for a read route.
+Customer_latest.parquet
 
-Inspect the full call chain.
+and any database that genuinely contains the complete ~3.6M client/master
+population.
 
-Make GET routes observational/read-only.
+Do not assume the existing database is correct.
+Just preserve it until validated.
 
-If initialization/seeding is required, move it to one of:
+B. SOURCE FILES
 
-- explicit migration/bootstrap
-- application startup initialization
-- existing governed setup path
+Preserve original:
 
-Do not modify business records.
+parquet
+csv
+source extracts
 
-Prove repeated GET requests cause:
+that contain real business/client data.
 
-schema delta = 0
-row delta = 0
-relationship delta = 0
-research delta = 0
-evidence delta = 0
+C. EXTERNAL PROVIDER INFRASTRUCTURE
 
-==================================================
-3. PRESERVE PHASE-2 INTEGRITY
-==================================================
+Preserve working reusable implementation for:
 
-Do NOT rebaseline the two historical exposure-record fingerprint FAIL entries.
+SEC
+GLEIF
+approved Web provider
+Windows/ZSA proxy handling
+TLS verification
+provider request normalization
+source-document retrieval
 
-The current read-only recomputation passes.
+Only preserve code that is actually reusable and not coupled to the old UI.
 
-Preserve the historical records as audit history.
+D. EVIDENCE UTILITIES
 
-Add a concise documented disposition explaining:
+Preserve reusable utilities for:
 
-- historical verification contains two failed observations
-- current protected-table recomputation matches the approved fingerprint
-- no evidence of current corruption exists
-- historical rows were intentionally retained
+source-document storage
+content hashing
+evidence snippets
+source provenance
+provider audit logging
 
-Do not erase or rewrite history.
-
-==================================================
-4. ZERO-BYTE DATABASE HYGIENE
-==================================================
-
-The audit identified a zero-byte duplicate:
-
-backend/data/ccrig_relationship_intelligence.sqlite3
-
-while the actual runtime database is:
-
-backend/data/ccr_relationship_intelligence.sqlite3
-
-Determine references.
-
-If nothing valid references the zero-byte artifact:
-remove it.
-
-If something does reference it:
-fix the reference to the canonical runtime database first,
-then remove the obsolete artifact.
-
-There must be ONE clearly documented runtime relationship-intelligence DB.
+Do not preserve old workflow complexity merely because it exists.
 
 ==================================================
-5. START THE REAL LOCAL APPLICATION
+2. OLD PRODUCT SURFACES TO REMOVE FROM ACTIVE PRODUCT
 ==================================================
 
-Use the repository-supported launch path.
+Remove from the ACTIVE application architecture:
 
-Start:
+Portfolio dashboard
+old Entities UI
+old CCR entity intelligence page
+old Network implementation
+Radar
+Events
+Research dashboard
+Evidence dashboard
+Review dashboard
+old inspector implementation
+old AI drawer
+old KPI surfaces
+old map implementation
+old candidate starburst graph
+old UI reports
+old experimental UI components
+legacy CSS/design systems
+unused routes
 
-BACKEND
-127.0.0.1:8000
+The new application will NOT be rebuilt during this task.
 
-FRONTEND
-127.0.0.1:5173
+If deletion creates unnecessary risk, move obsolete code under a clearly
+isolated:
 
-Do not merely inspect code.
+legacy/
 
-Verify actual HTTP runtime.
+directory that is NOT imported, routed, built or executed.
 
-Required backend checks:
+Prefer actual deletion when Git already provides recovery and dependencies are
+clearly dead.
 
-/api/health
-/api/ccr/status
-/api/ccr/overview
-/api/ccr/entities/summary
-/api/ccr/entities
-/api/ccr/map
-/api/ccr/ai/status
+==================================================
+3. REMOVE OLD CCR-CENTERED PRODUCT ASSUMPTIONS
+==================================================
 
-Also verify one real selected entity through:
+The new product must not be architected around:
 
-entity detail
-entity research
+16,769 CCR subjects
+16,767 entity_registry rows
+25,000 exposure rows
+
+Those datasets may remain available as legacy/reference data but must no longer
+define:
+
+application population
+entity universe
+search universe
+network universe
+primary API architecture
+frontend navigation
+
+Do not delete authoritative data solely because it belongs to the old CCR
+subset.
+
+Just disconnect it from the new core product.
+
+==================================================
+4. DATABASE CLEANUP
+==================================================
+
+Inventory every SQLite/database artifact.
+
+Classify each as:
+
+AUTHORITATIVE SOURCE
+MASTER CLIENT DATABASE
+DERIVED DATABASE
+LEGACY CCR DATABASE
+TEST DATABASE
+EMPTY/INVALID
+DUPLICATE
+UNKNOWN
+
+Do not delete the database containing the ~3.6M master population.
+
+Do not delete source databases before verifying their content.
+
+Remove only databases that are conclusively:
+
+empty
+test-only
+temporary
+duplicate generated artifacts
+obsolete UI/experimental databases
+
+Old relationship-intelligence databases may be moved to:
+
+legacy/data/
+
+if they contain prior research/evidence we may want to inspect later.
+
+The new system should eventually have one clearly named primary master client
+database.
+
+Do NOT build it yet.
+
+==================================================
+5. REPORT / GENERATED FILE CLEANUP
+==================================================
+
+Old generated reports have accumulated heavily.
+
+Move obsolete reports to:
+
+legacy/reports/
+
+or remove them if Git history already preserves them.
+
+The active backend/data directory should not contain dozens of obsolete
+implementation reports.
+
+Keep only raw/authoritative data and files needed for the new build.
+
+==================================================
+6. FRONTEND RESET
+==================================================
+
+Reduce the frontend to the smallest possible application shell.
+
+For now it may contain only:
+
+App
+router
+base styles
+one temporary placeholder route
+
+Example:
+
+/
+
+CLIENT CORRELATION
+New application foundation
+
+No dashboard.
+No cards.
+No fake graph.
+No old navigation.
+
+Do not begin the new visual design yet.
+
+==================================================
+7. BACKEND RESET
+==================================================
+
+Do NOT delete reusable provider/data utilities.
+
+But remove old application routing from the active API where it exists solely
+to support obsolete UI surfaces.
+
+The new backend should ultimately focus on:
+
+client universe
+client search
+relationship discovery
+evidence
 network
-evidence
-events
+
+Do not implement those APIs yet.
+
+Keep health/status functionality if useful.
 
 ==================================================
-6. BROWSER ACCEPTANCE
+8. AI
 ==================================================
 
-Using the running frontend, verify:
+Remove AI from the active UI for now.
 
-/portfolio
-/entities
-/network
-/radar
-/events
-/research
-/evidence
-/review
+Do not delete reusable HELIX integration code if it is valid.
 
-For each route:
+The new product will introduce AI only after the core correlation/evidence
+workflow works.
 
-HTTP / RENDER = PASS
-NO JS CRASH = PASS
-NAVIGATION = PASS
-ENTITY CONTEXT = PASS
-EMPTY STATE = TRUTHFUL
-
-Test:
-
-global entity search
-entity selection
-URL entity persistence
-browser back
-browser forward
-left navigation
-inspector open/close
-inspector tabs
-Network navigation
-Research navigation
-Evidence navigation
-AI drawer opening
-
-Do not create production data merely to make an empty screen non-empty.
+AI is extra, not the product.
 
 ==================================================
-7. NETWORK RENDERING
+9. FINAL ACTIVE REPOSITORY SHAPE
 ==================================================
 
-Select an entity with candidate edges.
+After cleanup, the ACTIVE product should be easy to understand.
 
-Verify:
+Conceptually:
 
-selected entity renders
-candidate nodes render
-candidate edges render
-candidate edges remain visibly differentiated from evidence relationships
-no candidate appears confirmed
-node click works
-entity switch works
-inspector stays synchronized
-graph remains usable at approximately 50 visible nodes
+data/
+    authoritative master sources
 
-If current layout overlaps badly, fix layout/rendering only.
+backend/
+    reusable core
+    providers
+    source/evidence utilities
+    minimal API
 
-Do not change relationship semantics.
+frontend/
+    minimal application shell
 
-==================================================
-8. PROVIDER TRANSPORT READINESS
-==================================================
+legacy/
+    old CCR application artifacts that we intentionally retain temporarily
 
-Reuse ONLY the already-approved Windows/ZSA transport configuration.
+tests/
+    only tests relevant to preserved infrastructure
 
-Do not invent a proxy.
-
-Execute bounded connectivity tests only.
-
-GLEIF:
-maximum 1 identity request
-
-SEC:
-maximum 1 identity/reference request
-
-Do not execute broad discovery.
-
-Report:
-
-transport
-TLS
-HTTP
-provider status
-cache status
-
-If transport works, persist only the existing governed audit/status information.
-
-Do not create a relationship from connectivity testing.
+There should be no ambiguity about which frontend is active.
 
 ==================================================
-9. HELIX READINESS
+10. VERIFY NOTHING IMPORTANT WAS LOST
 ==================================================
 
-Inspect the actual environment.
+Before completing:
 
-Do not fabricate credentials.
+verify master client source still exists
 
-If approved HELIX credentials/configuration already exist:
+verify its size/hash did not change
 
-run ONE safe read-only analyst request.
+verify reusable SEC code remains
 
-Question:
+verify reusable GLEIF code remains
 
-Explain the selected entity using only currently supplied CCR context.
-Clearly distinguish stored facts, research candidates, missing evidence,
-and unknown information.
+verify approved proxy configuration/code remains
 
-The call must NOT create:
+verify authoritative source datasets remain unchanged
 
-relationship
-relationship claim
-evidence
-external entity
-event
-candidate
-production mutation
-
-If HELIX is not configured:
-
-do not fake READY.
-
-Return the precise missing configuration requirement.
+verify Git can recover deleted legacy files
 
 ==================================================
-10. FRONTEND WARNING
+11. DO NOT DO YET
 ==================================================
 
-Inspect the existing lint warning in the inactive legacy:
+DO NOT:
 
-CcrPlatform.tsx
+build the 3.6M database
+create relationships
+run SEC discovery
+run Web discovery
+create correlation configuration
+create network graph
+create AI functionality
+create dashboards
 
-If the file is genuinely not part of the active UI:
-
-exclude/remove the dead legacy surface cleanly from the active lint/build scope
-or repair the warning with no behavioral change.
-
-Final desired state:
-
-lint errors = 0
-lint warnings in active application = 0
-
-==================================================
-11. FULL REGRESSION
-==================================================
-
-Run without exclusions:
-
-python -m pytest backend/tests -q
-
-Frontend:
-
-npm run lint
-npm run build
-
-Database:
-
-PRAGMA integrity_check
-PRAGMA foreign_key_check
-
-Protected Phase-2 fingerprint validation.
+This task is CLEANUP ONLY.
 
 ==================================================
-12. REPORT
+12. CREATE ONE REPORT
 ==================================================
 
-Create:
+Create only:
 
-backend/data/CCR_TODAY_DELIVERY_BATCH1_REPORT.md
+backend/data/CLIENT_CORRELATION_CLEAN_RESET_REPORT.md
 
-Include:
+It must show:
 
-changes
-root causes
-runtime verification
-browser route results
-API results
-provider transport results
-HELIX result
-test results
-database safeguards
-remaining blockers
+PRESERVED
+REMOVED
+MOVED TO LEGACY
+AUTHORITATIVE DATA FOUND
+DATABASES FOUND
+ACTIVE FRONTEND FILES
+ACTIVE BACKEND MODULES
+REUSABLE PROVIDERS
+UNRESOLVED ITEMS
 
 ==================================================
 FINAL RESPONSE
 ==================================================
 
-CCR DELIVERY BATCH 1: PASS / FAIL
+CLIENT CORRELATION CLEAN RESET: PASS / FAIL
 
-LOCAL BACKEND:
-PASS / FAIL
+AUTHORITATIVE MASTER SOURCE PRESERVED:
+YES / NO
 
-LOCAL FRONTEND:
-PASS / FAIL
+APPROXIMATE MASTER SOURCE ROWS:
+<actual if already safely determinable, otherwise NOT YET PROFILED>
 
-BROWSER ROUTES:
-PASS / FAIL
+OLD UI REMOVED FROM ACTIVE BUILD:
+YES / NO
 
-BACKEND FULL TEST:
-passed / failed / errors
+OLD CCR WORKFLOW REMOVED FROM ACTIVE PRODUCT:
+YES / NO
 
-FRONTEND BUILD:
-PASS / FAIL
+SEC PROVIDER CODE PRESERVED:
+YES / NO
 
-FRONTEND LINT:
-PASS / FAIL
+GLEIF PROVIDER CODE PRESERVED:
+YES / NO
 
-GET READ-ONLY SAFETY:
-PASS / FAIL
+WEB PROVIDER CODE PRESERVED:
+YES / NO / NOT PRESENT
 
-DATABASE INTEGRITY:
-PASS / FAIL
+MASTER DATA MODIFIED:
+NO / FAIL
 
-FOREIGN KEYS:
-PASS / FAIL
-
-PHASE-2 FINGERPRINT:
-PASS / FAIL
-
-NETWORK CANDIDATE VIEW:
-PASS / FAIL
-
-GLEIF CONNECTIVITY:
-READY / UNAVAILABLE
-
-SEC CONNECTIVITY:
-READY / UNAVAILABLE
-
-HELIX:
-READY / NOT_CONFIGURED / FAIL
-
-PRODUCTION RELATIONSHIPS CREATED:
+SOURCE DATA DELETED:
 0 / FAIL
 
-SYNTHETIC EVENTS CREATED:
-0 / FAIL
+ACTIVE FRONTEND:
+<short description>
 
-REMAINING DELIVERY BLOCKERS:
-<count>
+ACTIVE BACKEND:
+<short description>
+
+LEGACY LOCATION:
+<path>
 
 REPORT:
-backend/data/CCR_TODAY_DELIVERY_BATCH1_REPORT.md
+backend/data/CLIENT_CORRELATION_CLEAN_RESET_REPORT.md
 
 STOP.
+
+DO NOT START THE NEW BUILD.
