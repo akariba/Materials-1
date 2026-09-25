@@ -1,365 +1,312 @@
-CLIENT CORRELATION — STAGE 2A.4
-EXTERNAL ENTITY IDENTITY RESOLUTION — BOUNDED 3M PILOT
+CLIENT CORRELATION — STAGE 2A.5
+PROVIDER READINESS + BOUNDED UNRESOLVED RELATIONSHIP RECOVERY
 
-Stage 2A.3 is complete.
+Stage 2A.4 is complete.
 
-Current real 3M ingestion result:
+Current bounded 3M state:
 
-15 raw findings
-1 accepted relationship observation
-14 candidates
-17 evidence objects
-0 external entities
-0 synthetic shortcut edges
-0 fuzzy merges
+- 14 candidates
+- 7 named candidates
+- 6 generic descriptors retained unresolved
+- 1 no-evidence finding
+- 2 external entities
+- 2 accepted relationship observations in bounded graph
+- 4 named endpoints still unresolved
+- 0 paths
+- 0 fuzzy merges
+- 0 synthetic shortcut edges
 
-The ingestion plumbing is working.
+IMPORTANT PROVIDER STATE FROM STAGE 2A.4:
 
-The next problem is identity resolution of NAMED related entities that are not
-currently resolved to the 3.67M Client Universe.
-
-DO NOT redesign the ingestion model.
-DO NOT modify Customer_latest.parquet.
-DO NOT build the frontend/network.
-DO NOT create relationships merely because an entity identity is resolved.
-DO NOT use fuzzy entity merging.
-DO NOT create entities from unnamed/generic descriptors.
+GLEIF: operational
+SEC: NOT CALLED because SEC_USER_AGENT is not configured
+Approved Web: NOT_CONFIGURED
 
 OBJECTIVE
 
-For the existing persisted 3M Stage 2A.3 candidates only:
+Do NOT broaden research to the 3.67M universe.
 
-1. determine whether each named related entity is already an internal
-   Client Universe client;
-2. otherwise resolve it as a verified external entity where defensible;
-3. persist external identity separately from Client Universe;
-4. re-run the existing relationship acceptance gate;
-5. promote only candidates whose endpoint identity AND relationship evidence
-   independently satisfy the existing policy.
+First make the preserved SEC and approved Web provider paths operational,
+then rerun a tightly bounded recovery pass only against:
 
-This is ENTITY RESOLUTION, not new relationship discovery.
+1. the four remaining named unresolved endpoints from Stage 2A.4;
+2. the existing Solventum candidate findings;
+3. the existing Cabot finding only as a regression/control case.
 
-==================================================
-1. CLASSIFY THE EXISTING 14 CANDIDATES
-==================================================
-
-Read the actual persisted Stage 2A.3 candidate set.
-
-Classify each related endpoint as one of:
-
-NAMED_INTERNAL_CANDIDATE
-NAMED_EXTERNAL_CANDIDATE
-GENERIC_UNNAMED_DESCRIPTOR
-NO_RELATED_ENTITY
-IDENTITY_ALREADY_RESOLVED
-
-Produce the complete list before performing provider work.
-
-Examples of generic descriptors include:
-
-Revolving Credit Facility Syndicate Lenders
-Unnamed Limited- and Sole-Source Suppliers
-Unnamed ERP / IT Infrastructure Vendor
-Unnamed Pension Annuity Insurer
-
-These are NOT legal entities.
-
-They must remain unresolved candidate descriptors.
+Do not perform new broad discovery.
 
 ==================================================
-2. INTERNAL CLIENT UNIVERSE RESOLUTION FIRST
+1. SEC READINESS
 ==================================================
 
-For every NAMED related entity:
+Inspect the preserved SEC provider implementation and configuration.
 
-Search the 3,670,650-client Client Universe first.
+Use environment/configuration only.
 
-Allowed internal matching:
+Do NOT hard-code identity credentials or personal secrets.
 
-exact client_id
-exact GFCID
-exact CAGID only when uniqueness permits
-exact legal_entity_id only when uniqueness permits
-exact canonical/legal name
-exact normalized alias
+Configure the SEC User-Agent through the supported environment/config path.
 
-NO fuzzy merge.
+The User-Agent must comply with the existing SEC provider implementation
+and SEC access requirements.
 
-NO similarity threshold.
+Perform a minimal SEC connectivity/readiness test.
 
-NO model-based identity decision.
+Report:
 
-If exactly one client resolves:
-classify endpoint as INTERNAL_CLIENT
-and bind its client_id.
+SEC configuration state
+SEC transport state
+HTTP status
+TLS verification state
+provider readiness
 
-If more than one plausible internal record exists:
-AMBIGUOUS_INTERNAL
-and do not choose automatically.
-
-If none resolves:
-continue to external identity resolution.
+Do not disable TLS verification.
+Do not bypass approved network/proxy configuration.
 
 ==================================================
-3. EXTERNAL IDENTITY RESOLUTION
+2. APPROVED WEB READINESS
 ==================================================
 
-For named entities not found internally, use the preserved approved provider
-stack only:
+Inspect the preserved approved Web provider implementation.
+
+Determine exactly why it reports NOT_CONFIGURED.
+
+Use the application's existing approved integration/configuration boundary.
+
+Do NOT introduce direct arbitrary public-internet calls from business logic.
+
+Do NOT create a parallel scraper.
+
+If the provider requires configuration not available in the repository,
+report the exact missing configuration.
+
+If it can be activated safely from existing configuration/environment,
+activate and perform one bounded readiness request.
+
+Report:
+
+Web provider state
+transport state
+configuration required
+allowed source classes
+successful bounded request YES/NO
+
+==================================================
+3. GLEIF REGRESSION
+==================================================
+
+Run one minimal GLEIF identity request to confirm the existing working path
+has not regressed.
+
+Do not redesign GLEIF.
+
+==================================================
+4. BOUNDED RECOVERY SET
+==================================================
+
+Read the Stage 2A.4 persisted resolution results.
+
+Create an exact worklist containing ONLY:
+
+- four remaining named unresolved endpoints;
+- Solventum relationship candidates;
+- Cabot accepted relationship as the positive control.
+
+Do not send generic descriptors such as unnamed suppliers, unnamed lenders,
+unnamed insurers, or unnamed technology providers to external providers.
+
+==================================================
+5. IDENTITY RECOVERY
+==================================================
+
+For each unresolved named endpoint:
+
+first repeat exact Client Universe resolution;
+
+then use, where applicable:
 
 GLEIF
 SEC
-approved Web research
+approved Web
 
-The goal is identity only.
+Identity resolution and relationship evidence are separate gates.
 
-Do NOT perform broad relationship discovery in this stage.
-
-Preferred identity evidence:
-
-GLEIF:
-LEI
-legal name
-registered address
-jurisdiction
-parent identifiers where returned
-
-SEC:
-CIK
-registrant legal name
-ticker/exchange where authoritative
-filing registrant identity
-
-Approved Web:
-official company domain
-official corporate profile
-official investor-relations page
-government/regulatory identity reference
-
-Do not use generic search-result snippets as final identity authority.
-
-==================================================
-4. EXTERNAL ENTITY MODEL
-==================================================
-
-Create an external entity only where identity is sufficiently established.
-
-Each external entity must have a stable internal external_entity_id.
-
-Persist where available:
-
-external_entity_id
-legal_name
-normalized_name
-entity_type
-country/jurisdiction
-LEI
-CIK
-ticker
-official_domain
-provider identity references
-created_at
-updated_at
-identity_status
-identity_provenance
-
-External entities MUST remain separate from the Client Universe.
-
-Never create a fake GFCID/client_id for an external entity.
-
-Never insert an external entity into Customer_latest.parquet.
-
-==================================================
-5. ENTITY DEDUPLICATION
-==================================================
-
-External entity creation must be idempotent.
-
-Deduplicate only using strong identifiers such as:
+Resolve identity using authoritative identifiers where possible:
 
 LEI
 CIK
-other authoritative registration ID
-
-or exact deterministic identity evidence.
-
-Do NOT collapse companies because their names are similar.
-
-Report:
-
-external entities attempted
-external entities created
-existing external entities reused
-ambiguous external identities
-unresolved external identities
-fuzzy merges
-
-Fuzzy merges MUST equal 0.
-
-==================================================
-6. RE-EVALUATE EXISTING RELATIONSHIP CANDIDATES
-==================================================
-
-Once endpoint identity has been established, rerun the existing Stage 2A.2
-acceptance policy.
-
-Identity resolution alone does NOT create a relationship.
-
-For each candidate independently validate:
-
-subject identity
-related endpoint identity
-relationship taxonomy
-direction
-relationship semantics
-admissible evidence
-evidence specificity
-AsOfDate
-status support
-materiality support if present
-
-Then assign:
-
-RELATIONSHIP_OBSERVATION
-RELATIONSHIP_CANDIDATE
-NO_EVIDENCE
-REJECTED_INVALID
-
-Do not weaken the existing evidence gate.
-
-==================================================
-7. SPECIFIC 3M ENDPOINTS
-==================================================
-
-Inspect all named entities actually contained in the imported result.
-
-Where present, specifically test:
-
-3M India Limited
-Aearo / Aearo Technologies / Aearo Holding Corp.
-3M Belgium
-Solventum Corporation
-BNY Mellon
-Cabot Corporation
-EPA
-and every other NAMED endpoint in the persisted result.
-
-Do not assume any of these are external.
-
-Search the Client Universe first.
-
-For each report:
-
-input name
-internal match result
-resolved internal client_id if applicable
-external identity result if applicable
-LEI
-CIK
+official legal name
+regulatory registration
 official domain
-final endpoint class
-relationship candidate outcome
+
+No fuzzy merge.
+No entity creation from similarity alone.
 
 ==================================================
-8. UNNAMED ENDPOINT RULE
+6. RELATIONSHIP EVIDENCE RECOVERY
 ==================================================
 
-DO NOT create entity nodes for:
+For each named endpoint whose identity becomes sufficiently resolved:
 
-unnamed suppliers
-unnamed lenders
+retrieve evidence specifically for the EXISTING candidate relationship type.
+
+Do not invent a new relationship type merely to obtain acceptance.
+
+Search broadly enough to find admissible evidence but accept narrowly.
+
+Apply the existing evidence hierarchy and Stage 2A.2 acceptance rules.
+
+SEC filings should be preferred where the relationship is documented there.
+
+Approved Web may provide independent corroboration from permitted sources.
+
+GLEIF identity/parent data may support identity or ownership relationships
+where explicitly supported, but must not be generalized to unrelated
+relationship types.
+
+==================================================
+7. SOLVENTUM CONTROL
+==================================================
+
+The existing Solventum external identity is already resolved.
+
+Re-evaluate the persisted Solventum candidates using the now-operational
+SEC/Web source combination.
+
+Do NOT promote merely because identity is known.
+
+Promote only if the actual claimed relationship type, direction,
+and semantics are directly supported.
+
+If not, retain as candidate and state exactly which evidence requirement fails.
+
+==================================================
+8. CABOT CONTROL
+==================================================
+
+Replay the accepted Cabot relationship.
+
+It must remain one observation.
+
+No duplicate observation.
+No duplicate external entity.
+No duplicate evidence objects.
+
+==================================================
+9. GENERIC ENDPOINT SAFETY
+==================================================
+
+The six generic descriptors from Stage 2A.4 must remain unresolved descriptors.
+
+Do not create entities for:
+
+unnamed supplier groups
+unnamed lender syndicates
 unnamed insurers
-unnamed technology vendors
-generic groups
-industry descriptions
-facility descriptions
+unnamed ERP/IT vendors
+generic counterparty descriptions
 
-Keep these as unresolved relationship candidates.
-
-No entity should exist with names like:
-
-"Unnamed Supplier"
-"Revolving Credit Facility Syndicate Lenders"
+Generic descriptor entities created MUST equal 0.
 
 ==================================================
-9. PATH RECOMPUTATION
+10. PATH RECALCULATION
 ==================================================
 
-After any newly accepted direct observations are persisted:
+After the bounded recovery pass, recompute evidence-backed paths using only
+accepted relationship observations.
 
-recompute bounded evidence-backed paths.
+Candidates may be visually/research connected later but cannot form accepted
+hidden paths.
 
-Only accepted observations may form graph hops.
-
-Candidate relationships must not form confirmed hidden paths.
-
-Do not generate direct A->C shortcuts from A->B->C.
+Do not create an A->C relationship simply because A->B->C exists.
 
 Report:
 
-accepted direct relationships
-candidate relationships
-external entity endpoints
-internal endpoints
-multi-hop paths
+accepted direct edges
+candidate edges
+evidence-backed paths
 synthetic shortcut edges
 
-Synthetic shortcut edges MUST remain 0.
+Synthetic shortcut edges MUST equal 0.
 
 ==================================================
-10. IDEMPOTENCE
+11. IDEMPOTENCE
 ==================================================
 
-Run the exact Stage 2A.4 resolution process twice.
+Replay this exact bounded Stage 2A.5 operation once.
 
-Second execution must not duplicate:
+Second execution must produce no duplicate:
 
 external entities
-identifier aliases
+identity records
 relationship observations
-evidence links
 candidate records
+evidence objects
 paths
 
 ==================================================
-11. REPORT
+12. REPORT
 ==================================================
 
 Create:
 
-backend/data/EXTERNAL_ENTITY_RESOLUTION_STAGE_2A4_REPORT.md
+backend/data/PROVIDER_READINESS_RELATIONSHIP_RECOVERY_STAGE_2A5_REPORT.md
 
-Include a table for every Stage 2A.3 candidate:
+Include:
 
-related endpoint
-relationship type
-initial state
-Client Universe match
-external identity resolution
-strong identifiers
-identity authority
-final endpoint type
-final relationship state
-reason
+PROVIDER READINESS
 
-Final totals:
+GLEIF
+SEC
+Approved Web
 
-existing candidates processed
-internal Client Universe endpoints resolved
-external entities created
-external entities reused
-generic descriptors retained
-ambiguous identities
-unresolved named identities
-promoted observations
+For each:
+configuration
+connectivity
+transport
+readiness
+failure reason if unavailable
+
+BOUNDED ENTITY TABLE
+
+Endpoint
+Initial state
+Internal client match
+GLEIF result
+SEC identity result
+Web identity result
+Final identity state
+Strong identifiers
+
+RELATIONSHIP TABLE
+
+Subject
+Related entity
+Relationship type
+Initial state
+SEC evidence
+Web evidence
+GLEIF evidence where applicable
+Evidence quality
+Direction support
+Final state
+Reason
+
+FINAL COUNTS
+
+named endpoints tested
+resolved internal endpoints
+resolved external endpoints
+remaining unresolved named endpoints
+accepted observations before run
+newly promoted observations
+accepted observations after run
 remaining candidates
-no-evidence findings
-accepted direct edges
-derived paths
+generic descriptors retained
+paths
 synthetic shortcuts
 fuzzy merges
-duplicate records on replay
-Customer_latest.parquet modified
+duplicate records after replay
 
 PASS REQUIREMENTS
 
@@ -368,9 +315,14 @@ fuzzy merges = 0
 generic descriptor entities created = 0
 synthetic shortcut edges = 0
 duplicate records after replay = 0
-all external entities have defensible identity provenance
+Cabot regression = PASS
+SEC readiness = report actual result
+Web readiness = report actual result
+GLEIF regression = PASS
 
-STOP after the bounded 3M external identity-resolution pilot.
+STOP.
 
-Do not start broad 3.67M research.
-Do not build the network UI yet.
+Do not research the full 3.67M universe.
+Do not build the network UI.
+Do not add AI workflows.
+Do not redesign the relationship model.
