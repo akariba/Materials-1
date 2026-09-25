@@ -1,98 +1,183 @@
-CCR — FINAL DELIVERY READINESS AUDIT
+CCR — TODAY DELIVERY BATCH 1
+RUNTIME HARDENING + CLEAN REGRESSION + SAFE READ PATHS
 
 Work only in the CURRENT CCR repository.
 
-IMPORTANT:
-THIS IS AN AUDIT ONLY.
+Read first:
 
-Do NOT redesign the UI.
-Do NOT change CSS.
-Do NOT refactor.
-Do NOT add features.
-Do NOT change database data.
-Do NOT create relationships.
-Do NOT run broad external research.
-Do NOT change existing relationship semantics.
-Do NOT fabricate missing data.
-Do NOT fix anything yet.
+backend/data/CCR_FINAL_DELIVERY_READINESS_AUDIT.md
 
-I need an exact current-state assessment because this application must be
-delivered TODAY.
+This is an IMPLEMENTATION task.
 
-==================================================
-1. OBJECTIVE
-==================================================
+Do not redesign the frontend.
+Do not fabricate relationships.
+Do not fabricate events.
+Do not fabricate evidence.
+Do not alter Phase-2 protected business data.
+Do not rebaseline protected hashes.
+Do not create synthetic production intelligence.
+Do not weaken evidence standards.
 
-Inspect the complete current CCR implementation and tell me exactly:
+OBJECTIVE
 
-- what is implemented
-- what is actually working
-- what is partially working
-- what is only visual
-- what is disconnected
-- what data exists
-- what data does not exist
-- what is intentionally empty
-- what is broken
-- what must be fixed before delivery
-- what can safely wait until after delivery
-
-Do not infer from filenames or comments alone.
-
-Verify behavior from code, API, database and, where possible, the running app.
+Remove the technical blockers identified by the final delivery audit and
+prove the CURRENT product works as a running application.
 
 ==================================================
-2. STARTUP / RUNTIME
+1. FIX THE BROKEN BACKEND TEST GATE
 ==================================================
 
-Determine the exact current startup architecture.
+Inspect:
 
-Report:
+backend/tests/test_distance_map.py
 
-FRONTEND:
-- framework
-- package manager
-- start command
-- build command
-- expected port
+The audit found invalid Python syntax at line 1.
 
-BACKEND:
-- framework
-- start command
-- expected port
+Determine whether this is:
 
-DATABASE:
-- exact SQLite path currently used by the running application
+A. an obsolete/dead test,
+B. a corrupted copied fixture,
+C. an active test that should still exist.
 
-NETWORK / PROXY:
-- current approved Windows proxy handling
-- SEC status
-- GLEIF status
-- Web/provider status
+Do not blindly delete it.
 
-AI:
-- exact HELIX integration path
-- configuration source
-- status endpoint
-- analysis endpoint
-- whether it is currently executable
-- whether credentials are actually available
-- whether responses are persisted
-- whether AI is read-only / explanation-only
-- whether AI has any authority to create evidence or relationships
+If obsolete:
+- quarantine/remove it from the active backend test collection in a clean,
+  explainable way.
 
-Also identify any mismatch between:
-development mode,
-local mode,
-and the currently exposed remote/tunnel URL.
+If active:
+- repair the syntax while preserving the intended assertions.
+
+Then require:
+
+python -m pytest backend/tests -q
+
+to collect normally.
+
+Do NOT use an exclusion flag in the final validation.
+
+Expected:
+
+0 collection errors
+0 failed tests
+0 errors
 
 ==================================================
-3. CURRENT FRONTEND ROUTES
+2. REMOVE GET-SIDE DATABASE MUTATION
 ==================================================
 
-Inspect every current CCR page.
+The audit identified:
 
-At minimum:
+GET /api/ccr/relationship-config
+
+as potentially calling a store method that opens the SQLite database writable
+and may create/seed configuration tables.
+
+This is not acceptable for a read route.
+
+Inspect the full call chain.
+
+Make GET routes observational/read-only.
+
+If initialization/seeding is required, move it to one of:
+
+- explicit migration/bootstrap
+- application startup initialization
+- existing governed setup path
+
+Do not modify business records.
+
+Prove repeated GET requests cause:
+
+schema delta = 0
+row delta = 0
+relationship delta = 0
+research delta = 0
+evidence delta = 0
+
+==================================================
+3. PRESERVE PHASE-2 INTEGRITY
+==================================================
+
+Do NOT rebaseline the two historical exposure-record fingerprint FAIL entries.
+
+The current read-only recomputation passes.
+
+Preserve the historical records as audit history.
+
+Add a concise documented disposition explaining:
+
+- historical verification contains two failed observations
+- current protected-table recomputation matches the approved fingerprint
+- no evidence of current corruption exists
+- historical rows were intentionally retained
+
+Do not erase or rewrite history.
+
+==================================================
+4. ZERO-BYTE DATABASE HYGIENE
+==================================================
+
+The audit identified a zero-byte duplicate:
+
+backend/data/ccrig_relationship_intelligence.sqlite3
+
+while the actual runtime database is:
+
+backend/data/ccr_relationship_intelligence.sqlite3
+
+Determine references.
+
+If nothing valid references the zero-byte artifact:
+remove it.
+
+If something does reference it:
+fix the reference to the canonical runtime database first,
+then remove the obsolete artifact.
+
+There must be ONE clearly documented runtime relationship-intelligence DB.
+
+==================================================
+5. START THE REAL LOCAL APPLICATION
+==================================================
+
+Use the repository-supported launch path.
+
+Start:
+
+BACKEND
+127.0.0.1:8000
+
+FRONTEND
+127.0.0.1:5173
+
+Do not merely inspect code.
+
+Verify actual HTTP runtime.
+
+Required backend checks:
+
+/api/health
+/api/ccr/status
+/api/ccr/overview
+/api/ccr/entities/summary
+/api/ccr/entities
+/api/ccr/map
+/api/ccr/ai/status
+
+Also verify one real selected entity through:
+
+entity detail
+entity research
+network
+evidence
+events
+
+==================================================
+6. BROWSER ACCEPTANCE
+==================================================
+
+Using the running frontend, verify:
 
 /portfolio
 /entities
@@ -103,623 +188,202 @@ At minimum:
 /evidence
 /review
 
-Also inspect any:
+For each route:
 
-entity intelligence page
-entity detail page
-timeline page
-relationship detail page
-source/evidence reader
-AI drawer
-full-screen network view
-legacy routes still reachable
+HTTP / RENDER = PASS
+NO JS CRASH = PASS
+NAVIGATION = PASS
+ENTITY CONTEXT = PASS
+EMPTY STATE = TRUTHFUL
 
-For every route return:
+Test:
 
-ROUTE
-IMPLEMENTED: YES / PARTIAL / NO
-LOADS: YES / NO
-REAL BACKEND DATA: YES / PARTIAL / NO
-INTERACTIVE: YES / PARTIAL / NO
-ENTITY CONTEXT PRESERVED: YES / NO
-EMPTY DUE TO NO DATA: YES / NO
-ACTUAL DEFECTS
-DELIVERY BLOCKER: YES / NO
+global entity search
+entity selection
+URL entity persistence
+browser back
+browser forward
+left navigation
+inspector open/close
+inspector tabs
+Network navigation
+Research navigation
+Evidence navigation
+AI drawer opening
 
-Do not classify an intentionally empty dataset as a frontend defect.
-
-==================================================
-4. GLOBAL SHELL
-==================================================
-
-Audit:
-
-- navigation
-- global entity search
-- selected entity persistence
-- URL state
-- inspector
-- inspector tabs
-- provider status
-- system status
-- data-truth banners
-- AI Analyst entry point
-- loading states
-- error states
-- empty states
-- responsive behavior
-- scrolling
-- sticky headers
-- browser back/forward behavior
-
-Identify any controls that look clickable but do nothing.
-
-Identify any controls that contain placeholder behavior.
+Do not create production data merely to make an empty screen non-empty.
 
 ==================================================
-5. PORTFOLIO
+7. NETWORK RENDERING
 ==================================================
 
-Verify every visible number and section on Portfolio.
-
-Report the exact backend/API/database origin for:
-
-- CCR population
-- canonical entity count
-- exposure row count
-- research candidate count
-- evidence count
-- relationship count
-- country concentration
-- entity class counts
-- identifier coverage
-- research posture
-- industry/classification
-- source/provider posture
-- world-map values
-
-For the map verify:
-
-- GeoJSON loading
-- country matching
-- unmapped countries
-- hover behavior
-- click behavior
-- filtering behavior
-- entity navigation
-- legend
-- whether every displayed value is real
-
-Report any misleading or decorative metric.
-
-==================================================
-6. ENTITIES
-==================================================
+Select an entity with candidate edges.
 
 Verify:
 
-- entity registry count
-- search
-- search by legal name
-- GFCID
-- CAGID
-- LEI
-- CIK
-- ticker if supported
-- filters
-- pagination / virtualization
-- entity selection
-- URL persistence
-- selected row
-- inspector synchronization
-- entity detail navigation
+selected entity renders
+candidate nodes render
+candidate edges render
+candidate edges remain visibly differentiated from evidence relationships
+no candidate appears confirmed
+node click works
+entity switch works
+inspector stays synchronized
+graph remains usable at approximately 50 visible nodes
 
-Confirm the displayed entity population is canonical and not fabricated.
+If current layout overlaps badly, fix layout/rendering only.
 
-Check performance with the full entity registry.
+Do not change relationship semantics.
 
 ==================================================
-7. ENTITY INTELLIGENCE
+8. PROVIDER TRANSPORT READINESS
 ==================================================
 
-Inspect the selected-entity intelligence experience.
+Reuse ONLY the already-approved Windows/ZSA transport configuration.
 
-Report which of these are currently supported with REAL data:
+Do not invent a proxy.
 
-- overview
-- identity
-- identifiers
-- classification
-- exposure rows
-- relationships
-- candidates
-- research
-- evidence
-- sources
-- timeline/events
-- external identities
-- review state
-- research eligibility
-- monitoring state
+Execute bounded connectivity tests only.
 
-Identify fields that currently show:
-NOT AVAILABLE
-NO DATA
-UNKNOWN
-NOT STORED
+GLEIF:
+maximum 1 identity request
 
-For each one state whether that is:
-A. correct because source data does not contain it
-B. backend/API omission
-C. frontend omission
-D. actual defect
+SEC:
+maximum 1 identity/reference request
 
-==================================================
-8. NETWORK
-==================================================
-
-Audit the network very carefully.
+Do not execute broad discovery.
 
 Report:
 
-SELECTED ENTITY
-VISIBLE NODES
-VISIBLE EDGES
+transport
+TLS
+HTTP
+provider status
+cache status
 
-Separate counts for:
+If transport works, persist only the existing governed audit/status information.
 
-- evidence-backed relationship edges
-- production relationship edges
-- confirmed relationships
-- research candidate edges
-- external entities
-- local entities
-
-Verify:
-
-- solid/dotted semantics
-- edge direction
-- relationship type
-- candidate vs relationship separation
-- click node
-- click edge
-- inspector linkage
-- filters
-- semantic group layout
-- graph mode
-- value-chain mode
-- ownership mode
-- geography mode
-- evidence mode
-- timeline mode
-
-For each mode say:
-WORKING / PARTIAL / DISABLED / NOT IMPLEMENTED
-
-Check whether the graph can expand to full-screen.
-
-Check whether the current layout remains usable with 50+ nodes.
-
-Check whether any candidate edge visually looks like a confirmed relationship.
-
-That is a critical defect if present.
+Do not create a relationship from connectivity testing.
 
 ==================================================
-9. RADAR
+9. HELIX READINESS
 ==================================================
 
-Determine precisely what Radar currently represents.
+Inspect the actual environment.
 
-Separate:
+Do not fabricate credentials.
 
-- persisted event themes
-- research candidate signals
-- local correlation signals
-- source-backed monitoring information
-- unavailable analytics
+If approved HELIX credentials/configuration already exist:
 
-Verify that candidate scores are NOT presented as:
+run ONE safe read-only analyst request.
 
-risk scores
-probability of default
-relationship evidence
-impact evidence
+Question:
 
-Explain why the current Radar may be empty for the selected entity.
+Explain the selected entity using only currently supplied CCR context.
+Clearly distinguish stored facts, research candidates, missing evidence,
+and unknown information.
 
-Determine whether Radar is functioning correctly despite empty persisted event data.
+The call must NOT create:
 
-==================================================
-10. EVENTS
-==================================================
-
-Inspect event schema, APIs and frontend.
-
-Report:
-
-production event count
-selected-entity event count
-event source count
-event-to-entity linkage count
-
-Determine whether the page is empty because:
-
-A. ingestion is not implemented
-B. ingestion is implemented but no events exist
-C. backend route is missing
-D. frontend is disconnected
-E. filter/entity bug exists
-
-Do not create events.
-
-==================================================
-11. RESEARCH
-==================================================
-
-Audit the full research workflow.
-
-Report existing counts for:
-
-research plans
-research claims
-research runs
-provider requests
-source documents
-evidence snippets
-candidate relationships
-review-required items
-
-Verify:
-
-- Open Research action
-- provider selection
-- SEC fallback
-- GLEIF fallback
-- approved Web fallback
-- cache use
-- source policy
-- identity gates
-- direction gates
-- evidence gates
-- candidate/relationship separation
-- review requirements
-
-State clearly which operations are:
-
-READ ONLY
-EXECUTABLE
-HUMAN REVIEW REQUIRED
-DISABLED
-
-==================================================
-12. EVIDENCE
-==================================================
-
-Audit the evidence ledger.
-
-Report:
-
-total source documents
-total admissible source documents
-total evidence snippets
-selected-entity evidence
-relationship-linked evidence
-research-linked evidence
-
-Verify:
-
-- source
-- document title
-- URL
-- publication date
-- retrieval date
-- source tier
-- admissibility
-- excerpt
-- content hash
-- related entity
-- relationship/research linkage
-
-Verify clicking evidence opens a readable evidence-detail surface.
-
-If zero selected-entity evidence is shown, determine whether zero is correct.
-
-==================================================
-13. REVIEW
-==================================================
-
-Audit the human-review surface.
-
-Report counts for:
-
-research claims awaiting review
-candidate leads
-relationship proposals
-identity review items
-direction unresolved
-conflicts
-AI-generated explanations awaiting review if any
-
-Identify every button/action available on Review.
-
-For each action state whether it:
-
-works
-is read-only
-mutates research state
-mutates production relationship state
-requires confirmation
-is placeholder
-
-Do NOT execute mutation actions during the audit.
-
-==================================================
-14. AI / HELIX
-==================================================
-
-Inspect the current AI Analyst implementation end-to-end.
-
-The screenshots show a HELIX integration surface.
-Do not assume it is correct.
-
-Verify:
-
-- status endpoint
-- execution endpoint
-- credentials
-- request payload
-- selected entity context
-- current route/page context
-- graph context
-- evidence context
-- research context
-- conversation/history behavior
-- response persistence
-- error handling
-- timeout handling
-
-Run only ONE safe bounded AI test if the current implementation already
-supports a read-only analyst query.
-
-Use a simple question such as:
-
-"Explain the selected entity using only currently available CCR context."
-
-Do not allow the test to create:
-
-relationships
+relationship
+relationship claim
 evidence
-external entities
-events
-claims
-production observations
+external entity
+event
+candidate
+production mutation
 
-Report:
+If HELIX is not configured:
 
-AI EXECUTION: PASS / FAIL
-CONTEXT PROVIDED:
-actual
-RESPONSE RECEIVED:
-YES / NO
-RESPONSE PERSISTED:
-YES / NO
-DATA MUTATION:
-0 / FAIL
+do not fake READY.
 
-Check specifically whether the AI can reason only over provided source
-references or whether the implementation supports approved research fallback.
-
-Do not silently add Web research.
+Return the precise missing configuration requirement.
 
 ==================================================
-15. DATA LAYER
+10. FRONTEND WARNING
 ==================================================
 
-Inspect the actual SQLite schema and current counts.
+Inspect the existing lint warning in the inactive legacy:
 
-Return current counts for the important tables including, where present:
+CcrPlatform.tsx
 
-ccr_subjects
-canonical_clients
-entity_registry
-identifier_aliases
-entity identifiers
-entity name aliases
-relationship taxonomy
-relationship observations
-confirmed relationships
-relationship claims
-correlation candidates
-research plans
-research claims
-research runs
-source documents
-evidence snippets
-events
-event/entity links
-relationship paths
-path hops
-external entities
-GLEIF relationship observations
-provider request/audit tables
+If the file is genuinely not part of the active UI:
 
-Use actual current values.
+exclude/remove the dead legacy surface cleanly from the active lint/build scope
+or repair the warning with no behavioral change.
 
-Also report:
+Final desired state:
+
+lint errors = 0
+lint warnings in active application = 0
+
+==================================================
+11. FULL REGRESSION
+==================================================
+
+Run without exclusions:
+
+python -m pytest backend/tests -q
+
+Frontend:
+
+npm run lint
+npm run build
+
+Database:
 
 PRAGMA integrity_check
-foreign_key_check
+PRAGMA foreign_key_check
+
+Protected Phase-2 fingerprint validation.
 
 ==================================================
-16. DATA BOUNDARY VALIDATION
-==================================================
-
-Confirm that the application currently does NOT falsely represent:
-
-ACTIVE CLIENT
-INACTIVE CLIENT
-monetary exposure totals where amount semantics are unresolved
-risk score
-probability of default
-relationship confirmation from correlation alone
-AI response as evidence
-research candidate as production relationship
-event candidate as established event
-unnamed supplier as identified legal entity
-external entity without identity evidence
-
-Any violation is P0.
-
-==================================================
-17. TESTS
-==================================================
-
-Run the current supported validation suite.
-
-At minimum:
-
-frontend TypeScript/build
-frontend lint
-backend pytest regression
-API smoke checks
-SQLite integrity
-foreign keys
-
-If browser automation exists, run it.
-
-Do not alter production/source data to make tests pass.
-
-Return exact:
-
-passed
-failed
-errors
-warnings
-
-For every failure state:
-
-NEW REGRESSION
-PRE-EXISTING
-NON-BLOCKING
-DELIVERY BLOCKER
-
-==================================================
-18. DEAD / DUPLICATE CODE
-==================================================
-
-Identify:
-
-- old UI versions
-- legacy pages
-- dead routes
-- duplicate APIs
-- unused CSS systems
-- obsolete report files
-- obsolete frontend components
-- test-only assets accidentally reachable by production UI
-
-Do not delete them yet.
-
-Just report them.
-
-==================================================
-19. DELIVERY BLOCKER MATRIX
-==================================================
-
-Create three groups.
-
-P0 — MUST FIX TODAY BEFORE DELIVERY
-
-Only genuine blockers:
-crashes
-wrong data
-broken navigation
-broken core actions
-false relationships
-false evidence
-database corruption
-AI mutation outside contract
-security/config problem
-major unreadable UI
-critical browser failure
-
-P1 — SHOULD FIX TODAY
-
-Important usability / completeness issues.
-
-P2 — CAN WAIT
-
-Enhancements and polish.
-
-For each item provide:
-
-ISSUE
-SURFACE
-ROOT CAUSE
-FILES
-ESTIMATED CHANGE SIZE: SMALL / MEDIUM / LARGE
-RISK
-RECOMMENDED FIX ORDER
-
-==================================================
-20. TODAY DELIVERY PLAN
-==================================================
-
-Based on the ACTUAL repository state, propose the shortest path from the
-current implementation to a deliverable build TODAY.
-
-Do not propose another redesign.
-
-Use this order:
-
-1. runtime blockers
-2. incorrect data / semantics
-3. disconnected core functionality
-4. AI functionality
-5. network usability
-6. entity workflow
-7. research/evidence/review workflow
-8. empty-state correctness
-9. visual polish
-10. final regression
-11. final launch script
-
-Estimate the number of implementation batches required.
-
-Prefer small/medium focused batches.
-
-==================================================
-21. REPORT
+12. REPORT
 ==================================================
 
 Create:
 
-backend/data/CCR_FINAL_DELIVERY_READINESS_AUDIT.md
+backend/data/CCR_TODAY_DELIVERY_BATCH1_REPORT.md
 
-DO NOT MODIFY ANYTHING ELSE.
+Include:
+
+changes
+root causes
+runtime verification
+browser route results
+API results
+provider transport results
+HELIX result
+test results
+database safeguards
+remaining blockers
 
 ==================================================
 FINAL RESPONSE
 ==================================================
 
-Return exactly:
+CCR DELIVERY BATCH 1: PASS / FAIL
 
-CCR FINAL DELIVERY READINESS: READY / NOT READY
+LOCAL BACKEND:
+PASS / FAIL
 
-P0 BLOCKERS:
-<count>
+LOCAL FRONTEND:
+PASS / FAIL
 
-P1 ISSUES:
-<count>
+BROWSER ROUTES:
+PASS / FAIL
 
-P2 ISSUES:
-<count>
+BACKEND FULL TEST:
+passed / failed / errors
 
 FRONTEND BUILD:
 PASS / FAIL
 
-BACKEND REGRESSION:
-passed / failed / errors
+FRONTEND LINT:
+PASS / FAIL
+
+GET READ-ONLY SAFETY:
+PASS / FAIL
 
 DATABASE INTEGRITY:
 PASS / FAIL
@@ -727,51 +391,31 @@ PASS / FAIL
 FOREIGN KEYS:
 PASS / FAIL
 
-PORTFOLIO:
-PASS / PARTIAL / FAIL
+PHASE-2 FINGERPRINT:
+PASS / FAIL
 
-ENTITIES:
-PASS / PARTIAL / FAIL
+NETWORK CANDIDATE VIEW:
+PASS / FAIL
 
-ENTITY INTELLIGENCE:
-PASS / PARTIAL / FAIL
+GLEIF CONNECTIVITY:
+READY / UNAVAILABLE
 
-NETWORK:
-PASS / PARTIAL / FAIL
-
-RADAR:
-PASS / PARTIAL / FAIL
-
-EVENTS:
-PASS / PARTIAL / FAIL
-
-RESEARCH:
-PASS / PARTIAL / FAIL
-
-EVIDENCE:
-PASS / PARTIAL / FAIL
-
-REVIEW:
-PASS / PARTIAL / FAIL
+SEC CONNECTIVITY:
+READY / UNAVAILABLE
 
 HELIX:
-PASS / PARTIAL / FAIL
+READY / NOT_CONFIGURED / FAIL
 
-DATA-TRUTH CONTROLS:
-PASS / FAIL
+PRODUCTION RELATIONSHIPS CREATED:
+0 / FAIL
 
-PRODUCTION RELATIONSHIP SAFETY:
-PASS / FAIL
+SYNTHETIC EVENTS CREATED:
+0 / FAIL
 
-ESTIMATED IMPLEMENTATION BATCHES TO DELIVERY:
-<number>
-
-FIRST REQUIRED FIX:
-<one concise statement>
+REMAINING DELIVERY BLOCKERS:
+<count>
 
 REPORT:
-backend/data/CCR_FINAL_DELIVERY_READINESS_AUDIT.md
+backend/data/CCR_TODAY_DELIVERY_BATCH1_REPORT.md
 
 STOP.
-
-DO NOT IMPLEMENT THE FIXES.
