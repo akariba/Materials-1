@@ -1,483 +1,1241 @@
-LENDING UI RECONSTRUCTION — U1.5
-VISUAL REBUILD + ADVANCED FRONTEND EXPERIENCE
+LENDING INTELLIGENCE — CURRENT PRODUCT DESIGN + SYSTEM ARCHITECTURE AUDIT
 
-Work in the CURRENT Lending repository.
+THIS IS LENDING ONLY.
 
-The U1 implementation is functionally correct and must be preserved.
+DO NOT inspect, use, merge, import, infer from, or redesign CCR data or CCR
+business logic.
 
-READ:
+Do not use:
+- Customer_latest.parquet
+- CCR customer-master values
+- CCR relationship truth
+- CCR population counts
+
+CCR/shared legacy code may be mentioned ONLY where it physically coexists in
+the repository and creates a technical boundary or contamination risk.
+
+============================================================
+MISSION
+============================================================
+
+Perform a comprehensive CURRENT-STATE forensic audit of the Lending Intelligence
+application as it exists NOW after the UI reconstruction work.
+
+I need a detailed document describing:
+
+1. Current frontend product design
+2. Current information architecture
+3. Current page/route architecture
+4. Current frontend component architecture
+5. Current backend architecture
+6. Current API architecture
+7. Current data architecture
+8. Current relationship authority model
+9. Current network architecture
+10. Current geography/map architecture
+11. Current evidence and lineage model
+12. Current research architecture
+13. Current AI architecture
+14. Stylus integration
+15. R2D2 integration
+16. Other external/provider integrations
+17. Current Ask Lending Intelligence implementation
+18. Current state-management / investigation-context architecture
+19. Performance/bounded-read architecture
+20. Security/governance/action boundaries
+21. Current deployment/runtime architecture
+22. Current technical debt
+23. Current gaps between intended product and actual implementation
+24. What must be preserved during the next reconstruction stages
+
+THIS IS AN AUDIT.
+
+Do NOT redesign the product.
+Do NOT implement U2.
+Do NOT change code.
+Do NOT change APIs.
+Do NOT change source data.
+Do NOT change provider configuration.
+
+Read and trace the existing implementation.
+
+============================================================
+READ FIRST
+============================================================
+
+At minimum inspect:
 
 backend/data/LENDING_UI_RECONSTRUCTION_BLUEPRINT.md
 backend/data/LENDING_UI_U1_IMPLEMENTATION_REPORT.md
 
-THIS TASK IS A FRONTEND VISUAL AND INTERACTION RECONSTRUCTION.
+and any subsequent U1.5 report if present.
 
-DO NOT redo backend architecture.
-DO NOT change CAM/V3 authority.
-DO NOT change API contracts unless a tiny frontend compatibility fix is unavoidable.
-DO NOT touch CCR.
+Also inspect all relevant current source files under:
 
-==================================================
-MISSION
-==================================================
+frontend/src/
+backend/app/
+backend/data/
+scripts/
+tests/
 
-The current U1 is structurally correct but visually too basic.
+Inspect package.json / dependency configuration.
 
-Reconstruct the frontend so it looks and feels like a premium institutional
-relationship-intelligence platform.
+Inspect environment/configuration references relevant to:
 
-The current appearance is NOT acceptable as the final design.
+- AI
+- Stylus
+- R2D2
+- SEC
+- Web
+- provider adapters
+- research
+- caches
+- model/provider routing
 
-The target is much closer to:
+Do not expose secrets.
 
-- institutional intelligence terminal;
-- high-end research platform;
-- interactive relationship command center;
-- sophisticated map/network analytical product;
+============================================================
+1. CURRENT PRODUCT / UX ARCHITECTURE
+============================================================
 
-and NOT:
+Document what the current user sees.
 
-- report page;
-- document viewer;
-- plain SaaS dashboard;
-- stack of white cards;
-- administrative portal.
+Include the actual active Lending shell and its hierarchy.
 
-==================================================
-DO NOT PRESERVE THE CURRENT VISUAL COMPOSITION
-==================================================
+From the running implementation identify:
 
-Preserve the DATA and FUNCTIONAL contracts.
+- institutional left rail;
+- global command/search;
+- authority indicator;
+- Ask Lending Intelligence;
+- context strip;
+- Executive page;
+- Portfolio;
+- Geography;
+- Network;
+- Relationships;
+- Attention;
+- Research;
+- Studio;
+- Client Detail / Client 360;
+- inspectors/drawers;
+- map;
+- graph;
+- tables;
+- filters;
+- handoffs.
 
-Do NOT preserve:
+For each surface document:
 
-- current vertical page stacking;
-- current sparse card layout;
-- current typography hierarchy;
-- current pale low-impact map styling;
-- current empty-looking network area;
-- current oversized empty Ask drawer;
-- current simplistic navigation presentation.
+- route;
+- owning React component;
+- child components;
+- APIs called;
+- initial load behavior;
+- user interactions;
+- URL parameters;
+- context preserved across navigation;
+- read/write behavior;
+- empty/error/loading states;
+- source lanes displayed;
+- current visual maturity;
+- legacy implementation dependencies.
 
-You are explicitly expected to redesign the visible composition.
+Include an actual route table.
 
-==================================================
-EXECUTIVE PAGE — NEW DESKTOP COMPOSITION
-==================================================
+============================================================
+2. CURRENT FRONTEND ARCHITECTURE
+============================================================
 
-Recompose /lending into a high-density desktop intelligence canvas.
+Produce a component/module map.
 
-On a large monitor, the first viewport should show approximately:
+Show actual paths such as:
 
-LEFT
-institutional navigation rail
+App
+  ProductShell
+    PrimaryRail
+    CommandBar
+    ContextStrip
+    AskLending
+  Executive
+    ...
+  Portfolio
+    ...
+  Geography
+    ...
+  Network
+    ...
+  Client
+    ...
 
-TOP
-global command/search bar + Ask Lending Intelligence
+Use actual names from the repository.
 
-MAIN TOP
-executive metric band / attention summary
+Identify:
 
-MAIN CENTER-LEFT
-large shiny global geographic intelligence map
+- new reconstructed components;
+- legacy components still active;
+- duplicated implementations;
+- monolithic components;
+- shared utilities;
+- API client modules;
+- data adapters;
+- types/contracts;
+- styling architecture;
+- map modules;
+- graph modules;
+- inspector modules;
+- AI/assistant modules.
 
-MAIN CENTER-RIGHT
-relationship ecosystem / compact network
+State what is active versus retained/unused.
 
-BOTTOM OR SECONDARY ROW
-exposure / coverage / attention / sector intelligence
+============================================================
+3. PAGE-BY-PAGE CURRENT DESIGN
+============================================================
 
-Do not force the user to scroll through several screens before seeing the
-map and network.
+Document the CURRENT rendered design in detail.
 
-The map and network should be visible much earlier.
+Especially inspect:
 
-==================================================
-SHINY GLOBAL MAP
-==================================================
+A. Executive Intelligence
 
-The map must become a visually impressive analytical surface.
+Current visible elements include things such as:
 
-The surrounding application remains LIGHT.
+- 2,484 portfolio clients;
+- reported OSUC;
+- CAM coverage;
+- review-required;
+- attention items;
+- geographic intelligence map;
+- compact relationship ecosystem;
+- exposure ranking;
+- CAM availability;
+- sector concentration.
 
-The map canvas itself may be DARK / DEEP NAVY to achieve strong contrast.
+Confirm actual implementation and source.
 
-Design target:
+B. Portfolio / Client Analytics
 
-- deep navy map background;
-- luminous teal/blue/gold markers;
-- soft glow;
-- clear selected-country highlighting;
-- elegant hover labels;
-- subtle geographic grid/texture if appropriate;
-- smooth zoom/focus transitions;
-- client/exposure aggregation;
-- mapped/unmapped disclosure;
-- strong visual presence.
+Document:
 
-Do NOT create fake geography.
+- metrics;
+- attention cards;
+- search;
+- sector/country/CAM filters;
+- relationship filters;
+- tables;
+- sorting;
+- pagination/loading;
+- client handoff.
 
-Do NOT infer country risk.
+C. Geographic Intelligence
 
-Do NOT fabricate city-level coordinates.
+Document:
 
-Where only country-level geography exists, render polished country-level
-aggregation honestly.
+- map implementation;
+- geometry source;
+- country mapping;
+- markers;
+- aggregation;
+- map metrics;
+- mapped/unmapped behavior;
+- URL state;
+- relation to Network.
 
-The map should look like a signature intelligence visualization, not a muted SVG.
+D. Network Intelligence
 
-==================================================
-RELATIONSHIP NETWORK PREVIEW
-==================================================
+Document current:
 
-The compact network should look like a real advanced graph when a focus exists.
+- focus-selection behavior;
+- degree 1 / degree 2 controls;
+- graph/geography/table modes;
+- source-lane toggles;
+- CAM / review / external / AI controls;
+- node bounds;
+- edge bounds;
+- expansion;
+- inspectors;
+- empty-network behavior;
+- relationship evidence handoff.
 
-Use:
+E. Client Detail / Client 360
 
-- strong central focus node;
-- radial / deterministic first-degree positioning;
-- generous spacing;
-- clean edge routing;
-- high-quality labels;
-- source provenance directly on edges;
-- subtle glow/focus treatment;
-- hover/focus states;
-- selected edge emphasis;
-- node badges;
-- clear relationship-family differentiation.
+Document:
 
-Every visible relationship edge must show:
+- identity;
+- exposure;
+- CAM count;
+- relationship count;
+- tabs;
+- relationship grouping;
+- source lanes;
+- unresolved endpoints;
+- V2 fallback/history;
+- evidence;
+- review handoffs;
+- Network handoff;
+- Research handoff;
+- Intelligence handoff.
 
-RELATIONSHIP TYPE · SOURCE
+============================================================
+4. DATA ARCHITECTURE
+============================================================
+
+Create a detailed source-to-UI data architecture.
+
+For every current Lending data source identify:
+
+- file/store/database;
+- physical format;
+- purpose;
+- approximate population;
+- authority;
+- lifecycle;
+- owning loader;
+- APIs consuming it;
+- UI surfaces consuming it;
+- whether currently active;
+- whether fallback/history/supplemental/internal.
+
+At minimum reconcile the known Lending universes:
+
+CAM/V3
+V2 candidate/fallback
+Normalized operational projection
+External research/overlay
+Published/governed AI
+Portfolio workbook/source population
+
+Do not collapse them into one denominator.
+
+Explicitly state:
+
+CAM/V3 = authoritative Lending relationship truth.
+
+V2 = fallback/history only where supported.
+
+Normalized operational projection = separate governed/internal projection.
+
+External = supplemental.
+
+Governed AI = separate generated/published lane.
+
+Reported OSUC = source-reported/supplemental exposure context.
+
+Review-required = workflow state, not risk.
+
+============================================================
+5. SOURCE → API → UI LINEAGE
+============================================================
+
+For every major visible metric or object, trace:
+
+SOURCE
+    ↓
+LOADER / STORE
+    ↓
+BACKEND SERVICE
+    ↓
+API
+    ↓
+FRONTEND ADAPTER
+    ↓
+COMPONENT
+    ↓
+DISPLAY
 
 Examples:
 
-Supplier · CAM
-Customer · SEC
-Strategic Partner · WEB
-Relationship · AI
-Historical · V2
-Supplier · CAM + SEC
+Portfolio client count
+Reported OSUC
+CAM coverage
+Review-required count
+Top exposures
+Sector concentration
+Country distribution
+Relationship rows
+Network nodes
+Network edges
+Evidence counts
+Attention items
 
-No disconnected nodes.
+Do not assume lineage.
 
-No hairball.
+Trace actual code.
 
-No continuous force animation.
+============================================================
+6. RELATIONSHIP ARCHITECTURE
+============================================================
 
-If there is no focus, replace the large empty box with a high-quality
-client-selection state, including suggested deterministic entry points such as
-top exposures with governed relationships.
+Document exactly how a relationship is represented.
 
-Do not fabricate relationship examples.
+Include actual fields where present:
 
-==================================================
-NETWORK PREVIEW → FULL NETWORK
-==================================================
+- relationship ID;
+- semantic/group ID;
+- subject;
+- related entity;
+- endpoint IDs;
+- relationship type;
+- family;
+- direction;
+- state;
+- connectivity;
+- source lane;
+- source system;
+- evidence;
+- source references;
+- review state;
+- publication state;
+- completeness;
+- lineage;
+- authority;
+- confidence if source-defined;
+- taxonomy/reason codes.
 
-Make the entire Network Preview clearly interactive.
+Explain differences between:
 
-Provide a visible:
+- source assertion;
+- semantic/group display;
+- evidence record;
+- review item;
+- external proposal;
+- governed AI instance.
 
-EXPAND NETWORK
+============================================================
+7. NETWORK ARCHITECTURE
+============================================================
 
-control.
+Trace current Network end-to-end.
 
-The preview should visually communicate that it is a window into a much larger
-Network Intelligence workspace.
+Document:
 
-==================================================
-ASK LENDING INTELLIGENCE — REDESIGN
-==================================================
+- graph data source;
+- API;
+- graph adapter;
+- node construction;
+- edge construction;
+- node identity;
+- edge identity;
+- source labels;
+- direction;
+- deterministic layout;
+- degree expansion;
+- first-degree behavior;
+- caps;
+- truncation;
+- source toggles;
+- inspectors;
+- table synchronization;
+- geography view.
 
-The current large empty drawer is not sufficient.
+Confirm whether the browser ever loads:
 
-Redesign Ask Lending Intelligence as a real contextual copilot.
+- normalized 32,957-row artifact;
+- ~2.8 GB normalized history;
+- broad group materialization.
 
-When closed:
-- compact persistent button/chip in shell.
+Identify any route that still risks doing so.
 
-When open:
-- right-side intelligence panel;
-- conversation area;
-- current-context summary;
-- suggested prompts;
-- action chips;
-- source/governance indicators.
+Network provenance rules must be documented:
 
-Suggested prompts may be derived from capability, not fabricated answers.
+CAM
+CAM · REVIEW
+SEC
+WEB
+AI
+V2
 
-Examples:
+If multiple assertions support a semantic connection explain how the current
+implementation represents that.
 
-"What relationships are visible for this client?"
-"Show only CAM relationships."
-"Why is this edge visible?"
-"Show evidence for the selected relationship."
-"Which top exposures have no CAM?"
-"Open this client in Network."
+============================================================
+8. GEOGRAPHY / MAP ARCHITECTURE
+============================================================
 
-The panel must remain context-aware.
+Document:
 
-It should feel like an intelligence copilot, not a textarea in an empty drawer.
+- map technology;
+- geometry file/source;
+- rendering technology;
+- country-key reconciliation;
+- mapped country count;
+- unmapped labels;
+- map metrics;
+- client count;
+- relationship count;
+- reported OSUC;
+- markers;
+- fills;
+- interaction;
+- focus;
+- URL state;
+- graph/map relationship.
 
-DO NOT fabricate AI answers when no answer service is wired.
+State explicitly what geography represents and what it does NOT represent.
 
-If the response service is unavailable, the UI should still demonstrate:
-- context;
-- supported UI actions;
-- safe handoffs;
-- unavailable state.
+No country-risk interpretation unless actually source-supported.
 
-==================================================
-LEFT NAVIGATION
-==================================================
+============================================================
+9. EXTERNAL RESEARCH ARCHITECTURE
+============================================================
 
-Upgrade the institutional rail.
+Trace the current external research workflow.
 
-It should be compact, high quality, icon-led, visually distinct, and usable on
-large screens.
+Document the complete lifecycle:
 
-Use:
+REQUEST
+→ cache lookup
+→ provider readiness
+→ provider call
+→ retrieval
+→ extraction
+→ identity resolution
+→ claim/candidate
+→ evidence
+→ classification
+→ proposal/conflict/insufficient
+→ review
+→ optional governed action
 
-EXECUTIVE
-PORTFOLIO
-GEOGRAPHY
-NETWORK
-RELATIONSHIPS
-ATTENTION
+Identify exact current providers and adapters.
+
+Separate:
+
+SEC
+Web
+Stylus
+R2D2
+other providers
+
+Do not imply a provider exists unless code/config proves it.
+
+============================================================
+10. STYLUS INTEGRATION
+============================================================
+
+Perform a specific Stylus audit.
+
+Search the repository for:
+
+Stylus
+stylus
+provider names
+environment variables
+client classes
+HTTP endpoints
+research adapters
+provider registries
+feature flags
+configuration
+tests
+cached results
+
+Document:
+
+A. Is Stylus currently implemented?
+
+Use one classification:
+
+ACTIVE
+PARTIALLY IMPLEMENTED
+CONFIGURED BUT UNUSED
+STUBBED
+PLANNED ONLY
+NOT FOUND
+
+B. If implemented, show actual architecture:
+
+UI
+↓
+API
+↓
+research orchestrator
+↓
+Stylus adapter/client
+↓
+external service
+↓
+normalized result
+↓
+evidence/proposal/store
+↓
+UI
+
+C. Document:
+
+- request fields;
+- response schema;
+- authentication mechanism conceptually;
+- timeout behavior;
+- retry behavior;
+- caching;
+- fail-closed behavior;
+- provenance;
+- audit logging;
+- review boundary;
+- whether ordinary page load can call Stylus;
+- whether Ask Lending can invoke it;
+- whether explicit user confirmation is required.
+
+DO NOT display credentials or secrets.
+
+============================================================
+11. R2D2 INTEGRATION
+============================================================
+
+Perform the same audit for R2D2.
+
+Search all code/config/tests/reports.
+
+Classify it:
+
+ACTIVE
+PARTIALLY IMPLEMENTED
+CONFIGURED BUT UNUSED
+STUBBED
+PLANNED ONLY
+NOT FOUND
+
+Explain what R2D2 actually does in THIS repository.
+
+Do not infer from its name.
+
+Trace:
+
+UI
+↓
+API
+↓
+orchestrator
+↓
+R2D2 adapter/client
+↓
+service
+↓
+response
+↓
+normalization
+↓
+evidence/result
+↓
+user-facing surface
+
+Document its relationship, if any, to:
+
+- external research;
+- SEC;
+- Web;
+- document retrieval;
+- AI extraction;
+- relationship discovery;
+- relationship validation;
+- CAM;
+- proposals;
+- review;
+- Ask Lending Intelligence.
+
+============================================================
+12. AI ARCHITECTURE
+============================================================
+
+Perform a complete AI architecture audit.
+
+Identify every current AI-related component.
+
+Separate:
+
+A. Ask Lending Intelligence
+
+B. Governed AI Relationship Studio
+
+C. AI used inside research/extraction, if any
+
+D. provider/model infrastructure
+
+E. future/stubbed AI components
+
+For Ask Lending Intelligence document:
+
+- frontend component;
+- context payload;
+- active route;
+- focused client/entity;
+- selected relationship;
+- filters;
+- source lanes;
+- graph state;
+- geography state;
+- bounded metadata;
+- question payload;
+- backend endpoint;
+- model/provider call;
+- tool/action system;
+- response rendering.
+
+State whether the current Ask surface is:
+
+LIVE MODEL-BACKED
+READ-ONLY RULE/CONTEXT ASSISTANT
+PARTIAL
+UI ONLY
+
+Do not infer.
+
+============================================================
+13. AI UI-CONTROL ARCHITECTURE
+============================================================
+
+Determine whether AI can currently control the Lending UI.
+
+Audit support for actions such as:
+
+navigate
+search
+focus client
+focus entity
+filter
+show map
+show network
+select relationship
+open evidence
+open inspector
+expand network
+prepare research
+
+Separate:
+
+SUPPORTED NOW
+PARTIALLY SUPPORTED
+NOT IMPLEMENTED
+
+Also distinguish:
+
+SAFE READ/NAVIGATION ACTIONS
+
+from:
+
+EXPLICIT CONFIRMATION ACTIONS
+
+such as:
+
+run SEC research
+run Web research
+run Stylus
+run R2D2
+create proposal
+approve
+publish
+modify review state
+
+============================================================
+14. MODEL / PROVIDER MATRIX
+============================================================
+
+Produce a provider matrix.
+
+Columns:
+
+Provider
+Purpose
+Current status
+Invocation path
+Automatic or explicit
+Cache
+Persistence
+Evidence provenance
+Can alter CAM?
+Failure behavior
+Tests
+Configuration source
+
+Include if found:
+
+OpenAI
+Anthropic
+Grok/xAI
+Stylus
+R2D2
+SEC
+Web provider(s)
+GLEIF
+other external systems
+
+Do not include hypothetical providers.
+
+============================================================
+15. AI GOVERNANCE
+============================================================
+
+Document current AI governance.
+
+Trace the existing lifecycle if implemented:
+
+Describe
+→ Configure
+→ Draft
+→ Preview
+→ Approval
+→ Publish
+
+Explain:
+
+- definition;
+- version;
+- instance;
+- publication;
+- audit;
+- provenance;
+- human approval;
+- separation from CAM.
+
+State clearly whether published AI can ever mutate CAM automatically.
+
+============================================================
+16. SEC / WEB RESEARCH FALLBACK
+============================================================
+
+Document the intended and actual missing-connection behavior.
+
+For:
+
+NO GOVERNED CONNECTION CURRENTLY ESTABLISHED
+
+trace what currently happens.
+
+Explain:
+
+- CAM check;
+- cached external check;
+- SEC state;
+- Web state;
+- research-not-performed state;
+- Research Connection handoff;
+- provider execution;
+- result classification;
+- proposal/review.
+
+Confirm no research provider is automatically invoked merely because a CAM
+relationship is missing.
+
+============================================================
+17. ATTENTION / REVIEW ARCHITECTURE
+============================================================
+
+Document all current attention/review concepts.
+
+Separate:
+
+CAM review-required
+normalized review
+external proposal review
+external conflict
+insufficient evidence
+identity unresolved
+data readiness issue
+AI governance approval
+
+Do not combine them into a fake universal risk queue.
+
+Trace current UI routes and mutation behavior.
+
+============================================================
+18. CURRENT SEARCH ARCHITECTURE
+============================================================
+
+Audit the global search.
+
+Identify what it actually searches:
+
+clients
+CAGID
+entities
+relationship IDs
+relationship groups
+counterparties
+other fields
+
+Document:
+
+- frontend debounce;
+- endpoint;
+- pagination;
+- bounds;
+- result ranking;
+- current limitations.
+
+The current placeholder may say:
+
+Search client, CAGID, entity, relationship
+
+Verify whether the backend actually supports each class.
+
+Do not describe placeholder text as implemented functionality.
+
+============================================================
+19. URL / INVESTIGATION CONTEXT
+============================================================
+
+Document current URL-backed context.
+
+Include actual parameters such as:
+
+focus
+view
+scope
+lane
+type
+family
+state
+connectivity
+country
+sector
+degree
+selected
+page
+cursor
+research
+
+Classify each:
+
+IMPLEMENTED
+PARTIAL
+PLANNED
+
+Explain whether investigation context survives handoffs between:
+
+Executive
+Portfolio
+Client 360
+Geography
+Network
+Relationships
+Attention
+Research
+Studio.
+
+============================================================
+20. PERFORMANCE ARCHITECTURE
+============================================================
+
+Audit boundedness and performance.
+
+For every major initial page load identify:
+
+- endpoints;
+- limits;
+- pagination;
+- rows returned;
+- expensive adapters;
+- caching;
+- frontend rendering limits.
+
+Explicitly audit the known large normalized universe:
+
+approximately 32,957 rows
+approximately 2.8 GB artifact
+
+Identify any code path that materializes it before applying a limit.
+
+Identify risks in:
+
+relationship groups
+relationship details
+search
+Network
+Relationships
+workbench
+Ask Lending
+
+============================================================
+21. CURRENT FRONTEND TECHNOLOGY
+============================================================
+
+Document actual frontend stack:
+
+React
+TypeScript
+Vite
+routing
+CSS architecture
+state management
+query/cache library
+map renderer
+graph renderer
+table library
+animation library
+icons
+testing
+linting
+
+For each:
+
+CURRENTLY INSTALLED
+CURRENTLY USED
+LEGACY/UNUSED
+
+Do not recommend replacements in this section.
+
+============================================================
+22. CURRENT BACKEND TECHNOLOGY
+============================================================
+
+Document:
+
+framework
+routers
+services
+stores
+SQLite
+JSON
+Parquet if Lending actually uses it
+file artifacts
+cache directories
+provider clients
+test architecture
+runtime server
+configuration model
+
+Include a directory/module diagram.
+
+============================================================
+23. SECURITY / CONFIGURATION
+============================================================
+
+Document safely:
+
+- environment variable categories;
+- provider credentials architecture;
+- secret-handling approach;
+- client/server boundaries;
+- browser-exposed configuration;
+- provider call location;
+- authentication assumptions;
+- explicit-action boundaries.
+
+DO NOT print secret values.
+
+============================================================
+24. CURRENT DEPLOYMENT / RUNTIME
+============================================================
+
+Document:
+
+- local frontend runtime;
+- backend runtime;
+- proxying;
+- ports;
+- build output;
+- deployment evidence in repository;
+- remote/local parity status;
+- known deployment gaps.
+
+Do not infer deployment status where evidence is absent.
+
+============================================================
+25. ARCHITECTURE DIAGRAMS
+============================================================
+
+Include ASCII/Mermaid-style diagrams.
+
+A. Entire Lending architecture
+
+USER
+ ↓
+REACT UI
+ ↓
+LENDING API CLIENT
+ ↓
+FASTAPI ROUTERS
+ ↓
+SERVICES / STORES
+ ↓
+CAM / V2 / NORMALIZED / EXTERNAL / AI
+ ↓
+PROVIDERS
+
+B. Relationship truth architecture
+
+CAM/V3
+     ↓
+authoritative relationship read
+
+V2
+     ↓
+fallback/history
+
+External SEC/Web/Stylus/R2D2
+     ↓
+supplemental evidence/proposal
+
+Governed AI
+     ↓
+separate governed generated lane
+
+C. Ask Lending architecture
+
+UI CONTEXT
+   ↓
+ASK LENDING
+   ↓
+READ/SEARCH/ACTION ROUTER
+   ↓
+LENDING DATA / RESEARCH HANDOFF / UI ACTIONS
+
+D. Network architecture
+
+FOCUS
+ ↓
+BOUNDED RELATIONSHIP READ
+ ↓
+NODE/EDGE ADAPTER
+ ↓
+DETERMINISTIC GRAPH
+ ↓
+INSPECTOR / EVIDENCE / EXPANSION
+
+============================================================
+26. CURRENT PRODUCT GAPS
+============================================================
+
+After documenting the system, identify gaps.
+
+Do not redesign them yet.
+
+Classify each gap as:
+
+VISUAL
+UX
+FRONTEND ARCHITECTURE
+BACKEND API
+DATA
+AI
 RESEARCH
-STUDIO
+PROVIDER
+PERFORMANCE
+GOVERNANCE
+DEPLOYMENT
+TESTING
 
-Include:
-- premium active state;
-- subtle hover;
-- readable icon + label;
-- collapsed mode;
-- section spacing;
-- no generic bootstrap look.
+Examples to verify rather than assume:
 
-==================================================
-TYPOGRAPHY
-==================================================
+- full Network not yet visually mature;
+- relationship search limitations;
+- Ask Lending may not yet be model-backed;
+- Stylus integration may be incomplete;
+- R2D2 may be incomplete;
+- deep routes may still use legacy layouts;
+- relationship-group endpoint may still be expensive;
+- graph may require explicit focus;
+- provider calls may only exist in Research;
+- browser visual regression tests may be absent.
 
-The current page looks too much like an editorial report.
+============================================================
+27. PRESERVATION CONTRACT FOR NEXT UI STAGES
+============================================================
 
-Keep institutional sophistication but move toward an intelligence-terminal
-typography system.
+End with an explicit preservation list for U2+.
 
-Use a modern system sans / existing approved system font.
+Separate:
 
-Avoid excessive serif display typography.
+MUST PRESERVE
 
-Use stronger scale contrast:
+MAY REFACTOR
 
-- large executive title;
-- compact metric numerals;
-- clear table typography;
-- dense analytical labels;
-- restrained microcopy.
+MUST NOT CHANGE WITHOUT GOVERNANCE APPROVAL
 
-==================================================
-SURFACES
-==================================================
+This list should protect:
 
-Reduce excessive bordered white rectangles.
+- CAM/V3 authority;
+- source-lane distinctions;
+- read/write boundaries;
+- explicit research invocation;
+- bounded loading;
+- relationship evidence;
+- lineage;
+- review semantics;
+- OSUC semantics;
+- V2 fallback semantics;
+- external supplemental semantics;
+- AI separation.
 
-Use:
+============================================================
+OUTPUT
+============================================================
 
-- canvas regions;
-- soft tonal backgrounds;
-- subtle separators;
-- grouped analytical areas;
-- slim metric bands;
-- floating inspectors;
-- overlays where appropriate.
+Create:
 
-Cards should be used only when they communicate a meaningful object.
+backend/data/LENDING_CURRENT_PRODUCT_ARCHITECTURE_AUDIT.md
 
-==================================================
-ADVANCED FRONTEND INTERACTION
-==================================================
+This should be a detailed engineering/product architecture document.
 
-Improve:
+Do not make code changes except creating this report.
 
-- hover states;
-- map focus;
-- graph focus;
-- selection transitions;
-- drawer transitions;
-- contextual highlighting;
-- linked map/network selection;
-- filter chips;
-- animated-but-restrained counters where appropriate;
-- skeleton/loading transitions.
+At the beginning include:
 
-Do not use decorative continuous animation.
+CURRENT STATE SNAPSHOT
 
-==================================================
-RESPONSIVE LARGE-SCREEN PRIORITY
-==================================================
+with:
 
-Optimize primarily for:
+- active pages;
+- active routes;
+- current Lending population;
+- current CAM/V3 relationship count;
+- current review-required count;
+- current external production count;
+- current AI production count;
+- active research providers;
+- Stylus status;
+- R2D2 status;
+- Ask Lending status;
+- current map technology;
+- current graph technology;
+- current major performance constraint.
 
-1920×1080
-2560×1440
-large professional monitors
+At the end include:
 
-At these sizes, use horizontal analytical composition.
+NEXT RECONSTRUCTION READINESS
 
-Do not waste horizontal space with a narrow centered column.
+with exactly three classifications:
 
-Allow the main intelligence canvas to use most of the viewport.
+READY
+READY WITH PREREQUISITES
+NOT READY
 
-At laptop width, adapt into a more stacked layout.
+Evaluate separately:
 
-==================================================
-PORTFOLIO VISUAL CONSISTENCY
-==================================================
+U2 Full Network Intelligence
+U3 Relationship Intelligence
+U4 Ask Lending / AI interaction
+U5 Research + Stylus/R2D2
+U6 Attention / Review
+U7 final visual hardening
 
-The current /lending/clients page still visually belongs to the legacy product.
+For every classification state the concrete prerequisite, not a vague opinion.
 
-Bring the Portfolio route into the NEW shell and visual system.
+============================================================
+HARD RULE
+============================================================
 
-Do NOT redesign all deep Portfolio functionality in this task.
+Do not rely on prior reports where current source contradicts them.
 
-But ensure:
+CURRENT SOURCE > OLD REPORT.
 
-- new rail;
-- new command bar;
-- new context strip;
-- typography;
-- spacing;
-- surfaces;
-- buttons;
-- source badges;
+Do not call external providers during this audit.
 
-are visually consistent.
+Do not run Stylus.
+Do not run R2D2.
+Do not run SEC.
+Do not run Web.
+Do not run AI generation.
 
-No route should suddenly look like the old product when navigating from
-Executive to Portfolio.
+Inspect configuration and code only.
 
-==================================================
-VISUAL QUALITY BAR
-==================================================
+Do not expose secrets.
 
-The final result must NOT look like:
+Do not modify application behavior.
 
-- a generic admin dashboard;
-- a report document;
-- a simple wireframe;
-- a CSS-only reskin.
+STOP after the report.
 
-It should visibly demonstrate:
+Final response must end exactly:
 
-- custom visual composition;
-- polished map;
-- polished network;
-- premium controls;
-- intentional spacing;
-- strong hover/focus states;
-- contextual inspectors;
-- high-end information hierarchy.
-
-==================================================
-USE CURRENT DATA
-==================================================
-
-Do not fabricate:
-- numbers;
-- clients;
-- relationships;
-- SEC findings;
-- Web findings;
-- AI findings;
-- geography.
-
-Use only current bounded Lending reads.
-
-==================================================
-VALIDATE VISUALLY
-==================================================
-
-This task REQUIRES actual browser inspection.
-
-Open /lending at:
-
-- 1920×1080 or similar large desktop;
-- 1440px desktop;
-- laptop width.
-
-Inspect:
-
-- map appearance;
-- network appearance;
-- shell density;
-- spacing;
-- typography;
-- Ask drawer;
-- Portfolio shell consistency.
-
-Do not claim completion based only on successful TypeScript compilation.
-
-If browser tooling is unavailable, manually use the available running UI and
-document the limitation.
-
-==================================================
-DO NOT START FULL NETWORK U2
-==================================================
-
-Do not build the final full-screen Network Intelligence workspace yet.
-
-This task is the U1 visual-quality correction.
-
-Preserve the future U2 handoff.
-
-==================================================
-IMPLEMENTATION
-==================================================
-
-WRITE CODE.
-
-Do not produce another proposal before implementing.
-
-You are expected to substantially modify:
-
-- Lending shell components;
-- Executive page composition;
-- map presentation;
-- compact network presentation;
-- Ask drawer;
-- shared visual system;
-- Portfolio shell integration;
-- responsive CSS.
-
-Then:
-
-build
-lint
-run
-inspect visually
-iterate until materially improved
-
-==================================================
-FINAL REPORT
-==================================================
-
-Only after implementation create:
-
-backend/data/LENDING_UI_U1_5_VISUAL_RECONSTRUCTION_REPORT.md
-
-Include:
-- major visual changes;
-- files changed;
-- screenshots/visual validation description;
-- map treatment;
-- network treatment;
-- Ask Lending treatment;
-- large-screen layout behavior;
-- build/lint results;
-- known limitations.
-
-End exactly:
-
-READY FOR LENDING FULL NETWORK U2
+LENDING CURRENT ARCHITECTURE AUDIT COMPLETE
