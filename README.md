@@ -1,547 +1,599 @@
-CLIENT CORRELATION — STAGE 1
-BUILD THE 3.67M MASTER CLIENT DATABASE
+IMPORTANT ARCHITECTURE AMENDMENT — APPLY TO THE CURRENT CLIENT UNIVERSE BUILD
 
-Work only in the CURRENT clean-reset repository.
+Do not restart the task.
 
-AUTHORITATIVE SOURCE:
+Apply these requirements to the implementation already in progress.
 
-backend/Customer_latest.parquet
+The ~3.67M client universe must be engineered at LEAD / PRINCIPAL-LEVEL
+quality, not as a one-off SQLite import.
 
-Known source row count:
-
-3,670,650
-
-Known source columns:
-
-21
-
-IMPORTANT
-
-This task is ONLY about building the master client/entity database.
-
-Do NOT:
-- restore the old CCR application
-- use the old 16k population
-- use thousandClients.csv
-- create relationships
-- create correlation candidates
-- call SEC
-- call GLEIF
-- call Web
-- build a graph
-- build AI
-- build dashboards
-
-The 3.67M master source is the foundation.
+The local implementation may use SQLite today, but the DATA MODEL,
+QUERY CONTRACTS and APPLICATION LAYERS must be scalable and portable.
 
 ==================================================
-1. PROFILE THE AUTHORITATIVE SOURCE FIRST
+1. ARCHITECTURAL PRINCIPLE
 ==================================================
 
-Inspect:
+Separate four concepts explicitly:
 
-backend/Customer_latest.parquet
+1. AUTHORITATIVE SOURCE
+   Customer_latest.parquet
+   immutable source snapshot
 
-Read schema and metadata without loading the entire dataset into memory.
+2. OPERATIONAL CLIENT UNIVERSE
+   optimized searchable representation of the master clients
 
-Report the exact 21 columns with:
+3. RELATIONSHIP INTELLIGENCE
+   future graph/relationship observations, evidence and paths
 
-column name
-data type
-null count
-non-null count
-distinct count where practical
-sample values
+4. APPLICATION/API
+   must not depend directly on SQLite-specific SQL everywhere
 
-Determine the actual business grain.
-
-Specifically investigate:
-
-GFCID
-CAGID
-legal_entity_id
-legal_name
-country
-industry
-sector
-entity/client type
-credit_managed_flag
-any parent/group identifiers
-any source/update fields
-
-Do not infer semantics from field names alone where the data can test them.
+Do NOT mix all four into one giant database/table.
 
 ==================================================
-2. DETERMINE WHAT 3,670,650 MEANS
+2. DATABASE ROLE
 ==================================================
 
-Answer explicitly:
+client_universe.sqlite3 is the LOCAL operational implementation.
 
-Are 3,670,650 rows equal to 3,670,650 unique clients?
+Do not design the product so that business logic assumes:
 
-Calculate:
+database = SQLite forever
 
-total rows
-distinct GFCID
-duplicate GFCID rows
-distinct CAGID
-duplicate CAGID groups
-distinct legal_entity_id
-duplicate legal_entity_id groups
+Create a clean persistence/repository boundary so the implementation can later
+move to PostgreSQL or another server-grade relational engine without changing
+business logic or API contracts.
 
-Determine maximum rows per:
-
-GFCID
-CAGID
-legal_entity_id
-
-Use bounded examples to explain duplicate patterns.
-
-Do not merge anything yet.
+SQLite-specific details should remain inside the storage implementation.
 
 ==================================================
-3. IDENTITY KEY DECISION
+3. PRIMARY KEY DESIGN
 ==================================================
 
-Based on actual data, determine the strongest available master-client key.
+Use a compact internal surrogate key for joins.
 
-Prior work suggested GFCID may be the strongest entity-level key,
-but revalidate that against the complete 3.67M source.
+Preferred concept:
 
-Do not assume:
+client_id INTEGER PRIMARY KEY
 
-CAGID = client
-legal_entity_id = unique entity
-legal name = unique entity
+Keep natural/source identifiers separately:
 
-Document the decision.
-
-==================================================
-4. CREATE THE NEW DATABASE
-==================================================
-
-Create:
-
-backend/data/client_universe.sqlite3
-
-This becomes the PRIMARY database for the new Client Correlation application.
-
-Do not reuse:
-
-ccr_clients.sqlite3
-
-Do not reuse:
-
-ccr_relationship_intelligence.sqlite3
-
-Those are legacy artifacts.
-
-==================================================
-5. DATABASE MODEL
-==================================================
-
-Keep the initial model simple.
-
-Create:
-
-A. client_master
-
-One row per defensible master-client/entity grain.
-
-Use the strongest validated key.
-
-Preserve all useful original source attributes.
-
-Recommended structure where supported by the source:
-
-client_key
 gfcid
 cagid
 legal_entity_id
+source_master_id
 
-legal_name
+Do not use long text identifiers as every internal foreign key.
+
+Do not replace the source identifiers.
+
+The pattern should be:
+
+internal client_id
++
+source identifiers
+
+This will matter when millions of relationship edges are added later.
+
+==================================================
+4. DO NOT CREATE A GIANT UNCONTROLLED WIDE TABLE
+==================================================
+
+Keep client_master focused on commonly accessed canonical attributes.
+
+Do not duplicate large text fields or identifier values unnecessarily.
+
+Use separate structures where justified:
+
+client_master
+client_identifiers
+client_aliases
+source_lineage
+ingestion_runs
+data_quality_issues
+
+Do not over-normalize either.
+
+The goal is:
+
+fast entity lookup
+fast relationship joins
+clear provenance
+manageable schema evolution
+
+==================================================
+5. FUTURE RELATIONSHIP SCALE
+==================================================
+
+Design client_id so the future graph can reference the complete 3.67M
+population efficiently.
+
+Future relationship storage should conceptually support:
+
+relationship_id
+source_client_id
+target_client_id
+relationship_type
+direction
+state
+first_observed_at
+last_observed_at
+
+Evidence and source documents must be separate from relationship edges.
+
+DO NOT build those tables in this task unless a minimal empty schema is
+required for architectural compatibility.
+
+Do not populate relationships.
+
+==================================================
+6. INDEX STRATEGY
+==================================================
+
+Indexes must be deliberate.
+
+Do not simply index every column.
+
+Build indexes based on real query patterns.
+
+At minimum evaluate:
+
+UNIQUE / lookup:
+gfcid where uniqueness is validated
+
+LOOKUP:
+cagid
+legal_entity_id
+
+SEARCH:
 normalized_legal_name
 
+FILTER:
 country
-country_code
-
 industry
 sector
 
-entity_type
+IDENTIFIER TABLE:
+(identifier_type, normalized_value)
 
-credit_managed_flag
+Potential relationship joins later:
+client_id
 
-source_row_count
+Use EXPLAIN QUERY PLAN to prove representative queries use indexes.
 
-source_snapshot
+Avoid indexes that materially increase storage/write cost without supporting
+a real query.
 
-created_at
+==================================================
+7. SEARCH ARCHITECTURE
+==================================================
 
-Do not fabricate values.
+Do NOT implement search as:
 
-NULL remains NULL.
+LIKE '%query%'
 
-B. client_identifiers
+against 3.67M rows.
 
-Use only where multiple identifiers genuinely need separate storage.
+Use an appropriate indexed search layer.
 
-Structure:
+SQLite:
+FTS5 where available and appropriate.
 
-client_key
-identifier_type
-identifier_value
-normalized_value
+Keep the search contract implementation-independent so it could later become:
 
-Possible types only when actually present:
+PostgreSQL full-text search
+pg_trgm
+OpenSearch / Elasticsearch
+
+without changing the frontend search API.
+
+==================================================
+8. PAGINATION
+==================================================
+
+Do not use large OFFSET pagination as the primary architecture.
+
+For large result sets prefer stable keyset/cursor pagination.
+
+Example concept:
+
+after=<sort_key/client_id>
+
+API responses should expose bounded result sets.
+
+Never return arbitrary millions of records.
+
+==================================================
+9. INGESTION ARCHITECTURE
+==================================================
+
+The 3.67M import must be:
+
+streamed/batched
+transactional
+restartable
+idempotent
+observable
+
+Do not load all source rows into memory.
+
+Persist an ingestion_run record containing:
+
+run_id
+source path
+source SHA-256
+source row count
+started_at
+completed_at
+status
+rows_processed
+rows_inserted
+rows_rejected
+schema_version
+
+If the same source hash is already successfully ingested, do not accidentally
+duplicate the universe.
+
+==================================================
+10. SCHEMA VERSIONING
+==================================================
+
+Introduce an explicit schema version / migration mechanism.
+
+Do not evolve the production schema through ad-hoc:
+
+CREATE TABLE IF NOT EXISTS
+
+inside GET/read requests.
+
+All schema creation and migrations must happen through controlled startup,
+migration or build procedures.
+
+Read APIs must remain read-only.
+
+==================================================
+11. DATA TYPE DISCIPLINE
+==================================================
+
+Do not store everything as arbitrary TEXT merely because the source came from
+Parquet.
+
+Select appropriate types based on actual semantics.
+
+However:
+
+identifiers that may contain leading zeroes must remain TEXT.
+
+Examples likely requiring TEXT:
 
 GFCID
 CAGID
-LEGAL_ENTITY_ID
 LEI
-OTHER
+CIK if treated as identifier
+source IDs
 
-C. source_lineage
-
-Preserve enough information to trace a client back to the original Parquet.
-
-Do not duplicate the entire raw file unnecessarily.
+Do not silently coerce identifiers to numeric values.
 
 ==================================================
-6. DUPLICATE HANDLING
+12. NULL / UNKNOWN SEMANTICS
 ==================================================
 
-Do not silently collapse conflicting records.
+Maintain strict distinction among:
 
-If multiple source rows share the chosen client key:
+NULL
+empty string
+not supplied
+not applicable
+unresolved
 
-compare all business fields.
+Do not populate fake defaults.
 
-Classify:
+Do not use:
 
-EXACT_DUPLICATE
-CONSISTENT_MULTIROW
-ATTRIBUTE_CONFLICT
+UNKNOWN
+N/A
+0
 
-For conflicts, preserve traceability.
-
-Never arbitrarily choose one conflicting value without documenting the rule.
-
-==================================================
-7. SEARCH OPTIMIZATION
-==================================================
-
-The primary use case is interactive client search across millions of clients.
-
-Create indexes for actual available fields such as:
-
-gfcid
-cagid
-legal_entity_id
-normalized_legal_name
-country
-industry
-sector
-
-Use SQLite FTS5 if available and appropriate for legal-name search.
-
-Create a search structure supporting:
-
-exact GFCID
-exact CAGID
-exact legal entity ID
-exact legal name
-prefix legal name
-name token search
-
-Do not allow unbounded full-table responses.
+unless those values genuinely came from the authoritative source.
 
 ==================================================
-8. NORMALIZATION
+13. SOURCE PRESERVATION
 ==================================================
 
-For search only, create deterministic normalized text.
+Customer_latest.parquet remains immutable.
 
-For legal names:
+Never rewrite it as part of application operation.
 
-trim whitespace
-normalize repeated spaces
-case-normalize
-safe Unicode normalization
+Record:
 
-Do NOT:
+SHA-256
+row count
+schema
+ingestion timestamp
 
-remove meaningful company suffixes from stored legal name
-merge entities because names look similar
-perform fuzzy entity resolution
-invent aliases
-
-Keep:
-
-legal_name = source truth
-
-normalized_legal_name = search helper
+The operational database is derived and rebuildable from the authoritative
+source.
 
 ==================================================
-9. COUNTRY / CLASSIFICATION
+14. QUERY SERVICE BOUNDARY
 ==================================================
 
-Profile actual values.
+Create a clear application service/repository abstraction.
 
-Do not silently remap country or industry values unless the transformation is
-deterministic and separately stored.
+Conceptually:
 
-Preserve source value.
+ClientRepository
+    get_client()
+    find_by_identifier()
+    search_clients()
+    list_clients()
+    get_identifiers()
 
-Optional normalized value may exist alongside it.
+Business/API code should use that contract.
 
-==================================================
-10. DATA QUALITY TABLE
-==================================================
-
-Create a compact:
-
-client_data_quality
-
-or equivalent summary mechanism.
-
-Track useful factual issues such as:
-
-missing legal name
-missing GFCID
-duplicate GFCID
-identifier conflicts
-country missing
-classification missing
-
-Do not create subjective risk/confidence scores.
+It should NOT contain raw SQLite SQL scattered throughout route handlers.
 
 ==================================================
-11. BUILD SAFELY
+15. API DESIGN
 ==================================================
 
-The build must be restartable.
+Design API contracts so millions of records remain manageable.
 
-Use:
+Example:
 
-transactions
-batch inserts
-parameterized SQL
+GET /api/clients/search?q=&limit=&cursor=
 
-Avoid loading all 3.67M rows into RAM.
+Response should include:
 
-Prefer PyArrow/Parquet batch iteration or equivalent bounded processing.
+items
+next_cursor
+has_more
 
-Provide progress logging.
+Do not expose database row offsets as the public contract.
 
-If interrupted, the source Parquet must remain untouched.
-
-==================================================
-12. VALIDATE THE COMPLETE DATABASE
-==================================================
-
-After build, report:
-
-source rows
-master client rows
-distinct GFCID
-distinct CAGID
-distinct legal_entity_id
-
-exact duplicate source rows
-multirow clients
-conflicting clients
-
-clients with legal name
-clients with country
-clients with industry
-clients with sector
-
-database size
-
-index count
-
-FTS status
-
-Run:
-
-PRAGMA integrity_check
-PRAGMA foreign_key_check
+Client detail should resolve via stable client key.
 
 ==================================================
-13. SEARCH PERFORMANCE TEST
+16. CONCURRENCY / LOCAL SQLITE
 ==================================================
 
-Run bounded benchmarks.
+For the local deployment evaluate appropriate SQLite operational settings,
+including WAL where appropriate.
 
-Measure:
+Do not blindly set performance PRAGMAs.
 
-exact GFCID lookup
-exact CAGID lookup
-exact legal name
-prefix legal-name search
-token/name search
-country-filtered search
+Document:
 
-Use several representative queries.
+journal mode
+synchronous mode
+foreign keys
+busy timeout
+read/write connection strategy
 
-Report latency.
+Optimize for:
 
-Do not cherry-pick only cached queries; distinguish cold/warm where practical.
+many reads
+rare controlled writes
 
-==================================================
-14. MINIMAL API
-==================================================
-
-After database validation, add ONLY:
-
-GET /api/clients/summary
-
-GET /api/clients/search?q=&limit=
-
-GET /api/clients/{client_key}
-
-GET /api/clients/{client_key}/identifiers
-
-Maximum default search result size should be bounded.
-
-No relationship endpoints yet.
+which matches the client-universe workload.
 
 ==================================================
-15. MINIMAL FRONTEND CONNECTION
+17. ANALYZE / QUERY PLANNER
 ==================================================
 
-Keep the frontend simple.
+After loading/indexing the database:
 
-Replace the temporary page with only:
+run the appropriate ANALYZE process.
 
-CLIENT CORRELATION
+Validate query plans for representative searches.
 
-[ Search 3.67M clients... ]
+Report whether scans are:
 
-and a simple search-results list.
+INDEX SEARCH
+FTS SEARCH
+FULL TABLE SCAN
 
-When a result is clicked, show:
-
-legal name
-GFCID
-CAGID
-country
-industry/sector
-other real identifiers
-
-No graph yet.
-
-No dashboard.
-
-No cards everywhere.
-
-No relationship UI yet.
-
-The sole purpose is to prove the 3.67M universe is searchable and usable.
+Unexpected full scans on interactive endpoints are a FAIL.
 
 ==================================================
-16. LEGACY IS OFF-LIMITS
+18. PERFORMANCE TARGETS
 ==================================================
 
-Do not import data from:
+On the current workstation, use measurable practical targets.
 
-thousandClients.csv
-old CCR SQLite databases
-legacy relationship tables
-old candidate tables
+Target where realistically achievable:
 
-The new database must derive from:
+exact identifier lookup:
+< 100 ms warm
 
-Customer_latest.parquet
+client detail:
+< 100 ms warm
 
-only.
+name search returning first page:
+< 300 ms warm
+
+filtered search:
+< 500 ms warm
+
+These are engineering targets, not reasons to fake results.
+
+Report actual numbers even if slower.
 
 ==================================================
-17. REPORT
+19. SCALE TEST
 ==================================================
 
-Create:
+Validate against the COMPLETE universe.
+
+Do not demonstrate scalability using a 10k-row development subset.
+
+Test:
+
+3.67M-row database startup
+concurrent/sequential searches
+repeated search
+deep result navigation through cursor pagination
+identifier lookups
+filter combinations
+
+Watch memory consumption.
+
+The API must not materialize giant result sets.
+
+==================================================
+20. DATABASE SIZE / DUPLICATION
+==================================================
+
+Report:
+
+source Parquet size
+SQLite database size
+index size where practical
+FTS size
+total storage multiplication
+
+Avoid needless copies of the complete source payload.
+
+The operational database may be larger than the Parquet because of indexes,
+but the growth must be explainable.
+
+==================================================
+21. FUTURE SERVER DEPLOYMENT
+==================================================
+
+Document the migration path, but DO NOT implement it now.
+
+Target future architecture could be:
+
+Authoritative Parquet
+        ↓
+ingestion
+        ↓
+PostgreSQL client universe
+        ↓
+relationship/evidence store
+        ↓
+API
+        ↓
+network application
+
+The local SQLite implementation must preserve compatible concepts.
+
+Do NOT introduce PostgreSQL today unless there is a concrete requirement.
+
+==================================================
+22. FUTURE GRAPH SCALE
+==================================================
+
+Do not assume that all possible pairs across 3.67M clients can be materialized.
+
+3.67M × 3.67M pairwise comparison is not a valid architecture.
+
+Correlation discovery later must use:
+
+candidate generation
+blocking
+indexed attributes
+relationship-specific presets
+external search
+bounded graph expansion
+
+Never perform naïve all-to-all correlation.
+
+This requirement is CRITICAL.
+
+==================================================
+23. LEAD-LEVEL QUALITY GATES
+==================================================
+
+The implementation should demonstrate:
+
+clear responsibility boundaries
+schema documentation
+migration/versioning
+deterministic ingestion
+idempotency
+source lineage
+indexed queries
+bounded APIs
+cursor pagination
+no hidden writes on reads
+no unbounded memory operations
+no all-to-all comparisons
+clean rollback/rebuild path
+storage portability
+tests for important invariants
+
+==================================================
+24. ADD TO THE CURRENT REPORT
+==================================================
+
+Extend:
 
 backend/data/CLIENT_UNIVERSE_BUILD_REPORT.md
 
-Include:
+with sections:
 
-source schema
-business grain
-identity key analysis
-database schema
-actual row counts
-duplicate analysis
-data quality
-indexes
-search performance
-API validation
-known limitations
+Architecture
+Schema rationale
+Identity strategy
+Index strategy
+Search architecture
+Pagination strategy
+Ingestion/rebuild strategy
+SQLite operational configuration
+Query-plan validation
+Storage footprint
+Performance benchmarks
+Scale limitations
+PostgreSQL migration path
+Future graph/relationship architecture
 
 ==================================================
-FINAL RESPONSE
+FINAL ARCHITECTURAL GATE
 ==================================================
 
-CLIENT UNIVERSE BUILD: PASS / FAIL
+In the final response also include:
 
-AUTHORITATIVE SOURCE ROWS:
-3,670,650
-
-ACTUAL MASTER CLIENTS:
-<actual unique client count>
-
-PRIMARY CLIENT KEY:
-<actual>
-
-DISTINCT GFCID:
-<actual>
-
-DUPLICATE GFCID:
-<actual>
-
-DISTINCT CAGID:
-<actual>
-
-DISTINCT LEGAL_ENTITY_ID:
-<actual>
-
-DATABASE:
-backend/data/client_universe.sqlite3
-
-DATABASE SIZE:
-<actual>
-
-FTS SEARCH:
-PASS / FAIL / NOT USED
-
-EXACT-ID SEARCH:
-<latency>
-
-NAME SEARCH:
-<latency>
-
-SQLITE INTEGRITY:
+ARCHITECTURE QUALITY:
 PASS / FAIL
 
-FOREIGN KEYS:
+FULL 3.67M DATASET USED:
+YES / NO
+
+STREAMING INGESTION:
 PASS / FAIL
 
-SOURCE PARQUET MODIFIED:
+IDEMPOTENT REBUILD:
+PASS / FAIL
+
+SCHEMA VERSIONED:
+YES / NO
+
+READ ENDPOINTS MUTATE DATABASE:
 NO / FAIL
 
-LEGACY CCR DATA IMPORTED:
-0 / FAIL
-
-RELATIONSHIPS CREATED:
-0 / FAIL
-
-CLIENT SEARCH UI:
+KEYSET/CURSOR PAGINATION:
 PASS / FAIL
 
-REPORT:
-backend/data/CLIENT_UNIVERSE_BUILD_REPORT.md
+FTS/INDEXED NAME SEARCH:
+PASS / FAIL
 
-STOP.
+UNEXPECTED FULL TABLE SCANS:
+0 / <count>
 
-DO NOT START CORRELATION OR RELATIONSHIP DISCOVERY.
+SOURCE LINEAGE:
+PASS / FAIL
+
+REPOSITORY/STORAGE ABSTRACTION:
+PASS / FAIL
+
+SQLITE-SPECIFIC LOGIC ISOLATED:
+YES / NO
+
+NAIVE ALL-TO-ALL CORRELATION:
+NOT USED / FAIL
+
+FUTURE SERVER MIGRATION PATH:
+DOCUMENTED / FAIL
