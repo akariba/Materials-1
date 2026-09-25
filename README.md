@@ -1,961 +1,777 @@
-LENDING UI RECONSTRUCTION — U2
-FULL NETWORK INTELLIGENCE
+CCR — FINAL DELIVERY READINESS AUDIT
 
-THIS IS AN IMPLEMENTATION TASK.
-
-DO NOT WRITE ANOTHER DESIGN BLUEPRINT.
-DO NOT WRITE ANOTHER ARCHITECTURE AUDIT.
-DO NOT STOP AFTER ANALYSIS.
-
-YOU MUST MODIFY THE RUNNING FRONTEND AND, ONLY WHERE REQUIRED FOR BOUNDED READS,
-THE LENDING BACKEND.
-
-THE RESULT MUST BE VISIBLY RUNNABLE IN THE BROWSER.
-
-============================================================
-READ FIRST
-============================================================
-
-Read:
-
-backend/data/LENDING_UI_RECONSTRUCTION_BLUEPRINT.md
-backend/data/LENDING_UI_U1_IMPLEMENTATION_REPORT.md
-backend/data/LENDING_CURRENT_PRODUCT_ARCHITECTURE_AUDIT.md
-
-Current source overrides older reports.
-
-This is LENDING ONLY.
-
-Never use CCR data, CCR relationship truth, Customer_latest.parquet, or
-customer-master values.
-
-============================================================
-MISSION
-============================================================
-
-Completely reconstruct Network Intelligence into a premium institutional
-relationship-intelligence workspace.
-
-The current Network page is only a transitional implementation.
-
-U2 must create the real Network Intelligence product.
-
-This is NOT a cosmetic reskin.
-
-The finished surface should feel comparable to a premium capital-markets,
-cyber-intelligence, investigative-graph, or institutional research product,
-while retaining the LIGHT visual language already selected for Lending.
-
-The experience must be:
-
-- visually sophisticated;
-- spatially clear;
-- fast;
-- bounded;
-- evidence-first;
-- relationship-centric;
-- usable by a senior credit professional;
-- highly interactive;
-- readable without training;
-- deterministic;
-- source-aware.
-
-============================================================
-MANDATORY VISUAL OUTCOME
-============================================================
-
-The Network experience must occupy the available workspace.
-
-Do NOT render:
-
-- a small graph floating in a generic card;
-- a giant blank white page;
-- a basic SVG demo;
-- disconnected decorative nodes;
-- a dashboard containing many equal-weight boxes.
-
-The network is the primary visual surface.
-
-Target approximate layout:
-
-┌─────────────────────────────────────────────────────────────────────┐
-│ Global Lending command bar                             ASK LENDING │
-├─────────────────────────────────────────────────────────────────────┤
-│ Context / source lanes / current focus / bounds                    │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│   NETWORK CANVAS                                      INSPECTOR     │
-│                                                     ┌────────────┐ │
-│         related entity                              │ Selected   │ │
-│              ○                                      │ entity /   │ │
-│             / CAM                                   │ relation   │ │
-│            /                                        │ evidence   │ │
-│      ○────●────○ SEC                                │ provenance │ │
-│          focus                                      │ actions    │ │
-│            \                                        └────────────┘ │
-│             \ CAM REVIEW                                            │
-│              ○                                                      │
-│                                                                     │
-│   [ + ] [ - ] [ fit ] [center] [layout] [filters] [map] [table]   │
-├─────────────────────────────────────────────────────────────────────┤
-│ visible count · returned count · truncated · degree · source lanes │
-└─────────────────────────────────────────────────────────────────────┘
-
-The inspector may collapse so the canvas can become wider.
-
-============================================================
-FULLSCREEN / EXPANDED NETWORK
-============================================================
-
-MANDATORY.
-
-The compact network shown elsewhere in Lending must have:
-
-EXPAND NETWORK
-
-When selected, it opens the full Network Intelligence workspace.
-
-Inside Network Intelligence provide:
-
-FULLSCREEN / FOCUS MODE
-
-When activated:
-
-- collapse/minimize the Lending navigation rail;
-- collapse secondary descriptive text;
-- maximize the graph canvas;
-- keep graph controls;
-- preserve Ask Lending;
-- preserve source legend;
-- preserve inspector access;
-- preserve exit/back control.
-
-The user must be able to comfortably investigate the graph across nearly the
-entire screen.
-
-============================================================
-NETWORK IS FOCUS-BASED
-============================================================
-
-Do not draw the full universe by default.
-
-Require an explicit focus entity.
-
-Default degree = 1.
-
-The focus entity appears centrally.
-
-First-degree connected entities appear around it.
-
-Expansion is explicit.
-
-Never render arbitrary disconnected entities.
-
-If there are no governed first-degree connections, show:
-
-NO GOVERNED CONNECTION CURRENTLY ESTABLISHED
-
-and provide explicit investigation/research actions.
-
-Do not manufacture a graph to fill empty space.
-
-============================================================
-GRAPH TECHNOLOGY
-============================================================
-
-The current audit confirmed that the active graph is hand-authored SVG and
-multiple SVG graph implementations now coexist.
-
-For U2, consolidate Network around ONE reusable graph implementation.
-
-Evaluate whether a focused graph library already exists in the dependency tree.
-
-If none does, it is acceptable in U2 to add ONE justified graph dependency,
-preferably:
-
-@xyflow/react
-
-IF it materially improves:
-
-- viewport controls;
-- custom nodes;
-- custom edges;
-- label placement;
-- accessibility;
-- interaction;
-- future maintainability.
-
-Do not add an entire visualization framework merely for decoration.
-
-If a dependency is added, document why.
-
-============================================================
-GRAPH QUALITY
-============================================================
-
-The graph must be extremely legible.
-
-Every visible node must have:
-
-- identity;
-- readable label;
-- node type;
-- relationship attachment;
-- source-supported state.
-
-Every visible node other than the focus must be connected by a visible edge.
-
-No arbitrary floating nodes.
-
-No hidden inferred paths.
-
-No fake relationship strength.
-
-No force-layout motion after initial placement.
-
-Use a deterministic radial/layered structure.
-
-For degree 1:
-
-             Entity
-                ○
-             CAM│
-                │
-     Entity ○───●───○ Entity
-             SEC focus CAM REVIEW
-                │
-                ○
-             Entity
-
-For expanded branches, preserve visual ancestry and avoid overlapping labels.
-
-============================================================
-NODE DESIGN
-============================================================
-
-Nodes should be designed objects, not plain dots.
-
-FOCUS NODE:
-
-- visually strongest;
-- entity/client name;
-- compact type indicator;
-- optional reported OSUC if it is a portfolio client;
-- clear CAM availability state;
-- subtle glow/halo is allowed.
-
-PORTFOLIO CLIENT:
-
-- distinct outline;
-- CAGID available in inspector;
-- exposure may affect limited node size ONLY when explicitly labelled
-  EXPOSURE CONTEXT;
-- node size must never imply risk.
-
-RELATED ENTITY:
-
-- neutral institutional treatment;
-- name visible;
-- entity type if known.
-
-REVIEW node/relationship:
-
-- amber workflow treatment.
-
-External:
-
-- separate supplementary styling.
-
-AI:
-
-- separate governed AI styling.
-
-V2:
-
-- clearly fallback/history.
-
-============================================================
-EDGE DESIGN — CRITICAL
-============================================================
-
-Every relationship edge must expose provenance.
-
-This is mandatory.
-
-If the relationship is CAM/V3:
-
-       CAM
-
-must appear on or immediately next to the edge.
-
-If CAM review-required:
-
-       CAM · REVIEW
-
-If external SEC evidence:
-
-       SEC
-
-If external Web:
-
-       WEB
-
-If governed AI:
-
-       AI
-
-If V2 fallback:
-
-       V2
-
-If multiple retained assertions independently support a displayed connection:
-
-       CAM + SEC
-
-may be displayed ONLY as an inventory shorthand.
-
-It does NOT mean SEC has become CAM.
-
-The inspector must show the assertions independently.
-
-Also show relationship type where space permits.
-
-Example:
-
- NVIDIA ───────────── TSMC
-          SUPPLIER
-             CAM
-
-or
-
- COMPANY A ───────── COMPANY B
-          CUSTOMER
-         CAM · REVIEW
-
-Direction arrows appear ONLY when direction is actually source-supported.
-
-Unknown direction = undirected edge.
-
-============================================================
-EDGE INTERACTION
-============================================================
-
-Hover:
-
-- visually emphasize edge;
-- emphasize both endpoints;
-- show compact tooltip:
-    relationship type
-    source
-    direction
-    state
-    evidence count
-
-Click:
-
-open the Relationship Inspector.
-
-Inspector should contain:
-
-Relationship
-Subject
-Related entity
-Exact relationship type
-Family
-Direction
-Connectivity
-State
-Authority
-Source lane
-Review state
-Evidence count
-Source references
-Exact excerpts where available
-Lineage status
-Limitations
-
-Provide:
-
-OPEN RELATIONSHIP INTELLIGENCE
-
-OPEN EVIDENCE
-
-RESEARCH CONNECTION
-
-when appropriate.
-
-============================================================
-NODE INSPECTOR
-============================================================
-
-Clicking a node opens a sophisticated right-side drawer.
-
-For portfolio clients include:
-
-name
-CAGID
-sector
-country label
-reported OSUC
-portfolio share if available
-CAM availability
-relationship count
-review-required count
-
-Actions:
-
-OPEN CLIENT 360
-CENTER NETWORK
-EXPAND FIRST DEGREE
-VIEW RELATIONSHIPS
-VIEW EVIDENCE
-RESEARCH CONNECTION
-
-For non-client entities show only fields actually available.
-
-Do not invent missing data.
-
-============================================================
-SOURCE LANE CONTROLS
-============================================================
-
-At the top of Network provide visible source-lane controls.
-
-Default:
-
-CAM/V3 ON
-
-Review CAM may be visible with CAM but visually distinct.
-
-External OFF
-AI OFF
-V2 OFF
-
-Controls:
-
-[ CAM ]
-[ REVIEW ]
-[ SEC / WEB ]
-[ AI ]
-[ V2 HISTORY ]
-
-Turning a lane on may fetch/show that lane only if supported.
-
-It must never silently call a provider.
-
-External means persisted/cached external results.
-
-It does NOT mean execute external research.
-
-============================================================
-MISSING CONNECTION WORKFLOW
-============================================================
-
-This is a major product capability.
-
-If the user selects or searches two entities for which no governed connection
-is currently established:
-
-show clearly:
-
-NO GOVERNED CONNECTION CURRENTLY ESTABLISHED
-IN THE SELECTED SCOPE
-
-Then explain:
-
-CAM relationship:
-Not established / unavailable / unresolved as appropriate
-
-Cached external evidence:
-present / none
-
-SEC research:
-not performed / cached / unavailable
-
-Web research:
-not performed / cached / unavailable
-
-Stylus:
-status only
-
-R2D2:
-status only
-
-DO NOT automatically call any provider.
-
-Provide button:
-
-RESEARCH CONNECTION →
-
-This navigates to Research with prepared context.
-
-============================================================
-PREPARED RESEARCH CONTEXT
-============================================================
-
-Carry:
-
-subject identity
-counterparty identity
-CAGIDs where applicable
-known aliases
-relationship hypothesis
-CAM status
-known relationship IDs
-source excerpts
-missing evidence fields
-country/sector context
-selected scope
-requested channel options
-
-Do not execute research merely through navigation.
-
-============================================================
-GEOGRAPHY MODE
-============================================================
-
-Network must include:
-
-GRAPH
-MAP
-TABLE
-
-as first-class views.
-
-MAP should use the existing local geography assets and current source labels.
-
-The map should be much more visually refined than the current version.
-
-LIGHT APPLICATION SHELL
-+
-DARK CARTOGRAPHIC CANVAS
-
-is acceptable and preferred.
-
-The map should look luminous/shiny but still analytical.
-
-Use restrained:
-
-- teal/cyan;
-- gold/amber;
-- subtle glows;
-- highlighted geography;
-- point halos.
-
-No neon game aesthetic.
-
-============================================================
-GEOGRAPHIC NETWORK
-============================================================
-
-Where BOTH endpoints have reliable mapped geography AND an actual relationship
-record supports the connection, allow relationship arcs on the map.
-
-Do not fabricate geography.
-
-Do not infer HQ.
-
-Do not infer domicile.
-
-Do not render arcs for unresolved locations.
-
-Arc provenance must remain inspectable.
-
-CAM arc:
-CAM
-
-SEC arc:
-SEC
-
-etc.
-
-============================================================
-SHINY MAP TREATMENT
-============================================================
-
-Implement a premium geographic canvas:
-
-- dark navy/cartographic background;
-- muted continents;
-- subtle borders;
-- restrained luminous active countries;
-- haloed mapped entity points;
-- selected country focus;
-- animated hover transition only;
-- no continuous decorative particle flow;
-- source-aware relationship arcs;
-- selected-client marker;
-- tooltips;
-- zoom/pan;
-- fit-to-visible selection.
-
-The surrounding application remains light.
-
-This contrast is intentional.
-
-============================================================
-TABLE VIEW
-============================================================
-
-Provide a synchronized relationship table below or instead of the graph.
-
-Columns where available:
-
-Subject
-Related Entity
-Relationship Type
-Family
-Direction
-State
-Connectivity
-Source
-Evidence
-Review
-Action
-
-Clicking a row selects the corresponding graph edge.
-
-Clicking a graph edge selects the corresponding row.
-
-============================================================
-NETWORK SEARCH
-============================================================
-
-Provide focus search.
-
-It must search only what the backend actually supports.
-
-At minimum support portfolio client name and CAGID.
-
-If entity/relationship search is not yet supported by a bounded backend
-contract, DO NOT fake it.
-
-Instead state the limitation and implement the smallest bounded read adapter
-needed if justified.
-
-Never query the full 2.855 GB normalized artifact merely to perform a search.
-
-============================================================
-BOUNDS
-============================================================
-
-Initial focused graph:
-
-maximum approximately:
-50 nodes
-100 edges
-
-Expansion:
-
-maximum approximately:
-+50 nodes
-+100 edges per explicit request
-
-Hard browser-rendering ceiling:
-
-250 nodes
-500 edges
-
-If actual current bounded backend capabilities require a smaller practical
-limit, use the safer bound.
-
-Server response should expose if feasible:
-
-returned
-available
-has_more
-truncated
-truncation_reason
-
-UI must surface truncation.
-
-Never pretend the displayed graph is complete when it is bounded.
-
-============================================================
-PERFORMANCE — HARD RULE
-============================================================
-
-U2 MUST NOT make the browser load:
-
-backend/data/lending_relationship_database.json
-
-or any equivalent ~2.855 GB / 32,957-row artifact.
-
-It must not materialize that entire universe before applying a limit.
-
-Do not use the broad legacy group endpoint as initial Network loading.
-
-Network must be based on bounded CAM/V3-first reads.
-
-Any backend work performed for U2 must be:
-
-Lending-only
-read-only
-source-lane aware
-bounded before expensive processing
-paginated/limited
-deterministic
-tested
-
-============================================================
-CURRENT V3 AUTHORITY
-============================================================
-
-Preserve:
-
-41 CAM/V3 relationship rows
-13 canonical
-28 review-required
-
-Do not inflate the visible authoritative network using V2 or normalized history.
-
-Review-required remains source/workflow state.
-
-It is NOT a risk rating.
-
-============================================================
-AI ACCESS WINDOW
-============================================================
-
-Preserve and visually improve:
-
-ASK LENDING INTELLIGENCE
-
-as a persistent upper-right entry point.
-
-During U2 it may remain provider-free if the current implementation is not yet
-model-backed.
-
-But redesign its UI architecture so it is context-aware.
-
-Opening it from Network should show:
-
-Current focus
-Selected node
-Selected relationship
-Current degree
-Visible source lanes
-Filters
-Graph bounds
-Current view
-
-Suggested questions may include:
-
-"What relationships are visible for this client?"
-"Why is this connection review-required?"
-"What evidence supports this edge?"
-"Which visible relationships are CAM authoritative?"
-"Show me the relationship between NVIDIA and TSMC."
+Work only in the CURRENT CCR repository.
 
 IMPORTANT:
+THIS IS AN AUDIT ONLY.
 
-Until U4 implements model-backed orchestration, DO NOT pretend this is an LLM.
+Do NOT redesign the UI.
+Do NOT change CSS.
+Do NOT refactor.
+Do NOT add features.
+Do NOT change database data.
+Do NOT create relationships.
+Do NOT run broad external research.
+Do NOT change existing relationship semantics.
+Do NOT fabricate missing data.
+Do NOT fix anything yet.
 
-If the requested answer cannot be resolved from current bounded reads, provide
-a navigation/research action instead.
+I need an exact current-state assessment because this application must be
+delivered TODAY.
 
-============================================================
-FUTURE AI-CONTROL COMPATIBILITY
-============================================================
+==================================================
+1. OBJECTIVE
+==================================================
 
-Structure Network actions so U4 can later call typed UI commands such as:
+Inspect the complete current CCR implementation and tell me exactly:
 
-focusEntity(id)
-selectRelationship(id)
-expandNode(id)
-setDegree(1|2)
-setView(graph|map|table)
-toggleLane(CAM|REVIEW|EXTERNAL|AI|V2)
-openEvidence(id)
-prepareResearch(subject, counterparty)
+- what is implemented
+- what is actually working
+- what is partially working
+- what is only visual
+- what is disconnected
+- what data exists
+- what data does not exist
+- what is intentionally empty
+- what is broken
+- what must be fixed before delivery
+- what can safely wait until after delivery
 
-Do NOT implement uncontrolled natural-language mutation.
+Do not infer from filenames or comments alone.
 
-============================================================
-VISUAL QUALITY
-============================================================
+Verify behavior from code, API, database and, where possible, the running app.
 
-This cannot look like the current generic React dashboard.
+==================================================
+2. STARTUP / RUNTIME
+==================================================
 
-Required qualities:
+Determine the exact current startup architecture.
 
-- premium financial/institutional product;
-- refined typography;
-- strong information hierarchy;
-- generous canvas;
-- deliberate whitespace;
-- compact utility chrome;
-- smooth drawer transitions;
-- subtle depth;
-- clear selected states;
-- crisp graph typography;
-- custom icons where useful;
-- restrained source colors;
-- excellent hover/focus states.
+Report:
 
-Avoid:
+FRONTEND:
+- framework
+- package manager
+- start command
+- build command
+- expected port
 
-- endless identical cards;
-- Bootstrap-like boxes;
-- giant bordered rectangles;
-- default HTML-looking buttons;
-- primitive tabs;
-- weak typography;
-- oversized empty areas;
-- admin-console styling.
+BACKEND:
+- framework
+- start command
+- expected port
 
-============================================================
-RESPONSIVE BEHAVIOR
-============================================================
+DATABASE:
+- exact SQLite path currently used by the running application
 
-Desktop:
-full canvas + inspector.
+NETWORK / PROXY:
+- current approved Windows proxy handling
+- SEC status
+- GLEIF status
+- Web/provider status
 
-Medium width:
-canvas + overlay inspector.
+AI:
+- exact HELIX integration path
+- configuration source
+- status endpoint
+- analysis endpoint
+- whether it is currently executable
+- whether credentials are actually available
+- whether responses are persisted
+- whether AI is read-only / explanation-only
+- whether AI has any authority to create evidence or relationships
 
-Small width:
-graph remains usable;
-inspector becomes bottom sheet;
-rail collapses.
+Also identify any mismatch between:
+development mode,
+local mode,
+and the currently exposed remote/tunnel URL.
 
-============================================================
-ACCESSIBILITY
-============================================================
+==================================================
+3. CURRENT FRONTEND ROUTES
+==================================================
 
-Support:
+Inspect every current CCR page.
 
-keyboard focus
-visible focus states
-node selection by keyboard where practical
-edge selection where practical
-semantic controls
-tooltips not hover-only
-reduced-motion preference
-adequate contrast
+At minimum:
 
-============================================================
-BACKEND CHANGES
-============================================================
+/portfolio
+/entities
+/network
+/radar
+/events
+/research
+/evidence
+/review
 
-Backend changes are permitted ONLY if necessary for the bounded U2 contract.
+Also inspect any:
 
-Possible justified additions:
+entity intelligence page
+entity detail page
+timeline page
+relationship detail page
+source/evidence reader
+AI drawer
+full-screen network view
+legacy routes still reachable
 
-- focused network endpoint;
-- bounded entity search;
-- bounded expansion endpoint;
-- returned/available/truncation metadata.
+For every route return:
 
-Do NOT:
+ROUTE
+IMPLEMENTED: YES / PARTIAL / NO
+LOADS: YES / NO
+REAL BACKEND DATA: YES / PARTIAL / NO
+INTERACTIVE: YES / PARTIAL / NO
+ENTITY CONTEXT PRESERVED: YES / NO
+EMPTY DUE TO NO DATA: YES / NO
+ACTUAL DEFECTS
+DELIVERY BLOCKER: YES / NO
 
-- create another relationship store;
-- change authority semantics;
-- migrate CAM;
-- merge V2 into V3;
-- alter research providers;
-- alter AI publication;
-- alter review semantics.
+Do not classify an intentionally empty dataset as a frontend defect.
 
-============================================================
-TESTS
-============================================================
+==================================================
+4. GLOBAL SHELL
+==================================================
 
-Add focused tests for:
+Audit:
 
-- CAM/V3-first graph;
-- explicit focus;
-- first-degree loading;
-- review styling;
-- source provenance;
-- direction handling;
-- unresolved direction;
-- node/edge bounds;
-- truncation;
-- source-lane toggles;
-- no disconnected nodes;
-- no automatic external/provider call;
-- no AI/provider invocation;
-- no full normalized artifact read;
-- focus change;
-- expansion;
-- empty relationship state.
+- navigation
+- global entity search
+- selected entity persistence
+- URL state
+- inspector
+- inspector tabs
+- provider status
+- system status
+- data-truth banners
+- AI Analyst entry point
+- loading states
+- error states
+- empty states
+- responsive behavior
+- scrolling
+- sticky headers
+- browser back/forward behavior
 
-Frontend:
+Identify any controls that look clickable but do nothing.
 
-npm run build
-npm run lint
+Identify any controls that contain placeholder behavior.
 
-Do not claim visual validation unless actually performed.
+==================================================
+5. PORTFOLIO
+==================================================
 
-============================================================
-MANUAL VISUAL CASES
-============================================================
+Verify every visible number and section on Portfolio.
 
-Verify if environment permits:
+Report the exact backend/API/database origin for:
 
-1. default Network with no focus;
-2. focus client with CAM relationship;
-3. focus client with review-required relationship;
-4. client with no governed connection;
-5. edge selected;
-6. node selected;
-7. expanded graph;
-8. MAP view;
-9. TABLE view;
-10. source toggle;
-11. fullscreen Network;
-12. narrow screen;
-13. Ask Lending opened from a selected relationship.
+- CCR population
+- canonical entity count
+- exposure row count
+- research candidate count
+- evidence count
+- relationship count
+- country concentration
+- entity class counts
+- identifier coverage
+- research posture
+- industry/classification
+- source/provider posture
+- world-map values
 
-============================================================
-OUTPUT REPORT
-============================================================
+For the map verify:
+
+- GeoJSON loading
+- country matching
+- unmapped countries
+- hover behavior
+- click behavior
+- filtering behavior
+- entity navigation
+- legend
+- whether every displayed value is real
+
+Report any misleading or decorative metric.
+
+==================================================
+6. ENTITIES
+==================================================
+
+Verify:
+
+- entity registry count
+- search
+- search by legal name
+- GFCID
+- CAGID
+- LEI
+- CIK
+- ticker if supported
+- filters
+- pagination / virtualization
+- entity selection
+- URL persistence
+- selected row
+- inspector synchronization
+- entity detail navigation
+
+Confirm the displayed entity population is canonical and not fabricated.
+
+Check performance with the full entity registry.
+
+==================================================
+7. ENTITY INTELLIGENCE
+==================================================
+
+Inspect the selected-entity intelligence experience.
+
+Report which of these are currently supported with REAL data:
+
+- overview
+- identity
+- identifiers
+- classification
+- exposure rows
+- relationships
+- candidates
+- research
+- evidence
+- sources
+- timeline/events
+- external identities
+- review state
+- research eligibility
+- monitoring state
+
+Identify fields that currently show:
+NOT AVAILABLE
+NO DATA
+UNKNOWN
+NOT STORED
+
+For each one state whether that is:
+A. correct because source data does not contain it
+B. backend/API omission
+C. frontend omission
+D. actual defect
+
+==================================================
+8. NETWORK
+==================================================
+
+Audit the network very carefully.
+
+Report:
+
+SELECTED ENTITY
+VISIBLE NODES
+VISIBLE EDGES
+
+Separate counts for:
+
+- evidence-backed relationship edges
+- production relationship edges
+- confirmed relationships
+- research candidate edges
+- external entities
+- local entities
+
+Verify:
+
+- solid/dotted semantics
+- edge direction
+- relationship type
+- candidate vs relationship separation
+- click node
+- click edge
+- inspector linkage
+- filters
+- semantic group layout
+- graph mode
+- value-chain mode
+- ownership mode
+- geography mode
+- evidence mode
+- timeline mode
+
+For each mode say:
+WORKING / PARTIAL / DISABLED / NOT IMPLEMENTED
+
+Check whether the graph can expand to full-screen.
+
+Check whether the current layout remains usable with 50+ nodes.
+
+Check whether any candidate edge visually looks like a confirmed relationship.
+
+That is a critical defect if present.
+
+==================================================
+9. RADAR
+==================================================
+
+Determine precisely what Radar currently represents.
+
+Separate:
+
+- persisted event themes
+- research candidate signals
+- local correlation signals
+- source-backed monitoring information
+- unavailable analytics
+
+Verify that candidate scores are NOT presented as:
+
+risk scores
+probability of default
+relationship evidence
+impact evidence
+
+Explain why the current Radar may be empty for the selected entity.
+
+Determine whether Radar is functioning correctly despite empty persisted event data.
+
+==================================================
+10. EVENTS
+==================================================
+
+Inspect event schema, APIs and frontend.
+
+Report:
+
+production event count
+selected-entity event count
+event source count
+event-to-entity linkage count
+
+Determine whether the page is empty because:
+
+A. ingestion is not implemented
+B. ingestion is implemented but no events exist
+C. backend route is missing
+D. frontend is disconnected
+E. filter/entity bug exists
+
+Do not create events.
+
+==================================================
+11. RESEARCH
+==================================================
+
+Audit the full research workflow.
+
+Report existing counts for:
+
+research plans
+research claims
+research runs
+provider requests
+source documents
+evidence snippets
+candidate relationships
+review-required items
+
+Verify:
+
+- Open Research action
+- provider selection
+- SEC fallback
+- GLEIF fallback
+- approved Web fallback
+- cache use
+- source policy
+- identity gates
+- direction gates
+- evidence gates
+- candidate/relationship separation
+- review requirements
+
+State clearly which operations are:
+
+READ ONLY
+EXECUTABLE
+HUMAN REVIEW REQUIRED
+DISABLED
+
+==================================================
+12. EVIDENCE
+==================================================
+
+Audit the evidence ledger.
+
+Report:
+
+total source documents
+total admissible source documents
+total evidence snippets
+selected-entity evidence
+relationship-linked evidence
+research-linked evidence
+
+Verify:
+
+- source
+- document title
+- URL
+- publication date
+- retrieval date
+- source tier
+- admissibility
+- excerpt
+- content hash
+- related entity
+- relationship/research linkage
+
+Verify clicking evidence opens a readable evidence-detail surface.
+
+If zero selected-entity evidence is shown, determine whether zero is correct.
+
+==================================================
+13. REVIEW
+==================================================
+
+Audit the human-review surface.
+
+Report counts for:
+
+research claims awaiting review
+candidate leads
+relationship proposals
+identity review items
+direction unresolved
+conflicts
+AI-generated explanations awaiting review if any
+
+Identify every button/action available on Review.
+
+For each action state whether it:
+
+works
+is read-only
+mutates research state
+mutates production relationship state
+requires confirmation
+is placeholder
+
+Do NOT execute mutation actions during the audit.
+
+==================================================
+14. AI / HELIX
+==================================================
+
+Inspect the current AI Analyst implementation end-to-end.
+
+The screenshots show a HELIX integration surface.
+Do not assume it is correct.
+
+Verify:
+
+- status endpoint
+- execution endpoint
+- credentials
+- request payload
+- selected entity context
+- current route/page context
+- graph context
+- evidence context
+- research context
+- conversation/history behavior
+- response persistence
+- error handling
+- timeout handling
+
+Run only ONE safe bounded AI test if the current implementation already
+supports a read-only analyst query.
+
+Use a simple question such as:
+
+"Explain the selected entity using only currently available CCR context."
+
+Do not allow the test to create:
+
+relationships
+evidence
+external entities
+events
+claims
+production observations
+
+Report:
+
+AI EXECUTION: PASS / FAIL
+CONTEXT PROVIDED:
+actual
+RESPONSE RECEIVED:
+YES / NO
+RESPONSE PERSISTED:
+YES / NO
+DATA MUTATION:
+0 / FAIL
+
+Check specifically whether the AI can reason only over provided source
+references or whether the implementation supports approved research fallback.
+
+Do not silently add Web research.
+
+==================================================
+15. DATA LAYER
+==================================================
+
+Inspect the actual SQLite schema and current counts.
+
+Return current counts for the important tables including, where present:
+
+ccr_subjects
+canonical_clients
+entity_registry
+identifier_aliases
+entity identifiers
+entity name aliases
+relationship taxonomy
+relationship observations
+confirmed relationships
+relationship claims
+correlation candidates
+research plans
+research claims
+research runs
+source documents
+evidence snippets
+events
+event/entity links
+relationship paths
+path hops
+external entities
+GLEIF relationship observations
+provider request/audit tables
+
+Use actual current values.
+
+Also report:
+
+PRAGMA integrity_check
+foreign_key_check
+
+==================================================
+16. DATA BOUNDARY VALIDATION
+==================================================
+
+Confirm that the application currently does NOT falsely represent:
+
+ACTIVE CLIENT
+INACTIVE CLIENT
+monetary exposure totals where amount semantics are unresolved
+risk score
+probability of default
+relationship confirmation from correlation alone
+AI response as evidence
+research candidate as production relationship
+event candidate as established event
+unnamed supplier as identified legal entity
+external entity without identity evidence
+
+Any violation is P0.
+
+==================================================
+17. TESTS
+==================================================
+
+Run the current supported validation suite.
+
+At minimum:
+
+frontend TypeScript/build
+frontend lint
+backend pytest regression
+API smoke checks
+SQLite integrity
+foreign keys
+
+If browser automation exists, run it.
+
+Do not alter production/source data to make tests pass.
+
+Return exact:
+
+passed
+failed
+errors
+warnings
+
+For every failure state:
+
+NEW REGRESSION
+PRE-EXISTING
+NON-BLOCKING
+DELIVERY BLOCKER
+
+==================================================
+18. DEAD / DUPLICATE CODE
+==================================================
+
+Identify:
+
+- old UI versions
+- legacy pages
+- dead routes
+- duplicate APIs
+- unused CSS systems
+- obsolete report files
+- obsolete frontend components
+- test-only assets accidentally reachable by production UI
+
+Do not delete them yet.
+
+Just report them.
+
+==================================================
+19. DELIVERY BLOCKER MATRIX
+==================================================
+
+Create three groups.
+
+P0 — MUST FIX TODAY BEFORE DELIVERY
+
+Only genuine blockers:
+crashes
+wrong data
+broken navigation
+broken core actions
+false relationships
+false evidence
+database corruption
+AI mutation outside contract
+security/config problem
+major unreadable UI
+critical browser failure
+
+P1 — SHOULD FIX TODAY
+
+Important usability / completeness issues.
+
+P2 — CAN WAIT
+
+Enhancements and polish.
+
+For each item provide:
+
+ISSUE
+SURFACE
+ROOT CAUSE
+FILES
+ESTIMATED CHANGE SIZE: SMALL / MEDIUM / LARGE
+RISK
+RECOMMENDED FIX ORDER
+
+==================================================
+20. TODAY DELIVERY PLAN
+==================================================
+
+Based on the ACTUAL repository state, propose the shortest path from the
+current implementation to a deliverable build TODAY.
+
+Do not propose another redesign.
+
+Use this order:
+
+1. runtime blockers
+2. incorrect data / semantics
+3. disconnected core functionality
+4. AI functionality
+5. network usability
+6. entity workflow
+7. research/evidence/review workflow
+8. empty-state correctness
+9. visual polish
+10. final regression
+11. final launch script
+
+Estimate the number of implementation batches required.
+
+Prefer small/medium focused batches.
+
+==================================================
+21. REPORT
+==================================================
 
 Create:
 
-backend/data/LENDING_UI_U2_FULL_NETWORK_REPORT.md
+backend/data/CCR_FINAL_DELIVERY_READINESS_AUDIT.md
 
-Document:
+DO NOT MODIFY ANYTHING ELSE.
 
-- changed files;
-- graph architecture;
-- map architecture;
-- APIs;
-- bounds;
-- authority handling;
-- source labels;
-- edge provenance;
-- inspector behavior;
-- missing-connection workflow;
-- Ask integration;
-- tests;
-- build/lint;
-- performance;
-- limitations;
-- screenshots/manual validation if available.
+==================================================
+FINAL RESPONSE
+==================================================
 
-State explicitly:
+Return exactly:
 
-DOES ORDINARY NETWORK LOAD OR MATERIALIZE THE FULL 32,957-ROW /
-2.855-GB NORMALIZED ARTIFACT?
+CCR FINAL DELIVERY READINESS: READY / NOT READY
 
-The answer must be NO for U2 to pass.
+P0 BLOCKERS:
+<count>
 
-============================================================
-STOP CONDITION
-============================================================
+P1 ISSUES:
+<count>
 
-Do not start Relationship Intelligence U3.
+P2 ISSUES:
+<count>
 
-Do not start model-backed Ask Lending U4.
+FRONTEND BUILD:
+PASS / FAIL
 
-Do not repair Stylus or activate R2D2.
+BACKEND REGRESSION:
+passed / failed / errors
 
-Do not redesign Research.
+DATABASE INTEGRITY:
+PASS / FAIL
 
-Stop after U2 implementation and validation.
+FOREIGN KEYS:
+PASS / FAIL
 
-Final line must be exactly:
+PORTFOLIO:
+PASS / PARTIAL / FAIL
 
-READY FOR LENDING UI RECONSTRUCTION U3
+ENTITIES:
+PASS / PARTIAL / FAIL
+
+ENTITY INTELLIGENCE:
+PASS / PARTIAL / FAIL
+
+NETWORK:
+PASS / PARTIAL / FAIL
+
+RADAR:
+PASS / PARTIAL / FAIL
+
+EVENTS:
+PASS / PARTIAL / FAIL
+
+RESEARCH:
+PASS / PARTIAL / FAIL
+
+EVIDENCE:
+PASS / PARTIAL / FAIL
+
+REVIEW:
+PASS / PARTIAL / FAIL
+
+HELIX:
+PASS / PARTIAL / FAIL
+
+DATA-TRUTH CONTROLS:
+PASS / FAIL
+
+PRODUCTION RELATIONSHIP SAFETY:
+PASS / FAIL
+
+ESTIMATED IMPLEMENTATION BATCHES TO DELIVERY:
+<number>
+
+FIRST REQUIRED FIX:
+<one concise statement>
+
+REPORT:
+backend/data/CCR_FINAL_DELIVERY_READINESS_AUDIT.md
+
+STOP.
+
+DO NOT IMPLEMENT THE FIXES.
