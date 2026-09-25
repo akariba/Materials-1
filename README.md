@@ -1,404 +1,297 @@
-CCR CLIENT CORRELATION — CLEAN RESET
+CLIENT CORRELATION — SAFE RESET CONTINUATION
 
-This is a CONTROLLED CLEANUP task.
+We now know:
 
-The product is being reset around ONE primary objective:
+AUTHORITATIVE MASTER SOURCE:
+backend/Customer_latest.parquet
 
-3.6M CLIENT MASTER
-→ CLIENT CORRELATION
-→ RELATIONSHIP DISCOVERY
-→ SEC / WEB / GLEIF EVIDENCE
-→ INTERACTIVE NETWORK MAP
+ACTUAL MASTER ROWS:
+3,670,650
 
-The previous ~16k CCR-centered application is no longer the product foundation.
+COLUMNS:
+21
 
-Do not build anything new yet.
+Existing backend/data/ccr_clients.sqlite3 contains 3,658,305 rows and is NOT
+yet accepted as the authoritative master database.
 
-Do not redesign anything yet.
+The previous cleanup was correctly blocked because this workspace was not a
+Git repository.
 
-First remove/archive the accumulated product noise while preserving valuable
-source data and reusable infrastructure.
+OBJECTIVE
 
-==================================================
-0. SAFETY FIRST
-==================================================
+Create a safe recovery checkpoint, then complete the clean reset.
 
-Before deleting anything:
-
-1. Confirm this is a Git repository.
-2. Record current branch and commit.
-3. Create a recoverable Git checkpoint/tag or clean reset branch.
-4. Do not destroy uncommitted user work without preserving it.
-5. Produce an inventory of what will be kept and what will be removed.
-
-Do NOT delete any authoritative source data.
-
-Do NOT delete Git history.
+Do NOT build the new product yet.
 
 ==================================================
-1. PRESERVE THESE ASSETS
+1. CREATE EXTERNAL RECOVERY SNAPSHOT
 ==================================================
 
-Identify and preserve:
+Before deleting/moving anything, create a timestamped recovery directory
+OUTSIDE the active repository, for example:
 
-A. REAL MASTER CLIENT DATA
+../ccrig-master-pre-reset-backup/
 
-Especially inspect and preserve:
+Preserve:
 
-Customer_latest.parquet
+- frontend source
+- backend source
+- config
+- scripts
+- tests
+- reports
+- current relationship database
+- existing client database
+- provider implementation
+- README/documentation
 
-and any database that genuinely contains the complete ~3.6M client/master
-population.
+Do not duplicate large immutable source datasets unnecessarily if storage is
+an issue.
 
-Do not assume the existing database is correct.
-Just preserve it until validated.
+For large authoritative source files, preserve their current location and
+record:
 
-B. SOURCE FILES
+path
+size
+SHA-256
 
-Preserve original:
+At minimum record hashes for:
 
-parquet
-csv
-source extracts
+backend/Customer_latest.parquet
+backend/data/ccr_clients.sqlite3
+backend/data/ccr_relationship_intelligence.sqlite3
+backend/thousandClients.csv
 
-that contain real business/client data.
-
-C. EXTERNAL PROVIDER INFRASTRUCTURE
-
-Preserve working reusable implementation for:
-
-SEC
-GLEIF
-approved Web provider
-Windows/ZSA proxy handling
-TLS verification
-provider request normalization
-source-document retrieval
-
-Only preserve code that is actually reusable and not coupled to the old UI.
-
-D. EVIDENCE UTILITIES
-
-Preserve reusable utilities for:
-
-source-document storage
-content hashing
-evidence snippets
-source provenance
-provider audit logging
-
-Do not preserve old workflow complexity merely because it exists.
+Verify recovery snapshot exists before continuing.
 
 ==================================================
-2. OLD PRODUCT SURFACES TO REMOVE FROM ACTIVE PRODUCT
+2. INITIALIZE GIT FOR ACTIVE SOURCE
 ==================================================
 
-Remove from the ACTIVE application architecture:
+Initialize Git in the active repository.
 
-Portfolio dashboard
-old Entities UI
-old CCR entity intelligence page
-old Network implementation
+Create a sensible .gitignore excluding:
+
+venv
+node_modules
+dist
+__pycache__
+pytest caches
+temporary caches
+large SQLite databases
+Parquet source data
+generated provider caches
+
+Do NOT delete ignored files.
+
+Commit the CURRENT code/config/frontend/scripts/tests state as:
+
+pre-client-correlation-reset
+
+This is the rollback checkpoint.
+
+==================================================
+3. COMPLETE THE CLEAN RESET
+==================================================
+
+Now remove the OLD PRODUCT from the active application.
+
+Remove from active frontend:
+
+Portfolio
+old Entities
+old Entity Intelligence
+old Network
 Radar
 Events
 Research dashboard
 Evidence dashboard
-Review dashboard
-old inspector implementation
-old AI drawer
-old KPI surfaces
-old map implementation
-old candidate starburst graph
-old UI reports
-old experimental UI components
-legacy CSS/design systems
-unused routes
+Review
+old Inspector
+AI drawer
+old CCR navigation
+old CSS/dashboard components
 
-The new application will NOT be rebuilt during this task.
+The active frontend should become extremely small.
 
-If deletion creates unnecessary risk, move obsolete code under a clearly
-isolated:
+Keep only:
 
-legacy/
+frontend/src/main.tsx
+frontend/src/App.tsx
+minimal base styles
 
-directory that is NOT imported, routed, built or executed.
-
-Prefer actual deletion when Git already provides recovery and dependencies are
-clearly dead.
-
-==================================================
-3. REMOVE OLD CCR-CENTERED PRODUCT ASSUMPTIONS
-==================================================
-
-The new product must not be architected around:
-
-16,769 CCR subjects
-16,767 entity_registry rows
-25,000 exposure rows
-
-Those datasets may remain available as legacy/reference data but must no longer
-define:
-
-application population
-entity universe
-search universe
-network universe
-primary API architecture
-frontend navigation
-
-Do not delete authoritative data solely because it belongs to the old CCR
-subset.
-
-Just disconnect it from the new core product.
-
-==================================================
-4. DATABASE CLEANUP
-==================================================
-
-Inventory every SQLite/database artifact.
-
-Classify each as:
-
-AUTHORITATIVE SOURCE
-MASTER CLIENT DATABASE
-DERIVED DATABASE
-LEGACY CCR DATABASE
-TEST DATABASE
-EMPTY/INVALID
-DUPLICATE
-UNKNOWN
-
-Do not delete the database containing the ~3.6M master population.
-
-Do not delete source databases before verifying their content.
-
-Remove only databases that are conclusively:
-
-empty
-test-only
-temporary
-duplicate generated artifacts
-obsolete UI/experimental databases
-
-Old relationship-intelligence databases may be moved to:
-
-legacy/data/
-
-if they contain prior research/evidence we may want to inspect later.
-
-The new system should eventually have one clearly named primary master client
-database.
-
-Do NOT build it yet.
-
-==================================================
-5. REPORT / GENERATED FILE CLEANUP
-==================================================
-
-Old generated reports have accumulated heavily.
-
-Move obsolete reports to:
-
-legacy/reports/
-
-or remove them if Git history already preserves them.
-
-The active backend/data directory should not contain dozens of obsolete
-implementation reports.
-
-Keep only raw/authoritative data and files needed for the new build.
-
-==================================================
-6. FRONTEND RESET
-==================================================
-
-Reduce the frontend to the smallest possible application shell.
-
-For now it may contain only:
-
-App
-router
-base styles
-one temporary placeholder route
-
-Example:
-
-/
+Temporary page:
 
 CLIENT CORRELATION
-New application foundation
 
-No dashboard.
+Master client universe:
+3,670,650 source rows
+
+New correlation workspace under construction.
+
 No cards.
-No fake graph.
+No dashboard.
 No old navigation.
 
-Do not begin the new visual design yet.
-
 ==================================================
-7. BACKEND RESET
+4. REMOVE OLD ACTIVE BACKEND PRODUCT ROUTES
 ==================================================
 
-Do NOT delete reusable provider/data utilities.
+Remove old CCR application routes from active mounting.
 
-But remove old application routing from the active API where it exists solely
-to support obsolete UI surfaces.
+Do NOT destroy reusable provider code.
 
-The new backend should ultimately focus on:
+Preserve reusable:
 
-client universe
-client search
-relationship discovery
-evidence
-network
+SEC provider
+GLEIF provider
+Web provider
+HTTP/proxy/TLS transport
+source hashing
+source provenance
+evidence utilities
 
-Do not implement those APIs yet.
+The active backend should temporarily contain only:
 
-Keep health/status functionality if useful.
+health/status
+future client-universe foundation
+reusable providers
 
-==================================================
-8. AI
-==================================================
-
-Remove AI from the active UI for now.
-
-Do not delete reusable HELIX integration code if it is valid.
-
-The new product will introduce AI only after the core correlation/evidence
-workflow works.
-
-AI is extra, not the product.
+Do not implement relationship discovery yet.
 
 ==================================================
-9. FINAL ACTIVE REPOSITORY SHAPE
+5. REMOVE OLD GENERATED NOISE
 ==================================================
 
-After cleanup, the ACTIVE product should be easy to understand.
+Move old:
 
-Conceptually:
+CCR reports
+phase reports
+UI reports
+research reports
+test diagnostics
+old relationship database
+old derived client database
 
-data/
-    authoritative master sources
+to the EXTERNAL recovery/archive location.
 
-backend/
-    reusable core
-    providers
-    source/evidence utilities
-    minimal API
+They should no longer clutter:
+
+backend/data/
+
+Keep the authoritative master source untouched.
+
+Do not delete source data.
+
+==================================================
+6. IMPORTANT DATA DECISION
+==================================================
+
+Do NOT use ccr_clients.sqlite3 as the new master database yet.
+
+Reason:
+
+Customer_latest.parquet = 3,670,650 rows
+ccr_clients.sqlite3     = 3,658,305 rows
+
+Difference = 12,345 rows
+
+The new master database will be rebuilt or reconciled from the authoritative
+Parquet in the NEXT task.
+
+Do not investigate the discrepancy deeply yet.
+
+==================================================
+7. FINAL ACTIVE PRODUCT SHAPE
+==================================================
+
+After reset, the active workspace should be conceptually:
 
 frontend/
-    minimal application shell
+    minimal client-correlation shell
 
-legacy/
-    old CCR application artifacts that we intentionally retain temporarily
+backend/
+    minimal API
+    providers/
+    reusable evidence/source utilities
 
-tests/
-    only tests relevant to preserved infrastructure
+backend/Customer_latest.parquet
+    authoritative 3.67M master source
 
-There should be no ambiguity about which frontend is active.
+No active old CCR application.
 
-==================================================
-10. VERIFY NOTHING IMPORTANT WAS LOST
-==================================================
+No active 16k-centered workflow.
 
-Before completing:
-
-verify master client source still exists
-
-verify its size/hash did not change
-
-verify reusable SEC code remains
-
-verify reusable GLEIF code remains
-
-verify approved proxy configuration/code remains
-
-verify authoritative source datasets remain unchanged
-
-verify Git can recover deleted legacy files
+No active old relationship dashboard.
 
 ==================================================
-11. DO NOT DO YET
+8. VALIDATE
 ==================================================
 
-DO NOT:
+Verify:
 
-build the 3.6M database
-create relationships
-run SEC discovery
-run Web discovery
-create correlation configuration
-create network graph
-create AI functionality
-create dashboards
+authoritative parquet unchanged
+row count still 3,670,650
+SHA unchanged
 
-This task is CLEANUP ONLY.
+SEC provider code preserved
+GLEIF provider code preserved
+Web provider code preserved
 
-==================================================
-12. CREATE ONE REPORT
-==================================================
+frontend builds
 
-Create only:
+backend starts
 
-backend/data/CLIENT_CORRELATION_CLEAN_RESET_REPORT.md
+minimal page loads
 
-It must show:
+old routes are no longer active
 
-PRESERVED
-REMOVED
-MOVED TO LEGACY
-AUTHORITATIVE DATA FOUND
-DATABASES FOUND
-ACTIVE FRONTEND FILES
-ACTIVE BACKEND MODULES
-REUSABLE PROVIDERS
-UNRESOLVED ITEMS
+Git rollback checkpoint exists
+
+external recovery snapshot exists
 
 ==================================================
 FINAL RESPONSE
 ==================================================
 
-CLIENT CORRELATION CLEAN RESET: PASS / FAIL
+CLIENT CORRELATION SAFE RESET: PASS / FAIL
 
-AUTHORITATIVE MASTER SOURCE PRESERVED:
-YES / NO
+GIT CHECKPOINT:
+PASS / FAIL
 
-APPROXIMATE MASTER SOURCE ROWS:
-<actual if already safely determinable, otherwise NOT YET PROFILED>
+RECOVERY SNAPSHOT:
+PASS / FAIL
 
-OLD UI REMOVED FROM ACTIVE BUILD:
-YES / NO
+AUTHORITATIVE MASTER:
+backend/Customer_latest.parquet
 
-OLD CCR WORKFLOW REMOVED FROM ACTIVE PRODUCT:
-YES / NO
+MASTER ROWS:
+3,670,650
 
-SEC PROVIDER CODE PRESERVED:
-YES / NO
-
-GLEIF PROVIDER CODE PRESERVED:
-YES / NO
-
-WEB PROVIDER CODE PRESERVED:
-YES / NO / NOT PRESENT
-
-MASTER DATA MODIFIED:
+MASTER MODIFIED:
 NO / FAIL
 
-SOURCE DATA DELETED:
-0 / FAIL
+OLD UI ACTIVE:
+NO / FAIL
+
+OLD CCR WORKFLOW ACTIVE:
+NO / FAIL
+
+SEC PRESERVED:
+YES / NO
+
+GLEIF PRESERVED:
+YES / NO
+
+WEB PRESERVED:
+YES / NO
 
 ACTIVE FRONTEND:
-<short description>
+minimal client-correlation shell
 
 ACTIVE BACKEND:
-<short description>
-
-LEGACY LOCATION:
-<path>
-
-REPORT:
-backend/data/CLIENT_CORRELATION_CLEAN_RESET_REPORT.md
+minimal API + reusable providers
 
 STOP.
 
-DO NOT START THE NEW BUILD.
+DO NOT BUILD THE NEW DATABASE YET.
