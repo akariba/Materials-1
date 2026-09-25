@@ -1,288 +1,376 @@
-CLIENT CORRELATION — STAGE 2A.3
-REAL STYLUS RESULT INGESTION PILOT — 3M ONLY
+CLIENT CORRELATION — STAGE 2A.4
+EXTERNAL ENTITY IDENTITY RESOLUTION — BOUNDED 3M PILOT
 
-Stage 2A.2 is complete.
+Stage 2A.3 is complete.
 
-Now perform ONE bounded end-to-end ingestion pilot using the actual exported
-Stylus relationship-research JSON for 3M Company.
+Current real 3M ingestion result:
 
-DO NOT call Stylus.
-DO NOT call SEC/Web/GLEIF.
-DO NOT perform new external research.
-DO NOT process any other Client Universe client.
+15 raw findings
+1 accepted relationship observation
+14 candidates
+17 evidence objects
+0 external entities
+0 synthetic shortcut edges
+0 fuzzy merges
+
+The ingestion plumbing is working.
+
+The next problem is identity resolution of NAMED related entities that are not
+currently resolved to the 3.67M Client Universe.
+
+DO NOT redesign the ingestion model.
 DO NOT modify Customer_latest.parquet.
-DO NOT build the network UI.
-DO NOT loosen any Stage 2A.2 validation gates.
-
-Locate the manually exported Stylus JSON supplied by the user under:
-
-backend/data/stylus_import/
-
-Use the actual file exactly as supplied.
-Do not rewrite, normalize, enhance, or regenerate its research content.
+DO NOT build the frontend/network.
+DO NOT create relationships merely because an entity identity is resolved.
+DO NOT use fuzzy entity merging.
+DO NOT create entities from unnamed/generic descriptors.
 
 OBJECTIVE
 
-Prove the production path:
+For the existing persisted 3M Stage 2A.3 candidates only:
 
-actual Stylus JSON
-    ->
-schema validation
-    ->
-3M Client Universe subject resolution
-    ->
-related endpoint resolution
-    ->
-evidence validation
-    ->
-observation/candidate/no-evidence classification
-    ->
-relationship repository persistence
-    ->
-bounded read API verification
+1. determine whether each named related entity is already an internal
+   Client Universe client;
+2. otherwise resolve it as a verified external entity where defensible;
+3. persist external identity separately from Client Universe;
+4. re-run the existing relationship acceptance gate;
+5. promote only candidates whose endpoint identity AND relationship evidence
+   independently satisfy the existing policy.
+
+This is ENTITY RESOLUTION, not new relationship discovery.
 
 ==================================================
-1. SUBJECT RESOLUTION
+1. CLASSIFY THE EXISTING 14 CANDIDATES
 ==================================================
 
-Resolve "3M Company" against the Stage 1 Client Universe BEFORE accepting
-any relationship finding.
+Read the actual persisted Stage 2A.3 candidate set.
 
-Report the exact resolved:
+Classify each related endpoint as one of:
 
-client_id
-gfcid
-source_master_id
-legal_name
-matching identifier/method
+NAMED_INTERNAL_CANDIDATE
+NAMED_EXTERNAL_CANDIDATE
+GENERIC_UNNAMED_DESCRIPTOR
+NO_RELATED_ENTITY
+IDENTITY_ALREADY_RESOLVED
 
-The persisted subject endpoint for every valid 3M relationship MUST use the
-resolved Client Universe client_id.
+Produce the complete list before performing provider work.
 
-A subject client_id of null after ingestion is FAIL.
-
-Do not use fuzzy matching.
-
-==================================================
-2. INGEST THE ACTUAL STYLUS RESULT
-==================================================
-
-Persist the raw imported Stylus response for audit.
-
-Run every finding through the existing Stage 2A.2 acceptance gates.
-
-Do not trust Stylus classifications automatically.
-
-For every finding determine:
-
-ACCEPTED OBSERVATION
-CANDIDATE
-NO_EVIDENCE
-REJECTED_INVALID
-
-with an explicit machine-readable reason.
-
-==================================================
-3. RELATED ENTITY RESOLUTION
-==================================================
-
-For every NAMED related entity:
-
-First attempt deterministic Client Universe resolution using approved exact
-identifiers and normalized exact aliases/names.
-
-If exactly one Client Universe client resolves:
-bind its client_id.
-
-If the entity is clearly identifiable but does not exist in Client Universe:
-use external_entities.
-
-If identity cannot be established:
-retain as candidate/unresolved.
-
-Generic descriptors MUST NOT become entity records.
-
-Explicitly test examples from the 3M output such as:
+Examples of generic descriptors include:
 
 Revolving Credit Facility Syndicate Lenders
 Unnamed Limited- and Sole-Source Suppliers
 Unnamed ERP / IT Infrastructure Vendor
 Unnamed Pension Annuity Insurer
 
-These must NOT be created as real entities.
+These are NOT legal entities.
+
+They must remain unresolved candidate descriptors.
 
 ==================================================
-4. NAMED FINDINGS
+2. INTERNAL CLIENT UNIVERSE RESOLUTION FIRST
 ==================================================
 
-Inspect named entities returned by the real Stylus file, including where
-present examples such as:
+For every NAMED related entity:
 
-3M India Limited
-Solventum Corporation
-Aearo entities / Aearo Technologies
-3M Belgium
-BNY Mellon
-Cabot Corporation
-EPA or other regulator/counterparty entities
+Search the 3,670,650-client Client Universe first.
 
-Do not assume they are all valid observations.
+Allowed internal matching:
 
-Validate identity, relationship semantics, direction and evidence separately.
+exact client_id
+exact GFCID
+exact CAGID only when uniqueness permits
+exact legal_entity_id only when uniqueness permits
+exact canonical/legal name
+exact normalized alias
 
-Report whether each resolved as:
+NO fuzzy merge.
 
-INTERNAL_CLIENT
-EXTERNAL_ENTITY
-UNRESOLVED
-REJECTED
+NO similarity threshold.
 
-==================================================
-5. RELATIONSHIP SEMANTICS
-==================================================
+NO model-based identity decision.
 
-Verify that:
+If exactly one client resolves:
+classify endpoint as INTERNAL_CLIENT
+and bind its client_id.
 
-- subsidiary remains subsidiary
-- equity investor remains equity investor
-- strategic partner remains strategic partner
-- lender requires an identified lender endpoint
-- supplier requires an identified supplier endpoint for observation status
-- legal counterparty remains the correct directional semantic
-- regulator relationships are accepted only if permitted by the controlled taxonomy
-- service-provider findings require an identified counterparty
+If more than one plausible internal record exists:
+AMBIGUOUS_INTERNAL
+and do not choose automatically.
 
-Do not manufacture a relationship because Stylus labelled it one.
+If none resolves:
+continue to external identity resolution.
 
 ==================================================
-6. EVIDENCE
+3. EXTERNAL IDENTITY RESOLUTION
 ==================================================
 
-For each accepted observation report:
+For named entities not found internally, use the preserved approved provider
+stack only:
 
-relationship type
-subject
-related entity
-direction
-source channel
-source tier
-source reference
-publication date
-number of admissible evidence objects
+GLEIF
+SEC
+approved Web research
 
-Preserve separate SEC and Web evidence objects.
+The goal is identity only.
 
-Do not invent a URL or convert a generic source description into a precise
-source reference.
+Do NOT perform broad relationship discovery in this stage.
+
+Preferred identity evidence:
+
+GLEIF:
+LEI
+legal name
+registered address
+jurisdiction
+parent identifiers where returned
+
+SEC:
+CIK
+registrant legal name
+ticker/exchange where authoritative
+filing registrant identity
+
+Approved Web:
+official company domain
+official corporate profile
+official investor-relations page
+government/regulatory identity reference
+
+Do not use generic search-result snippets as final identity authority.
 
 ==================================================
-7. HIDDEN / INDIRECT PATH TEST
+4. EXTERNAL ENTITY MODEL
 ==================================================
 
-After direct observations are accepted, derive paths only from accepted
-observations.
+Create an external entity only where identity is sufficiently established.
 
-Example concept:
+Each external entity must have a stable internal external_entity_id.
 
-3M
- -> Aearo
- -> another counterparty
+Persist where available:
 
-may produce a relationship path if both hops independently pass.
+external_entity_id
+legal_name
+normalized_name
+entity_type
+country/jurisdiction
+LEI
+CIK
+ticker
+official_domain
+provider identity references
+created_at
+updated_at
+identity_status
+identity_provenance
 
-It must NOT produce a synthetic direct relationship.
+External entities MUST remain separate from the Client Universe.
+
+Never create a fake GFCID/client_id for an external entity.
+
+Never insert an external entity into Customer_latest.parquet.
+
+==================================================
+5. ENTITY DEDUPLICATION
+==================================================
+
+External entity creation must be idempotent.
+
+Deduplicate only using strong identifiers such as:
+
+LEI
+CIK
+other authoritative registration ID
+
+or exact deterministic identity evidence.
+
+Do NOT collapse companies because their names are similar.
 
 Report:
 
-accepted direct edges
-derived multi-hop paths
+external entities attempted
+external entities created
+existing external entities reused
+ambiguous external identities
+unresolved external identities
+fuzzy merges
+
+Fuzzy merges MUST equal 0.
+
+==================================================
+6. RE-EVALUATE EXISTING RELATIONSHIP CANDIDATES
+==================================================
+
+Once endpoint identity has been established, rerun the existing Stage 2A.2
+acceptance policy.
+
+Identity resolution alone does NOT create a relationship.
+
+For each candidate independently validate:
+
+subject identity
+related endpoint identity
+relationship taxonomy
+direction
+relationship semantics
+admissible evidence
+evidence specificity
+AsOfDate
+status support
+materiality support if present
+
+Then assign:
+
+RELATIONSHIP_OBSERVATION
+RELATIONSHIP_CANDIDATE
+NO_EVIDENCE
+REJECTED_INVALID
+
+Do not weaken the existing evidence gate.
+
+==================================================
+7. SPECIFIC 3M ENDPOINTS
+==================================================
+
+Inspect all named entities actually contained in the imported result.
+
+Where present, specifically test:
+
+3M India Limited
+Aearo / Aearo Technologies / Aearo Holding Corp.
+3M Belgium
+Solventum Corporation
+BNY Mellon
+Cabot Corporation
+EPA
+and every other NAMED endpoint in the persisted result.
+
+Do not assume any of these are external.
+
+Search the Client Universe first.
+
+For each report:
+
+input name
+internal match result
+resolved internal client_id if applicable
+external identity result if applicable
+LEI
+CIK
+official domain
+final endpoint class
+relationship candidate outcome
+
+==================================================
+8. UNNAMED ENDPOINT RULE
+==================================================
+
+DO NOT create entity nodes for:
+
+unnamed suppliers
+unnamed lenders
+unnamed insurers
+unnamed technology vendors
+generic groups
+industry descriptions
+facility descriptions
+
+Keep these as unresolved relationship candidates.
+
+No entity should exist with names like:
+
+"Unnamed Supplier"
+"Revolving Credit Facility Syndicate Lenders"
+
+==================================================
+9. PATH RECOMPUTATION
+==================================================
+
+After any newly accepted direct observations are persisted:
+
+recompute bounded evidence-backed paths.
+
+Only accepted observations may form graph hops.
+
+Candidate relationships must not form confirmed hidden paths.
+
+Do not generate direct A->C shortcuts from A->B->C.
+
+Report:
+
+accepted direct relationships
+candidate relationships
+external entity endpoints
+internal endpoints
+multi-hop paths
 synthetic shortcut edges
 
-Synthetic shortcut edges MUST equal 0.
+Synthetic shortcut edges MUST remain 0.
 
 ==================================================
-8. PERSISTENCE AND REPLAY
+10. IDEMPOTENCE
 ==================================================
 
-The ingestion must be idempotent.
+Run the exact Stage 2A.4 resolution process twice.
 
-Import the exact same 3M Stylus result twice.
+Second execution must not duplicate:
 
-The second import must NOT duplicate:
-
-research run content
-relationship observations
-candidates
-evidence
 external entities
+identifier aliases
+relationship observations
+evidence links
+candidate records
 paths
 
-Use deterministic provenance/content hashes or equivalent repository-level
-deduplication.
-
-Report first-import and second-import counts.
-
 ==================================================
-9. API VERIFICATION
-==================================================
-
-Using the resolved 3M client_id, exercise:
-
-GET /api/relationships/{client_id}
-GET /api/relationships/{client_id}/candidates
-GET /api/relationships/{client_id}/paths
-GET /api/relationships/{client_id}/evidence
-GET /api/relationships/{client_id}/summary
-
-Confirm bounded responses and correct Client Universe identity.
-
-==================================================
-10. REPORT
+11. REPORT
 ==================================================
 
 Create:
 
-backend/data/RELATIONSHIP_REAL_3M_INGESTION_STAGE_2A3_REPORT.md
+backend/data/EXTERNAL_ENTITY_RESOLUTION_STAGE_2A4_REPORT.md
 
-Include:
+Include a table for every Stage 2A.3 candidate:
 
-Stylus source artifact name
-raw findings count
-3M resolved client_id
-3M resolved GFCID
-accepted observations
-candidates
-no-evidence findings
-rejected findings
-internal related clients resolved
-external entities created
-unresolved endpoint descriptors
-evidence objects
-direct edges
-multi-hop paths
-synthetic shortcut edges
-fuzzy merges
-duplicate records after second import
-source master modified
-
-Then provide a table for every Stylus finding:
-
-related entity
+related endpoint
 relationship type
-Stylus classification
-application classification
-endpoint resolution
-evidence result
-final persisted state
+initial state
+Client Universe match
+external identity resolution
+strong identifiers
+identity authority
+final endpoint type
+final relationship state
 reason
 
-PASS criteria:
+Final totals:
 
-3M internal client_id non-null
-synthetic shortcuts = 0
-fuzzy merges = 0
-generic unnamed entity nodes = 0
-duplicate records after replay = 0
+existing candidates processed
+internal Client Universe endpoints resolved
+external entities created
+external entities reused
+generic descriptors retained
+ambiguous identities
+unresolved named identities
+promoted observations
+remaining candidates
+no-evidence findings
+accepted direct edges
+derived paths
+synthetic shortcuts
+fuzzy merges
+duplicate records on replay
+Customer_latest.parquet modified
+
+PASS REQUIREMENTS
+
 Customer_latest.parquet modified = NO
+fuzzy merges = 0
+generic descriptor entities created = 0
+synthetic shortcut edges = 0
+duplicate records after replay = 0
+all external entities have defensible identity provenance
 
-STOP after this bounded 3M pilot.
+STOP after the bounded 3M external identity-resolution pilot.
+
+Do not start broad 3.67M research.
+Do not build the network UI yet.
