@@ -1,1356 +1,1825 @@
 IMPLEMENT WITH LUNA
 
 CCR — CLIENT CORRELATION
-V1 STAGE 3 — CONTROLLED LEGAL ENTITY IDENTITY RESOLUTION PILOT
+V1 STAGE 4 — CORRELATION CONFIGURATION + CORRELATION ENGINE FOUNDATION
 
-This is an implementation/execution stage.
+THIS IS THE FIRST STAGE WHOSE PRIMARY PURPOSE IS ACTUAL CCR CORRELATION.
 
-It is NOT another architecture audit.
+Do not turn this into another general enrichment architecture stage.
 
-The purpose is to resolve the identity blocker discovered during the completed 3M V1 controlled revalidation so that existing evidence-backed claims can become real CCR V1 relationships where the identity gate is satisfied.
+The product objective is now:
 
-Do not continue into correlation-engine development automatically after completing this stage.
+Client Universe records
+        ->
+verified Legal Entity identity
+        ->
+accepted evidence-backed Legal Entity relationships
+        ->
+governed correlation definitions
+        ->
+derived Client-to-Client correlations
 
-==================================================
-1. CURRENT VERIFIED BASELINE
-==================================================
+This stage must implement the configuration layer and the correlation execution engine together so that correlation semantics are configurable from the beginning rather than hard-coded and retrofitted later.
 
-CCR V1 Foundation Stage 1:
-COMPLETE
+No frontend work in this stage.
 
-CCR V1 Foundation Stage 1.1:
-COMPLETE
+No new relationship research.
 
-3M controlled V1 revalidation:
-COMPLETE
+No broad identity campaign.
+
+No Stage 2A work.
+
+--------------------------------------------------
+1. VERIFIED BASELINE
+--------------------------------------------------
 
 Current relationship schema:
+
 v10
 
-Authoritative Client Universe:
-backend/Customer_latest.parquet
-
-Expected source properties:
+Current Client Universe:
 
 3,670,650 rows
 3,670,650 unique GFCIDs
 
-Runtime Client Universe:
+Authoritative source:
 
-backend/data/client_universe.sqlite3
+backend/Customer_latest.parquet
 
-Expected:
+Current CCR V1 identity-resolution pilot result:
 
-3,670,650 client_master rows
-3,670,650 unique GFCIDs
+Status:
+COMPLETED
 
-Current 3M root:
+Identity results:
 
-client_id:
-437487
+4 VERIFIED identity links
+0 PROBABLE
+0 UNVERIFIED
+0 REJECTED
 
-GFCID:
-0000426083
+Legal Entities:
 
-legal_name:
-3M CO
+2 created
+2 reused
 
-Current V1 3M revalidation result:
+Existing V1 claims re-evaluated:
 
-V1 documents:
-2
-
-V1 passages:
-6
-
-V1 atomic claims:
-9
-
-V1 coverage rows:
-2
-
-V1 events:
-1
-
-V1 identity links:
-0
+4
 
 V1 relationships:
-0
+
+before: 0
+after: 3 ACCEPTED
 
 V1 relationship versions:
-0
+
+before: 0
+after: 4
 
 V1 qualifiers:
+
+before: 0
+after: 3
+
+Known accepted facts include:
+
+3M -> 3M India
+relationship: owns
+accepted
+ownership_percentage: 75%
+
+3M -> Solventum
+relationship: owns
+accepted
+historical ownership percentage: 19.9%
+
+3M -> Solventum
+relationship: owns
+later version
+ownership percentage: 14.8%
+
+3M -> Solventum
+relationship: supplies
+accepted
+
+Cabot:
+
+context only
+no accepted V1 relationship
+
+Existing SPIN_OFF event remains independent from relationship rows.
+
+Solventum Client Universe match remains ambiguous.
+
+Cabot Client Universe match remains ambiguous.
+
+Historical Stage 2 rows remain unchanged.
+
+Backend tests:
+
+69 passed
+
+Fuzzy merges:
+
 0
 
-The reason there are zero V1 relationships is the Legal Entity identity gate.
+Synthetic direct edges:
 
-Existing claims were intentionally not promoted where the Client Record -> Legal Entity identity had not been established.
+0
 
-Historical Stage 2 data remains immutable.
+Client Universe modifications:
 
-==================================================
-2. PRIMARY OBJECTIVE
-==================================================
+0
 
-Create production-quality CCR V1 identity links where defensible between selected Client Universe records and real-world Legal Entities.
+Source-master modifications:
 
-Primary target:
+0
 
-3M Client Record
-client_id 437487
-GFCID 0000426083
-legal_name 3M CO
+--------------------------------------------------
+2. CORE PRODUCT OBJECTIVE
+--------------------------------------------------
 
-Secondary target:
+This stage must make CCR capable of answering:
 
-the exact Client Universe record representing 3M India Ltd used in the historical 3M pilot.
+"How is Client A correlated with Client B?"
 
-Additional match-back targets:
+using governed structural definitions over accepted evidence-backed relationships.
 
-Solventum Corporation
-Cabot Corporation
+The basic flow is:
 
-The goal is to determine whether these real-world Legal Entities are represented in the 3.67M Client Universe and, where evidence is strong enough, create governed V1 identity links.
+CLIENT RECORD A
+    ->
+VERIFIED identity
+    ->
+LEGAL ENTITY A
+    ->
+accepted relationship graph
+    ->
+correlation definition
+    ->
+LEGAL ENTITY B
+    ->
+VERIFIED identity
+    ->
+CLIENT RECORD B
 
-After identity resolution, re-evaluate ONLY the already-existing V1 3M claims.
+The output is:
 
-Do not perform new relationship discovery.
+CLIENT A
+<->
+CLIENT B
 
-==================================================
-3. THIS IS IDENTITY RESOLUTION, NOT RELATIONSHIP RESEARCH
-==================================================
+with an explicit correlation type and an explainable evidence path.
 
-Allowed activity:
+--------------------------------------------------
+3. RELATIONSHIP FACTS AND CORRELATIONS ARE DIFFERENT
+--------------------------------------------------
 
-Legal Entity identity resolution
-strong-identifier lookup
-official-source entity verification
-Client Universe exact identifier match-back
-identity-support persistence
-existing V1 claim re-evaluation after identity resolution
+Do NOT alter relationship facts because a correlation configuration changes.
 
-Not allowed:
+Example:
 
-supplier discovery
-customer discovery
-lender discovery
-ownership discovery beyond already-persisted claims
-dependency research
-litigation research
-partner research
-new relationship research
-frontier expansion
-hidden-path discovery
-Stage 2A.8
-broad enrichment
+Supplier X -> supplies -> Client A Legal Entity
+Supplier X -> supplies -> Client B Legal Entity
 
-Identity-provider information must not automatically become relationship evidence.
+Those are factual relationship records.
 
-==================================================
-4. IDENTITY MODEL
-==================================================
+A configuration may determine that this structure constitutes:
 
-Use the existing approved CCR V1 identity-link contract.
+SHARED_SUPPLIER
 
-link_type:
+Changing, disabling, or versioning SHARED_SUPPLIER must NOT change either supplies relationship.
 
-EXACT
-ASSOCIATED
+Architecture:
 
-link_state:
+FACTUAL V1 RELATIONSHIP GRAPH
+        ↓
+CORRELATION CONFIGURATION
+        ↓
+CORRELATION ENGINE
+        ↓
+DERIVED CLIENT-TO-CLIENT CORRELATION
 
-VERIFIED
-PROBABLE
-UNVERIFIED
-REJECTED
+--------------------------------------------------
+4. TWO CLASSES OF CORRELATION
+--------------------------------------------------
 
-EXACT means:
+Do not model DIRECT as if it were exactly the same thing as a multi-hop derived pattern.
 
-the Client Record and Legal Entity refer to the same real-world Legal Entity.
+Support two definition kinds:
 
-ASSOCIATED means:
+DIRECT_RELATION_VIEW
 
-the Client Record represents an explicitly evidenced branch, booking capacity, operating capacity, or other governed association with that Legal Entity.
+DERIVED_PATTERN
 
-ASSOCIATED must NOT mean:
+DIRECT_RELATION_VIEW means:
 
-same corporate group
-subsidiary
-parent
-affiliate
-shared CAGID
-shared beneficial owner
+two qualifying Client Records are linked because their Legal Entities have a qualifying accepted direct relationship.
 
-Those are not identity.
+DERIVED_PATTERN means:
 
-==================================================
-5. STRICT IDENTITY PRINCIPLES
-==================================================
+two qualifying Client Records are correlated because a governed structural graph pattern connects their Legal Entities.
 
-Do NOT assume:
+This distinction should remain explicit in the model.
 
-1 GFCID = 1 Legal Entity
+--------------------------------------------------
+5. CORRELATION DEFINITION OBJECT
+--------------------------------------------------
 
-Do NOT automatically treat:
+Introduce a first-class versioned object conceptually equivalent to:
 
-GFCID
-CAGID
-CAGID_NAME
-beneficial_owner_gfcid
-legal_entity_id
-lei_legal_name
-legal_name
-alias
-account type
-customer type
-GFCID type
-
-as sufficient Legal Entity proof by themselves.
-
-Do NOT use:
-
-fuzzy name matching
-edit distance
-token similarity
-embedding similarity
-LLM similarity
-name popularity
-
-to create a VERIFIED identity link.
-
-Search candidate != identity proof.
-
-==================================================
-6. STRONG IDENTIFIER PRIORITY
-==================================================
-
-Resolve identity using strong identifiers first.
-
-Potential strong identity evidence includes, where semantics are established:
-
-LEI
-CIK
-official registry identifier
-official incorporation/company identifier
-other approved stable Legal Entity identifier
-
-For every identifier used as proof, validate:
-
-identifier type
-identifier value
-issuing/source authority
-entity legal name
-entity status where relevant
-jurisdiction where relevant
-consistency with the Client Record
-
-Do not assume the Client Universe field:
-
-legal_entity_id
-
-is an LEI merely because it contains an LEI-shaped value.
-
-Validate what it actually represents.
-
-==================================================
-7. EXTERNAL SOURCES AUTHORIZED
-==================================================
-
-Unlike the previous offline stages, this stage MAY use external identity sources.
-
-Authorized providers:
-
-GLEIF
-SEC
-
-Web may be used only as a narrowly scoped fallback for official/primary Legal Entity identity evidence.
-
-Web must NOT be used for broad relationship discovery.
-
-All provider calls must be recorded.
-
-==================================================
-8. GLEIF ROLE
-==================================================
-
-GLEIF is an identity source.
-
-Use GLEIF for:
-
-LEI lookup
-official Legal Entity name
-entity status
-registered address/jurisdiction where relevant
-identifier verification
-
-GLEIF search ranking is not identity proof.
-
-A candidate returned from GLEIF becomes VERIFIED only when deterministic evidence supports the match.
-
-Do not use GLEIF Level 2 to create ownership relationships in this stage.
-
-Do not create:
-
-owns
-controls
-
-from GLEIF relationship data during this identity stage.
-
-==================================================
-9. SEC ROLE
-==================================================
-
-SEC is an identity source where applicable.
-
-Use:
-
-CIK
-registrant legal name
-filing entity metadata
-official ticker/CIK mapping where appropriate
-
-Do not use:
-
-ticker alone
-filing co-mention
-subsidiary mention
-brand mention
-
-as standalone identity proof.
-
-Ensure SEC User-Agent and transport configuration are correct before making calls.
-
-Persist provider-attempt audit records.
-
-==================================================
-10. WEB FALLBACK ROLE
-==================================================
-
-Web is permitted only when GLEIF/SEC cannot resolve the identity and an official primary identity source is required.
-
-Allowed examples:
-
-official company registry
-official issuer legal page
-government corporate registry
-official exchange filing identity page
-
-Do not use general news or search-result snippets as VERIFIED identity proof.
-
-Do not perform broad open-web research.
-
-==================================================
-11. RESOLVE 3M FIRST
-==================================================
-
-For:
-
-client_id 437487
-GFCID 0000426083
-legal_name 3M CO
-
-Inspect all current Client Universe identity context first.
-
-Report:
-
-GFCID
-legal_name
-legal_entity_id
-lei_legal_name
-CAGID
-CAGID_NAME
-aliases
-GFCID type
-customer type
-account type
-other normalized identifiers
-
-Then resolve the corresponding real-world Legal Entity.
-
-Try to establish:
-
-link_type = EXACT
-
-link_state = VERIFIED
-
-only if deterministic evidence supports it.
-
-If evidence supports only a weaker state:
-
-use PROBABLE or UNVERIFIED.
-
-Do not promote for convenience.
-
-==================================================
-12. 3M LEGAL ENTITY RECORD
-==================================================
-
-Before creating a new external Legal Entity:
-
-search existing external_entities using strong identifiers and existing canonical identity data.
-
-If the Legal Entity already exists:
-
-reuse it.
-
-If no valid record exists and the identity is sufficiently established:
-
-create exactly one Legal Entity record using the existing legal-entity storage boundary.
-
-Preserve:
-
-canonical legal name
-strong identifier(s)
-source
-jurisdiction if known
-status if available
-identity provenance
-
-Do not create a generic "3M group" organization node.
-
-==================================================
-13. IDENTITY SUPPORT
-==================================================
-
-Every created CCR V1 identity link must have explicit support.
-
-Use:
-
-ccr_v1_identity_link_support
-
-or the current approved support contract.
-
-Persist enough information to answer:
-
-Which source proved this?
-Which identifier was used?
-What identifier type?
-What Legal Entity did it identify?
-What Client Record was linked?
-What decision rule was used?
-Which policy version?
-Which provider?
-When was the decision made?
-What was the as-of date?
-Why was the state VERIFIED / PROBABLE / UNVERIFIED?
-
-Do not rely on free-text explanation alone.
-
-==================================================
-14. RESOLVE 3M INDIA
-==================================================
-
-Identify the exact internal Client Universe record used by historical observation 1.
-
-Verify from current persisted data:
-
-client_id
-GFCID
-legal_name
-legal_entity_id
-lei_legal_name
-aliases
-other available identifiers
-
-Then resolve the real-world Legal Entity represented by that Client Record.
-
-Do not rely solely on the name "3M India Ltd".
-
-Attempt strong-identifier identity proof.
-
-If deterministic evidence supports it:
-
-create:
-
-EXACT + VERIFIED
-
-Otherwise preserve the appropriate weaker state.
-
-Do not create a relationship simply because the historical relationship said subsidiary.
-
-==================================================
-15. SOLVENTUM — REUSE EXISTING LEGAL ENTITY
-==================================================
-
-An external Solventum Legal Entity already exists.
-
-Do not create another one.
-
-Inspect its:
-
-external_entity_id
-canonical legal name
-provider identifiers
-identity evidence
-resolution history
-LEI if available
-CIK if available
-other strong identifiers
-
-Use this existing Legal Entity as the real-world entity anchor.
-
-==================================================
-16. SOLVENTUM CLIENT UNIVERSE MATCH-BACK
-==================================================
-
-Determine whether the exact Solventum Legal Entity is represented in the 3.67M Client Universe.
-
-Search using:
-
-strong identifiers first
-
-Then exact deterministic supporting metadata.
-
-Possible outcomes:
-
-VERIFIED
-PROBABLE
-AMBIGUOUS
-NO_MATCH
-INSUFFICIENT
-
-If exactly one Client Universe record is proven to represent the same Legal Entity:
-
-create:
-
-EXACT + VERIFIED
-
-identity link.
-
-If several Client Records are plausible:
-
-do not choose arbitrarily.
-
-Report:
-
-AMBIGUOUS
-
-unless evidence proves the role of each record.
-
-==================================================
-17. CABOT — REUSE EXISTING LEGAL ENTITY
-==================================================
-
-An external Cabot Legal Entity already exists.
-
-Do not create another one.
-
-Inspect the existing Legal Entity identity evidence and strong identifiers.
-
-Then determine whether the same Legal Entity is represented in the Client Universe.
-
-Use the same outcomes:
-
-VERIFIED
-PROBABLE
-AMBIGUOUS
-NO_MATCH
-INSUFFICIENT
-
-No fuzzy auto-link.
-
-==================================================
-18. MULTIPLE CLIENT RECORDS FOR ONE LEGAL ENTITY
-==================================================
-
-This is a critical rule.
-
-If one Legal Entity appears to match several Client Universe records:
-
-do not silently collapse them.
-
-Do not assume duplicate GFCIDs.
-
-Do not assume branch semantics.
-
-Do not assume account-role semantics.
-
-Create VERIFIED identity links only where the relationship between each Client Record and the Legal Entity is explicitly supportable.
-
-Otherwise:
-
-PROBABLE
-UNVERIFIED
-or no link
-
-is acceptable.
-
-==================================================
-19. IDENTITY CONFLICTS
-==================================================
-
-If:
-
-GLEIF
-SEC
-Client Universe identifiers
-official registry data
-
-conflict:
-
-do not silently prefer one.
-
-Record the conflict.
-
-Use:
-
-PROBABLE
-UNVERIFIED
-REJECTED
-
-as appropriate.
-
-Do not allow unresolved conflict to produce an accepted client-to-client correlation path.
-
-==================================================
-20. DO NOT USE RELATIONSHIP CLAIMS AS IDENTITY SHORTCUTS
-==================================================
-
-Existing evidence saying:
-
-3M owns 75% of 3M India
-
-does not automatically prove that:
-
-Client Record 437487 = the Legal Entity described in that filing.
-
-Identity must have its own support.
-
-Likewise:
-
-relationship evidence
-!=
-identity evidence
-
-unless the same source passage explicitly and independently establishes Legal Entity identity.
-
-==================================================
-21. RE-EVALUATE EXISTING V1 CLAIMS AFTER IDENTITY
-==================================================
-
-Once identity resolution is complete, re-evaluate ONLY the existing claims created during:
-
-CCR_V1_3M_CONTROLLED_REVALIDATION
-
-Do not discover new claims.
-
-Existing claims include ownership and commercial-context assertions.
-
-For each claim previously marked:
-
-IDENTITY_BLOCKED
-
-re-evaluate the identity gate.
-
-Possible outcomes:
-
-remains blocked
-becomes CANDIDATE relationship version
-becomes ACCEPTED relationship version
-
-depending on:
-
-endpoint identity
-relationship evidence
-evidence basis
-current V1 acceptance rules
-
-==================================================
-22. 3M -> 3M INDIA `owns`
-==================================================
-
-The controlled revalidation found evidence stating approximately:
-
-75% ownership
-
-Do not trust this prompt.
-
-Use the already-persisted V1 claim/evidence.
-
-If:
-
-3M Legal Entity identity passes
+CCRCorrelationDefinition
 
 and:
 
-3M India Legal Entity identity passes
+CCRCorrelationDefinitionVersion
 
-and:
+A definition represents the stable business concept.
 
-existing evidence satisfies V1 owns acceptance
+A version represents the exact executable configuration.
 
-then create:
+At minimum a definition requires:
 
-ccr_v1_relationships
+definition_id
+code
+display_name
+description
+definition_kind
+status
+created_at
+created_by
 
-relationship_type:
-owns
+Suggested status model:
 
-direction:
-3M Legal Entity -> 3M India Legal Entity
+DRAFT
+ACTIVE
+DISABLED
+RETIRED
 
-Create a relationship version with the correct:
+A definition version requires at minimum:
 
-acceptance state
-evidence basis
-dates/as-of metadata
-policy version
-ontology version
+definition_id
+version
+effective_from
+effective_to if any
+pattern specification
+endpoint identity policy
+relationship acceptance policy
+relationship type restrictions
+direction rules
+maximum depth
+intermediate-node rules
+qualifier predicates if any
+coverage policy
+hub/noise policy
+visibility policy
+evidence drill-down policy
+canonical configuration hash
+created_at
+created_by
 
-If the evidence explicitly states:
+Versions should be immutable after activation.
 
-75%
+A changed configuration creates a new version.
 
-then create:
+--------------------------------------------------
+6. DO NOT BUILD AN UNBOUNDED GRAPH DSL
+--------------------------------------------------
 
-ownership_percentage = 75%
+Do not create a general-purpose arbitrary graph-programming language.
 
-as a qualifier supported by its own claim/evidence.
+V1 configuration must be constrained and validateable.
 
-Do not infer:
+Support only the structural pattern shapes required by CCR V1.
 
-controls
+Suggested pattern kinds:
 
-unless a separate controls claim exists and passes.
+DIRECT
 
-==================================================
-23. 3M -> SOLVENTUM `owns`
-==================================================
+SHARED_INTERMEDIATE
 
-Existing V1 claims include explicit historical ownership assertions such as:
+DIRECTED_CHAIN
 
-19.9%
-
-and a later:
-
-14.8%
-
-Use only persisted claims.
-
-If 3M identity passes and Solventum is already a resolved Legal Entity:
-
-re-evaluate the ownership claims.
-
-Do not overwrite the percentages.
-
-Preserve temporal context.
-
-Possible correct representation:
-
-stable relationship:
-owns
-
-relationship versions / qualifier history:
-
-ownership_percentage = 19.9
-observed/effective context A
-
-ownership_percentage = 14.8
-observed/effective context B
-
-Do not invent exact effective dates when the source only gives observation/reporting context.
-
-==================================================
-24. SOLVENTUM COMMERCIAL / SUPPLY CLAIM
-==================================================
-
-The controlled revalidation found transition-services / commercial context.
-
-Do not recreate historical:
-
-strategic_partner
-
-Do not automatically create:
-
-partners_with
-
-If an existing V1 atomic claim already explicitly satisfies:
-
-supplies
-
-then evaluate that existing claim under the V1 supplies rule after identity passes.
-
-Direction must reflect:
-
-supplier -> customer
-
-based on the actual evidence.
-
-Do not guess direction.
-
-If evidence is insufficient:
-
-leave it as a claim/candidate.
-
-==================================================
-25. CABOT RELATIONSHIP CLASSIFICATION
-==================================================
-
-Do NOT perform new Cabot legal research.
-
-The previous revalidation found:
-
-indemnification/legal context
-
-but not sufficient evidence for:
-
-litigates_against
-
-Do not change that conclusion merely because identity becomes resolved.
-
-This stage may resolve Cabot identity only.
-
-No new Cabot relationship should be created unless an already-existing V1 claim independently qualifies under an already-existing acceptance rule.
-
-==================================================
-26. EVENT HANDLING
-==================================================
-
-Existing V1 event:
-
-SPIN_OFF
-
-must remain independent of relationships.
-
-Do not let identity resolution automatically convert the event into:
-
-owns
-controls
-partners_with
-or any other relationship.
-
-Preserve event/relationship separation.
-
-==================================================
-27. COVERAGE
-==================================================
-
-This stage is:
-
-IDENTITY RESOLUTION
-+
-LIMITED RE-EVALUATION OF EXISTING CLAIMS
-
-It is NOT a full relationship enrichment campaign.
-
-Do not create:
-
-RESEARCHED_NONE_FOUND
-
-for broad relationship families.
-
-Preserve:
-
-PARTIAL
-
-where appropriate.
-
-==================================================
-28. CORRELATION READINESS ASSESSMENT
-==================================================
-
-At the end, explicitly assess readiness for the next stage.
-
-Answer these questions:
-
-A.
-Do we have at least one:
-
-VERIFIED Client Record -> Legal Entity link?
-
-B.
-Do we have at least one:
-
-ACCEPTED V1 Legal Entity relationship?
-
-C.
-Do we have any accepted relationship where BOTH Legal Entity endpoints map to Client Universe records through qualifying identity links?
-
-D.
-Can we demonstrate:
-
-DIRECT correlation?
-
-E.
-Do we have sufficient accepted relationship topology to demonstrate any real two-hop derived correlation?
+This is enough for the first correlation catalogue.
 
 Examples:
 
-SHARED_CONTROLLER
-SHARED_SUPPLIER
-SHARED_CUSTOMER
-SUPPLY_CHAIN
+DIRECT
 
-Do not fabricate readiness.
+Client A
+    -- relationship -->
+Client B
 
-Expected possible outcome:
 
-DIRECT = READY
+SHARED_INTERMEDIATE
 
-DERIVED MULTI-HOP = NOT_READY
+Client A <- supplies - Supplier X - supplies -> Client B
 
-That is acceptable.
 
-==================================================
-29. IMPORTANT — DO NOT BUILD CORRELATION YET
-==================================================
+DIRECTED_CHAIN
+
+Client A -> supplies -> Entity X -> supplies -> Client B
+
+Do not create arbitrary recursive pattern execution.
+
+V1 configured depth must remain bounded.
+
+Maximum supported derived pattern depth for this stage:
+
+2 relationship hops.
+
+--------------------------------------------------
+7. CORRELATION CONFIGURATION MUST BE DATA, NOT CODE
+--------------------------------------------------
+
+Do not implement each correlation using custom if-statements such as:
+
+if shared_supplier:
+    ...
+
+The engine should execute governed definitions stored through the configuration model.
+
+Adding a new valid supported correlation pattern later should primarily require:
+
+new configuration
+
+not:
+
+new relationship-graph business logic
+
+provided the configuration uses an already supported pattern shape.
+
+This is essential for the future:
+
+AI Create Correlation
+
+feature.
+
+--------------------------------------------------
+8. AI CREATE CORRELATION — DESIGN FOR IT, DO NOT IMPLEMENT IT
+--------------------------------------------------
+
+The future product will support:
+
+Create Correlation
+    ->
+Manual
+or
+AI Create Correlation
+
+AI will eventually be allowed to propose correlation configuration.
+
+It must NOT directly activate arbitrary graph semantics.
+
+Future flow:
+
+AI proposal
+    ->
+DRAFT correlation definition/version
+    ->
+schema validation
+    ->
+preview against graph
+    ->
+result/noise review
+    ->
+authorized approval
+    ->
+ACTIVE version
+
+Therefore the configuration contract created now must be serializable, validateable, versioned, and able to represent a DRAFT.
 
 Do NOT implement:
 
-correlation definition tables
-correlation configuration
-correlation engine
-shared-supplier logic
-shared-controller logic
-shared-customer logic
-supply-chain logic
-shared-lender logic
-correlation API
-correlation UI
-AI Create Correlation
+LLM calls
+AI proposal generation
+approval UI
+configuration UI
 
-Those are the immediately following authorized design direction, but they are not part of this stage.
+in this stage.
 
-==================================================
-30. SCHEMA
-==================================================
+--------------------------------------------------
+9. STRICT DEFAULT IDENTITY POLICY
+--------------------------------------------------
+
+Default Client-to-Client correlation endpoint policy:
+
+link_state = VERIFIED
+
+link_type = EXACT
+
+Do not allow by default:
+
+PROBABLE
+UNVERIFIED
+REJECTED
+
+A definition may structurally support ASSOCIATED in the future, but initial system definitions should use EXACT unless there is an explicit reason otherwise.
+
+Do not silently convert an ASSOCIATED link into EXACT.
+
+--------------------------------------------------
+10. INTERMEDIATE LEGAL ENTITIES
+--------------------------------------------------
+
+Derived correlations may use Legal Entities that are not Client Universe records as intermediate nodes.
+
+Example:
+
+Client A
+    <- supplies -
+External Supplier X
+    - supplies ->
+Client B
+
+Supplier X does NOT have to be a client.
+
+But both correlation endpoints:
+
+Client A
+Client B
+
+must satisfy the configured Client Record -> Legal Entity identity policy.
+
+Do not manufacture Client Records for intermediate entities.
+
+--------------------------------------------------
+11. RELATIONSHIP ELIGIBILITY
+--------------------------------------------------
+
+Default relationship-hop eligibility:
+
+relationship version state = ACCEPTED
+
+Do not traverse:
+
+CANDIDATE
+DISPUTED
+REJECTED
+
+unless a future explicitly governed configuration permits a different display-only mode.
+
+For active V1 correlation definitions in this stage:
+
+ACCEPTED only.
+
+Relationship evidence must remain available through the CCR V1 support/evidence lineage.
+
+No synthetic relationships.
+
+--------------------------------------------------
+12. TEMPORAL SEMANTICS
+--------------------------------------------------
+
+The engine must execute with an explicit:
+
+as_of_date
+
+or a clearly defined current-time mode.
+
+For relationship versions with temporal information:
+
+select versions valid/observed for the requested as-of interpretation according to existing V1 fields.
+
+Do not flatten:
+
+19.9%
+and
+14.8%
+
+Solventum ownership observations into one timeless fact.
+
+Correlation explanation must identify the relationship version(s) used.
+
+If exact temporal validity is unknown, preserve the available observation/as-of semantics rather than inventing dates.
+
+--------------------------------------------------
+13. CORRELATION RESULT IS DERIVED
+--------------------------------------------------
+
+Do NOT persist correlation results as authoritative facts in this stage.
+
+Correlation results should be derived/query results from:
+
+relationship facts
+identity links
+correlation definition version
+as-of date
+
+Do not create a giant precomputed client-pair table.
+
+Do not materialize all possible 3.67M x 3.67M pairs.
+
+Persist configuration.
+
+Derive correlation results.
+
+Caching may be considered later.
+
+--------------------------------------------------
+14. CORRELATION RESULT CONTRACT
+--------------------------------------------------
+
+Create a domain result object conceptually equivalent to:
+
+CCRCorrelationResult
+
+It must contain at least:
+
+correlation definition ID
+correlation code
+definition version
+definition kind
+Client A client_id
+Client A GFCID
+Client A Legal Entity
+Client B client_id
+Client B GFCID
+Client B Legal Entity
+as_of_date
+ordered path
+relationship IDs
+relationship-version IDs
+intermediate Legal Entity IDs
+direction information
+qualifying identity-link IDs
+relevant qualifiers
+evidence-basis metadata
+coverage warnings
+configuration hash
+deterministic result fingerprint
+
+Do not include an opaque correlation score.
+
+--------------------------------------------------
+15. CORRELATION EXPLANATION
+--------------------------------------------------
+
+Every result must be explainable.
+
+Example output conceptually:
+
+Correlation:
+SHARED_SUPPLIER
+
+Client A:
+...
+
+Client B:
+...
+
+Intermediate:
+Supplier X
+
+Path:
+
+Supplier X
+    -> supplies -> Client A Legal Entity
+
+Supplier X
+    -> supplies -> Client B Legal Entity
+
+Endpoint identity:
+
+Client A:
+VERIFIED / EXACT
+
+Client B:
+VERIFIED / EXACT
+
+Relationship evidence:
+
+hop 1:
+ACCEPTED
+PRIMARY
+
+hop 2:
+ACCEPTED
+PRIMARY
+
+Definition:
+
+SHARED_SUPPLIER
+version 1
+
+As of:
+
+...
+
+The user must be able to understand why CCR says the clients are correlated.
+
+--------------------------------------------------
+16. CORRELATION CONFIGURATION V1 CATALOGUE
+--------------------------------------------------
+
+Seed the following governed definitions.
+
+Do not create fake graph results.
+
+Definitions may legitimately return zero against the current pilot.
+
+A. DIRECT
+
+definition kind:
+
+DIRECT_RELATION_VIEW
+
+Meaning:
+
+two qualifying Client Records whose Legal Entities have an eligible accepted relationship.
+
+The result must preserve the actual underlying relationship type.
+
+Examples:
+
+owns
+controls
+supplies
+lends_to
+provides_credit_support
+depends_on_products_of
+
+Do not flatten them into an unexplained generic direct edge.
+
+
+B. SHARED_CONTROLLER
+
+definition kind:
+
+DERIVED_PATTERN
+
+Pattern:
+
+Controller X
+    -> controls -> Client A Legal Entity
+
+Controller X
+    -> controls -> Client B Legal Entity
+
+Intermediate:
+
+LEGAL_ENTITY
+
+Depth:
+
+2
+
+
+C. SHARED_SUPPLIER
+
+Pattern:
+
+Supplier X
+    -> supplies -> Client A Legal Entity
+
+Supplier X
+    -> supplies -> Client B Legal Entity
+
+
+D. SHARED_CUSTOMER
+
+Pattern:
+
+Client A Legal Entity
+    -> supplies -> Customer X
+
+Client B Legal Entity
+    -> supplies -> Customer X
+
+
+E. SUPPLY_CHAIN
+
+Pattern:
+
+Client A Legal Entity
+    -> supplies -> Intermediate X
+
+Intermediate X
+    -> supplies -> Client B Legal Entity
+
+Direction matters.
+
+
+F. SHARED_LENDER
+
+Pattern:
+
+Lender X
+    -> lends_to -> Client A Legal Entity
+
+Lender X
+    -> lends_to -> Client B Legal Entity
+
+
+G. SHARED_PRODUCT_DEPENDENCY
+
+Pattern:
+
+Client A Legal Entity
+    -> depends_on_products_of -> Producer X
+
+Client B Legal Entity
+    -> depends_on_products_of -> Producer X
+
+
+Do not add SHARED_SPONSOR yet unless the current manages semantics are fully implemented and tested.
+
+It can remain deferred.
+
+--------------------------------------------------
+17. CONFIGURATION ENABLEMENT
+--------------------------------------------------
+
+Each seeded correlation definition must explicitly support:
+
+ACTIVE
+DISABLED
+
+or equivalent governed enablement.
+
+Initial recommendation:
+
+DIRECT:
+ACTIVE
+
+SHARED_CONTROLLER:
+ACTIVE
+
+SHARED_SUPPLIER:
+ACTIVE
+
+SHARED_CUSTOMER:
+ACTIVE
+
+SUPPLY_CHAIN:
+ACTIVE
+
+SHARED_LENDER:
+ACTIVE
+
+SHARED_PRODUCT_DEPENDENCY:
+ACTIVE
+
+"ACTIVE" does not mean results must exist.
+
+It means the engine is permitted to evaluate the pattern.
+
+--------------------------------------------------
+18. COVERAGE IS NOT PROOF OF NON-CORRELATION
+--------------------------------------------------
+
+A correlation query returning zero results does not mean:
+
+no correlation exists.
+
+The result should expose relevant enrichment coverage where available.
+
+Example:
+
+SHARED_SUPPLIER result count = 0
+
+but supply enrichment coverage = PARTIAL
+
+must be distinguishable from:
+
+SHARED_SUPPLIER result count = 0
+
+with complete governed supply coverage.
+
+Do not convert zero result into a universal negative.
+
+--------------------------------------------------
+19. HUB / NOISE CONFIGURATION
+--------------------------------------------------
+
+Support a configuration section for hub/noise handling.
+
+Do not implement opaque importance scores.
+
+The configuration should be able to express factual constraints such as:
+
+maximum intermediate linked-client degree
+minimum evidence requirements
+default visibility
+suppress high-degree intermediate nodes
+warn instead of suppress
+
+For Stage 4, implement only simple deterministic degree handling if needed.
+
+Suggested model:
+
+hub_policy:
+    mode = NONE | WARN | SUPPRESS
+    max_client_degree = nullable integer
+
+Default:
+
+NONE
+
+Do not invent thresholds for the seeded definitions unless required for tests.
+
+--------------------------------------------------
+20. VISIBILITY CONFIGURATION
+--------------------------------------------------
+
+Definitions should support:
+
+VISIBLE
+HIDDEN_BY_DEFAULT
+
+This controls presentation/query default behavior.
+
+It must not alter factual relationships.
+
+No frontend is being built yet.
+
+--------------------------------------------------
+21. QUALIFIER PREDICATES
+--------------------------------------------------
+
+The configuration contract should be capable of requiring an accepted qualifier.
+
+Example future configuration:
+
+SHARED_CRITICAL_SUPPLIER
+
+requires:
+
+supplies
+
+plus:
+
+described_as_critical = ACCEPTED
+
+Do not seed this correlation yet.
+
+Do not implement a complicated general expression language.
+
+Support a constrained qualifier predicate shape such as:
+
+qualifier_type
+allowed_states
+operator
+value where appropriate
+
+V1 can initially support simple:
+
+EXISTS
+EQUALS
+
+only.
+
+--------------------------------------------------
+22. CONFIGURATION VALIDATION
+--------------------------------------------------
+
+A correlation definition/version must be validated before activation.
+
+Reject invalid configurations such as:
+
+unknown relationship type
+unknown pattern kind
+depth > supported V1 depth
+candidate hops for an ACTIVE V1 definition
+REJECTED identity endpoints
+missing direction semantics
+unsupported qualifier operator
+missing endpoint identity policy
+synthetic relationship requirement
+unknown entity grain
+
+Validation errors must be explicit.
+
+--------------------------------------------------
+23. VERSIONING
+--------------------------------------------------
+
+Correlation definitions must be versioned.
+
+Example:
+
+SHARED_SUPPLIER v1
+
+later:
+
+SHARED_SUPPLIER v2
+
+may change:
+
+hub policy
+visibility
+identity policy
+qualifier requirement
+
+Existing result fingerprints/explanations must identify which version was used.
+
+Do not mutate ACTIVE v1 in place.
+
+--------------------------------------------------
+24. CONFIGURATION FINGERPRINT
+--------------------------------------------------
+
+Canonicalize the executable configuration and compute a deterministic configuration fingerprint/hash.
+
+The same semantic version/configuration should produce the same fingerprint.
+
+A changed executable configuration must produce a different fingerprint.
+
+Use this in:
+
+result fingerprints
+audit/debug output
+tests
+
+--------------------------------------------------
+25. GENERIC CORRELATION ENGINE
+--------------------------------------------------
+
+Implement one engine/service that:
+
+1. loads an ACTIVE correlation definition version;
+
+2. validates the configuration;
+
+3. resolves the selected Client Record to qualifying Legal Entity identity;
+
+4. queries accepted V1 relationship versions;
+
+5. executes the configured pattern;
+
+6. validates the opposite client endpoint identity;
+
+7. applies direction rules;
+
+8. applies qualifier predicates;
+
+9. applies hub policy;
+
+10. attaches coverage information;
+
+11. builds explanation path;
+
+12. returns deterministic correlation results.
+
+Do not implement separate engines for every correlation type.
+
+--------------------------------------------------
+26. QUERY MODES
+--------------------------------------------------
+
+Support at least:
+
+A. correlations_for_client
+
+Input:
+
+client_id
+optional definition code(s)
+as_of_date
+limit
+
+Output:
+
+bounded correlation results from the selected Client Record.
+
+
+B. correlation_between_clients
+
+Input:
+
+client_id_a
+client_id_b
+optional definition code(s)
+as_of_date
+
+Output:
+
+all qualifying configured correlations between the two Client Records.
+
+These may initially be service/repository methods.
+
+A public API is not required in this stage.
+
+--------------------------------------------------
+27. BOUNDED EXECUTION
+--------------------------------------------------
+
+All correlation execution must be bounded.
+
+No unbounded graph walk.
+
+For this stage:
+
+maximum supported depth:
+2 relationship hops
+
+bounded result limit required
+
+intermediate-node fan-out must be query-bounded
+
+no recursive frontier expansion
+
+no provider calls
+
+no research initiation
+
+--------------------------------------------------
+28. CURRENT REAL PILOT — DIRECT CORRELATION
+--------------------------------------------------
+
+The current CCR V1 graph should be used to prove the engine with real data.
+
+Expected real candidate:
+
+3M Client Record
+
+and
+
+3M India Client Record
+
+because the identity pilot established qualifying identities and the V1 graph contains:
+
+3M Legal Entity
+    -> owns ->
+3M India Legal Entity
+
+with an ACCEPTED relationship.
+
+Run the DIRECT definition.
+
+Expected conceptual result:
+
+3M
+<- DIRECT / owns ->
+3M India
+
+with:
+
+relationship ID
+relationship-version ID
+identity-link IDs
+ownership percentage where applicable
+evidence basis
+definition version
+configuration fingerprint
+as-of date
+explanation
+
+Do NOT hard-code client IDs into the engine.
+
+This must emerge from the generic configuration and graph query.
+
+--------------------------------------------------
+29. SOLVENTUM SAFETY TEST
+--------------------------------------------------
+
+Solventum has accepted Legal Entity relationships with 3M but its Client Universe match remains ambiguous.
+
+Therefore:
+
+3M -> Solventum
+
+must NOT automatically become a Client-to-Client DIRECT correlation unless Solventum has a qualifying identity link satisfying the active DIRECT definition.
+
+Use this as a critical regression test.
+
+Legal Entity relationship:
+
+YES
+
+Client-to-Client correlation:
+
+NO
+
+when endpoint Client identity is ambiguous/non-qualifying.
+
+--------------------------------------------------
+30. CABOT SAFETY TEST
+--------------------------------------------------
+
+Cabot currently has:
+
+no accepted V1 relationship
+
+and an ambiguous Client Universe match.
+
+It must not appear as a client correlation.
+
+This provides another negative control.
+
+--------------------------------------------------
+31. DERIVED PATTERN PILOT RESULT
+--------------------------------------------------
+
+Run the seeded derived definitions against the existing 3M-centered V1 data.
+
+Do not expect fabricated results.
+
+It is acceptable and likely that:
+
+SHARED_CONTROLLER = 0
+
+SHARED_SUPPLIER = 0
+
+SHARED_CUSTOMER = 0
+
+SUPPLY_CHAIN = 0
+
+SHARED_LENDER = 0
+
+SHARED_PRODUCT_DEPENDENCY = 0
+
+for this small pilot.
+
+Report the result honestly.
+
+Also report whether the reason is:
+
+no matching graph pattern
+
+insufficient Client endpoint identity
+
+insufficient relationship coverage
+
+or a combination.
+
+Zero derived correlations is not a failure of the engine.
+
+--------------------------------------------------
+32. DO NOT RESEARCH TO CREATE A DERIVED RESULT
+--------------------------------------------------
+
+Do not call providers just because the pilot lacks a shared supplier or shared controller.
+
+Do not create test production data.
+
+Do not fabricate relationships.
+
+Use unit-test fixtures for pattern tests.
+
+Use the real 3M data only for real validation.
+
+--------------------------------------------------
+33. TEST FIXTURES FOR ALL PATTERNS
+--------------------------------------------------
+
+Create temporary/test-only graph fixtures sufficient to verify each correlation definition mechanically.
+
+Fixtures must not enter the production-like local relationship database.
+
+Test:
+
+DIRECT
+
+SHARED_CONTROLLER
+
+SHARED_SUPPLIER
+
+SHARED_CUSTOMER
+
+SUPPLY_CHAIN
+
+SHARED_LENDER
+
+SHARED_PRODUCT_DEPENDENCY
+
+Verify directionality exactly.
+
+--------------------------------------------------
+34. DIRECT IS NOT A SYNTHETIC EDGE
+--------------------------------------------------
+
+A DIRECT correlation result is a derived client view of an existing accepted Legal Entity relationship.
+
+Do not persist a new relationship edge between Client Records.
+
+The relationship fact remains:
+
+Legal Entity A
+-> relationship ->
+Legal Entity B
+
+DIRECT correlation exposes that fact at the Client Record layer.
+
+--------------------------------------------------
+35. DERIVED CORRELATION IS NOT A RELATIONSHIP FACT
+--------------------------------------------------
+
+Example:
+
+Client A and Client B share Supplier X.
+
+Do NOT create a relationship row:
+
+Client A -> shared_supplier -> Client B
+
+in:
+
+ccr_v1_relationships
+
+SHARED_SUPPLIER is a derived correlation result.
+
+This distinction is mandatory.
+
+--------------------------------------------------
+36. NO CORRELATION SCORE
+--------------------------------------------------
+
+Do not introduce:
+
+correlation score
+relationship score
+materiality score
+importance score
+risk score
+connection strength score
+
+The engine returns:
+
+correlation type
+path
+facts
+evidence basis
+coverage
+degree/noise facts
+configuration version
+
+Any future ranking can be designed separately.
+
+--------------------------------------------------
+37. CORRELATION CATALOGUE REPOSITORY
+--------------------------------------------------
+
+Provide repository/service methods for at least:
+
+create_definition
+create_definition_version
+get_definition
+list_definitions
+get_active_version
+activate_version
+disable_definition
+validate_version
+
+Writes may be used by tests/bootstrap only.
+
+No admin UI yet.
+
+Do not expose unrestricted public configuration mutation APIs in this stage.
+
+--------------------------------------------------
+38. SEEDED DEFINITIONS MUST BE IDEMPOTENT
+--------------------------------------------------
+
+Application initialization/bootstrap must not duplicate seeded definitions.
+
+Repeated initialization must produce:
+
+same definition IDs where deterministic
+same active versions
+same fingerprints
+zero duplicate versions
+
+Test this.
+
+--------------------------------------------------
+39. AUDITABILITY
+--------------------------------------------------
+
+A correlation result must be reproducible from:
+
+definition ID
+definition version
+configuration fingerprint
+as-of date
+Client IDs
+identity-link IDs
+relationship-version IDs
+qualifier IDs where used
+
+Do not require hidden model reasoning to reproduce a result.
+
+--------------------------------------------------
+40. CORRELATION CONFIGURATION VS RELATIONSHIP CONFIGURATION
+--------------------------------------------------
+
+Keep this architectural separation explicit.
+
+RELATIONSHIP CONFIGURATION answers:
+
+What is an owns / controls / supplies / lends_to relationship?
+What evidence is required?
+What direction does it have?
+What qualifiers are valid?
+
+CORRELATION CONFIGURATION answers:
+
+How can accepted relationships combine into a meaningful Client-to-Client structural connection?
+
+Do not merge these two concepts into one configuration table.
+
+--------------------------------------------------
+41. NO LEGACY STATISTICAL CORRELATION REUSE
+--------------------------------------------------
+
+Do NOT reuse old Phase 4A constructs such as:
+
+SAME_CAGID
+SAME_BENEFICIAL_OWNER
+statistical similarity signals
+exposure correlation
+old correlation score logic
+
+as V1 correlation definitions.
+
+Those remain legacy.
+
+The new correlation engine is structural and evidence-backed.
+
+--------------------------------------------------
+42. NO EXPOSURE AUTHORITY
+--------------------------------------------------
+
+Do not use:
+
+historical CCR exposure population
+thousandClients
+exposure amount
+credit-managed flags
+
+as correlation eligibility requirements.
+
+All Client Universe records remain potentially eligible subject to identity and enrichment coverage.
+
+--------------------------------------------------
+43. DATABASE SCHEMA
+--------------------------------------------------
 
 Current schema:
 
 v10
 
-Prefer to stay at:
-
-v10
-
-unless a genuinely missing identity-audit structure requires an additive migration.
-
-Do not increment the schema unnecessarily.
-
-If a migration is required:
-
-keep it minimal
-additive
-idempotent
-replay-safe
-foreign-key safe
-
-Explain why.
-
-==================================================
-31. IDEMPOTENCE
-==================================================
-
-The identity-resolution run must be deterministic where inputs and external identity evidence are unchanged.
-
-Run/replay the local persistence stage twice where practical.
-
-Second execution must create:
-
-0 duplicate Legal Entities
-0 duplicate identity links
-0 duplicate identity-support rows
-0 duplicate relationships
-0 duplicate relationship versions
-0 duplicate qualifiers
-
-Report all duplicate counts.
-
-==================================================
-32. PROVIDER AUDIT
-==================================================
-
-Record every external identity-provider call.
-
-For each:
-
-provider
-entity target
-query/identifier
-purpose
-HTTP/result status
-cache status
-network attempted
-result
-whether the result contributed to identity proof
-
-Do not treat provider failure as:
-
-NO_MATCH
-
-Use:
-
-UNAVAILABLE
-or
-INSUFFICIENT
-
-where appropriate.
-
-==================================================
-33. REQUIRED TESTS
-==================================================
-
-Preserve all current backend tests.
-
-Add focused tests covering at minimum:
-
-1.
-strong exact identifier can support VERIFIED EXACT identity.
-
-2.
-name-only match cannot create VERIFIED identity.
-
-3.
-alias-only match cannot create VERIFIED identity.
-
-4.
-CAGID cannot create VERIFIED identity.
-
-5.
-CAGID_NAME cannot create VERIFIED identity.
-
-6.
-beneficial_owner_gfcid cannot create VERIFIED identity.
-
-7.
-legal_entity_id is not assumed to be an LEI.
-
-8.
-lei_legal_name alone is not identity proof.
-
-9.
-FTS/search result is candidate discovery only.
-
-10.
-existing Legal Entity is reused by strong identifier.
-
-11.
-duplicate Legal Entity creation is prevented.
-
-12.
-ambiguous Client Universe matches remain non-VERIFIED.
-
-13.
-PROBABLE identity cannot satisfy strict client-correlation identity gate.
-
-14.
-UNVERIFIED identity cannot satisfy the strict gate.
-
-15.
-REJECTED identity cannot satisfy the gate.
-
-16.
-identity support is distinct from relationship support.
-
-17.
-identity-provider evidence cannot automatically create relationship claims.
-
-18.
-existing identity-blocked claim can be re-evaluated after VERIFIED identity exists.
-
-19.
-no new relationship claim is created by identity lookup.
-
-20.
-3M ownership qualifier is not fabricated.
-
-21.
-Solventum percentages remain separately evidenced.
-
-22.
-event does not automatically become relationship.
-
-23.
-Client Universe remains unchanged.
-
-24.
-source master remains unchanged.
-
-25.
-no fuzzy merge.
-
-26.
-identity resolution replay creates zero duplicates.
-
-==================================================
-34. CLIENT UNIVERSE INTEGRITY
-==================================================
-
-Verify:
-
-backend/data/client_universe.sqlite3
+A small additive schema migration is authorized for correlation configuration.
 
 Expected:
 
-client_master rows:
-3,670,650
+v11
 
-unique GFCIDs:
-3,670,650
+Suggested new tables:
 
-No rows inserted.
-No rows updated.
-No rows deleted.
+ccr_correlation_definitions
 
-==================================================
-35. SOURCE MASTER INTEGRITY
-==================================================
+ccr_correlation_definition_versions
+
+Use existing repository naming conventions.
+
+Do not create a persisted correlation-result table in this stage.
+
+If one additional small audit/bootstrap table is genuinely necessary, justify it in the report.
+
+No destructive migration.
+
+--------------------------------------------------
+44. CONFIGURATION STORAGE
+--------------------------------------------------
+
+Prefer explicit scalar columns for core governance fields and canonical JSON for bounded pattern/policy structures where appropriate.
+
+Do not store the entire definition as opaque free-form JSON only.
+
+The database should make basic governance fields queryable:
+
+code
+kind
+status
+version
+effective dates
+configuration fingerprint
+
+Pattern JSON must be schema validated.
+
+--------------------------------------------------
+45. NO FRONTEND
+--------------------------------------------------
+
+Frontend modifications:
+
+0
+
+Do not implement yet:
+
+Correlation Configuration page
+network map
+client workspace
+AI Create Correlation
+configuration editor
+preview UI
+
+The backend model must, however, be suitable for those features later.
+
+--------------------------------------------------
+46. NO EXTERNAL ACTIVITY
+--------------------------------------------------
+
+During this stage:
+
+GLEIF calls = 0
+
+SEC calls = 0
+
+Web calls = 0
+
+Stylus calls = 0
+
+new relationship research = 0
+
+new identity research = 0
+
+frontier expansion = 0
+
+Stage 2A.8 = 0
+
+The engine queries only existing local V1 data.
+
+--------------------------------------------------
+47. CLIENT UNIVERSE INTEGRITY
+--------------------------------------------------
+
+Verify:
+
+3,670,650 client_master rows
+
+3,670,650 unique GFCIDs
+
+No inserts.
+No updates.
+No deletes.
+
+--------------------------------------------------
+48. SOURCE MASTER INTEGRITY
+--------------------------------------------------
 
 Verify:
 
 backend/Customer_latest.parquet
 
-Expected:
-
-rows:
+Rows:
 3,670,650
 
-unique GFCIDs:
+Unique GFCIDs:
 3,670,650
-
-Verify SHA-256 against the current established source hash.
 
 No modifications.
 
-==================================================
-36. HISTORICAL STAGE 2 IMMUTABILITY
-==================================================
+--------------------------------------------------
+49. REQUIRED TESTS
+--------------------------------------------------
 
-Do not modify historical Stage 2 relationship/research rows.
+Preserve all current tests.
 
-Expected modification count:
+Add focused tests covering at least:
 
-0
+CONFIGURATION
 
-Existing historical data remains audit history only.
+1. correlation definition can be persisted.
 
-==================================================
-37. FRONTEND
-==================================================
+2. correlation definition version can be persisted.
 
-Frontend files modified:
+3. ACTIVE version is immutable.
 
-0
+4. changed config creates new version.
 
-Do not build any UI.
+5. deterministic config fingerprint.
 
-==================================================
-38. CREATE REPORT
-==================================================
+6. invalid relationship type rejected.
+
+7. invalid pattern kind rejected.
+
+8. depth > 2 rejected.
+
+9. missing endpoint identity policy rejected.
+
+10. candidate-hop ACTIVE configuration rejected.
+
+11. unsupported qualifier operator rejected.
+
+12. seeded definitions are idempotent.
+
+IDENTITY GATING
+
+13. VERIFIED EXACT endpoint passes default gate.
+
+14. PROBABLE endpoint fails.
+
+15. UNVERIFIED endpoint fails.
+
+16. REJECTED endpoint fails.
+
+17. ambiguous Client Universe candidate does not become correlation endpoint.
+
+DIRECT
+
+18. accepted direct relationship between two qualifying client-linked Legal Entities yields DIRECT result.
+
+19. underlying relationship type remains visible.
+
+20. candidate relationship version does not yield DIRECT result.
+
+21. disputed relationship version does not yield DIRECT result.
+
+22. rejected relationship version does not yield DIRECT result.
+
+23. Solventum ambiguous match does not yield a client-to-client DIRECT result.
+
+24. Cabot does not yield DIRECT result.
+
+DERIVED PATTERNS
+
+25. SHARED_CONTROLLER positive fixture.
+
+26. SHARED_CONTROLLER direction-negative fixture.
+
+27. SHARED_SUPPLIER positive fixture.
+
+28. SHARED_CUSTOMER positive fixture.
+
+29. SUPPLY_CHAIN positive fixture.
+
+30. SUPPLY_CHAIN wrong-direction negative fixture.
+
+31. SHARED_LENDER positive fixture.
+
+32. SHARED_PRODUCT_DEPENDENCY positive fixture.
+
+33. intermediate entity need not be a Client Record.
+
+34. both endpoints must qualify as Client Records.
+
+35. no synthetic relationship row is created.
+
+QUALIFIERS
+
+36. EXISTS qualifier predicate works.
+
+37. EQUALS qualifier predicate works.
+
+38. candidate qualifier fails an ACCEPTED-only predicate.
+
+TEMPORAL
+
+39. as-of query uses qualifying relationship version.
+
+40. later ownership version does not erase historical version.
+
+COVERAGE
+
+41. zero correlation result with PARTIAL coverage does not assert no correlation exists.
+
+BOUNDS
+
+42. result limit enforced.
+
+43. maximum depth enforced.
+
+44. no recursive provider/research call occurs.
+
+REPLAY
+
+45. configuration bootstrap replay creates no duplicates.
+
+INTEGRITY
+
+46. Client Universe unchanged.
+
+47. source master unchanged.
+
+48. existing V1 relationships unchanged.
+
+49. no fuzzy merge.
+
+50. no synthetic direct relationship.
+
+--------------------------------------------------
+50. REAL 3M VALIDATION
+--------------------------------------------------
+
+Run the correlation engine against current real V1 data.
+
+Required real checks:
+
+A. correlations_for_client(3M)
+
+with:
+
+DIRECT
+
+Report exact results.
+
+Expected:
+
+at least the 3M / 3M India ownership correlation if the current verified identity links and accepted relationship satisfy the configured policy.
+
+Do not force the expectation.
+
+
+B. correlation_between_clients(3M, 3M India)
+
+Expected conceptual result:
+
+DIRECT
+underlying relation = owns
+
+Include:
+
+identity links
+relationship
+relationship version
+75% qualifier where available
+evidence basis
+definition/version
+as-of date
+configuration fingerprint
+
+
+C. 3M / Solventum
+
+Legal Entity relationship exists.
+
+Client-to-Client correlation must be absent if Solventum still lacks a qualifying Client Record identity link.
+
+
+D. derived patterns
+
+Run all ACTIVE derived definitions.
+
+Report actual counts.
+
+Zero is acceptable.
+
+--------------------------------------------------
+51. CORRELATION READINESS
+--------------------------------------------------
+
+At the end assess:
+
+CONFIGURATION MODEL:
+READY / PARTIAL / FAIL
+
+DIRECT CORRELATION:
+READY / PARTIAL / FAIL
+
+DERIVED PATTERN ENGINE:
+READY / PARTIAL / FAIL
+
+REAL DIRECT PILOT:
+READY / NOT_READY
+
+REAL DERIVED PILOT DATA:
+AVAILABLE / INSUFFICIENT
+
+CORRELATION API:
+NOT YET IMPLEMENTED
+
+CORRELATION UI:
+NOT YET IMPLEMENTED
+
+AI CREATE CORRELATION:
+NOT YET IMPLEMENTED
+
+--------------------------------------------------
+52. CREATE REPORT
+--------------------------------------------------
 
 Create:
 
-backend/data/CCR_V1_IDENTITY_RESOLUTION_PILOT_REPORT.md
+backend/data/CCR_V1_CORRELATION_CONFIGURATION_ENGINE_FOUNDATION_REPORT.md
 
 Required sections:
 
 1. Executive result
-2. Scope and non-actions
-3. Input baseline
-4. Identity policy
-5. Provider activity summary
-6. 3M Client Record identity context
-7. 3M Legal Entity resolution
-8. 3M identity-link decision
-9. 3M India Client Record identification
-10. 3M India Legal Entity resolution
-11. 3M India identity-link decision
-12. Solventum existing Legal Entity
-13. Solventum Client Universe match-back
-14. Cabot existing Legal Entity
-15. Cabot Client Universe match-back
-16. Strong identifiers used
-17. Ambiguous matches
-18. Identity conflicts
-19. Identity-support records
-20. Existing V1 claims re-evaluated
-21. 3M -> 3M India ownership result
-22. 3M -> Solventum ownership result
-23. Solventum supply/transition-services result
-24. Cabot result
-25. Relationship/version counts
-26. Qualifier counts
-27. Coverage
-28. Correlation-readiness assessment
+2. Baseline
+3. Product boundary
+4. Relationship facts vs correlations
+5. Schema changes
+6. Correlation definition model
+7. Definition version model
+8. Configuration validation
+9. Configuration fingerprinting
+10. Seeded correlation catalogue
+11. Generic execution engine
+12. Identity gates
+13. Relationship gates
+14. Qualifier predicates
+15. Temporal/as-of behavior
+16. Coverage behavior
+17. Hub/noise policy
+18. Correlation explanation contract
+19. DIRECT execution
+20. SHARED_CONTROLLER execution
+21. SHARED_SUPPLIER execution
+22. SHARED_CUSTOMER execution
+23. SUPPLY_CHAIN execution
+24. SHARED_LENDER execution
+25. SHARED_PRODUCT_DEPENDENCY execution
+26. Real 3M validation
+27. Solventum negative identity-gate test
+28. Derived-pattern pilot results
 29. Replay/idempotence
 30. Tests
 31. SQLite integrity
 32. Client Universe integrity
 33. Source-master integrity
-34. Remaining identity limitations
-35. Remaining GFCID-semantic unknowns
+34. External-call verification
+35. Remaining limitations
 36. Recommended next action
 
-==================================================
-39. ABSOLUTE CONSTRAINTS
-==================================================
-
-New relationship discovery:
-0
-
-New frontier research:
-0
-
-Stage 2A.8:
-0
-
-Fuzzy identity merges:
-0
-
-Synthetic direct edges:
-0
-
-Historical Stage 2 modifications:
-0
-
-Client Universe modifications:
-0
-
-Source-master modifications:
-0
-
-Frontend modifications:
-0
-
-Do not create a VERIFIED identity merely to unblock correlation.
-
-==================================================
-40. FINAL STATUS FORMAT
-==================================================
+--------------------------------------------------
+53. FINAL STATUS FORMAT
+--------------------------------------------------
 
 At completion output exactly:
 
-CCR V1 — IDENTITY RESOLUTION PILOT
+CCR V1 — CORRELATION CONFIGURATION + ENGINE FOUNDATION
 
 Status:
 PASS / PARTIAL / FAIL
 
-Schema version:
+Schema before:
+Schema after:
 
 Client Universe rows:
 Client Universe modifications:
 Source-master modifications:
-Historical Stage 2 modifications:
 
-External identity-provider calls:
+External provider calls:
+0
 
-GLEIF:
-SEC:
-Web:
+New relationship research:
+0
 
-3M Client Record:
-client_id:
-GFCID:
+New identity research:
+0
 
-3M Legal Entity:
-external_entity_id:
-canonical legal name:
-LEI:
-CIK:
+Correlation definitions created:
 
-3M identity link:
-EXACT / ASSOCIATED / NONE
+Correlation definition versions created:
 
-3M identity state:
-VERIFIED / PROBABLE / UNVERIFIED / REJECTED / NONE
+Seeded definitions:
 
-3M identity support count:
+DIRECT:
+SHARED_CONTROLLER:
+SHARED_SUPPLIER:
+SHARED_CUSTOMER:
+SUPPLY_CHAIN:
+SHARED_LENDER:
+SHARED_PRODUCT_DEPENDENCY:
 
-3M India Client Record:
-client_id:
-GFCID:
+Configuration validation:
+PASS / PARTIAL / FAIL
 
-3M India Legal Entity:
-external_entity_id:
-canonical legal name:
-LEI:
-other strong identifier:
+Configuration fingerprinting:
+PASS / PARTIAL / FAIL
 
-3M India identity link:
-EXACT / ASSOCIATED / NONE
+Generic correlation engine:
+PASS / PARTIAL / FAIL
 
-3M India identity state:
-VERIFIED / PROBABLE / UNVERIFIED / REJECTED / NONE
+DIRECT correlation engine:
+PASS / PARTIAL / FAIL
 
-Solventum existing Legal Entity reused:
-YES / NO
+Derived correlation engine:
+PASS / PARTIAL / FAIL
 
-Solventum Client Universe match:
-VERIFIED / PROBABLE / AMBIGUOUS / NO_MATCH / INSUFFICIENT
+Real 3M DIRECT correlations:
 
-Cabot existing Legal Entity reused:
-YES / NO
+3M -> 3M India DIRECT:
+FOUND / NOT_FOUND
 
-Cabot Client Universe match:
-VERIFIED / PROBABLE / AMBIGUOUS / NO_MATCH / INSUFFICIENT
+Underlying relationship type:
 
-New Legal Entities created:
+3M -> Solventum Client-to-Client correlation:
+FOUND / BLOCKED_BY_IDENTITY / NOT_FOUND
 
-Identity links created:
+Real derived-pattern results:
 
-VERIFIED:
-PROBABLE:
-UNVERIFIED:
-REJECTED:
+SHARED_CONTROLLER:
+SHARED_SUPPLIER:
+SHARED_CUSTOMER:
+SUPPLY_CHAIN:
+SHARED_LENDER:
+SHARED_PRODUCT_DEPENDENCY:
 
-Identity-support records created:
+Synthetic relationship rows created:
+0
 
-Existing V1 claims re-evaluated:
-
-V1 relationships before:
-V1 relationships after:
-
-V1 relationship versions before:
-V1 relationship versions after:
-
-V1 ACCEPTED relationships:
-
-V1 CANDIDATE relationships:
-
-V1 qualifiers created:
-
-3M -> 3M India owns:
-ACCEPTED / CANDIDATE / IDENTITY_BLOCKED / EVIDENCE_BLOCKED / NOT_SUPPORTED
-
-3M -> Solventum owns:
-ACCEPTED / CANDIDATE / IDENTITY_BLOCKED / EVIDENCE_BLOCKED / NOT_SUPPORTED
-
-3M -> Solventum supplies:
-ACCEPTED / CANDIDATE / IDENTITY_BLOCKED / EVIDENCE_BLOCKED / NOT_SUPPORTED
-
-Cabot relationship:
-result:
-
-External relationship research performed:
+Persisted correlation-result rows created:
 0
 
 Fuzzy merges:
 0
 
-Synthetic direct edges:
-0
-
 Frontend files modified:
 0
-
-Correlation readiness:
-
-At least one VERIFIED Client Record -> Legal Entity link:
-YES / NO
-
-At least one ACCEPTED V1 relationship:
-YES / NO
-
-At least one accepted relationship with qualifying Client Universe identity at both endpoints:
-YES / NO
-
-DIRECT correlation:
-READY / NOT_READY
-
-DERIVED multi-hop correlation:
-READY / NOT_READY
 
 Backend tests:
 passed / failed / skipped
@@ -1359,18 +1828,31 @@ SQLite foreign-key check:
 
 SQLite quick check:
 
-Replay/idempotence:
+Configuration bootstrap replay:
 PASS / FAIL
 
-Duplicate objects on replay:
+Correlation configuration readiness:
+READY / PARTIAL / FAIL
+
+Correlation engine readiness:
+READY / PARTIAL / FAIL
+
+Correlation API:
+NOT_IMPLEMENTED
+
+Correlation UI:
+NOT_IMPLEMENTED
+
+AI Create Correlation:
+NOT_IMPLEMENTED
 
 Report:
-backend/data/CCR_V1_IDENTITY_RESOLUTION_PILOT_REPORT.md
+backend/data/CCR_V1_CORRELATION_CONFIGURATION_ENGINE_FOUNDATION_REPORT.md
 
 Recommended next action:
 
-If identity and at least one V1 relationship are sufficiently proven, recommend:
+If correlation configuration and engine are READY and the real 3M/3M India DIRECT result is produced correctly, recommend:
 
-CCR V1 — CORRELATION CONFIGURATION + CORRELATION ENGINE FOUNDATION
+CCR CORRELATION API + QUERY LAYER
 
-Do not begin that next stage automatically.
+Do not begin API, frontend, AI Create Correlation, or new enrichment research automatically.
