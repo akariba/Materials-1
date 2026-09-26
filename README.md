@@ -1,125 +1,50 @@
 IMPLEMENT WITH LUNA
 
 CCR — CLIENT CORRELATION
-V1 STAGE 2 — CONTROLLED 3M HISTORICAL MIGRATION AND REVALIDATION
-OFFLINE / EVIDENCE-BOUND / NON-DESTRUCTIVE
+V1 STAGE 3 — CONTROLLED LEGAL ENTITY IDENTITY RESOLUTION PILOT
 
-The CCR V1 Foundation is now complete through Stage 1.1.
+This is an implementation/execution stage.
 
-Current verified baseline:
+It is NOT another architecture audit.
 
-Relationship schema: v10
+The purpose is to resolve the identity blocker discovered during the completed 3M V1 controlled revalidation so that existing evidence-backed claims can become real CCR V1 relationships where the identity gate is satisfied.
 
-Client Universe:
+Do not continue into correlation-engine development automatically after completing this stage.
+
+==================================================
+1. CURRENT VERIFIED BASELINE
+==================================================
+
+CCR V1 Foundation Stage 1:
+COMPLETE
+
+CCR V1 Foundation Stage 1.1:
+COMPLETE
+
+3M controlled V1 revalidation:
+COMPLETE
+
+Current relationship schema:
+v10
+
+Authoritative Client Universe:
+backend/Customer_latest.parquet
+
+Expected source properties:
+
 3,670,650 rows
 3,670,650 unique GFCIDs
 
-Backend tests:
-63 passed
-0 failed
-0 skipped
+Runtime Client Universe:
 
-Historical 3M accepted observations:
-4
-
-Historical graph-visible accepted edges:
-4
-
-Canonical historical evidence resolver:
-PASS
-
-Cabot normalized ordinary evidence:
-recognized
-
-CCR V1 production-like tables:
-empty
-
-Historical Stage 2 rows:
-preserved and unchanged
-
-External provider calls during Stage 1.1:
-0
-
-This stage is now explicitly authorized.
-
-The purpose is to perform the FIRST controlled migration/revalidation of historical CCR relationship evidence into the new CCR V1 model.
-
-This is NOT new research.
-
-This is NOT Stage 2A.8.
-
-This is NOT frontier expansion.
-
-This is NOT frontend work.
-
---------------------------------------------------
-1. OBJECTIVE
---------------------------------------------------
-
-Use the existing persisted 3M pilot data to prove the CCR V1 model end-to-end:
-
-historical evidence
-    ->
-CCR V1 document representation
-    ->
-evidence passage
-    ->
-atomic claim
-    ->
-endpoint identity gate
-    ->
-deterministic acceptance policy
-    ->
-relationship / relationship version
-    ->
-qualifiers and/or events
-    ->
-coverage
-    ->
-auditable comparison with historical Stage 2 result
-
-No historical record may be rewritten.
-
-The V1 result may differ from the historical Stage 2 result.
-
-That is expected.
-
-The historical observations are inputs for revalidation, not V1 truth.
-
---------------------------------------------------
-2. ABSOLUTE NO-RESEARCH RULE
---------------------------------------------------
-
-Do NOT call:
-
-SEC
-GLEIF
-Web
-Stylus
-provider recovery
-frontier expansion
-any external API
-any external website
-
-Do NOT attempt to refresh evidence.
-
-Do NOT use model pretrained knowledge as evidence.
-
-Do NOT infer facts from general knowledge.
-
-Use only evidence already persisted locally.
-
-External provider calls must remain:
-
-0
-
---------------------------------------------------
-3. HISTORICAL 3M ROOT
---------------------------------------------------
-
-Verify the root from the current database.
+backend/data/client_universe.sqlite3
 
 Expected:
+
+3,670,650 client_master rows
+3,670,650 unique GFCIDs
+
+Current 3M root:
 
 client_id:
 437487
@@ -130,1184 +55,1028 @@ GFCID:
 legal_name:
 3M CO
 
-Do not assume the expected values if current persisted data differs.
+Current V1 3M revalidation result:
 
-Report the verified values.
+V1 documents:
+2
 
---------------------------------------------------
-4. HISTORICAL OBSERVATIONS TO REVALIDATE
---------------------------------------------------
+V1 passages:
+6
 
-The four historical accepted observations are expected to be:
+V1 atomic claims:
+9
 
-OBSERVATION 1
+V1 coverage rows:
+2
 
-3M
-->
-3M India Ltd
+V1 events:
+1
 
-historical type:
-subsidiary
+V1 identity links:
+0
 
-endpoint:
-internal Client Universe record
+V1 relationships:
+0
 
-historical acceptance:
-ACCEPTED
+V1 relationship versions:
+0
 
+V1 qualifiers:
+0
 
-OBSERVATION 2
+The reason there are zero V1 relationships is the Legal Entity identity gate.
 
-3M
-<->
+Existing claims were intentionally not promoted where the Client Record -> Legal Entity identity had not been established.
+
+Historical Stage 2 data remains immutable.
+
+==================================================
+2. PRIMARY OBJECTIVE
+==================================================
+
+Create production-quality CCR V1 identity links where defensible between selected Client Universe records and real-world Legal Entities.
+
+Primary target:
+
+3M Client Record
+client_id 437487
+GFCID 0000426083
+legal_name 3M CO
+
+Secondary target:
+
+the exact Client Universe record representing 3M India Ltd used in the historical 3M pilot.
+
+Additional match-back targets:
+
+Solventum Corporation
 Cabot Corporation
 
-historical type:
-legal_counterparty
+The goal is to determine whether these real-world Legal Entities are represented in the 3.67M Client Universe and, where evidence is strong enough, create governed V1 identity links.
 
-endpoint:
-external legal entity
+After identity resolution, re-evaluate ONLY the already-existing V1 3M claims.
 
-historical acceptance:
-ACCEPTED
+Do not perform new relationship discovery.
 
+==================================================
+3. THIS IS IDENTITY RESOLUTION, NOT RELATIONSHIP RESEARCH
+==================================================
 
-OBSERVATION 3
+Allowed activity:
 
-3M
-->
-Solventum Corporation
+Legal Entity identity resolution
+strong-identifier lookup
+official-source entity verification
+Client Universe exact identifier match-back
+identity-support persistence
+existing V1 claim re-evaluation after identity resolution
 
-historical type:
-equity_investor
+Not allowed:
 
-endpoint:
-external legal entity
+supplier discovery
+customer discovery
+lender discovery
+ownership discovery beyond already-persisted claims
+dependency research
+litigation research
+partner research
+new relationship research
+frontier expansion
+hidden-path discovery
+Stage 2A.8
+broad enrichment
 
-historical acceptance:
-ACCEPTED
+Identity-provider information must not automatically become relationship evidence.
 
+==================================================
+4. IDENTITY MODEL
+==================================================
 
-OBSERVATION 4
+Use the existing approved CCR V1 identity-link contract.
 
-3M
-<->
-Solventum Corporation
+link_type:
 
-historical type:
-strategic_partner
+EXACT
+ASSOCIATED
 
-endpoint:
-external legal entity
+link_state:
 
-historical acceptance:
-ACCEPTED
+VERIFIED
+PROBABLE
+UNVERIFIED
+REJECTED
 
-Verify these from the database.
+EXACT means:
 
-Do not silently rely on the prompt.
+the Client Record and Legal Entity refer to the same real-world Legal Entity.
 
---------------------------------------------------
-5. HISTORICAL DATA IS IMMUTABLE
---------------------------------------------------
+ASSOCIATED means:
 
-Do NOT modify:
+the Client Record represents an explicitly evidenced branch, booking capacity, operating capacity, or other governed association with that Legal Entity.
 
-research_runs
-research_raw_results
-research_findings
-relationship_candidates
-relationship_observations
-relationship_evidence
-relationship_observation_evidence
-relationship_recovery_evidence
-relationship_observation_recovery_evidence
-external identity history
-resolution history
-provider attempt history
-traversal history
-frontier history
+ASSOCIATED must NOT mean:
 
-The Stage 2 dataset remains the historical audit record.
+same corporate group
+subsidiary
+parent
+affiliate
+shared CAGID
+shared beneficial owner
 
-CCR V1 records must be new additive records.
+Those are not identity.
 
---------------------------------------------------
-6. USE THE CANONICAL EVIDENCE RESOLVER
---------------------------------------------------
-
-For every historical observation use the Stage 1.1 canonical evidence resolver.
-
-It must recognize:
-
-DIRECT_ORDINARY
-
-NORMALIZED_ORDINARY
-
-RECOVERY
-
-and deduplicate evidence reachable by multiple mechanisms.
-
-Do not create another evidence-resolution implementation.
-
-All migrated evidence lineage must originate from this canonical resolution.
-
---------------------------------------------------
-7. CREATE A DETERMINISTIC MIGRATION RUN
---------------------------------------------------
-
-Introduce or use an existing run/audit mechanism to identify this controlled migration.
-
-The run must have:
-
-stable run identifier
-stage identifier
-policy version
-ontology version
-source database/schema version
-input fingerprint
-as-of date
-created timestamp
-status
-
-Suggested stage name:
-
-CCR_V1_3M_CONTROLLED_REVALIDATION
-
-The same inputs + same policy version must produce the same V1 result.
-
-Rerunning the migration must not create duplicate:
-
-documents
-passages
-claims
-identity links
-relationships
-relationship versions
-qualifiers
-events
-coverage rows
-
-Idempotence is required.
-
---------------------------------------------------
-8. DOCUMENT MIGRATION RULE
---------------------------------------------------
-
-For every historical evidence item used by the four observations, determine what is actually retained.
-
-Do not invent content.
-
-Possible cases include:
-
-A. historical reference/excerpt only
-
-Use:
-
-retention_mode = LEGACY_REFERENCE
-
-Replay capability must reflect reality:
-
-PASSAGE_REPLAY
-PARTIAL_REPLAY
-or
-NO_REPLAY
-
-Never FULL_REPLAY.
-
-
-B. retained cached body exists and can be deterministically tied to the evidence item
-
-Only then may a stronger retention representation be used.
-
-Do not automatically classify cached material as FULL_SNAPSHOT.
-
-Verify:
-
-body identity
-content hash
-source reference
-lineage
-
-before doing so.
-
-
-C. evidence reference exists but exact excerpt cannot be verified
-
-Represent honestly.
-
-Do not fabricate a passage.
-
-Do not mark verified excerpt if verification is impossible.
-
---------------------------------------------------
-9. DOCUMENT DEDUPLICATION
---------------------------------------------------
-
-The same underlying source document must not become multiple CCR V1 documents merely because:
-
-SEC
-Web
-recovery
-or historical ingestion
-
-retrieved or referenced it differently.
-
-Use deterministic source/document identity where possible.
-
-Retrieval mechanism remains separate from source class.
-
-Example:
-
-retrieval mechanism:
-WEB
-
-underlying source:
-SEC filing
-
-source class:
-REGULATORY_FILING
-
-must not become independent corroboration.
-
---------------------------------------------------
-10. PASSAGE MIGRATION
---------------------------------------------------
-
-Create ccr_v1_passages only where an exact historical excerpt/text is actually retained.
-
-Preserve:
-
-exact excerpt
-source reference
-historical evidence identifier
-hash if available
-locator/page/offset only if actually known
-verification capability
-provenance
-
-Do NOT invent:
-
-page
-offset
-section
-document position
-
-when the old evidence does not contain it.
-
-Historical excerpt-only passages should remain visibly legacy-limited.
-
---------------------------------------------------
-11. ATOMIC CLAIM EXTRACTION
---------------------------------------------------
-
-Convert the retained 3M evidence into atomic CCR V1 claims.
-
-This is a deterministic migration/revalidation exercise.
-
-Do not merely copy the historical relationship label into claim.relationship_type.
-
-Read the persisted evidence/excerpt.
-
-Represent exactly what the source states.
-
-One passage may create multiple independent atomic claims.
-
-Example:
-
-a passage may separately state:
-
-A retains a 19.9% interest in B
-
-and
-
-A and B entered transition service arrangements
-
-Those are separate claims.
-
-Do not collapse them into:
-
-strategic_partner
-
-unless the source itself makes a qualifying partnership claim and the V1 ontology permits it.
-
---------------------------------------------------
-12. CLAIM DISCIPLINE
---------------------------------------------------
-
-Each atomic claim must represent one assertion.
-
-Do not create compound claims such as:
-
-"A owns and controls and supplies B"
-
-Create separate claims when separate facts are stated.
-
-A claim may have:
-
-resolved subject legal entity
-resolved object legal entity
-
-or:
-
-unresolved subject/object mention
-
-Do not create placeholder legal entities merely to complete a relationship.
-
-Unresolved endpoints remain unresolved claims.
-
---------------------------------------------------
-13. IDENTITY GATE COMES BEFORE CLIENT CONNECTION
---------------------------------------------------
-
-A V1 relationship connects:
-
-LEGAL ENTITY
-to
-LEGAL ENTITY
-
-A client-to-client interpretation additionally requires qualifying Client Record <-> Legal Entity identity links.
+==================================================
+5. STRICT IDENTITY PRINCIPLES
+==================================================
 
 Do NOT assume:
 
-GFCID = legal entity
+1 GFCID = 1 Legal Entity
 
-Do NOT infer VERIFIED identity from:
+Do NOT automatically treat:
 
-name equality alone
+GFCID
 CAGID
 CAGID_NAME
 beneficial_owner_gfcid
-legal_entity_id without established semantics
-lei_legal_name alone
-fuzzy similarity
+legal_entity_id
+lei_legal_name
+legal_name
+alias
+account type
+customer type
+GFCID type
 
-No fuzzy merge.
+as sufficient Legal Entity proof by themselves.
 
---------------------------------------------------
-14. INTERNAL CLIENT ENDPOINTS
---------------------------------------------------
+Do NOT use:
 
-3M and 3M India are represented in the Client Universe.
+fuzzy name matching
+edit distance
+token similarity
+embedding similarity
+LLM similarity
+name popularity
 
-That fact alone does not establish their legal-entity identity.
+to create a VERIFIED identity link.
 
-For each, inspect existing local deterministic identifiers and historical/provider identity evidence.
+Search candidate != identity proof.
 
-If existing evidence is sufficient for an EXACT or ASSOCIATED legal-entity link under current CCR rules, create the corresponding link with explicit provenance.
+==================================================
+6. STRONG IDENTIFIER PRIORITY
+==================================================
 
-Otherwise use:
+Resolve identity using strong identifiers first.
 
-UNVERIFIED
+Potential strong identity evidence includes, where semantics are established:
 
-or:
+LEI
+CIK
+official registry identifier
+official incorporation/company identifier
+other approved stable Legal Entity identifier
 
-PROBABLE
+For every identifier used as proof, validate:
 
-as appropriate.
+identifier type
+identifier value
+issuing/source authority
+entity legal name
+entity status where relevant
+jurisdiction where relevant
+consistency with the Client Record
 
-Do NOT promote to VERIFIED merely so a V1 relationship can be created.
+Do not assume the Client Universe field:
 
-If the subject identity remains insufficient for an accepted entity relationship, report:
+legal_entity_id
 
-IDENTITY_BLOCKED
+is an LEI merely because it contains an LEI-shaped value.
 
-rather than weakening the identity gate.
+Validate what it actually represents.
 
---------------------------------------------------
-15. EXISTING CABOT AND SOLVENTUM ENTITY RECORDS
---------------------------------------------------
+==================================================
+7. EXTERNAL SOURCES AUTHORIZED
+==================================================
 
-The existing external_entities rows for Cabot and Solventum remain the current legal-entity storage boundary.
+Unlike the previous offline stages, this stage MAY use external identity sources.
 
-Reuse them when appropriate.
+Authorized providers:
 
-Do not create duplicate legal entities.
+GLEIF
+SEC
 
-Preserve their existing:
+Web may be used only as a narrowly scoped fallback for official/primary Legal Entity identity evidence.
+
+Web must NOT be used for broad relationship discovery.
+
+All provider calls must be recorded.
+
+==================================================
+8. GLEIF ROLE
+==================================================
+
+GLEIF is an identity source.
+
+Use GLEIF for:
+
+LEI lookup
+official Legal Entity name
+entity status
+registered address/jurisdiction where relevant
+identifier verification
+
+GLEIF search ranking is not identity proof.
+
+A candidate returned from GLEIF becomes VERIFIED only when deterministic evidence supports the match.
+
+Do not use GLEIF Level 2 to create ownership relationships in this stage.
+
+Do not create:
+
+owns
+controls
+
+from GLEIF relationship data during this identity stage.
+
+==================================================
+9. SEC ROLE
+==================================================
+
+SEC is an identity source where applicable.
+
+Use:
+
+CIK
+registrant legal name
+filing entity metadata
+official ticker/CIK mapping where appropriate
+
+Do not use:
+
+ticker alone
+filing co-mention
+subsidiary mention
+brand mention
+
+as standalone identity proof.
+
+Ensure SEC User-Agent and transport configuration are correct before making calls.
+
+Persist provider-attempt audit records.
+
+==================================================
+10. WEB FALLBACK ROLE
+==================================================
+
+Web is permitted only when GLEIF/SEC cannot resolve the identity and an official primary identity source is required.
+
+Allowed examples:
+
+official company registry
+official issuer legal page
+government corporate registry
+official exchange filing identity page
+
+Do not use general news or search-result snippets as VERIFIED identity proof.
+
+Do not perform broad open-web research.
+
+==================================================
+11. RESOLVE 3M FIRST
+==================================================
+
+For:
+
+client_id 437487
+GFCID 0000426083
+legal_name 3M CO
+
+Inspect all current Client Universe identity context first.
+
+Report:
+
+GFCID
+legal_name
+legal_entity_id
+lei_legal_name
+CAGID
+CAGID_NAME
+aliases
+GFCID type
+customer type
+account type
+other normalized identifiers
+
+Then resolve the corresponding real-world Legal Entity.
+
+Try to establish:
+
+link_type = EXACT
+
+link_state = VERIFIED
+
+only if deterministic evidence supports it.
+
+If evidence supports only a weaker state:
+
+use PROBABLE or UNVERIFIED.
+
+Do not promote for convenience.
+
+==================================================
+12. 3M LEGAL ENTITY RECORD
+==================================================
+
+Before creating a new external Legal Entity:
+
+search existing external_entities using strong identifiers and existing canonical identity data.
+
+If the Legal Entity already exists:
+
+reuse it.
+
+If no valid record exists and the identity is sufficiently established:
+
+create exactly one Legal Entity record using the existing legal-entity storage boundary.
+
+Preserve:
+
+canonical legal name
+strong identifier(s)
+source
+jurisdiction if known
+status if available
+identity provenance
+
+Do not create a generic "3M group" organization node.
+
+==================================================
+13. IDENTITY SUPPORT
+==================================================
+
+Every created CCR V1 identity link must have explicit support.
+
+Use:
+
+ccr_v1_identity_link_support
+
+or the current approved support contract.
+
+Persist enough information to answer:
+
+Which source proved this?
+Which identifier was used?
+What identifier type?
+What Legal Entity did it identify?
+What Client Record was linked?
+What decision rule was used?
+Which policy version?
+Which provider?
+When was the decision made?
+What was the as-of date?
+Why was the state VERIFIED / PROBABLE / UNVERIFIED?
+
+Do not rely on free-text explanation alone.
+
+==================================================
+14. RESOLVE 3M INDIA
+==================================================
+
+Identify the exact internal Client Universe record used by historical observation 1.
+
+Verify from current persisted data:
+
+client_id
+GFCID
+legal_name
+legal_entity_id
+lei_legal_name
+aliases
+other available identifiers
+
+Then resolve the real-world Legal Entity represented by that Client Record.
+
+Do not rely solely on the name "3M India Ltd".
+
+Attempt strong-identifier identity proof.
+
+If deterministic evidence supports it:
+
+create:
+
+EXACT + VERIFIED
+
+Otherwise preserve the appropriate weaker state.
+
+Do not create a relationship simply because the historical relationship said subsidiary.
+
+==================================================
+15. SOLVENTUM — REUSE EXISTING LEGAL ENTITY
+==================================================
+
+An external Solventum Legal Entity already exists.
+
+Do not create another one.
+
+Inspect its:
 
 external_entity_id
-canonical name
+canonical legal name
 provider identifiers
 identity evidence
 resolution history
+LEI if available
+CIK if available
+other strong identifiers
 
-Create CCR V1 identity-link/support records only when justified by existing deterministic evidence.
+Use this existing Legal Entity as the real-world entity anchor.
 
-Do not convert historical AMBIGUOUS internal-match status into VERIFIED.
+==================================================
+16. SOLVENTUM CLIENT UNIVERSE MATCH-BACK
+==================================================
 
---------------------------------------------------
-16. V1 RELATIONSHIP TYPES
---------------------------------------------------
+Determine whether the exact Solventum Legal Entity is represented in the 3.67M Client Universe.
 
-ACTIVE V1 relationship types:
+Search using:
 
-owns
-controls
-lends_to
-provides_credit_support
-supplies
-depends_on_products_of
+strong identifiers first
 
-PASSIVE / OPPORTUNISTIC ontology-supported types:
+Then exact deterministic supporting metadata.
 
-manages
-licenses_to
-partners_with
-litigates_against
+Possible outcomes:
 
-Deferred:
-
-provides_professional_services_to
-broad passive equity harvesting
-regulatory relationships
-natural-person external enrichment
-organisation-grain relationships
-
-The historical Stage 2 labels:
-
-subsidiary
-legal_counterparty
-equity_investor
-strategic_partner
-
-are NOT V1 relationship types.
-
-They must be revalidated.
-
---------------------------------------------------
-17. HISTORICAL `subsidiary` REVALIDATION
---------------------------------------------------
-
-Do not simply rename:
-
-subsidiary
-->
-controls
-
-Inspect the source evidence.
-
-`controls` may be accepted only when the evidence explicitly establishes control through something such as:
-
-subsidiary/consolidation statement
-controlled-by statement
-accounting consolidation
-voting control
-general-partner structure
-explicit contractual control
-
-If the source is an SEC Exhibit 21 or equivalent and identifies the entity as a subsidiary, that may support:
-
-controls
-
-with:
-
-control_basis = SUBSIDIARY_DISCLOSURE
-
-Do not infer ownership percentage.
-
-`owns` must remain independent.
-
-Only create an owns claim/version if the source actually provides sufficient ownership evidence.
-
-Do not assume:
-
-subsidiary = 100% owned
-
---------------------------------------------------
-18. HISTORICAL `equity_investor` REVALIDATION
---------------------------------------------------
-
-Do not preserve `equity_investor` as a V1 relationship type.
-
-Inspect the actual evidence.
-
-If the source explicitly states that 3M owns/retains a stake in Solventum, create:
-
-owns
-
-Direction:
-
-3M -> Solventum
-
-If a percentage is explicitly stated, create an independently evidenced qualifier:
-
-ownership_percentage
-
-Preserve direct/indirect basis exactly as stated.
-
-Never invent a percentage.
-
-An accepted owns relationship must satisfy the frozen V1 evidence rule.
-
-Primary evidence is sufficient.
-
-Single secondary evidence alone is not sufficient for ACCEPTED.
-
---------------------------------------------------
-19. HISTORICAL `strategic_partner` REVALIDATION
---------------------------------------------------
-
-`strategic_partner` is not a V1 relationship type.
-
-Do not map it automatically to:
-
-partners_with
-
-Read the actual retained evidence.
-
-Possible decompositions include:
-
-supplies
-licenses_to
-partners_with
-event/context only
-no supported V1 relationship
-
-Examples:
-
-transition services agreement
-may support:
-supplies
-
-licensing agreement
-may support:
-licenses_to
-
-specifically scoped collaboration agreement
-may support:
-partners_with
-
-generic wording such as:
-strategic partner
-technology partner
-ecosystem partner
-
-without described scope is NOT sufficient for an accepted V1 relationship.
-
-One historical strategic_partner observation may produce:
-
-0
-1
-or multiple
-
-V1 atomic claims/relationships.
-
-That is acceptable.
-
---------------------------------------------------
-20. HISTORICAL `legal_counterparty` REVALIDATION
---------------------------------------------------
-
-`legal_counterparty` is not a V1 relationship type.
-
-Do not migrate it directly.
-
-Inspect the actual Cabot evidence.
-
-Potential outcomes include:
-
-A. litigates_against
-
-Only if evidence clearly establishes:
-
-plaintiff/claimant
-->
-defendant/respondent
-
-for an identifiable case.
-
-Direction must be explicit.
-
-Regulatory enforcement is excluded.
-
-
-B. event-only
-
-If the retained evidence describes a:
-
-settlement
-legal resolution
-transaction
-indemnity event
-
-without a qualifying persistent V1 relationship, represent the appropriate event/context only.
-
-
-C. unsupported V1 relationship
-
-If the historical evidence merely establishes that Cabot is a legal counterparty but does not satisfy a V1 relationship type:
-
-do not create a relationship.
-
-Preserve the claim/evidence and classify the historical observation as revalidation-rejected or not-mappable.
-
-Do not manufacture a V1 edge simply to preserve historical graph density.
-
---------------------------------------------------
-21. `supplies` ACCEPTANCE RULE
---------------------------------------------------
-
-For any 3M evidence that may support supplies:
-
-Direction:
-
-supplier -> customer
-
-Accept existence if:
-
-PRIMARY evidence explicitly states supply relationship
-
-OR
-
-two independent approved secondary sources corroborate it.
-
-Examples sufficient:
-
-"X supplies Y to A"
-
-"X is our supplier"
-
-named filed supply agreement
-
-Named supplier list may support existence but not unstated qualifiers.
-
-Insufficient:
-
-co-mention
-product use
-compatibility
-generic relationship wording
-
---------------------------------------------------
-22. `depends_on_products_of` RULE
---------------------------------------------------
-
-Direction:
-
-dependent -> producer
-
-Requires explicit dependency language such as:
-
-rely on
-depend on
-critical input
-essential component
-sole-source
-single-source
-no readily available substitute
-
-Mere usage or incorporation is insufficient.
-
-The producer must resolve to a Legal Entity.
-
---------------------------------------------------
-23. `partners_with` RULE
---------------------------------------------------
-
-V1 passive type.
-
-Requires:
-
-named agreement
-
-or:
-
-specifically described scoped collaboration
-
-in PRIMARY evidence.
-
-Generic marketing partnership wording is not sufficient.
-
-Do not use `partners_with` as a catch-all for any commercial agreement.
-
---------------------------------------------------
-24. `licenses_to` RULE
---------------------------------------------------
-
-V1 passive type.
-
-Only migrate if the retained source demonstrates a meaningful named IP/technology licence.
-
-Ordinary enterprise/software/SaaS usage does not qualify.
-
-Direction:
-
-licensor -> licensee
-
---------------------------------------------------
-25. `litigates_against` RULE
---------------------------------------------------
-
-Direction:
-
-plaintiff/claimant -> defendant/respondent
-
-Requires PRIMARY evidence such as:
-
-court record
-filed litigation disclosure
-
-Parties and roles must be sufficiently clear.
-
-Settlement itself is an event, not automatically a persistent litigation relationship.
-
---------------------------------------------------
-26. EVIDENCE BASIS
---------------------------------------------------
-
-Use only:
-
-PRIMARY
-CORROBORATED
-SINGLE_SECONDARY
+VERIFIED
+PROBABLE
+AMBIGUOUS
+NO_MATCH
 INSUFFICIENT
 
-No HIGH/MEDIUM/LOW numerical or ordinal confidence controls acceptance.
+If exactly one Client Universe record is proven to represent the same Legal Entity:
 
-Historical confidence may remain in lineage metadata but must not decide V1 acceptance.
+create:
 
-PRIMARY includes appropriate:
+EXACT + VERIFIED
 
-REGISTRY
-REGULATORY_FILING
-ISSUER_FILING
-ISSUER_IR where allowed by type
-OFFICIAL_TRANSACTION_DOCUMENT
-GOVERNMENT
-EXCHANGE_FILING
+identity link.
 
-CORROBORATED requires at least two genuinely independent approved secondary sources.
+If several Client Records are plausible:
 
-Do not double-count syndicated or derivative sources.
+do not choose arbitrarily.
 
---------------------------------------------------
-27. RELATIONSHIP VERSION STATES
---------------------------------------------------
+Report:
 
-Use:
+AMBIGUOUS
 
-CANDIDATE
-ACCEPTED
-DISPUTED
-REJECTED
+unless evidence proves the role of each record.
 
-Freshness is separate.
+==================================================
+17. CABOT — REUSE EXISTING LEGAL ENTITY
+==================================================
 
-Temporal validity is separate.
+An external Cabot Legal Entity already exists.
 
-Evidence basis is separate.
+Do not create another one.
 
-Do not create a relationship version merely because the historical Stage 2 observation was ACCEPTED.
+Inspect the existing Legal Entity identity evidence and strong identifiers.
 
-The new V1 version must satisfy V1 rules.
+Then determine whether the same Legal Entity is represented in the Client Universe.
 
---------------------------------------------------
-28. QUALIFIERS
---------------------------------------------------
+Use the same outcomes:
 
-Qualifiers must be evaluated separately from the base relationship.
+VERIFIED
+PROBABLE
+AMBIGUOUS
+NO_MATCH
+INSUFFICIENT
 
-Potential relevant 3M qualifiers include:
+No fuzzy auto-link.
 
-ownership_percentage
-ownership_basis
-control_basis
-agreement_name
-product_or_service_category
-described_as_critical
-described_as_strategic
-sole_source
-single_source
-revenue_share
-spend_share
+==================================================
+18. MULTIPLE CLIENT RECORDS FOR ONE LEGAL ENTITY
+==================================================
 
-Do not create a qualifier unless supported by evidence.
+This is a critical rule.
 
-A base relationship can be ACCEPTED while a qualifier is:
+If one Legal Entity appears to match several Client Universe records:
 
-CANDIDATE
-DISPUTED
-UNKNOWN
+do not silently collapse them.
 
-Do not hold back a valid base relationship merely because an optional qualifier is weak.
+Do not assume duplicate GFCIDs.
 
---------------------------------------------------
-29. EVENT USE
---------------------------------------------------
+Do not assume branch semantics.
 
-Use the new event model where historically retained evidence actually describes an event.
+Do not assume account-role semantics.
 
-Potential 3M examples may include:
+Create VERIFIED identity links only where the relationship between each Client Record and the Legal Entity is explicitly supportable.
 
-spin-off
-settlement
-agreement signing
-transition arrangement
-transaction completion
+Otherwise:
 
-Do not create an event simply because one is expected from general knowledge.
+PROBABLE
+UNVERIFIED
+or no link
 
-Use only persisted evidence.
+is acceptable.
 
-Creating an event must not automatically create a relationship.
+==================================================
+19. IDENTITY CONFLICTS
+==================================================
 
---------------------------------------------------
-30. COVERAGE
---------------------------------------------------
+If:
 
-This stage is not a complete research campaign.
+GLEIF
+SEC
+Client Universe identifiers
+official registry data
 
-Therefore do NOT claim systematic:
+conflict:
 
-RESEARCHED_NONE_FOUND
+do not silently prefer one.
 
-for any active family merely because the four historical observations did not contain that family.
-
-Coverage for this controlled migration should explicitly indicate its bounded scope.
-
-Appropriate states may include:
-
-NOT_RESEARCHED
-
-or:
-
-PARTIAL
-
-depending on what the migrated evidence represents.
-
-This migration is:
-
-historical-evidence revalidation
-
-not:
-
-complete 3M enrichment research.
-
-Do not claim full ownership/control/financing/supply coverage.
-
---------------------------------------------------
-31. HISTORICAL-TO-V1 DISPOSITION
---------------------------------------------------
-
-For each of the four historical observations assign one or more migration dispositions.
+Record the conflict.
 
 Use:
 
-CONFIRMED
-RECLASSIFIED
-DOWNGRADED
+PROBABLE
+UNVERIFIED
 REJECTED
-EVENT_ONLY
+
+as appropriate.
+
+Do not allow unresolved conflict to produce an accepted client-to-client correlation path.
+
+==================================================
+20. DO NOT USE RELATIONSHIP CLAIMS AS IDENTITY SHORTCUTS
+==================================================
+
+Existing evidence saying:
+
+3M owns 75% of 3M India
+
+does not automatically prove that:
+
+Client Record 437487 = the Legal Entity described in that filing.
+
+Identity must have its own support.
+
+Likewise:
+
+relationship evidence
+!=
+identity evidence
+
+unless the same source passage explicitly and independently establishes Legal Entity identity.
+
+==================================================
+21. RE-EVALUATE EXISTING V1 CLAIMS AFTER IDENTITY
+==================================================
+
+Once identity resolution is complete, re-evaluate ONLY the existing claims created during:
+
+CCR_V1_3M_CONTROLLED_REVALIDATION
+
+Do not discover new claims.
+
+Existing claims include ownership and commercial-context assertions.
+
+For each claim previously marked:
+
 IDENTITY_BLOCKED
-EVIDENCE_LIMITED
 
-Definitions:
+re-evaluate the identity gate.
 
-CONFIRMED
-The same factual relationship survives and maps directly enough to a V1 relationship.
+Possible outcomes:
 
-RECLASSIFIED
-The underlying fact survives but maps to a different V1 type or multiple V1 claims.
+remains blocked
+becomes CANDIDATE relationship version
+becomes ACCEPTED relationship version
 
-DOWNGRADED
-Historical accepted observation becomes only CANDIDATE under V1.
+depending on:
 
-REJECTED
-Historical observation does not meet any V1 relationship rule.
+endpoint identity
+relationship evidence
+evidence basis
+current V1 acceptance rules
 
-EVENT_ONLY
-Evidence supports an event but not a persistent V1 relationship.
+==================================================
+22. 3M -> 3M INDIA `owns`
+==================================================
 
-IDENTITY_BLOCKED
-Relationship evidence may be adequate but endpoint identity gate prevents accepted relationship creation.
+The controlled revalidation found evidence stating approximately:
 
-EVIDENCE_LIMITED
-Stored historical evidence is insufficient for deterministic V1 acceptance and no refetch is allowed in this stage.
+75% ownership
 
-Multiple dispositions may be recorded where necessary, but explain them.
+Do not trust this prompt.
 
---------------------------------------------------
-32. EXPECT DIFFERENT COUNTS
---------------------------------------------------
+Use the already-persisted V1 claim/evidence.
 
-Do NOT target:
+If:
 
-4 historical observations
-=
-4 V1 relationships
+3M Legal Entity identity passes
 
-The correct V1 count may be:
+and:
 
-less than 4
-equal to 4
-greater than 4
+3M India Legal Entity identity passes
 
-because:
+and:
 
-one historical observation may produce no V1 relationship
+existing evidence satisfies V1 owns acceptance
 
-or:
+then create:
 
-one historical observation may decompose into multiple atomic V1 relationships.
+ccr_v1_relationships
 
-Correct evidence semantics matter more than preserving historical graph density.
+relationship_type:
+owns
 
---------------------------------------------------
-33. MIGRATION LINEAGE
---------------------------------------------------
+direction:
+3M Legal Entity -> 3M India Legal Entity
 
-Every V1 object created from historical data must preserve lineage sufficient to trace back to:
+Create a relationship version with the correct:
 
-historical observation ID
-historical candidate ID if relevant
-historical evidence ID
-recovery evidence ID if relevant
-research run
-source reference
-migration run
+acceptance state
+evidence basis
+dates/as-of metadata
 policy version
 ontology version
 
-Do not require an analyst to reverse-engineer lineage from free text.
+If the evidence explicitly states:
 
-If existing provenance JSON is sufficient, use it consistently.
+75%
 
-If a tiny additive crosswalk structure is necessary, add the minimum schema required.
+then create:
 
-Do not redesign the whole schema.
+ownership_percentage = 75%
 
---------------------------------------------------
-34. IDEMPOTENCE
---------------------------------------------------
+as a qualifier supported by its own claim/evidence.
 
-Run this controlled migration at least twice or use the repository's deterministic replay mechanism.
+Do not infer:
+
+controls
+
+unless a separate controls claim exists and passes.
+
+==================================================
+23. 3M -> SOLVENTUM `owns`
+==================================================
+
+Existing V1 claims include explicit historical ownership assertions such as:
+
+19.9%
+
+and a later:
+
+14.8%
+
+Use only persisted claims.
+
+If 3M identity passes and Solventum is already a resolved Legal Entity:
+
+re-evaluate the ownership claims.
+
+Do not overwrite the percentages.
+
+Preserve temporal context.
+
+Possible correct representation:
+
+stable relationship:
+owns
+
+relationship versions / qualifier history:
+
+ownership_percentage = 19.9
+observed/effective context A
+
+ownership_percentage = 14.8
+observed/effective context B
+
+Do not invent exact effective dates when the source only gives observation/reporting context.
+
+==================================================
+24. SOLVENTUM COMMERCIAL / SUPPLY CLAIM
+==================================================
+
+The controlled revalidation found transition-services / commercial context.
+
+Do not recreate historical:
+
+strategic_partner
+
+Do not automatically create:
+
+partners_with
+
+If an existing V1 atomic claim already explicitly satisfies:
+
+supplies
+
+then evaluate that existing claim under the V1 supplies rule after identity passes.
+
+Direction must reflect:
+
+supplier -> customer
+
+based on the actual evidence.
+
+Do not guess direction.
+
+If evidence is insufficient:
+
+leave it as a claim/candidate.
+
+==================================================
+25. CABOT RELATIONSHIP CLASSIFICATION
+==================================================
+
+Do NOT perform new Cabot legal research.
+
+The previous revalidation found:
+
+indemnification/legal context
+
+but not sufficient evidence for:
+
+litigates_against
+
+Do not change that conclusion merely because identity becomes resolved.
+
+This stage may resolve Cabot identity only.
+
+No new Cabot relationship should be created unless an already-existing V1 claim independently qualifies under an already-existing acceptance rule.
+
+==================================================
+26. EVENT HANDLING
+==================================================
+
+Existing V1 event:
+
+SPIN_OFF
+
+must remain independent of relationships.
+
+Do not let identity resolution automatically convert the event into:
+
+owns
+controls
+partners_with
+or any other relationship.
+
+Preserve event/relationship separation.
+
+==================================================
+27. COVERAGE
+==================================================
+
+This stage is:
+
+IDENTITY RESOLUTION
++
+LIMITED RE-EVALUATION OF EXISTING CLAIMS
+
+It is NOT a full relationship enrichment campaign.
+
+Do not create:
+
+RESEARCHED_NONE_FOUND
+
+for broad relationship families.
+
+Preserve:
+
+PARTIAL
+
+where appropriate.
+
+==================================================
+28. CORRELATION READINESS ASSESSMENT
+==================================================
+
+At the end, explicitly assess readiness for the next stage.
+
+Answer these questions:
+
+A.
+Do we have at least one:
+
+VERIFIED Client Record -> Legal Entity link?
+
+B.
+Do we have at least one:
+
+ACCEPTED V1 Legal Entity relationship?
+
+C.
+Do we have any accepted relationship where BOTH Legal Entity endpoints map to Client Universe records through qualifying identity links?
+
+D.
+Can we demonstrate:
+
+DIRECT correlation?
+
+E.
+Do we have sufficient accepted relationship topology to demonstrate any real two-hop derived correlation?
+
+Examples:
+
+SHARED_CONTROLLER
+SHARED_SUPPLIER
+SHARED_CUSTOMER
+SUPPLY_CHAIN
+
+Do not fabricate readiness.
+
+Expected possible outcome:
+
+DIRECT = READY
+
+DERIVED MULTI-HOP = NOT_READY
+
+That is acceptable.
+
+==================================================
+29. IMPORTANT — DO NOT BUILD CORRELATION YET
+==================================================
+
+Do NOT implement:
+
+correlation definition tables
+correlation configuration
+correlation engine
+shared-supplier logic
+shared-controller logic
+shared-customer logic
+supply-chain logic
+shared-lender logic
+correlation API
+correlation UI
+AI Create Correlation
+
+Those are the immediately following authorized design direction, but they are not part of this stage.
+
+==================================================
+30. SCHEMA
+==================================================
+
+Current schema:
+
+v10
+
+Prefer to stay at:
+
+v10
+
+unless a genuinely missing identity-audit structure requires an additive migration.
+
+Do not increment the schema unnecessarily.
+
+If a migration is required:
+
+keep it minimal
+additive
+idempotent
+replay-safe
+foreign-key safe
+
+Explain why.
+
+==================================================
+31. IDEMPOTENCE
+==================================================
+
+The identity-resolution run must be deterministic where inputs and external identity evidence are unchanged.
+
+Run/replay the local persistence stage twice where practical.
 
 Second execution must create:
 
-0 duplicate documents
-0 duplicate passages
-0 duplicate claims
+0 duplicate Legal Entities
 0 duplicate identity links
+0 duplicate identity-support rows
 0 duplicate relationships
 0 duplicate relationship versions
 0 duplicate qualifiers
-0 duplicate events
-0 duplicate coverage rows
 
-Report replay results.
+Report all duplicate counts.
 
---------------------------------------------------
-35. NO BROAD ONTOLOGY MIGRATION
---------------------------------------------------
+==================================================
+32. PROVIDER AUDIT
+==================================================
 
-Only migrate/revalidate evidence connected to the 3M pilot.
+Record every external identity-provider call.
 
-Do NOT migrate all historical relationship observations.
+For each:
 
-Do NOT migrate all 14 candidates beyond what is necessary to preserve the four-observation evidence lineage.
+provider
+entity target
+query/identifier
+purpose
+HTTP/result status
+cache status
+network attempted
+result
+whether the result contributed to identity proof
 
-Do NOT perform Client Universe-wide enrichment.
+Do not treat provider failure as:
 
-Do NOT bulk-create identity links.
+NO_MATCH
 
---------------------------------------------------
-36. OPTIONAL CANDIDATE CONTEXT
---------------------------------------------------
+Use:
 
-The 14 historical candidates may be inspected when required to understand lineage of evidence supporting the four accepted observations.
+UNAVAILABLE
+or
+INSUFFICIENT
 
-Do not migrate unrelated candidate relationships into V1 production records during this stage.
+where appropriate.
 
-If a candidate contains evidence essential to an accepted historical observation, preserve that lineage.
+==================================================
+33. REQUIRED TESTS
+==================================================
 
---------------------------------------------------
-37. DO NOT PERFORM NEW PATH DISCOVERY
---------------------------------------------------
+Preserve all current backend tests.
 
-No:
+Add focused tests covering at minimum:
 
-traversal expansion
-frontier research
-hidden relationship mining
-client-connection pattern calculation
-shared-supplier calculation
-shared-controller calculation
-shared-lender calculation
+1.
+strong exact identifier can support VERIFIED EXACT identity.
 
-This stage validates V1 facts for one known pilot.
+2.
+name-only match cannot create VERIFIED identity.
 
-Client connections come later.
+3.
+alias-only match cannot create VERIFIED identity.
 
---------------------------------------------------
-38. API
---------------------------------------------------
+4.
+CAGID cannot create VERIFIED identity.
 
-Do not build broad V1 APIs yet.
+5.
+CAGID_NAME cannot create VERIFIED identity.
 
-If necessary, add a minimal read-only diagnostic endpoint only if repository conventions genuinely require one.
+6.
+beneficial_owner_gfcid cannot create VERIFIED identity.
 
-Prefer repository/report/test validation over adding an API.
+7.
+legal_entity_id is not assumed to be an LEI.
 
-No frontend integration.
+8.
+lei_legal_name alone is not identity proof.
 
---------------------------------------------------
-39. DATABASE SCHEMA
---------------------------------------------------
+9.
+FTS/search result is candidate discovery only.
 
-Current schema is v10.
+10.
+existing Legal Entity is reused by strong identifier.
 
-Do not increment the schema merely because data is populated.
+11.
+duplicate Legal Entity creation is prevented.
 
-Only migrate to v11 if a genuinely necessary small structural addition is required for deterministic historical lineage or migration-run metadata.
+12.
+ambiguous Client Universe matches remain non-VERIFIED.
 
-If no schema change is needed:
+13.
+PROBABLE identity cannot satisfy strict client-correlation identity gate.
 
-remain at v10.
+14.
+UNVERIFIED identity cannot satisfy the strict gate.
 
-Explain the decision.
+15.
+REJECTED identity cannot satisfy the gate.
 
---------------------------------------------------
-40. REQUIRED TESTS
---------------------------------------------------
+16.
+identity support is distinct from relationship support.
 
-Preserve all 63 existing tests.
+17.
+identity-provider evidence cannot automatically create relationship claims.
 
-Add focused migration/revalidation tests covering:
+18.
+existing identity-blocked claim can be re-evaluated after VERIFIED identity exists.
 
-1. migration is deterministic.
+19.
+no new relationship claim is created by identity lookup.
 
-2. migration is idempotent.
+20.
+3M ownership qualifier is not fabricated.
 
-3. historical Stage 2 rows remain unchanged.
+21.
+Solventum percentages remain separately evidenced.
 
-4. LEGACY_REFERENCE evidence cannot become FULL_REPLAY.
+22.
+event does not automatically become relationship.
 
-5. document deduplication works across retrieval mechanisms.
+23.
+Client Universe remains unchanged.
 
-6. passage requires actual retained excerpt.
+24.
+source master remains unchanged.
 
-7. passage locator is not fabricated.
+25.
+no fuzzy merge.
 
-8. one passage may generate multiple atomic claims.
+26.
+identity resolution replay creates zero duplicates.
 
-9. claim is distinct from accepted relationship.
-
-10. unresolved endpoint does not create placeholder Legal Entity.
-
-11. weak identity blocks client-to-client acceptance.
-
-12. PROBABLE identity does not behave as VERIFIED.
-
-13. REJECTED identity is excluded.
-
-14. no fuzzy merge.
-
-15. subsidiary label is not automatically converted to owns.
-
-16. subsidiary evidence can support controls only when evidence satisfies the rule.
-
-17. ownership percentage is not inferred.
-
-18. equity_investor label is not preserved as V1 type.
-
-19. strategic_partner is not automatically mapped to partners_with.
-
-20. legal_counterparty is not a V1 relationship type.
-
-21. settlement event does not automatically create litigates_against.
-
-22. accepted relationship requires sufficient evidence basis.
-
-23. SINGLE_SECONDARY does not satisfy a PRIMARY-required rule.
-
-24. qualifier state is independent of base relationship state.
-
-25. event does not automatically create relationship.
-
-26. controlled migration does not produce RESEARCHED_NONE_FOUND for unsearched families.
-
-27. no provider call occurs.
-
-28. Client Universe remains unchanged.
-
-29. source master remains unchanged.
-
-30. canonical historical evidence resolver remains aligned with graph/API behavior.
-
---------------------------------------------------
-41. 3M COMPARISON REPORT
---------------------------------------------------
-
-Produce a clear before/after table:
-
-HISTORICAL OBSERVATION
-HISTORICAL TYPE
-HISTORICAL ACCEPTANCE
-HISTORICAL EVIDENCE
-V1 ATOMIC CLAIM(S)
-IDENTITY GATE
-V1 RELATIONSHIP TYPE
-V1 VERSION STATE
-V1 EVIDENCE BASIS
-QUALIFIERS
-EVENTS
-DISPOSITION
-RATIONALE
-
-Do this for all four observations.
-
-Do not hide a rejected or downgraded result.
-
---------------------------------------------------
-42. V1 OBJECT COUNTS
---------------------------------------------------
-
-Report exact created counts for:
-
-ccr_v1_identity_links
-ccr_v1_documents
-ccr_v1_passages
-ccr_v1_claims
-ccr_v1_identity_link_support
-ccr_v1_relationships
-ccr_v1_relationship_versions
-ccr_v1_relationship_support
-ccr_v1_qualifiers
-ccr_v1_enrichment_coverage
-ccr_v1_events
-
-Also report counts by:
-
-relationship type
-relationship acceptance state
-evidence basis
-identity state
-retention mode
-migration disposition
-
---------------------------------------------------
-43. SOURCE MASTER INTEGRITY
---------------------------------------------------
-
-Verify:
-
-backend/Customer_latest.parquet
-
-Expected:
-
-3,670,650 rows
-3,670,650 unique GFCIDs
-
-Verify source hash if available.
-
-Modifications:
-
-0
-
---------------------------------------------------
-44. CLIENT UNIVERSE INTEGRITY
---------------------------------------------------
+==================================================
+34. CLIENT UNIVERSE INTEGRITY
+==================================================
 
 Verify:
 
@@ -1315,102 +1084,110 @@ backend/data/client_universe.sqlite3
 
 Expected:
 
-3,670,650 client_master rows
-3,670,650 unique GFCIDs
+client_master rows:
+3,670,650
 
-No rows inserted
-No rows updated
-No rows deleted
+unique GFCIDs:
+3,670,650
 
---------------------------------------------------
-45. NO FRONTEND
---------------------------------------------------
+No rows inserted.
+No rows updated.
+No rows deleted.
+
+==================================================
+35. SOURCE MASTER INTEGRITY
+==================================================
+
+Verify:
+
+backend/Customer_latest.parquet
+
+Expected:
+
+rows:
+3,670,650
+
+unique GFCIDs:
+3,670,650
+
+Verify SHA-256 against the current established source hash.
+
+No modifications.
+
+==================================================
+36. HISTORICAL STAGE 2 IMMUTABILITY
+==================================================
+
+Do not modify historical Stage 2 relationship/research rows.
+
+Expected modification count:
+
+0
+
+Existing historical data remains audit history only.
+
+==================================================
+37. FRONTEND
+==================================================
 
 Frontend files modified:
 
 0
 
-Do not build:
+Do not build any UI.
 
-network map
-relationship workspace
-evidence panel
-dashboard
-client connection UI
-
---------------------------------------------------
-46. CREATE REPORT
---------------------------------------------------
+==================================================
+38. CREATE REPORT
+==================================================
 
 Create:
 
-backend/data/CCR_V1_3M_CONTROLLED_REVALIDATION_REPORT.md
+backend/data/CCR_V1_IDENTITY_RESOLUTION_PILOT_REPORT.md
 
 Required sections:
 
 1. Executive result
 2. Scope and non-actions
-3. Migration run identity
-4. Historical 3M baseline
-5. Evidence inventory used
-6. Document migration
-7. Passage migration
-8. Atomic claims produced
-9. Identity-link evaluation
-10. 3M India revalidation
-11. Cabot revalidation
-12. Solventum ownership revalidation
-13. Solventum strategic-partner revalidation
-14. Event migration
-15. Relationship/version results
-16. Qualifier results
-17. Coverage results
-18. Historical-to-V1 disposition table
-19. V1 object counts
-20. Idempotence/replay result
-21. Test result
-22. SQLite integrity
-23. Client Universe integrity
-24. Source-master integrity
-25. External-call verification
-26. Remaining evidence limitations
-27. Remaining identity limitations
-28. Recommended next action
+3. Input baseline
+4. Identity policy
+5. Provider activity summary
+6. 3M Client Record identity context
+7. 3M Legal Entity resolution
+8. 3M identity-link decision
+9. 3M India Client Record identification
+10. 3M India Legal Entity resolution
+11. 3M India identity-link decision
+12. Solventum existing Legal Entity
+13. Solventum Client Universe match-back
+14. Cabot existing Legal Entity
+15. Cabot Client Universe match-back
+16. Strong identifiers used
+17. Ambiguous matches
+18. Identity conflicts
+19. Identity-support records
+20. Existing V1 claims re-evaluated
+21. 3M -> 3M India ownership result
+22. 3M -> Solventum ownership result
+23. Solventum supply/transition-services result
+24. Cabot result
+25. Relationship/version counts
+26. Qualifier counts
+27. Coverage
+28. Correlation-readiness assessment
+29. Replay/idempotence
+30. Tests
+31. SQLite integrity
+32. Client Universe integrity
+33. Source-master integrity
+34. Remaining identity limitations
+35. Remaining GFCID-semantic unknowns
+36. Recommended next action
 
---------------------------------------------------
-47. IMPORTANT INTERPRETATION RULE
---------------------------------------------------
+==================================================
+39. ABSOLUTE CONSTRAINTS
+==================================================
 
-If existing evidence cannot support a V1 relationship without refetching:
-
-do not refetch.
-
-Mark the result:
-
-EVIDENCE_LIMITED
-
-or:
-
-DOWNGRADED
-
-or:
-
-REJECTED
-
-as appropriate.
-
-The purpose of this stage is to discover what the stored historical evidence can defensibly support under V1.
-
-It is NOT to preserve the old result.
-
---------------------------------------------------
-48. ABSOLUTE CONSTRAINTS
---------------------------------------------------
-
-External provider calls:
-0
-
-New external research:
+New relationship discovery:
 0
 
 New frontier research:
@@ -1419,13 +1196,13 @@ New frontier research:
 Stage 2A.8:
 0
 
-Fuzzy merges:
+Fuzzy identity merges:
 0
 
-Synthetic path edges:
+Synthetic direct edges:
 0
 
-Historical Stage 2 row modifications:
+Historical Stage 2 modifications:
 0
 
 Client Universe modifications:
@@ -1437,98 +1214,143 @@ Source-master modifications:
 Frontend modifications:
 0
 
-No relationship may be accepted merely because Stage 2 historically accepted it.
+Do not create a VERIFIED identity merely to unblock correlation.
 
---------------------------------------------------
-49. FINAL STATUS FORMAT
---------------------------------------------------
+==================================================
+40. FINAL STATUS FORMAT
+==================================================
 
 At completion output exactly:
 
-CCR V1 — 3M CONTROLLED REVALIDATION
+CCR V1 — IDENTITY RESOLUTION PILOT
 
 Status:
 PASS / PARTIAL / FAIL
 
-Relationship schema version:
-
-Migration run:
-
-Historical Stage 2 rows modified:
+Schema version:
 
 Client Universe rows:
 Client Universe modifications:
 Source-master modifications:
+Historical Stage 2 modifications:
 
-External provider calls:
+External identity-provider calls:
 
-Historical 3M accepted observations:
-4
+GLEIF:
+SEC:
+Web:
 
-Historical graph-visible edges:
-4
+3M Client Record:
+client_id:
+GFCID:
 
-Historical observations revalidated:
+3M Legal Entity:
+external_entity_id:
+canonical legal name:
+LEI:
+CIK:
 
-V1 documents created:
+3M identity link:
+EXACT / ASSOCIATED / NONE
 
-V1 passages created:
+3M identity state:
+VERIFIED / PROBABLE / UNVERIFIED / REJECTED / NONE
 
-V1 atomic claims created:
+3M identity support count:
 
-V1 identity links created:
+3M India Client Record:
+client_id:
+GFCID:
 
-VERIFIED identity links:
-PROBABLE identity links:
-UNVERIFIED identity links:
-REJECTED identity links:
+3M India Legal Entity:
+external_entity_id:
+canonical legal name:
+LEI:
+other strong identifier:
 
-V1 relationships created:
+3M India identity link:
+EXACT / ASSOCIATED / NONE
 
-V1 relationship versions created:
+3M India identity state:
+VERIFIED / PROBABLE / UNVERIFIED / REJECTED / NONE
 
-ACCEPTED:
-CANDIDATE:
-DISPUTED:
+Solventum existing Legal Entity reused:
+YES / NO
+
+Solventum Client Universe match:
+VERIFIED / PROBABLE / AMBIGUOUS / NO_MATCH / INSUFFICIENT
+
+Cabot existing Legal Entity reused:
+YES / NO
+
+Cabot Client Universe match:
+VERIFIED / PROBABLE / AMBIGUOUS / NO_MATCH / INSUFFICIENT
+
+New Legal Entities created:
+
+Identity links created:
+
+VERIFIED:
+PROBABLE:
+UNVERIFIED:
 REJECTED:
+
+Identity-support records created:
+
+Existing V1 claims re-evaluated:
+
+V1 relationships before:
+V1 relationships after:
+
+V1 relationship versions before:
+V1 relationship versions after:
+
+V1 ACCEPTED relationships:
+
+V1 CANDIDATE relationships:
 
 V1 qualifiers created:
 
-V1 events created:
+3M -> 3M India owns:
+ACCEPTED / CANDIDATE / IDENTITY_BLOCKED / EVIDENCE_BLOCKED / NOT_SUPPORTED
 
-Disposition counts:
+3M -> Solventum owns:
+ACCEPTED / CANDIDATE / IDENTITY_BLOCKED / EVIDENCE_BLOCKED / NOT_SUPPORTED
 
-CONFIRMED:
-RECLASSIFIED:
-DOWNGRADED:
-REJECTED:
-EVENT_ONLY:
-IDENTITY_BLOCKED:
-EVIDENCE_LIMITED:
+3M -> Solventum supplies:
+ACCEPTED / CANDIDATE / IDENTITY_BLOCKED / EVIDENCE_BLOCKED / NOT_SUPPORTED
 
-3M India result:
+Cabot relationship:
+result:
 
-Cabot result:
-
-Solventum ownership result:
-
-Solventum strategic-partner result:
-
-RESEARCHED_NONE_FOUND rows created:
-0 unless a completed defined research scope genuinely exists
-
-Migration replay/idempotence:
-PASS / FAIL
-
-Duplicate V1 objects after replay:
+External relationship research performed:
+0
 
 Fuzzy merges:
+0
 
 Synthetic direct edges:
-
-New paths:
+0
 
 Frontend files modified:
+0
+
+Correlation readiness:
+
+At least one VERIFIED Client Record -> Legal Entity link:
+YES / NO
+
+At least one ACCEPTED V1 relationship:
+YES / NO
+
+At least one accepted relationship with qualifying Client Universe identity at both endpoints:
+YES / NO
+
+DIRECT correlation:
+READY / NOT_READY
+
+DERIVED multi-hop correlation:
+READY / NOT_READY
 
 Backend tests:
 passed / failed / skipped
@@ -1537,9 +1359,18 @@ SQLite foreign-key check:
 
 SQLite quick check:
 
+Replay/idempotence:
+PASS / FAIL
+
+Duplicate objects on replay:
+
 Report:
-backend/data/CCR_V1_3M_CONTROLLED_REVALIDATION_REPORT.md
+backend/data/CCR_V1_IDENTITY_RESOLUTION_PILOT_REPORT.md
 
 Recommended next action:
 
-Do not perform new research, client-connection mining, or frontend work automatically.
+If identity and at least one V1 relationship are sufficiently proven, recommend:
+
+CCR V1 — CORRELATION CONFIGURATION + CORRELATION ENGINE FOUNDATION
+
+Do not begin that next stage automatically.
