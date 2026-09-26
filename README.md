@@ -1,459 +1,136 @@
-CLIENT CORRELATION — STAGE 2A.6
-BOUNDED MULTI-HOP / HIDDEN RELATIONSHIP DISCOVERY
-
-Work only in the CURRENT clean-reset repository.
-
-Do not redesign the frontend.
-Do not modify Customer_latest.parquet.
-Do not alter the 3.67M Client Universe identity model.
-Do not perform a portfolio-wide external research run.
-Do not fabricate relationships, identities, evidence, paths, or scores.
-
-CURRENT VERIFIED FOUNDATION
-
-- Client Universe: 3,670,650 clients.
-- GFCID is the unique client-grain source identity.
-- Stage 2A.5 completed successfully.
-- SEC, approved Web, and GLEIF are READY.
-- Accepted relationship observations currently exist.
-- Solventum and Cabot provide positive-control relationships.
-- Replay/idempotence is working.
-- No fuzzy merges.
-- No synthetic shortcuts.
-- No source-master modification.
-- Current hidden paths: 0.
-
-OBJECTIVE
-
-Prove that the system can discover genuine evidence-backed MULTI-HOP relationships starting from one selected Client Universe client.
-
-This stage is NOT about discovering as many relationships as possible.
-
-It is about establishing a defensible graph-expansion architecture that can later scale safely.
-
-PRIMARY PILOT SUBJECT
-
-Use the existing bounded 3M subject already used by Stages 2A.3–2A.5.
-
-Do not create a new unrelated pilot.
-
-CORE PRINCIPLE
-
-SEARCH BROADLY.
-ACCEPT NARROWLY.
-EXPAND ONLY FROM ACCEPTED EDGES.
-
-A candidate edge must NEVER be used as a graph hop.
-
-A multi-hop path does NOT create a synthetic direct relationship between the path endpoints.
-
-Example:
-
-3M -> Solventum -> Entity X
-
-does NOT mean:
-
-3M -> Entity X
-
-unless independent admissible evidence separately establishes that direct relationship.
-
---------------------------------------------------
-1. GRAPH EXPANSION MODEL
---------------------------------------------------
-
-Implement bounded graph traversal from the selected subject.
-
-Initial maximum depth:
-
-DEPTH 0:
-selected Client Universe subject
-
-DEPTH 1:
-existing accepted relationships of subject
-
-DEPTH 2:
-accepted relationships discovered around accepted Depth-1 entities
-
-DEPTH 3:
-accepted relationships discovered around accepted Depth-2 entities
-
-Maximum depth = 3.
-
-Make depth configurable but default to 3.
-
-Do not go beyond depth 3 in this stage.
-
---------------------------------------------------
-2. BRANCHING CONTROL
---------------------------------------------------
-
-Prevent graph explosion.
-
-For every expandable entity:
-
-- consider only evidence-backed relationship observations;
-- rank/select only the strongest relevant accepted relationships;
-- maximum expansion fan-out = 5 accepted edges per entity;
-- candidates do not consume the accepted expansion allowance;
-- unresolved generic descriptors must never be expansion nodes;
-- NO_EVIDENCE records must never be expansion nodes.
-
-Make fan-out configurable.
-
-Default:
-
-max_depth = 3
-max_accepted_edges_per_node = 5
-
---------------------------------------------------
-3. ENTITY RESOLUTION ORDER
---------------------------------------------------
-
-For every discovered named entity:
-
-FIRST:
-attempt exact resolution into the 3.67M Client Universe.
-
-Use exact supported identity fields only:
-- client_id
-- GFCID
-- deterministic source_master_id
-- exact normalized legal/canonical name
-- approved aliases
-- exact known legal entity identifiers
-
-NO fuzzy matching.
-
-If no defensible Client Universe match exists:
-
-SECOND:
-attempt governed external identity resolution using available approved providers.
-
-Only create/reuse an external entity when identity acceptance gates pass.
-
-If identity remains unresolved:
-
-retain the relationship as candidate/unresolved.
-
-Do not create an entity merely from descriptive text.
-
---------------------------------------------------
-4. EXTERNAL RESEARCH
---------------------------------------------------
-
-Research may use only approved provider infrastructure already implemented:
-
+CLIENT CORRELATION — STAGE 2A.7 — EVIDENCE-BACKED FRONTIER EXPANSION PILOT
+Continue from the completed Stage 2A.6 implementation.
+Do NOT redesign traversal.
+Do NOT modify the 3.67M Client Universe source.
+Do NOT fabricate relationships or create synthetic shortcuts.
+Stage 2A.6 correctly demonstrated that the current accepted graph has no second-level edges. Provider attempts were 0 because traversal operated only over already-persisted accepted observations.
+Stage 2A.7 must now perform the missing operation:
+research the accepted depth-1 endpoints and expand the graph with independently evidence-backed relationships.
+1. Pilot root
+Use the same real 3M root used in Stage 2A.6.
+Obtain its currently accepted direct neighbors from the relationship repository.
+Only accepted/evidence-backed depth-1 endpoints may become frontier research subjects.
+Candidates, generic descriptors, NO_EVIDENCE findings, unresolved identities, or synthetic entities must NOT become traversal-expansion seeds.
+2. Frontier research
+For each eligible depth-1 entity:
+run bounded external relationship discovery using the existing approved provider infrastructure:
 - SEC_FILINGS
 - R2D2_WEB / approved Web
-- GLEIF
-
-Reuse:
-- cache
-- provenance
-- evidence quality
-- source policies
-- identity gates
-- AsOfDate
-- replay protection
-- provider audit logging
-
-Do not bypass the existing provider layer.
-
-Do not make direct uncontrolled internet calls.
-
---------------------------------------------------
-5. PATH DEFINITION
---------------------------------------------------
-
-Create a hidden/multi-hop path only when EVERY hop is an accepted relationship observation.
-
-Example valid path:
-
-Client A
- --accepted relationship-->
- External Entity B
- --accepted relationship-->
- Client C
-
-or
-
-Client A
- -> Client B
- -> External C
- -> Client D
-
-Each path must preserve:
-
-- ordered node IDs
-- ordered relationship observation IDs
+- GLEIF where applicable
+Research the entity itself, not merely its relationship back to 3M.
+Discover its strongest defensible relationships permitted by the existing controlled taxonomy.
+Use the existing Stylus-derived evidence, identity, direction, materiality and acceptance policies unchanged.
+Search broadly but accept narrowly.
+3. Strict pilot bounds
+This is NOT a universe-wide crawl.
+For this pilot:
+- root depth = 0
+- existing direct neighbors = depth 1
+- actively research depth-1 entities only
+- maximum newly accepted relationships per frontier entity = 3
+- do not recursively research depth-2 entities yet
+- use the existing AsOfDate
+- preserve provider caching, audit and replay semantics
+This keeps the research bounded while giving Stage 2A.6 actual second-level graph material.
+4. Identity resolution
+Every discovered related entity must pass deterministic identity handling.
+Resolution order:
+1. exact Client Universe identity where defensible;
+2. existing external entity identity;
+3. new external entity only when external identity is sufficiently established;
+4. otherwise remain unresolved candidate.
+Never fuzzy-merge.
+Never create a Client Universe client from external text.
+Never treat a similar company name as identity proof.
+Critically, check whether a discovered endpoint already exists among the 3,670,650 Client Universe clients.
+This is essential because the product ultimately needs to discover Client-Universe-to-Client-Universe correlations.
+5. Relationship acceptance
+Only persist a new accepted relationship observation when:
+- both endpoint identities satisfy policy;
+- relationship semantics are explicit;
+- direction is supported where required;
+- evidence is admissible;
+- relationship type is in controlled taxonomy;
+- evidence meets the existing acceptance threshold.
+Otherwise preserve it as candidate / unresolved / no-evidence according to existing contracts.
+Do not lower thresholds to manufacture graph depth.
+6. After frontier research
+Once new accepted observations are persisted:
+rerun the existing Stage 2A.6 traversal from 3M.
+Now evaluate:
+3M -> depth-1 entity -> depth-2 entity
+and, where naturally available:
+3M -> A -> B -> C
+Do not create synthetic 3M -> B or 3M -> C relationships.
+A path is a path, not a direct relationship.
+7. Correlation detection
+Explicitly identify when a valid evidence-backed path connects:
+Client Universe client → one or more intermediaries → another Client Universe client
+Persist the path and its ordered hops.
+Preserve:
 - relationship type per hop
 - direction per hop
-- connectivity per hop
 - evidence references per hop
-- evidence quality per hop
-- relationship status per hop
-- source channel per hop
-- AsOfDate
-- created/retrieved timestamps
+- endpoint identity provenance
+- weakest-hop strength
 - path depth
-- path endpoint classifications
-- whether endpoint is Client Universe or external
-
---------------------------------------------------
-6. HIDDEN CLIENT-TO-CLIENT CORRELATION
---------------------------------------------------
-
-A particularly important result is:
-
-CLIENT UNIVERSE CLIENT
-    ->
-one or more accepted intermediaries
-    ->
-ANOTHER CLIENT UNIVERSE CLIENT
-
-Classify this as:
-
-HIDDEN_CLIENT_PATH
-
-Do NOT classify it as a direct relationship.
-
-Also support:
-
-CLIENT_TO_EXTERNAL_PATH
-EXTERNAL_TO_CLIENT_PATH
-EXTERNAL_TO_EXTERNAL_PATH
-
-but Client-to-Client hidden paths are the primary business outcome.
-
---------------------------------------------------
-7. PATH STRENGTH
---------------------------------------------------
-
-Do not invent a numerical AI score.
-
-Path strength must be based on existing governed relationship/evidence properties.
-
-The strength of a multi-hop path must never exceed its weakest hop.
-
-If any hop later becomes invalid/unaccepted, the path must no longer qualify as accepted.
-
-Store path state explicitly.
-
-Suggested states:
-
-ACCEPTED_PATH
-CANDIDATE_PATH
-INVALIDATED_PATH
-
-For this stage, only ACCEPTED_PATH may be treated as a validated hidden correlation.
-
---------------------------------------------------
-8. CYCLE / DUPLICATE CONTROL
---------------------------------------------------
-
-Implement:
-
-- visited entity control per traversal;
-- no immediate A -> B -> A loops;
-- deterministic path fingerprints;
-- duplicate path suppression;
-- deterministic replay;
-- canonical path ordering only where semantics permit;
-- preserve direction.
-
-Do not merge semantically different paths merely because endpoints match.
-
---------------------------------------------------
-9. STORAGE ARCHITECTURE
---------------------------------------------------
-
-Keep the storage design scalable and adapter-driven.
-
-Do not couple application logic directly to SQLite.
-
-Add repository contracts/interfaces for:
-
-- graph neighbors
-- accepted observations
-- path persistence
-- traversal runs
-- expansion frontier
-- path retrieval
-
-SQLite remains the current local adapter.
-
-The design must remain migratable later to PostgreSQL / graph-capable storage without rewriting business logic.
-
-Do NOT migrate databases in this stage.
-
---------------------------------------------------
-10. TRAVERSAL RUN MODEL
---------------------------------------------------
-
-Persist a bounded traversal run with:
-
-- traversal_run_id
-- root client_id
-- root GFCID
-- max_depth
-- fanout limit
-- AsOfDate
-- started_at
-- completed_at
-- status
-- provider attempts
-- nodes evaluated
-- accepted edges inspected
-- candidates encountered
-- new identities resolved
-- new accepted observations
-- paths found
-- hidden Client Universe endpoint paths found
-- replay fingerprint
-
-Exact replay must not create duplicate provider attempts, entities, observations, evidence, or paths.
-
---------------------------------------------------
-11. BOUNDED 3M PILOT
---------------------------------------------------
-
-Run ONE bounded pilot.
-
-Root:
-existing 3M Client Universe entity.
-
-Start from the currently accepted graph.
-
-Expand accepted related entities.
-
-Try to reach at least depth 2.
-
-Depth 3 may be used only where the evidence permits it.
-
-Do NOT loosen acceptance criteria merely to create a path.
-
-A correct result of zero hidden paths is acceptable if the evidence does not support them.
-
-The purpose is to prove architecture and traversal correctness.
-
---------------------------------------------------
-12. REQUIRED API
---------------------------------------------------
-
-Add bounded read APIs only as necessary, such as:
-
-GET /api/relationships/{client_id}/network
-
-GET /api/relationships/{client_id}/paths
-
-GET /api/relationships/{client_id}/neighbors
-
-GET /api/relationship-traversals/{traversal_run_id}
-
-Support depth parameter only within the governed maximum.
-
-Example:
-
-?depth=1
-?depth=2
-?depth=3
-
-Never return millions of nodes.
-
-Use bounded pagination / cursors where appropriate.
-
---------------------------------------------------
-13. REQUIRED TESTS
---------------------------------------------------
-
-Test at minimum:
-
-- accepted edge can be traversed;
-- candidate edge cannot be traversed;
-- NO_EVIDENCE cannot be traversed;
-- unresolved generic descriptor cannot become a node;
-- exact Client Universe resolution is preferred over external entity creation;
-- external entity created only after identity gates pass;
-- 2-hop accepted path persistence;
-- 3-hop accepted path persistence;
-- weakest-hop rule;
-- path does not create a synthetic direct relationship;
-- cycle prevention;
-- duplicate path prevention;
-- replay/idempotence;
-- direction preservation;
-- same endpoints with different semantic paths remain distinct;
-- no fuzzy identity merge;
-- source master remains unchanged;
-- provider errors do not generate accepted relationships;
-- depth limit enforced;
-- fan-out limit enforced.
-
-Run the complete backend regression suite afterward.
-
---------------------------------------------------
-14. REPORT
---------------------------------------------------
-
-Create:
-
-backend/data/HIDDEN_RELATIONSHIP_DISCOVERY_STAGE_2A6_REPORT.md
-
-Report:
-
-CLIENT UNIVERSE ROWS:
-ROOT SUBJECT:
-ROOT CLIENT_ID:
-ROOT GFCID:
-
-MAX DEPTH:
-FANOUT:
-
-TRAVERSAL STATUS:
-
-NODES EVALUATED:
-CLIENT UNIVERSE NODES:
-EXTERNAL NODES:
-
-ACCEPTED EDGES INSPECTED:
-NEW ACCEPTED EDGES:
-CANDIDATES RETAINED:
-UNRESOLVED ENTITIES:
-
-SEC ATTEMPTS:
-WEB ATTEMPTS:
-GLEIF ATTEMPTS:
-
-2-HOP PATHS:
-3-HOP PATHS:
-HIDDEN CLIENT-TO-CLIENT PATHS:
-
-SYNTHETIC DIRECT RELATIONSHIPS CREATED: 0 / FAIL
-FUZZY MERGES: 0 / FAIL
-MASTER CLIENT ROWS MODIFIED: 0 / FAIL
-GENERIC DESCRIPTORS USED AS NODES: 0 / FAIL
-CANDIDATE EDGES USED IN ACCEPTED PATHS: 0 / FAIL
-
-REPLAY:
-PASS / FAIL
-
-FULL BACKEND TESTS:
-PASS / FAIL
-
-SCALABLE REPOSITORY BOUNDARY:
-PASS / FAIL
-
-Then show the most informative discovered path, if any, as:
-
-ROOT
-  -> relationship type / direction / evidence source
-ENTITY
-  -> relationship type / direction / evidence source
-ENTITY
-
-If no valid hidden path is discovered, report that honestly.
-
-Do not fabricate one to obtain a successful-looking result.
-
-STOP after Stage 2A.6.
-Do not build the network UI yet.
+- internal/external entity classification
+A hidden path must never be stronger than its weakest hop.
+8. Provider activity must be real
+Unlike Stage 2A.6, this stage is expected to execute provider research.
+Report separately:
+- frontier entities considered
+- frontier entities researched
+- SEC attempts
+- Web attempts
+- GLEIF attempts
+- cache hits
+- provider failures
+- documents retrieved
+- candidate findings
+- accepted new observations
+- unresolved endpoints
+- new external entities
+- discovered endpoints resolving to Client Universe
+Provider attempts = 0 is NOT sufficient for Stage 2A.7 unless there are genuinely zero eligible frontier entities, in which case stop and report why.
+9. Path results
+After expansion report:
+- accepted graph edges before Stage 2A.7
+- accepted graph edges after Stage 2A.7
+- new second-level edges
+- 2-hop paths
+- 3-hop paths
+- Client-Universe-to-Client-Universe paths
+- paths involving external intermediaries
+- synthetic direct relationships created: MUST BE 0
+Do NOT force a hidden path to exist.
+A legitimate result of zero paths is acceptable if genuine provider research has been performed and no admissible second-level relationship survives the gates.
+10. Replay/integrity
+Exact replay must not duplicate:
+- provider attempts where cache/replay semantics prohibit it
+- external identities
+- observations
+- evidence objects
+- graph edges
+- paths
+Source master modifications must remain 0.
+Fuzzy merges must remain 0.
+Synthetic shortcuts must remain 0.
+11. Validation
+Run the full backend test suite.
+Add focused tests for:
+- accepted frontier entity triggers research
+- candidate frontier does not
+- second-level relationship acceptance
+- exact Client Universe endpoint resolution
+- external endpoint resolution
+- duplicate prevention
+- weak evidence remains candidate
+- path creation after new edge
+- path weakest-hop semantics
+- no synthetic direct relationship
+- replay/idempotence
+Produce:
+backend/data/FRONTIER_RELATIONSHIP_EXPANSION_STAGE_2A7_REPORT.md
+At the end provide a concise PASS/FAIL summary and actual pilot counts.
+Do not work on frontend/UI in this stage.
