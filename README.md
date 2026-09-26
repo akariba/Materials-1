@@ -1,300 +1,162 @@
-CCR — CLIENT CORRELATION
-V1 STAGE 4.1 — FINAL CONTRACT PATCH BEFORE STAGE 5
+CCR V1 — STAGE 5
+CORRELATION QUERY API + CLIENT CORRELATION READ MODEL
 
-PURPOSE
+IMPLEMENTATION TASK
 
-Apply the two required senior-review correctness patches to the already-approved CCR V1 Stage 4 implementation before any Stage 5 public query/read API is built.
+This is an implementation stage.
 
-This is a SMALL PATCH.
+Implement the Stage 5 read/query layer on top of the approved CCR V1 Stage 4.1 baseline.
 
-Do not redesign Stage 4.
-Do not add new correlation patterns.
-Do not perform enrichment or research.
-Do not call providers.
-Do not modify the frontend.
-Do not begin Stage 5.
-Do not add AI Create Correlation.
-Do not add persisted derived-result tables.
-Do not modify the Client Universe.
-Do not modify historical Stage 2 data.
-Do not modify existing factual relationships except where test fixtures are isolated.
+Do NOT perform new external research.
+Do NOT call SEC, GLEIF, Web, Stylus, or any external provider.
+Do NOT perform frontier expansion.
+Do NOT create synthetic relationships.
+Do NOT create fuzzy identity matches.
+Do NOT modify the Client Universe.
+Do NOT modify the authoritative source parquet.
+Do NOT build the frontend.
+Do NOT build AI Create Correlation.
+Do NOT implement correlation-definition authoring yet.
+Do NOT start broad enrichment.
+Do NOT introduce recursive graph traversal.
+Do NOT migrate to PostgreSQL.
+Do NOT introduce a graph database.
 
-The existing Stage 4 foundation remains approved except for the two contract defects described below.
+This stage is a READ MODEL + API stage.
 
---------------------------------------------------
-1. CURRENT APPROVED BASELINE
---------------------------------------------------
+==================================================
+1. APPROVED BASELINE
+==================================================
 
-Current schema version:
+Use the completed Stage 4.1 implementation as the authoritative baseline.
+
+Relevant report:
+
+backend/data/
+CCR_V1_STAGE_4_1_FINAL_CONTRACT_PATCH_REPORT.md
+
+Approved database:
+
+backend/data/relationship_ingestion.sqlite3
+
+Current relationship schema version:
+
 11
 
-Current approved derived definitions:
-6
+Client Universe:
 
-Current approved definition versions:
-6
+3,670,650 rows
+3,670,650 unique GFCIDs
 
-Persisted DIRECT definitions:
-0
+The Client Universe must remain unchanged.
 
-Direct Relationship View:
-implemented
+Stage 4.1 has already established:
 
-Derived Correlation evaluator:
-implemented
+- VERIFIED + EXACT identity endpoint gate
+- ACCEPTED relationship-version gate
+- mandatory evidence lineage
+- symmetric explicitly named client resolution
+- discovered-entity ambiguity handling
+- separate Direct Relationship View
+- separate Derived Correlation Evaluator
+- six approved derived definitions
+- two allowed pattern kinds:
+    SHARED_INTERMEDIATE
+    DIRECTED_CHAIN
+- maximum derived depth:
+    2 relationship hops
+- query-time-only derived results
+- no DIRECT correlation definition
+- no persisted derived-result table
+- execution-status vs enrichment-coverage distinction
+- truth vs hub/default-visibility separation
 
-Persisted derived-result table:
-none
+Preserve those contracts exactly.
 
-Current real proof:
+==================================================
+2. STAGE 5 OBJECTIVE
+==================================================
 
-3M -> 3M India
+Create a clean read model and public FastAPI query surface so a consumer can select a Client Record and retrieve:
 
-relationship:
-owns
+1. factual direct relationships;
+2. derived Client correlations;
+3. pairwise Client-to-Client results;
+4. the structural explanation/path;
+5. endpoint identity lineage;
+6. relationship evidence lineage;
+7. qualifiers;
+8. temporal state;
+9. query execution status;
+10. research/enrichment coverage;
+11. visibility / hub suppression metadata;
+12. correlation-definition metadata.
 
-ownership:
-75%
+This is the first product-facing backend read layer.
 
-Direct Relationship View:
-1 factual result
+The output must be designed so the frontend can later render:
 
-3M -> Solventum:
+CLIENT
+  |
+  +-- DIRECT RELATIONSHIPS
+  |
+  +-- DERIVED CORRELATIONS
+  |
+  +-- WHY / PATH / EVIDENCE
+  |
+  +-- COVERAGE
 
-blocked by identity ambiguity
+without confusing a factual relationship with a derived correlation.
 
-All six derived real-data queries currently return:
-0 results
+==================================================
+3. CRITICAL SEMANTIC RULE
+==================================================
 
-Stage 4 fixture suite:
-passing
+There are TWO distinct result families.
 
-Full backend suite:
-passing
+A. DIRECT RELATIONSHIP
 
-No provider calls:
-confirmed
-
---------------------------------------------------
-2. SENIOR REVIEW DECISION
---------------------------------------------------
-
-Senior review decision:
-
-STAGE 4 APPROVED AFTER PATCH — THEN PROCEED TO STAGE 5
-
-Only two blocking changes are required:
-
-1. identity resolution symmetry for explicitly named client_id endpoints;
-
-2. separation of evaluator execution status from research/enrichment coverage.
-
-Do not introduce unrelated architecture changes.
-
---------------------------------------------------
-3. PATCH 1 — IDENTITY RESOLUTION SYMMETRY
---------------------------------------------------
-
-The current Stage 4 implementation permits an explicitly selected source client to use its persisted identity link even when a provider identifier is shared, but explicitly selected target clients may still be forced through provider-identifier uniqueness resolution.
-
-This is incorrect.
-
-Resolution must depend on:
-
-EXPLICITLY NAMED CLIENT
-versus
-DISCOVERED ENTITY
-
-not:
-
-SOURCE
-versus
-TARGET
-
-Freeze this invariant:
-
-Any Client Record explicitly identified in the query by client_id, regardless of whether it is source or target, resolves through that Client Record's own persisted identity link.
-
-Required accepted endpoint identity gate remains:
-
-link_state = VERIFIED
-AND
-link_type = EXACT
-
-Lookup path:
-
-client_id
-    ->
-persisted CCR V1 identity link
-    ->
-Legal Entity
-
-Do NOT re-derive an explicitly named client's identity by raw provider identifier matching.
-
-Do NOT require provider identifier uniqueness when the query caller has already explicitly named a client_id that has an approved VERIFIED+EXACT identity link.
-
---------------------------------------------------
-4. DISCOVERED ENTITY RESOLUTION
---------------------------------------------------
-
-Provider-identifier matching and ambiguity rules remain required only when the evaluator discovers a Legal Entity and must determine whether that entity maps to a Client Record.
-
-Examples:
-
-- two-hop intermediate entity;
-- discovered counterparty;
-- graph-found endpoint not explicitly supplied by client_id.
-
-For discovered entities:
-
-provider identifier ambiguity may legitimately result in:
-
-IDENTITY_UNRESOLVED
-
-or equivalent governed status.
-
-Do not weaken this rule.
-
---------------------------------------------------
-5. SOURCE/TARGET ROLE MUST NOT CHANGE ELIGIBILITY
---------------------------------------------------
-
-For two explicitly named clients A and B:
-
-query:
-A -> B
-
-and query:
-B -> A
-
-must resolve the same two Client Record identity links.
-
-Changing which client is syntactically called "source" or "target" must never make an otherwise identical factual relationship or derived correlation become identity-eligible in one direction and identity-blocked in the reverse direction.
-
-Relationship direction itself must still remain factual and canonical.
+A factual projection of an accepted Legal Entity relationship to Client Record grain.
 
 Example:
 
-A owns B
+3M
+  --owns 75%-->
+3M India
 
-does not become:
+This is NOT a correlation definition.
 
-B owns A
+B. DERIVED CORRELATION
 
-But identity eligibility must be role-symmetric.
+A governed structural result computed from multiple accepted factual relationship hops.
 
---------------------------------------------------
-6. DIRECT RELATIONSHIP VIEW PATCH
---------------------------------------------------
+Example:
 
-Apply the same named-client identity invariant to Direct Relationship View.
+Client A
+  <- supplied by -
+Supplier X
+  - supplies ->
+Client B
 
-For pairwise direct query:
+Result:
 
-client_id_a
-client_id_b
+SHARED_SUPPLIER
 
-if both clients have:
+Do not combine these into one generic result object.
 
-VERIFIED + EXACT
+Do not introduce a generic DIRECT correlation.
 
-persisted identity links,
+==================================================
+4. PUBLIC STATUS CONTRACT
+==================================================
 
-use those links directly.
+Stage 5 MUST eliminate ambiguity in public API terminology.
 
-Do not rerun provider-id uniqueness resolution for either named endpoint.
-
-For broad discovery queries from one client:
-
-the selected client uses its persisted identity link;
-
-discovered target Legal Entities still require governed entity-to-client match-back.
-
-This distinction is expected and correct.
-
---------------------------------------------------
-7. SOLVENTUM CONSEQUENCE
---------------------------------------------------
-
-Re-test the current 3M / Solventum case carefully.
-
-Important:
-
-If the Solventum client_id supplied in the explicit pairwise query already has its own persisted VERIFIED+EXACT identity link, the pairwise identity gate must use that link and must NOT be blocked merely because other Client Universe records share the same provider identifier.
-
-If Solventum does NOT have a persisted qualifying VERIFIED+EXACT identity link for that explicit client_id, it remains blocked.
-
-Do not assume the result.
-
-Read the current persisted CCR V1 identity links and report the actual state.
-
-The broad discovery behavior may still differ:
-
-3M broad direct discovery
-    ->
-Solventum Legal Entity discovered
-    ->
-ambiguous client match-back
-
-may legitimately surface:
-
-IDENTITY_UNRESOLVED / PARTIAL coverage
-
-if the evaluator does not already know a specific client_id.
-
-That is not the same operation as an explicit pairwise query.
-
-Document the difference.
-
---------------------------------------------------
-8. IDENTITY TESTS
---------------------------------------------------
-
-Add regression tests proving:
-
-1. explicitly named source client resolves through its persisted VERIFIED+EXACT identity link.
-
-2. explicitly named target client resolves through its persisted VERIFIED+EXACT identity link.
-
-3. raw provider-identifier ambiguity does not invalidate either explicitly named client when both already have approved identity links.
-
-4. A-to-B and B-to-A pairwise queries resolve identical endpoint identity links.
-
-5. factual relationship direction remains canonical despite symmetric identity resolution.
-
-6. discovered entity match-back still applies provider identifier ambiguity rules.
-
-7. discovered ambiguous entity is not auto-attached to a Client Record.
-
-8. PROBABLE identity still fails accepted-correlation eligibility.
-
-9. ASSOCIATED remains ineligible while global ASSOCIATED acceptance is OFF.
-
-10. no fuzzy identity merge introduced.
-
---------------------------------------------------
-9. PATCH 2 — EXECUTION STATUS VS COVERAGE
---------------------------------------------------
-
-Separate:
-
-EVALUATOR EXECUTION COMPLETENESS
-
-from:
-
-RESEARCH / ENRICHMENT COVERAGE
-
-These must be distinct in domain objects and Stage 4 evaluator results before Stage 5 public API work begins.
-
---------------------------------------------------
-10. EXECUTION STATUS
---------------------------------------------------
-
-Introduce or normalize:
+Expose:
 
 execution_status
 
-Allowed values:
+with only:
 
 COMPLETE
 PARTIAL
@@ -302,50 +164,28 @@ FAILED
 
 Semantics:
 
-COMPLETE
+COMPLETE =
+the bounded evaluator finished over all currently eligible facts available to the query.
 
-The evaluator finished processing all currently eligible graph facts within the bounded query.
+PARTIAL =
+the intended bounded evaluator could not fully evaluate the requested query.
 
-It does NOT mean:
+FAILED =
+the evaluator did not produce a reliable result.
 
-- external research was comprehensive;
-- the real world was exhaustively checked;
-- no undiscovered relationship exists;
-- enrichment coverage is complete.
+CRITICAL:
 
-PARTIAL
+COMPLETE MUST NEVER mean:
 
-The evaluator itself could not complete its intended bounded evaluation.
+"the real world was comprehensively researched."
 
-Examples may include:
+==================================================
+5. RESEARCH / ENRICHMENT COVERAGE CONTRACT
+==================================================
 
-internal evaluation interruption
-missing required local inputs
-bounded execution failure affecting result completeness
+Expose research/enrichment coverage separately.
 
-Do not misuse PARTIAL merely because enrichment coverage is partial.
-
-FAILED
-
-The evaluator failed to produce a reliable execution result.
-
---------------------------------------------------
-11. COVERAGE OBJECT
---------------------------------------------------
-
-Coverage must remain a separate structured object.
-
-Do not flatten all coverage into execution_status.
-
-Coverage should be represented at appropriate granularity by:
-
-endpoint
-relationship family / research family
-scope
-as_of_date
-policy_version
-
-using existing governed coverage outcomes:
+Use the existing governed coverage model:
 
 NOT_ELIGIBLE
 NOT_RESEARCHED
@@ -354,616 +194,856 @@ RESEARCHED_NONE_FOUND
 PARTIAL
 UNAVAILABLE
 
-Freshness remains separate:
+Freshness:
 
 CURRENT
 STALE
 
-Do not invent additional coverage truth states unless already required by the existing domain contract.
+Do not expose the old convenience field:
 
---------------------------------------------------
-12. COVERAGE SUMMARY
---------------------------------------------------
+coverage_state = COMPLETE
 
-Optionally expose a deterministic convenience field:
+as if it were authoritative research coverage.
 
-coverage_summary
+If legacy/internal convenience fields are needed for compatibility, they may remain internally, but the new Stage 5 API must expose a clearly named structure such as:
 
-Allowed presentation-oriented values may be:
+research_coverage
 
-COMPREHENSIVE
-PARTIAL
-MINIMAL
-UNKNOWN
+or:
 
-But only if this is implemented as a derived convenience summary.
-
-It must never replace detailed coverage records.
-
-If the existing code does not need this field yet, do not force it into persistence.
-
-Stage 5 can derive it in the read model.
-
---------------------------------------------------
-13. ZERO RESULT SEMANTICS
---------------------------------------------------
-
-For:
-
-execution_status = COMPLETE
-
-and coverage including PARTIAL / NOT_RESEARCHED / UNAVAILABLE
-
-a zero result means only:
-
-the evaluator found zero qualifying matches in the currently available graph.
-
-It must NOT mean:
-
-no such real-world correlation exists.
-
-Preserve this exact conceptual distinction.
-
-Required report wording example:
-
-"0 [pattern] correlations found under [definition] against the currently available relationship graph (execution: COMPLETE). [Family] coverage is PARTIAL for [client]. This does not confirm no such relationship exists — it reflects current enrichment coverage as of [date]."
-
-Do not hardcode user-facing prose into low-level evaluator logic unless already part of the architecture.
-
-Prefer returning structured fields from which Stage 5 can build this wording.
-
---------------------------------------------------
-14. POSITIVE RESULT SEMANTICS
---------------------------------------------------
-
-A valid positive correlation remains valid even if broader enrichment coverage is PARTIAL.
+enrichment_coverage
 
 Example:
 
-A qualifying SHARED_SUPPLIER result was found.
+{
+  "execution_status": "COMPLETE",
+  "research_coverage": {
+      "outcome": "PARTIAL",
+      "freshness": "STALE",
+      "as_of_date": "...",
+      "relationship_family": "...",
+      "scope_key": "...",
+      "source_set": [...]
+  }
+}
 
-That structural result remains true under current evidence.
+There may be multiple coverage records for one result/query.
 
-Partial research coverage only means:
+Do not collapse them into a fake single complete/not-complete flag when multiple families/scopes are relevant.
 
-there may be additional suppliers/correlations not yet found.
+==================================================
+6. ZERO-RESULT CONTRACT
+==================================================
 
-Coverage does not invalidate an already proven positive result.
+For any zero-result query, expose a structured flag:
 
---------------------------------------------------
-15. REAL 3M DERIVED QUERY PATCH
---------------------------------------------------
+zero_is_not_universal_negative = true
 
-Rerun the six real derived definitions after the patch.
+or equivalent explicit contract field.
 
-Their evaluator execution may legitimately report:
+The API/read model must support wording equivalent to:
+
+"No qualifying correlation was found in the currently available eligible graph."
+
+It must NOT imply:
+
+"No correlation exists."
+
+If:
 
 execution_status = COMPLETE
 
-with:
+and research coverage is:
 
-results = 0
+PARTIAL
+NOT_RESEARCHED
+or UNAVAILABLE
 
-But attach or expose the real coverage metadata separately.
+the result is still not evidence of universal non-existence.
 
-Do not describe the zero results as proof that no real correlation exists.
+Test this explicitly.
 
-Definitions:
+==================================================
+7. DIRECT RELATIONSHIP READ MODEL
+==================================================
 
-SHARED_CONTROLLER
-SHARED_SUPPLIER
-SHARED_CUSTOMER
-SUPPLY_CHAIN
-SHARED_LENDER
-SHARED_PRODUCT_DEPENDENCY
+Create an explicit Direct Relationship result contract.
 
---------------------------------------------------
-16. CATEGORY NORMALIZATION — SMALL NON-BLOCKING CLEANUP
---------------------------------------------------
+Suggested conceptual fields:
 
-While touching the Stage 4 contract, normalize the six seeded definition categories to the senior-reviewed stable labels.
+result_family:
+DIRECT_RELATIONSHIP
 
-Category is:
+query_source_client
+query_target_client if pairwise
 
-UI grouping metadata
-+
-governance metadata
+canonical_relationship_id
+relationship_version_id
 
-It is NOT evaluator semantics.
+relationship_type
 
-Changing only the category must never change matching behavior.
+canonical_direction
 
-Use:
+query_relative_direction
 
-SHARED_CONTROLLER
-category = GROUP_STRUCTURE
+acceptance_state
 
-SHARED_SUPPLIER
-category = COMMERCIAL_DEPENDENCY
+effective_from
+effective_to
+observed_at
+last_verified_at
+date precision where available
 
-SHARED_CUSTOMER
-category = COMMERCIAL_DEPENDENCY
+source_legal_entity
+target_legal_entity
 
-SUPPLY_CHAIN
-category = COMMERCIAL_DEPENDENCY
+source_identity_link
+target_identity_link
 
-SHARED_LENDER
-category = FINANCING
+qualifiers[]
 
-SHARED_PRODUCT_DEPENDENCY
-category = PRODUCT_DEPENDENCY
+evidence[]
 
-Do not add additional categories.
+execution_status
 
-Do not make category part of correlation truth.
+research_coverage[]
 
-If definition immutability means changing the existing active version would violate the current version contract, perform the smallest correct versioned/configuration migration necessary and document it.
+coverage_warnings[]
 
-Do not silently mutate immutable executable semantics.
+visibility metadata if applicable
 
-Because category is non-executable metadata, explicitly document whether it belongs to definition metadata or versioned configuration in the current implementation.
+as_of_date
 
---------------------------------------------------
-17. HARD GATES REMAIN UNCHANGED
---------------------------------------------------
+The actual names may follow repository conventions, but preserve these semantics.
 
-Do NOT change:
+==================================================
+8. QUERY-RELATIVE DIRECTION
+==================================================
 
-accepted endpoint identity:
-VERIFIED + EXACT
+The reverse query behavior validated in Stage 4.1 must remain explicit.
 
-ASSOCIATED global acceptance:
-OFF
-
-eligible relationship version state:
-ACCEPTED only
-
-mandatory evidence lineage:
-required
-
-maximum derived depth:
-2
-
-pattern kinds:
-SHARED_INTERMEDIATE
-DIRECTED_CHAIN
-
-persisted derived result rows:
-none
-
---------------------------------------------------
-18. DIRECT VS DERIVED REMAIN DISTINCT
---------------------------------------------------
-
-Preserve separate domain result families for:
-
-Direct Relationship View
-
-and
-
-Derived Correlation Result
-
-Do not merge them into one generic "correlation result" object.
-
-Stage 5 will expose separate API response types.
-
---------------------------------------------------
-19. HUB / VISIBILITY REMAINS UNCHANGED
---------------------------------------------------
-
-Preserve:
-
-correlation truth
-
-separately from:
-
-default suppression / visibility metadata.
-
-A hub-suppressed result remains a true match.
-
-Do not filter it out at the evaluator level when the caller requests hidden/suppressed results.
-
---------------------------------------------------
-20. NO STAGE 5 WORK
---------------------------------------------------
-
-Do not add:
-
-public Stage 5 APIs
-new FastAPI routes
-frontend
-network UI
-AI Create Correlation
-new enrichment workflows
-provider orchestration
-real two-hop research
-
-This patch must leave Stage 5 as a clean next stage.
-
---------------------------------------------------
-21. MIGRATION / SCHEMA GUIDANCE
---------------------------------------------------
-
-First inspect whether these two patches require a schema migration.
-
-Prefer no schema migration if:
-
-- the identity fix is evaluator/service logic only;
-- execution_status and structured coverage already fit existing in-memory/domain contracts;
-- category normalization can be handled without violating persistence contracts.
-
-If a schema migration is genuinely necessary, justify it clearly.
-
-Do NOT increment schema version merely for convenience.
-
-Current schema:
-v11
-
-Expected schema after patch:
-prefer v11
-
-If schema changes are necessary:
-use the next version and make it additive/replay-safe.
-
---------------------------------------------------
-22. REQUIRED TESTS — STATUS/COVERAGE
---------------------------------------------------
-
-Add tests proving:
-
-11. execution_status=COMPLETE means evaluator completion only.
-
-12. execution_status is independent from coverage state.
-
-13. COMPLETE + PARTIAL coverage is valid.
-
-14. COMPLETE + NOT_RESEARCHED coverage is valid where applicable.
-
-15. COMPLETE + UNAVAILABLE coverage is valid where applicable.
-
-16. zero results + partial coverage does not produce a universal non-existence assertion in structured result semantics.
-
-17. positive correlation + partial broader coverage remains a valid positive result.
-
-18. coverage remains endpoint/family scoped rather than one global truth value.
-
-19. coverage as-of metadata preserved.
-
-20. coverage policy version preserved where available.
-
---------------------------------------------------
-23. REQUIRED TESTS — CATEGORY
---------------------------------------------------
-
-21. SHARED_CONTROLLER category = GROUP_STRUCTURE.
-
-22. SHARED_SUPPLIER category = COMMERCIAL_DEPENDENCY.
-
-23. SHARED_CUSTOMER category = COMMERCIAL_DEPENDENCY.
-
-24. SUPPLY_CHAIN category = COMMERCIAL_DEPENDENCY.
-
-25. SHARED_LENDER category = FINANCING.
-
-26. SHARED_PRODUCT_DEPENDENCY category = PRODUCT_DEPENDENCY.
-
-27. category changes do not alter evaluator matching semantics.
-
---------------------------------------------------
-24. REQUIRED REGRESSION TESTS
---------------------------------------------------
-
-Confirm all existing Stage 4 tests still pass for:
-
-DIRECT absent from derived catalog
-
-exactly six derived definitions
-
-exactly two derived pattern shapes
-
-depth <= 2
-
-ACCEPTED-only relationship hops
-
-VERIFIED+EXACT identity gates
-
-mandatory evidence lineage
-
-qualifier predicates
-
-temporal filtering
-
-hub suppression metadata
-
-query-time-only derived results
-
-no persisted correlation results
-
-no synthetic client edges
-
-no fuzzy merges
-
---------------------------------------------------
-25. REAL-DATA REGRESSION
---------------------------------------------------
-
-Re-run current real checks.
-
-Report separately:
-
-A. explicit pairwise Direct Relationship View:
+Example:
 
 3M -> 3M India
 
-B. reverse explicit pairwise query:
-
-3M India -> 3M
-
-Identity resolution should be symmetric.
-
-The factual relationship direction must remain:
+returns canonical factual relationship:
 
 3M owns 3M India
 
-Do not fabricate inverse ownership.
+with query-relative direction:
 
-C. explicit pairwise 3M -> Solventum
+A_TO_B
 
-Read actual current persisted identity-link state before deciding outcome.
+Query:
 
-D. broad 3M discovery query
+3M India -> 3M
 
-Report discovered-entity identity ambiguity separately.
+must return the SAME canonical relationship.
 
-E. all six derived definitions
+Do NOT fabricate:
 
-Report:
+3M India owns 3M.
+
+Instead report the original canonical fact relative to the reverse query, such as:
+
+B_TO_A
+
+The read model should make both:
+
+canonical direction
+
+and
+
+query-relative direction
+
+clear enough that a future UI cannot accidentally invert the fact.
+
+==================================================
+9. DERIVED CORRELATION READ MODEL
+==================================================
+
+Create a separate Derived Correlation result contract.
+
+Suggested conceptual fields:
+
+result_family:
+DERIVED_CORRELATION
+
+definition_id
+definition_code
+definition_version
+definition_category
+pattern_kind
+
+source_client
+target_client
+
+source_legal_entity
+target_legal_entity
+
+intermediate_entity / entities
+
+path_hops[]
+
+Each hop should expose:
+
+relationship_id
+relationship_version_id
+relationship_type
+canonical direction
+path-relative direction
+qualifiers
+identity lineage
+evidence lineage
+temporal fields
+
+Also expose:
 
 execution_status
-result_count
-coverage metadata
+research_coverage[]
+coverage_warnings[]
+visibility_state
+suppression_reason
+as_of_date
 
-separately.
+The correlation result itself must NOT become a stored relationship.
 
---------------------------------------------------
-26. INTEGRITY
---------------------------------------------------
+Do not persist derived result rows.
+
+==================================================
+10. EXPLANATION / PATH CONTRACT
+==================================================
+
+Every positive derived result must be explainable without recomputing an opaque graph traversal.
+
+Return a deterministic bounded explanation.
+
+Example:
+
+{
+  "definition_code": "SHARED_SUPPLIER",
+  "source_client": ...,
+  "target_client": ...,
+  "intermediate_entity": ...,
+  "path": [
+      {
+        "relationship_type": "supplies",
+        ...
+      },
+      {
+        "relationship_type": "supplies",
+        ...
+      }
+  ]
+}
+
+The path must reference the exact accepted relationship versions used.
+
+Do not return a synthetic summary edge in place of the underlying path.
+
+==================================================
+11. EVIDENCE LINEAGE CONTRACT
+==================================================
+
+For Direct Relationship results and for every derived path hop, return enough evidence metadata for a later UI to drill down.
+
+At minimum include available:
+
+claim_id
+relationship_support_id
+document_id
+passage_id
+source class
+source reference
+title
+publication date
+excerpt/reference
+evidence basis
+admissibility
+retention/replay capability
+content/source hashes where available
+
+Do not invent missing body text, offsets, hashes, dates, or source metadata.
+
+Historical evidence may legitimately be LEGACY_REFERENCE / PASSAGE_REPLAY.
+
+Expose what exists.
+
+Do not silently upgrade historical evidence to FULL_REPLAY.
+
+==================================================
+12. IDENTITY LINEAGE CONTRACT
+==================================================
+
+For every Client endpoint in a returned Direct Relationship or Derived Correlation result expose:
+
+client_id
+GFCID where permitted by existing contract
+legal entity ID
+identity_link_id
+link_type
+link_state
+identity evidence/support references
+
+Hard eligibility remains:
+
+link_state = VERIFIED
+
+AND
+
+link_type = EXACT
+
+Do not allow PROBABLE.
+
+Do not allow ASSOCIATED while the global associated-link acceptance policy remains disabled.
+
+==================================================
+13. EXPLICIT CLIENT VS DISCOVERED ENTITY MODE
+==================================================
+
+Preserve Stage 4.1 distinction.
+
+For an explicitly named Client Record:
+
+client_id
+  -> persisted CCR V1 VERIFIED + EXACT identity link
+  -> Legal Entity
+
+This rule is symmetric for source and target.
+
+For a Legal Entity encountered through broad discovery:
+
+Legal Entity
+  -> provider identifier / approved identity information
+  -> deterministic Client Universe match-back
+  -> ambiguity checks
+
+Ambiguous discovered entities must not be auto-attached to a Client Record.
+
+Expose enough metadata for consumers to understand the resolution mode.
+
+Suggested field:
+
+endpoint_resolution_mode:
+
+NAMED_CLIENT_PERSISTED_LINK
+DISCOVERED_ENTITY_MATCHBACK
+
+Do not make source/target role itself alter identity eligibility.
+
+==================================================
+14. VISIBILITY / HUB CONTRACT
+==================================================
+
+Truth and default display suppression must remain separate.
+
+A structurally valid correlation may have:
+
+is_match = true
+
+visibility_state = SUPPRESSED_HUB
+
+suppression_reason = ...
+
+Do not delete the result because of hub/noise policy.
+
+Stage 5 API must expose the structural truth and visibility state separately.
+
+==================================================
+15. CORRELATION DEFINITION CATALOG API
+==================================================
+
+Expose the six approved read-only derived definitions.
+
+Expected definitions:
+
+SHARED_CONTROLLER
+SHARED_SUPPLIER
+SHARED_CUSTOMER
+SUPPLY_CHAIN
+SHARED_LENDER
+SHARED_PRODUCT_DEPENDENCY
+
+Expected normalized categories:
+
+SHARED_CONTROLLER
+    GROUP_STRUCTURE
+
+SHARED_SUPPLIER
+    COMMERCIAL_DEPENDENCY
+
+SHARED_CUSTOMER
+    COMMERCIAL_DEPENDENCY
+
+SUPPLY_CHAIN
+    COMMERCIAL_DEPENDENCY
+
+SHARED_LENDER
+    FINANCING
+
+SHARED_PRODUCT_DEPENDENCY
+    PRODUCT_DEPENDENCY
+
+Expose useful metadata such as:
+
+definition_id
+code
+version
+category
+pattern_kind
+description if already governed
+hop contract
+qualifier predicates
+visibility/hub metadata
+as-of behavior
+
+Do not expose arbitrary executable predicates.
+
+Do not add mutation endpoints.
+
+Do not add Create/Update/Delete definition APIs yet.
+
+Do not add AI Create Correlation yet.
+
+==================================================
+16. SUGGESTED API SURFACES
+==================================================
+
+Implement a coherent bounded API surface.
+
+Exact route naming may follow the current FastAPI conventions, but it should cover at least:
+
+GET /api/ccr/correlation-definitions
+
+GET /api/ccr/clients/{client_id}/summary
+
+GET /api/ccr/clients/{client_id}/relationships
+
+GET /api/ccr/clients/{client_id}/correlations
+
+GET /api/ccr/clients/{source_client_id}/relationships/{target_client_id}
+
+GET /api/ccr/clients/{source_client_id}/correlations/{target_client_id}
+
+If a better REST shape fits the current repository conventions, use it, but preserve these six capabilities.
+
+Do not break existing Client Universe APIs.
+
+==================================================
+17. CLIENT CORRELATION SUMMARY
+==================================================
+
+The selected-client summary should be designed as the future workspace bootstrap call.
+
+Return bounded summary information such as:
+
+Client Record identity/context
+
+resolved Legal Entity identity
+
+direct relationship count
+
+derived correlation count
+
+counts by correlation definition
+
+coverage summary
+
+warnings
+
+as_of_date
+
+available correlation definitions
+
+Do NOT trigger research in order to populate the summary.
+
+Counts must reflect only currently available eligible CCR facts.
+
+==================================================
+18. PAGINATION AND BOUNDS
+==================================================
+
+All list endpoints must be bounded.
+
+Use deterministic ordering.
+
+Suggested:
+
+default limit: 25
+maximum limit: 100
+
+Use a stable continuation/cursor approach where practical.
+
+Do not introduce unbounded graph queries.
+
+Do not return the entire 3.67M Client Universe.
+
+==================================================
+19. AS-OF DATE
+==================================================
+
+The API must accept an as-of date where the underlying Stage 4 contracts support it.
+
+Temporal filtering must preserve:
+
+effective_from
+effective_to
+observed dates
+acceptance state
+
+Do not reinterpret `observed_to` as relationship termination.
+
+Do not fabricate effective dates.
+
+==================================================
+20. REAL-DATA ACCEPTANCE TESTS
+==================================================
+
+Use the existing real local 3M data.
+
+At minimum test:
+
+A. 3M -> 3M India direct query
+
+Expected:
+
+FOUND
+
+relationship:
+owns
+
+ownership:
+75%
+
+identity:
+VERIFIED + EXACT for both endpoints
+
+factual result family:
+DIRECT_RELATIONSHIP
+
+B. 3M India -> 3M direct query
+
+Expected:
+
+same canonical relationship
+
+no fabricated inverse ownership
+
+query-relative direction should reflect reversal.
+
+C. explicit 3M -> Solventum direct query
+
+Stage 4.1 now establishes qualifying persisted EXACT links.
+
+Expected current factual relationships include:
+
+owns
+
+supplies
+
+Do not re-run provider resolution for the named Solventum Client endpoint.
+
+D. broad 3M direct relationship list
+
+Expected:
+
+existing valid results retained
+
+ambiguous discovered Client match-backs remain warnings
+
+broad discovery coverage remains distinguishable from explicit pairwise behavior.
+
+E. six derived 3M / 3M India definitions
+
+Expected current real derived result count:
+
+0
+
+The API must return this without asserting universal non-existence.
+
+F. definition catalog
+
+Expected:
+
+6 definitions
+
+0 DIRECT definitions.
+
+==================================================
+21. FIXTURE DERIVED TESTS
+==================================================
+
+Retain and extend existing isolated Stage 4 fixtures.
+
+Stage 5 API serialization tests must include at least:
+
+positive SHARED_INTERMEDIATE result
+
+positive DIRECTED_CHAIN result
+
+wrong direction rejected
+
+wrong hop type rejected
+
+identity blocked endpoint
+
+PROBABLE identity rejected
+
+ASSOCIATED identity rejected while global policy disabled
+
+non-ACCEPTED relationship rejected
+
+missing mandatory evidence rejected
+
+effective-date filtering
+
+SUPPRESSED_HUB positive result retained
+
+zero-result + partial coverage semantics
+
+query-time result not persisted
+
+==================================================
+22. READ-ONLY GUARANTEE
+==================================================
+
+Normal Stage 5 GET requests must not write:
+
+Client Universe rows
+
+source master rows
+
+relationships
+
+relationship versions
+
+identity links
+
+claims
+
+qualifiers
+
+coverage rows
+
+events
+
+correlation result rows
+
+provider attempts
+
+research runs
+
+No network request should occur.
+
+Add tests where practical confirming query paths are read-only.
+
+==================================================
+23. SCHEMA POLICY
+==================================================
+
+Prefer NO schema migration for Stage 5.
+
+This should principally be:
+
+domain contracts
+repository/read-model methods
+service layer
+FastAPI routes
+serialization
+tests
+report
+
+If a schema migration is genuinely unavoidable, stop and explain why before implementing it.
+
+Do not add a derived-result persistence table.
+
+==================================================
+24. EXISTING APIS
+==================================================
+
+Preserve existing Client Universe and historical relationship APIs unless a compatibility fix is essential.
+
+Do not repurpose old Stage 2 routes to silently mean CCR V1 Stage 5.
+
+Create explicit CCR V1 query surfaces.
+
+Avoid ambiguous old terminology.
+
+==================================================
+25. FRONTEND BOUNDARY
+==================================================
+
+Do not modify frontend files.
+
+However, design the Stage 5 responses so a later UI can directly render:
+
+Client header
+
+Direct Relationships
+
+Derived Correlations
+
+Correlation reason/path
+
+Evidence panel
+
+Coverage state
+
+Warnings
+
+No-results-with-partial-coverage message
+
+without performing graph logic in the browser.
+
+==================================================
+26. FUTURE CORRELATION CONFIGURATION
+==================================================
+
+Do not implement configuration editing now.
+
+However, Stage 5 must preserve the architecture needed later for:
+
+Correlation Configuration
+
+and:
+
+AI Create Correlation
+
+That future capability will author/version governed definition contracts.
+
+Therefore:
+
+- keep definition IDs/versioning stable;
+- keep category separate from executable semantics;
+- do not hard-code UI labels throughout service logic;
+- make the read-only definition catalog reusable by the future configuration UI;
+- do not allow future definition metadata to override platform hard gates.
+
+==================================================
+27. VALIDATION
+==================================================
+
+Run:
+
+focused Stage 5 tests
+
+full backend suite
+
+Python compile/static checks
+
+SQLite foreign-key check
+
+SQLite quick_check
 
 Verify:
 
-Client Universe rows:
-3,670,650
+schema remains v11
 
-Client Universe modifications:
-0
+Client Universe row count remains 3,670,650
 
-source-master modifications:
-0
+unique GFCIDs remain 3,670,650
 
-historical Stage 2 modifications:
-0
+source master unchanged
 
-CCR V1 factual relationship modifications:
-0 unless category metadata/config migration explicitly requires no fact changes
+historical Stage 2 data unchanged
 
-external provider calls:
-0
+CCR V1 Stage 1-4.1 data unchanged
 
-new research:
-0
+provider calls = 0
 
-frontend modifications:
-0
+new research = 0
 
-synthetic direct edges:
-0
+fuzzy merges = 0
 
-fuzzy merges:
-0
+synthetic edges = 0
 
-persisted derived result rows:
-0
+persisted derived-result rows = 0
 
---------------------------------------------------
-27. CREATE PATCH REPORT
---------------------------------------------------
+frontend files modified = 0
+
+==================================================
+28. REQUIRED IMPLEMENTATION REPORT
+==================================================
 
 Create:
 
-backend/data/CCR_V1_STAGE_4_1_FINAL_CONTRACT_PATCH_REPORT.md
+backend/data/
+CCR_V1_STAGE_5_CORRELATION_QUERY_API_REPORT.md
 
-Required sections:
+The report must include:
 
-1. Executive result
-2. Senior review decision
-3. Identity asymmetry defect
-4. Correct named-client identity invariant
-5. Discovered-entity resolution invariant
-6. Direct Relationship View pairwise behavior
-7. Broad discovery behavior
-8. Execution status contract
-9. Coverage contract
-10. Zero-result semantics
-11. Positive-result semantics
-12. Catalog category normalization
-13. Hard-gate regression
-14. Direct vs derived regression
-15. Hub/visibility regression
-16. Real 3M pairwise validation
-17. Reverse-direction identity validation
-18. Solventum validation
-19. Broad 3M discovery validation
-20. Real six-definition derived results
-21. Focused tests
-22. Full backend tests
-23. SQLite integrity
-24. Client Universe integrity
-25. Source-master integrity
-26. External-call verification
-27. Stage 5 readiness
+1. Executive status
 
---------------------------------------------------
-28. FINAL OUTPUT FORMAT
---------------------------------------------------
+2. Files changed
 
-At completion output exactly:
+3. Routes added
 
-CCR V1 — STAGE 4.1 FINAL CONTRACT PATCH
+4. Read-model/domain contracts
 
-Status:
-PASS / PARTIAL / FAIL
+5. Direct Relationship result contract
 
-Schema before:
-11
+6. Derived Correlation result contract
 
-Schema after:
+7. Execution-status contract
 
-Identity symmetry patch:
-PASS / FAIL
+8. Research/enrichment coverage contract
 
-Named source client uses persisted VERIFIED+EXACT link:
-YES / NO
+9. Zero-result semantics
 
-Named target client uses persisted VERIFIED+EXACT link:
-YES / NO
+10. Identity-lineage contract
 
-Named endpoint resolution depends on source/target role:
-YES / NO
+11. Evidence-lineage contract
 
-Discovered entity provider-ambiguity checks retained:
-YES / NO
+12. Visibility/hub contract
 
-Reverse pairwise identity resolution:
-PASS / FAIL
+13. Definition catalog result
 
-3M -> 3M India explicit pairwise result:
-FOUND / NOT_FOUND
+14. Real 3M -> 3M India API examples
 
-3M India -> 3M explicit pairwise identity resolution:
-PASS / FAIL
+15. Real reverse 3M India -> 3M example
 
-Canonical factual relationship direction preserved:
-YES / NO
+16. Real explicit 3M -> Solventum example
 
-3M -> Solventum explicit pairwise result:
-FOUND / BLOCKED_BY_IDENTITY / NOT_FOUND
+17. Broad 3M relationship result/coverage behavior
 
-Solventum qualifying persisted identity link:
-YES / NO
+18. Real six-definition derived result counts
 
-Broad 3M discovery coverage:
-status:
+19. Fixture-derived positive examples
 
-Execution/Coverage split:
-PASS / FAIL
+20. Read-only verification
 
-execution_status field:
-SUPPORTED / NOT_SUPPORTED
+21. Test results
 
-coverage structured separately:
-YES / NO
+22. SQLite integrity
 
-COMPLETE may coexist with PARTIAL coverage:
-YES / NO
+23. Client Universe integrity
 
-COMPLETE means comprehensive real-world research:
-NO
+24. Source-master integrity
 
-Zero-result partial-coverage semantics:
-PASS / FAIL
+25. Known limitations
 
-Categories:
+26. Exact recommended next stage
 
-SHARED_CONTROLLER:
-GROUP_STRUCTURE
+==================================================
+29. STOP BOUNDARY
+==================================================
 
-SHARED_SUPPLIER:
-COMMERCIAL_DEPENDENCY
+STOP after Stage 5 API/read-model implementation and validation.
 
-SHARED_CUSTOMER:
-COMMERCIAL_DEPENDENCY
+Do NOT:
 
-SUPPLY_CHAIN:
-COMMERCIAL_DEPENDENCY
+- perform controlled two-hop enrichment;
+- start Stage 6 frontend;
+- add provider research;
+- add correlation authoring;
+- add AI Create Correlation;
+- broaden the ontology;
+- create persisted correlation-result tables.
 
-SHARED_LENDER:
-FINANCING
+At completion, report whether Stage 5 is:
 
-SHARED_PRODUCT_DEPENDENCY:
-PRODUCT_DEPENDENCY
+PASS
+PARTIAL
+FAIL
 
-Category affects matching semantics:
-NO
-
-Hard endpoint identity gate:
-VERIFIED + EXACT
-
-Eligible relationship state:
-ACCEPTED ONLY
-
-Mandatory evidence lineage:
-YES
-
-Persisted DIRECT correlation definitions:
-0
-
-Derived definitions:
-6
-
-Derived pattern kinds:
-2
-
-Persisted derived result rows:
-0
-
-Synthetic direct edges:
-0
-
-Fuzzy merges:
-0
-
-External provider calls:
-0
-
-New research:
-0
-
-Client Universe rows:
-3,670,650
-
-Client Universe modifications:
-0
-
-Source-master modifications:
-0
-
-Historical Stage 2 modifications:
-0
-
-Frontend modifications:
-0
-
-Focused Stage 4.1 tests:
-passed / failed / skipped
-
-Full backend tests:
-passed / failed / skipped
-
-SQLite foreign-key check:
-
-SQLite quick check:
-
-Stage 5 readiness:
-READY / NOT_READY
-
-Report:
-backend/data/CCR_V1_STAGE_4_1_FINAL_CONTRACT_PATCH_REPORT.md
-
-Recommended next action:
-
-If all blocking patches pass:
-
-CCR V1 — STAGE 5
-CORRELATION QUERY API + CLIENT CORRELATION READ MODEL
-
-Do not start Stage 5 automatically.
+and give the exact route examples needed for us to inspect the first product-facing CCR results.
