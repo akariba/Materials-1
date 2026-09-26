@@ -1,697 +1,300 @@
-CCR — CLIENT CORRELATION
-V1 FOUNDATION MIGRATION — STAGE 1
-ADDITIVE DOMAIN FOUNDATION + SCHEMA FOUNDATION
-
-You are now implementing the first real CCR V1 architecture change after the completed CCR V1 Architecture Reconciliation Audit.
-
-IMPORTANT:
-The reconciliation audit has ALREADY been completed.
-
-Do NOT rerun the audit.
-
-Before making changes, read the completed reconciliation report in the repository and use its ACTUAL findings as the implementation baseline.
-
-Expected report location is approximately:
-
-backend/data/CCR_V1_ARCHITECTURE_RECONCILIATION_AUDIT.md
-
-If the exact filename/path differs, locate the completed CCR V1 reconciliation report and use that.
-
-The report is authoritative for:
-
-- current schema version and tables;
-- current Stage 2 relationship structures;
-- exact 3M pilot state;
-- evidence/document-retention findings;
-- identity structures;
-- current APIs;
-- current tests;
-- traversal/frontier structures;
-- reusable components;
-- components requiring adaptation;
-- historical/audit-only structures.
-
-Do not replace repository facts with assumptions from this prompt.
-
-======================================================================
-1. PRODUCT BOUNDARY
-======================================================================
-
-This project is:
+IMPLEMENT WITH LUNA
 
 CCR — CLIENT CORRELATION
+V1 FOUNDATION — STAGE 1.1 COMPLIANCE AND CONSISTENCY PATCH
 
-Use CCR terminology in ALL newly created code, configuration, documentation, reports, classes and comments.
+This is a narrow corrective stage following the successful CCR V1 Foundation Stage 1 implementation.
 
-For this stage do NOT introduce or use unrelated product terminology.
+Do NOT begin 3M V1 relationship reclassification or replay yet.
 
-The active CCR capability model is:
+Do NOT perform new research.
 
-CLIENT UNIVERSE
-CLIENT ENRICHMENT
-ENTITY RESOLUTION
-RELATIONSHIP RESEARCH
-EVIDENCE
-RELATIONSHIP GRAPH
-CLIENT CONNECTIONS
+Do NOT call SEC, GLEIF, Web, Stylus, recovery, frontier research, or any external provider.
 
-The authoritative Client Universe remains:
+Do NOT implement Stage 2A.8.
 
-backend/Customer_latest.parquet
+Do NOT modify the frontend.
 
-approximately:
+The purpose of this stage is to close the remaining implementation gaps identified by reviewing:
 
-3,670,650 client records
-3,670,650 unique GFCIDs
+backend/data/CCR_V1_FOUNDATION_STAGE_1_REPORT.md
 
-The existing Client Universe database/repository remains authoritative for internal client records.
+against the approved CCR V1 architecture.
 
-DO NOT redesign or rebuild the Client Universe in this stage.
+--------------------------------------------------
+1. CURRENT VERIFIED BASELINE
+--------------------------------------------------
 
-DO NOT introduce another client population.
+Current relationship schema:
 
-DO NOT modify source-master rows.
+v9
 
-======================================================================
-2. PURPOSE OF THIS STAGE
-======================================================================
+Current Client Universe:
 
-The current Stage 2 implementation successfully proved important controls:
+3,670,650 rows
 
-- deterministic/bounded processing;
-- no fuzzy automatic merging;
-- candidate retention;
-- generic-descriptor exclusion;
-- provider auditing;
-- source-master immutability;
-- replay/idempotence controls;
-- no synthetic direct relationships;
-- evidence-gated acceptance;
-- bounded traversal.
+Current backend tests:
 
-However, its domain structures were built incrementally around the earlier pilot workflow.
+57 passed
+0 failed
+0 skipped
 
-CCR V1 now needs a stable foundation that separates:
+Current CCR V1 tables:
 
-CLIENT RECORD
+ccr_v1_identity_links
+ccr_v1_documents
+ccr_v1_passages
+ccr_v1_claims
+ccr_v1_identity_link_support
+ccr_v1_relationships
+ccr_v1_relationship_versions
+ccr_v1_relationship_support
+ccr_v1_qualifiers
+ccr_v1_enrichment_coverage
 
-from
+These tables are currently empty.
 
-LEGAL ENTITY
+Historical Stage 2 rows remain preserved.
 
-from
+Current historical 3M state remains:
 
-IDENTITY LINK
+4 accepted observations
+3 graph-visible accepted edges
 
-from
+No fuzzy merges.
 
-EVIDENCE
+No synthetic direct edges.
 
-from
+No source-master changes.
 
-ATOMIC CLAIM
+No Client Universe changes.
 
-from
+Preserve all of these invariants.
 
-ACCEPTED RELATIONSHIP
+--------------------------------------------------
+2. IMPORTANT: STAGE 1 PASSED, BUT IT DID NOT COMPLETE ALL REQUESTED WORK
+--------------------------------------------------
 
-from
+Do not roll back Stage 1.
 
-RELATIONSHIP VERSION
+The additive CCR V1 foundation is accepted.
 
-from
+However, the Stage 1 report explicitly records that the historical ordinary-evidence-link / graph-predicate discrepancy remains unchanged.
 
-QUALIFIERS
+This is a required correction before any V1 migration/replay.
 
-from
+The Stage 1 implementation also omitted the minimal event foundation and introduced two semantic differences from the approved model that should be corrected while the CCR V1 tables remain empty:
 
-RESEARCH COVERAGE
+1. coverage representation of identity-unresolved research;
+2. legacy evidence retention mode.
 
-This stage establishes those foundations ADDITIVELY.
+This stage addresses those items only.
 
-It must NOT yet:
+--------------------------------------------------
+3. FIX THE CANONICAL EVIDENCE RESOLUTION DEFECT
+--------------------------------------------------
 
-- run new relationship research;
-- migrate all historical observations;
-- replay the 3M pilot;
-- delete historical Stage 2 data;
-- remove traversal infrastructure;
-- create client-connection algorithms;
-- build the frontend;
-- expand frontier nodes;
-- call providers.
+This is the highest-priority change.
 
-======================================================================
-3. IMPLEMENTATION PHILOSOPHY
-======================================================================
+The historical relationship store currently has:
 
-This is an ADDITIVE migration.
+4 accepted 3M observations
 
-The existing Stage 2 schema and records are historical/audit evidence.
+but:
 
-Do not destructively rewrite them.
+3 graph-visible accepted edges.
 
-Do not reinterpret old rows in place.
+The architecture reconciliation audit established the exact reason.
 
-Do not delete existing tables.
+Observation 2 — Cabot Corporation — is ACCEPTED and has admissible ordinary evidence.
 
-Do not silently remap existing accepted relationships.
+Its valid normalized lineage is:
 
-The intended transition pattern is:
+relationship observation 2
+    ->
+relationship_observation_evidence
+    ->
+relationship_evidence row 13
 
-CURRENT STAGE 2 DATA
-        │
-        │ preserved
-        ▼
-HISTORICAL / AUDIT COMPATIBILITY
+But relationship_evidence row 13 originated from a candidate and therefore has:
 
-while separately introducing:
+candidate_id populated
 
-CCR V1 DOMAIN FOUNDATION
-        │
-        ▼
-future controlled migration/replay
+and:
 
-The old and new models may coexist temporarily.
+observation_id NULL
 
-That is expected.
+The current graph predicate checks:
 
-======================================================================
-4. START WITH THE RECONCILIATION REPORT
-======================================================================
+1. direct relationship_evidence.observation_id;
+2. recovery evidence associations;
 
-Before coding:
+but it does NOT correctly inspect the normalized:
 
-1. Read the completed CCR V1 Architecture Reconciliation Audit.
-2. Inspect all current schema-v8 relationship tables.
-3. Inspect the repository/domain interfaces.
-4. Inspect current evidence structures.
-5. Inspect current entity/external-identity structures.
-6. Inspect existing migration framework.
-7. Inspect the test suite.
+relationship_observation_evidence
 
-Then produce a short internal implementation map before editing.
+association.
 
-Do not create another audit report.
+Therefore different consumers disagree about the same accepted observation:
 
-Use the previous audit's classifications:
+relationship evidence API can see the Cabot evidence
 
-KEEP
-KEEP + EXTEND
-MIGRATE
-DEPRECATE LATER
-HISTORICAL AUDIT ONLY
-NEEDS DESIGN DECISION
+while:
 
-Respect those findings.
+graph/neighbour/traversal eligibility cannot.
 
-If this prompt conflicts with a hard repository fact identified by the reconciliation audit, preserve repository correctness and report the conflict.
+This must be corrected.
 
-======================================================================
-5. CCR V1 CORE DOMAIN MODEL
-======================================================================
+--------------------------------------------------
+4. IMPLEMENT ONE CANONICAL HISTORICAL EVIDENCE RESOLVER
+--------------------------------------------------
 
-Implement domain contracts for the following concepts.
+Create one shared repository/domain-level evidence-resolution mechanism for historical accepted observations.
 
-Do not necessarily force each contract into a separate file if the repository conventions favour another structure.
+Do NOT repair this by changing historical evidence rows.
 
-But the concepts must remain semantically distinct.
+Do NOT populate missing observation_id values.
 
-----------------------------------------------------------------------
-5.1 CLIENT RECORD
-----------------------------------------------------------------------
+Do NOT duplicate evidence.
 
-A Client Record is the authoritative internal record represented by the existing Client Universe.
+Do NOT manufacture new evidence.
 
-The existing Client Universe repository remains the source of truth.
+The canonical resolver must recognize all currently valid evidence paths:
 
-Do NOT copy all 3.67M clients into a new CCR table.
+A. DIRECT ORDINARY EVIDENCE
 
-CCR V1 should reference Client Universe records through the existing stable internal client key and source identifiers.
+relationship_evidence.observation_id
+    ->
+relationship observation
 
-No new client authority.
+B. NORMALIZED ORDINARY EVIDENCE
 
-----------------------------------------------------------------------
-5.2 LEGAL ENTITY
-----------------------------------------------------------------------
+relationship_observation_evidence
+    ->
+relationship_evidence
 
-CCR V1 legal entities represent real-world legal entities that can participate in externally evidenced relationships.
+C. RECOVERY EVIDENCE
 
-V1 entity grain:
+existing observation-to-recovery-evidence linkage
 
-LEGAL_ENTITY only.
+The resolver must deduplicate evidence if the same evidence is reachable through more than one path.
 
-Do not implement generic ORGANISATION nodes in this stage.
+The resolver should return enough metadata to identify:
 
-Do not automatically convert unresolved names into legal entities.
+evidence identifier
+evidence source
+linkage mechanism
+admissibility
+source reference
+content/reference hash where present
 
-An entity must support provenance-aware identifiers.
+Do not alter acceptance criteria.
 
-Strong identifiers may include, where actually available:
+This resolver answers:
 
-- LEI
-- CIK where appropriate
-- registry identifier
-- other governed exact identifier
+"What admissible evidence supports this accepted historical observation?"
 
-Names alone do NOT automatically establish entity identity.
+It does not decide whether an unaccepted observation should become accepted.
 
-Reuse/adapt the existing external-entity infrastructure where the reconciliation audit shows it is safe.
+--------------------------------------------------
+5. USE THE CANONICAL RESOLVER CONSISTENTLY
+--------------------------------------------------
 
-Do NOT create a duplicate entity system if existing structures can be extended cleanly.
+Inspect all current code paths that determine evidence-backed relationship visibility.
 
-----------------------------------------------------------------------
-5.3 CLIENT ↔ ENTITY IDENTITY LINK
-----------------------------------------------------------------------
+At minimum reconcile:
 
-Introduce an explicit CCR V1 identity-link concept between:
+accepted observation detail
+evidence listing
+graph edge eligibility
+neighbour calculation
+network calculation
+traversal hop eligibility
+graph fingerprints/counting where applicable
 
-Client Record
-and
-Legal Entity
+Do not create several slightly different resolver implementations.
 
-The domain must support at least:
+All relevant consumers should use the same canonical evidence meaning.
 
-link_type:
+The invariant must become:
 
-EXACT
-ASSOCIATED
+the same accepted observation must not be evidence-backed in one API and evidence-unbacked in another because of storage-link shape.
 
-link_state:
+--------------------------------------------------
+6. CABOT REGRESSION TEST
+--------------------------------------------------
 
-VERIFIED
-PROBABLE
-UNVERIFIED
-REJECTED
+Create a focused regression fixture reproducing the historical Cabot structure:
 
-Also preserve:
-
-basis
-source/provenance
-created_at
-updated_at or versioning equivalent
-policy/rule version where appropriate
-
-IMPORTANT:
-
-Do NOT invent VERIFIED links during this stage.
-
-Do NOT bulk-map the 3.67M universe.
-
-Do NOT infer SAME ENTITY from name similarity.
-
-Do NOT infer SAME ENTITY from CAGID.
-
-Do NOT assume legal_entity_id is automatically a valid LEI.
-
-Existing exact identity evidence may only be migrated later through an explicit controlled migration/replay stage.
-
-For now implement the capability and tests.
-
-Identity rule:
-
-strong relationship evidence
+candidate-originated evidence
 +
-weak identity link
-≠
-accepted client-to-client connection
+relationship_evidence.observation_id = NULL
++
+normalized relationship_observation_evidence link
++
+accepted relationship observation
 
-======================================================================
-6. CCR V1 DOCUMENT / EVIDENCE FOUNDATION
-======================================================================
+Verify:
 
-The conceptual chain is:
+canonical evidence resolver finds the evidence
 
-DOCUMENT
-    ↓
-EVIDENCE PASSAGE
-    ↓
-ATOMIC CLAIM
-    ↓
-ACCEPTANCE
-    ↓
-RELATIONSHIP VERSION
+and, if all existing historical graph eligibility rules are satisfied:
 
-Implement the storage/domain foundation required to support this chain.
+the accepted observation becomes graph-visible.
 
-----------------------------------------------------------------------
-6.1 DOCUMENT
-----------------------------------------------------------------------
+Do NOT weaken any other eligibility rule to achieve this.
 
-A Document represents a retrieved source artifact or source representation.
+--------------------------------------------------
+7. VERIFY THE FOUR 3M HISTORICAL OBSERVATIONS
+--------------------------------------------------
 
-Support metadata including, where available:
+Using current persisted data only, evaluate:
 
-document_id
-source_class
-publisher/source
-canonical reference or URL
-publication_date
-retrieved_at
-content_hash
-retention_mode
-full_content_retained
-replay_capability
-metadata/provenance
+Observation 1
+3M -> 3M India Ltd
+historical type: subsidiary
 
-Do NOT assume every document's full text may always be retained.
+Observation 2
+3M <-> Cabot Corporation
+historical type: legal_counterparty
 
-Support retention capability conceptually such as:
+Observation 3
+3M -> Solventum Corporation
+historical type: equity_investor
 
-FULL_SNAPSHOT
-RESTRICTED_SNAPSHOT
-TRANSIENT_VERIFICATION
+Observation 4
+3M <-> Solventum Corporation
+historical type: strategic_partner
 
-Use naming consistent with repository conventions.
+Do not reclassify these relationship types yet.
 
-The data model should allow:
+Report for each:
 
-FULL_SNAPSHOT:
-replay/excerpt verification possible from retained content
+acceptance state
+resolved evidence count
+evidence linkage path(s)
+graph eligibility
+reason
 
-RESTRICTED_SNAPSHOT:
-only permitted representation retained
+Historical accepted observation count must remain:
 
-TRANSIENT_VERIFICATION:
-verification occurred during ingestion but full content is not retained
+4
 
-Do not build licensing logic.
+Expected graph-visible edge result after the canonical evidence fix:
 
-Build the metadata capability.
+4
 
-----------------------------------------------------------------------
-6.2 EVIDENCE PASSAGE
-----------------------------------------------------------------------
+ONLY if all four meet the existing historical eligibility rules.
 
-Evidence Passage represents an exact portion of a Document.
+If the result remains 3, identify the exact remaining rule.
 
-Support, where available:
+Do not force 4.
 
-passage_id
-document_id
-exact excerpt/text
-start/end offsets OR another deterministic locator
-passage_hash if useful
-created_at/extracted_at
+--------------------------------------------------
+8. COVERAGE SEMANTICS CORRECTION
+--------------------------------------------------
 
-A passage must be traceable to its document.
-
-Do not accept model-generated summaries as evidence passages.
-
-----------------------------------------------------------------------
-6.3 ATOMIC CLAIM
-----------------------------------------------------------------------
-
-A Claim represents ONE atomic assertion extracted from evidence.
-
-It is NOT an accepted relationship.
-
-Conceptually support:
-
-claim_id
-passage_id
-subject reference
-object reference OR unresolved mention OR unspecified object
-relationship type/family candidate
-direction/roles
-polarity
-stated dates
-qualifier assertions
-extraction provenance
-extractor/prompt version
-created_at
-
-Important examples:
-
-"B supplies A"
-=
-one claim
-
-"B and C supply A"
-=
-two atomic claims from the same passage
-
-"We rely on sole-source suppliers"
-=
-claim with unspecified object
-NOT a relationship edge
-
-A named but unresolved counterparty must remain resolvable later.
-
-An unnamed counterparty must NOT become a placeholder entity.
-
-======================================================================
-7. CCR V1 RELATIONSHIP FOUNDATION
-======================================================================
-
-Introduce or adapt the relationship model so that:
-
-RELATIONSHIP
-
-and
-
-RELATIONSHIP VERSION
-
-are distinct concepts.
-
-A Relationship represents the stable identity of a factual entity-to-entity relationship.
-
-A Relationship Version represents the accepted state over time.
-
-Do not migrate old observations yet.
-
-----------------------------------------------------------------------
-7.1 ACCEPTANCE STATE
-----------------------------------------------------------------------
-
-Support:
-
-CANDIDATE
-ACCEPTED
-DISPUTED
-REJECTED
-
-Do not combine this with freshness.
-
-Do not combine this with temporal validity.
-
-Do not introduce numeric confidence.
-
-----------------------------------------------------------------------
-7.2 TEMPORAL FIELDS
-----------------------------------------------------------------------
-
-Support relationship-version temporal information where appropriate:
-
-effective_from
-effective_to
-date precision if repository patterns permit
-observed_from / earliest evidence
-observed_to / latest evidence
-last_verified_at
-
-Do not fabricate dates.
-
-Nullable/unknown dates are valid.
-
-----------------------------------------------------------------------
-7.3 EVIDENCE BASIS
-----------------------------------------------------------------------
-
-Support deterministic evidence basis:
-
-PRIMARY
-CORROBORATED
-SINGLE_SECONDARY
-INSUFFICIENT
-
-Do not implement arbitrary HIGH/MEDIUM/LOW confidence for acceptance.
-
-Do not create numeric relationship-confidence scores.
-
-----------------------------------------------------------------------
-7.4 SOURCE CLASS
-----------------------------------------------------------------------
-
-Prepare the model for governed underlying source classes such as:
-
-REGISTRY
-REGULATORY_FILING
-ISSUER_FILING
-ISSUER_IR
-OFFICIAL_TRANSACTION_DOCUMENT
-GOVERNMENT
-EXCHANGE_FILING
-APPROVED_NEWS
-COMMERCIAL_DATASET
-OTHER_APPROVED_SECONDARY
-
-Retrieval mechanism and source class must remain separate concepts.
-
-Example:
-
-retrieval mechanism:
-WEB
-
-underlying source:
-REGULATORY_FILING
-
-must NOT count as independent Web corroboration of the filing.
-
-No external calls are made in this stage.
-
-======================================================================
-8. CCR V1 QUALIFIER FOUNDATION
-======================================================================
-
-Qualifiers are assertions ABOUT an accepted/candidate relationship.
-
-They are not separate relationship types merely because they change how an analyst describes the relationship.
-
-A qualifier must support its own acceptance/evidence state.
-
-Conceptually support:
-
-ACCEPTED
-CANDIDATE
-DISPUTED
-UNKNOWN
-
-Potential qualifiers include:
-
-ownership_percentage
-voting_percentage
-ownership_basis
-control_basis
-
-facility_amount
-currency
-commitment_share
-secured
-maturity
-
-product_category
-service_category
-revenue_share
-spend_share
-sole_source
-single_source
-
-described_as_critical
-described_as_strategic
-
-agreement_name/reference
-
-Do not need to implement every qualifier as a hardcoded column.
-
-Use a governed extensible representation consistent with repository style.
-
-Critical rule:
-
-A valid base relationship must not fail merely because a qualifier is weak.
-
-Example:
-
-supplies = ACCEPTED
-
-sole_source = CANDIDATE
-
-described_as_critical = UNKNOWN
-
-is valid.
-
-======================================================================
-9. CCR V1 ACTIVE RELATIONSHIP TYPES
-======================================================================
-
-Create the V1 ontology/domain definitions required for the six ACTIVE initial relationship types:
-
-owns
-
-controls
-
-lends_to
-
-provides_credit_support
-
-supplies
-
-depends_on_products_of
-
-Do not yet create live research pipelines for them.
-
-Do not migrate current data automatically.
-
-The ontology should define, at minimum:
-
-canonical type
-family
-direction semantics
-inverse display label
-allowed endpoint grain
-active/passive/deferred research status
-basic qualifier vocabulary
-whether direct client-to-client display is eligible
-whether graph-hop use is allowed
-
-Use policy/configuration data where practical instead of spreading type logic throughout application code.
-
-----------------------------------------------------------------------
-9.1 PASSIVE / OPPORTUNISTIC TYPES
-----------------------------------------------------------------------
-
-The architecture may also recognise:
-
-manages
-licenses_to
-partners_with
-litigates_against
-
-but DO NOT spend major engineering effort on research behavior for them.
-
-They are not active research families in this stage.
-
-----------------------------------------------------------------------
-9.2 DEFERRED
-----------------------------------------------------------------------
-
-Do not implement active support for:
-
-provides_professional_services_to
-broad passive equity-holding harvest
-regulatory relationship harvesting
-organisation-grain entities
-natural-person external research
-
-======================================================================
-10. CONTROL BASIS MUST PRESERVE SOURCE SEMANTICS
-======================================================================
-
-For future control relationships, preserve source-specific basis.
-
-Examples:
-
-GLEIF Level 2 may support:
-
-controls
-control_basis = ACCOUNTING_CONSOLIDATION
-
-SEC Exhibit 21 may support:
-
-controls
-control_basis = SUBSIDIARY_DISCLOSURE
-
-Do NOT silently normalize these into a universal legal-control assertion without preserving their stated basis.
-
-This stage only needs the model capability.
-
-Do not harvest new control relationships.
-
-======================================================================
-11. RESEARCH OUTCOME / ENRICHMENT COVERAGE FOUNDATION
-======================================================================
-
-CCR V1 needs to distinguish:
+The approved CCR V1 enrichment coverage outcomes are:
 
 NOT_ELIGIBLE
 NOT_RESEARCHED
@@ -700,625 +303,672 @@ RESEARCHED_NONE_FOUND
 PARTIAL
 UNAVAILABLE
 
-Freshness separately:
+Freshness remains separately:
 
 CURRENT
 STALE
 
-Implement or adapt a CCR V1 enrichment/research-coverage contract that can track coverage by:
+IDENTITY_UNRESOLVED must NOT be a peer top-level coverage outcome.
 
-entity
-relationship family
-scope/source set
-as_of
-policy version
+Identity unresolved describes why research was not performed.
+
+Represent it as:
+
+outcome = NOT_RESEARCHED
+
+reason_code = IDENTITY_UNRESOLVED
+
+The NOT_RESEARCHED reason model must support at least:
+
+IDENTITY_UNRESOLVED
+NOT_PRIORITIZED
+FAMILY_NOT_IN_SCOPE
+
+If useful, allow an extensible governed reason field, but do not replace the distinction above with arbitrary free text.
+
+The existing ccr_v1_enrichment_coverage table is empty, so correct this foundation now before it receives production data.
+
+Do not create coverage rows during this stage.
+
+--------------------------------------------------
+9. RESEARCHED_NONE_FOUND SAFETY RULE
+--------------------------------------------------
+
+Preserve and test:
+
+RESEARCHED_NONE_FOUND may only represent a completed defined research scope that produced zero qualifying findings.
+
+It must not be produced when:
+
+provider calls failed
+provider was unavailable
+provider was not configured
+identity was unresolved
+only part of the required source set ran
+research was never started
+
+PARTIAL and UNAVAILABLE remain distinct states.
+
+The historical Stage 2A.7 frontier result must never be translated into RESEARCHED_NONE_FOUND.
+
+--------------------------------------------------
+10. LEGACY EVIDENCE RETENTION MODE
+--------------------------------------------------
+
+The document model currently supports:
+
+FULL_SNAPSHOT
+RESTRICTED_SNAPSHOT
+TRANSIENT_VERIFICATION
+
+Add an explicit:
+
+LEGACY_REFERENCE
+
+retention mode.
+
+Purpose:
+
+represent historical evidence for which CCR possesses references/excerpts/metadata but does NOT possess a first-class retained source document sufficient for deterministic full replay.
+
+LEGACY_REFERENCE must support cases like the historical 3M evidence:
+
+source reference known
+excerpt known
+some metadata known
+full source body absent
+passage offsets unavailable
+content hash possibly absent
+full replay impossible
+
+LEGACY_REFERENCE must never imply:
+
+FULL_REPLAY
+
+A legacy-reference document may have replay capability such as:
+
+PASSAGE_REPLAY
+PARTIAL_REPLAY
+NO_REPLAY
+
+depending on what is actually retained.
+
+Do not backfill historical evidence yet.
+
+This stage only ensures the schema/domain model can represent it correctly.
+
+--------------------------------------------------
+11. MINIMAL EVENT FOUNDATION
+--------------------------------------------------
+
+Stage 1 explicitly chose not to introduce an event object.
+
+The approved CCR model requires events to remain conceptually separate from persistent relationships.
+
+Create a minimal additive event foundation now.
+
+Do NOT create a large event taxonomy.
+
+Do NOT populate historical events.
+
+At minimum introduce:
+
+ccr_v1_events
+
+with a domain/repository contract capable of representing:
+
+event_id
+event_type
+event state/status if required
+effective/announced/observed dates where known
+date precision
+subject Legal Entity
+optional related Legal Entity
+optional unresolved counterparty/reference
+source/policy provenance
+stable fingerprint
+created timestamp
+
+Examples of future event types include:
+
+ACQUISITION
+DIVESTITURE
+SPIN_OFF
+FACILITY_SIGNING
+FACILITY_TERMINATION
+LITIGATION_SETTLEMENT
+JV_FORMATION
+
+These examples do not need to become a complete closed taxonomy during this stage.
+
+If event evidence/claim support requires a separate small association table, add it only if necessary.
+
+Prefer reuse of the existing:
+
+document
+passage
+atomic claim
+
+foundation.
 
 Important:
 
-RESEARCHED_NONE_FOUND
-means:
+an event must NOT automatically create a persistent relationship.
 
-"the configured research scope completed successfully and found no qualifying relationship"
+Example:
 
-It must NEVER mean:
+announced acquisition
 
-"this relationship does not exist."
+does not automatically mean:
 
-Provider failure must not become NONE_FOUND.
+owns
 
-NOT_RESEARCHED must permit reason codes, such as:
+until the relevant relationship acceptance conditions are satisfied.
 
-identity_unresolved
-not_prioritized
-family_not_in_scope
-policy_ineligible
+--------------------------------------------------
+12. EVENT VS RELATIONSHIP INVARIANT
+--------------------------------------------------
 
-Do not execute research.
+Add tests demonstrating that:
 
-======================================================================
-12. EVENTS — FOUNDATION ONLY
-======================================================================
+creating or representing an event does not automatically create:
 
-CCR V1 distinguishes events from persistent relationships.
+ccr_v1_relationships
 
-Examples of events:
+or:
 
-acquisition
-spin-off
-facility signing
-facility termination
-litigation settlement
-
-Do not build a complete event subsystem unless needed to avoid locking the model incorrectly.
-
-At minimum:
-
-- ensure the new relationship/version model does not require events to be represented as permanent relationship types;
-- create only the minimum domain/storage abstraction required if the architecture naturally needs it now.
-
-If introducing events would significantly expand scope, defer actual event persistence and document that decision.
-
-======================================================================
-13. CLIENT CONNECTIONS — DO NOT IMPLEMENT YET
-======================================================================
-
-Do NOT implement connection mining in this stage.
-
-Do NOT add new traversal algorithms.
-
-Do NOT create shared-supplier or shared-controller calculations yet.
-
-The future direction includes:
-
-DIRECT client-to-client relationships as a view/category
-
-and derived structures such as:
-
-SHARED_CONTROLLER
-SHARED_SUPPLIER
-SHARED_CUSTOMER
-SUPPLY_CHAIN
-
-Potential hidden-by-default structures later:
-
-SHARED_LENDER
-SHARED_PRODUCT_DEPENDENCY
-SHARED_SPONSOR
-
-But this stage ends before connection implementation.
-
-The new foundation must merely make those queries possible later.
-
-======================================================================
-14. EXISTING STAGE 2 DATA
-======================================================================
-
-Preserve all existing Stage 2 data.
-
-This includes any existing:
-
-observations
-candidates
-evidence
-external entities
-identity records
-provider attempts
-resolution runs
-recovery runs
-traversal runs
-frontier expansion runs
-paths
-hop evidence
-provider caches
-
-Do not migrate these automatically.
-
-Do not reinterpret current 3M relationships under V1 during this stage.
-
-Do not delete them.
-
-The completed reconciliation audit already determined their future disposition.
-
-Respect that classification.
-
-======================================================================
-15. CURRENT 3M PILOT
-======================================================================
-
-The 3M pilot becomes the future CCR V1 regression/replay case.
-
-DO NOT replay it in this stage.
-
-DO NOT call providers.
-
-DO NOT change accepted 3M observations.
-
-DO NOT create new 3M relationships.
-
-Only ensure the new architecture is capable of supporting the future flow:
-
-stored/retrieved evidence
-    ↓
-evidence passage
-    ↓
-atomic claims
-    ↓
-V1 acceptance
-    ↓
-relationship/version
-    ↓
-compare against historical result
-
-Future comparison states:
-
-CONFIRMED
-RECLASSIFIED
-DOWNGRADED
-REJECTED
-NEW
-
-Do not implement the comparison workflow now unless a minimal reusable enum/contract is clearly needed.
-
-======================================================================
-16. EXISTING TRAVERSAL / FRONTIER INFRASTRUCTURE
-======================================================================
-
-Do not delete Stage 2A.6 or 2A.7 infrastructure.
-
-Do not continue developing it.
-
-Leave historical execution/audit records intact.
-
-Where necessary:
-
-- mark old structures as legacy/historical in documentation;
-- keep them operational enough for existing read-only audit APIs/tests;
-- do not wire new CCR V1 relationships into old traversal automatically.
-
-The future connection engine will be designed after V1 relationships and identity links exist.
-
-======================================================================
-17. SCHEMA MIGRATION
-======================================================================
-
-Create ONE additive migration from the current relationship schema version.
-
-The reconciliation audit should tell you the current exact version.
-
-If it is schema v8 as expected:
-
-create schema v9.
-
-If the current repository reports another version:
-
-use the actual next version.
-
-The migration must be:
-
-ADDITIVE
-IDEMPOTENT
-REPLAY-SAFE
-NON-DESTRUCTIVE
-
-No DROP TABLE.
-
-No destructive ALTER.
-
-No deletion of Stage 2 data.
-
-No rewriting of historical rows.
-
-Use foreign keys and indexes deliberately.
-
-Do not prematurely create massive indexes that are not required by the Stage 1 workload.
-
-======================================================================
-18. STORAGE / REPOSITORY BOUNDARY
-======================================================================
-
-Continue using repository abstractions.
-
-Do not make application/domain code dependent directly on SQLite-specific behavior where avoidable.
-
-SQLite remains acceptable for this local stage.
-
-Do NOT migrate to PostgreSQL in this task.
-
-Add/extend repository contracts for the new CCR V1 concepts.
-
-Potential concepts include:
-
-entity
-client_entity_identity_link
-document
-evidence_passage
-claim
-relationship
-relationship_version
-relationship_support
-qualifier
-enrichment_coverage
-
-Use naming that matches the actual existing repository style.
-
-Do not create gratuitous repository interfaces if one well-structured CCR repository boundary is cleaner.
-
-======================================================================
-19. TERMINOLOGY CLEANLINESS
-======================================================================
-
-ALL new artifacts created by this stage must use CCR naming.
+ccr_v1_relationship_versions
 
 Examples:
 
-CCR
-Client Correlation
-Client Universe
-Client Enrichment
-Entity Resolution
-Relationship Research
-Evidence
-Relationship Graph
-Client Connections
+FACILITY_SIGNING event
+does not automatically create lends_to
 
-Do not copy unrelated historical naming into new class/table/config/report names.
+ACQUISITION announcement
+does not automatically create owns or controls
 
-Do not rename historical files in this stage unless required to prevent active runtime ambiguity.
+LITIGATION_SETTLEMENT event
+does not automatically create litigates_against
 
-Legacy names may remain untouched for audit/history.
+Relationship creation remains governed separately.
 
-New code must not make new dependencies on unrelated legacy policy files.
+--------------------------------------------------
+13. VERIFY SOURCE CLASS VS RETRIEVAL MECHANISM
+--------------------------------------------------
 
-======================================================================
-20. CODE ORGANIZATION
-======================================================================
+Preserve Stage 1's correct separation between:
 
-Follow existing backend architecture and conventions.
+underlying source class
 
-Prefer adapting reusable components identified by the reconciliation audit.
+and:
 
-Do NOT build a parallel application.
+retrieval mechanism/provider.
 
-Do NOT duplicate:
+Example:
 
-client repository
-provider infrastructure
-database connection framework
-migration framework
-common provenance/audit utilities
+retrieval mechanism = WEB
 
-when existing implementation is reusable.
+underlying source class = REGULATORY_FILING
 
-But do not force incompatible Stage 2 concepts into CCR V1 merely to reduce file count.
+must remain possible.
 
-======================================================================
-21. REQUIRED TESTS
-======================================================================
+Do not treat retrieval provider as independent corroboration.
 
-Add focused tests for the new CCR V1 foundation.
+No external retrieval occurs during this stage.
 
-At minimum test:
+--------------------------------------------------
+14. DO NOT CHANGE THE V1 RELATIONSHIP ONTOLOGY
+--------------------------------------------------
 
-1. schema migration is additive;
+Keep the current approved ACTIVE types:
 
-2. existing Stage 2 tables/data survive migration;
+owns
+controls
+lends_to
+provides_credit_support
+supplies
+depends_on_products_of
 
-3. source Client Universe remains unchanged;
+Keep passive/opportunistic metadata support:
 
-4. client-record/entity identity link supports:
-   EXACT
-   ASSOCIATED
-   VERIFIED
-   PROBABLE
-   UNVERIFIED
-   REJECTED;
+manages
+licenses_to
+partners_with
+litigates_against
 
-5. no identity link is automatically VERIFIED from a name alone;
+Do not activate:
 
-6. unresolved named mention does not create a legal entity automatically;
+provides_professional_services_to
+broad passive ownership harvesting
+regulatory relationships
+natural-person external enrichment
+organisation-grain relationships
 
-7. unnamed claim does not create an entity;
+Do not migrate the 23 historical Stage 2 relationship labels yet.
 
-8. document → evidence passage lineage is preserved;
+--------------------------------------------------
+15. DO NOT POPULATE THE CCR V1 TABLES WITH 3M YET
+--------------------------------------------------
 
-9. one passage may produce multiple atomic claims;
+This remains a foundation-compliance patch.
 
-10. one atomic relationship claim has one relationship assertion;
+Do not migrate:
 
-11. relationship acceptance state is separate from freshness;
+3M India
+Cabot
+Solventum
 
-12. relationship version supports unknown/open temporal fields;
+into V1 relationship rows yet.
 
-13. qualifier state is independent from base relationship state;
+Do not create V1 accepted relationships from the old four observations.
 
-14. weak qualifier does not downgrade an accepted base relationship;
+Do not create identity links for them merely because historical resolution exists.
 
-15. evidence basis enum supports:
-    PRIMARY
-    CORROBORATED
-    SINGLE_SECONDARY
-    INSUFFICIENT;
+Do not backfill documents/passages/claims yet.
 
-16. retrieval mechanism is separate from underlying source class;
+That is the next controlled stage after this patch is verified.
 
-17. RESEARCHED_NONE_FOUND cannot be created when outcome is PARTIAL/UNAVAILABLE;
+--------------------------------------------------
+16. IDENTITY FOUNDATION — NO CHANGE IN AUTHORITY
+--------------------------------------------------
 
-18. research coverage tracks entity + family + policy/scope;
+Preserve the Stage 1 identity model:
 
-19. no synthetic direct relationship is created from path concepts;
+link_type:
+EXACT
+ASSOCIATED
 
-20. historical Stage 2 3M records are unchanged;
+link_state:
+VERIFIED
+PROBABLE
+UNVERIFIED
+REJECTED
 
-21. existing no-fuzzy-merge invariants still pass;
+Do not infer identity from:
 
-22. existing source-master immutability tests still pass;
+name similarity
+CAGID
+CAGID_NAME
+beneficial_owner_gfcid
+legal_entity_id without semantic validation
+lei_legal_name alone
 
-23. existing test suite remains green unless a test is explicitly and defensibly superseded.
+No fuzzy merge.
 
-Do not weaken old tests merely to make the migration pass.
+Do not bulk-map the 3.67M Client Universe.
 
-If an old test encodes a genuinely superseded behavior, identify it explicitly before changing it.
+--------------------------------------------------
+17. CLIENT UNIVERSE AND SOURCE MASTER
+--------------------------------------------------
 
-Prefer compatibility in this stage.
+The authoritative Client Universe remains:
 
-======================================================================
-22. NO EXTERNAL PROVIDER ACTIVITY
-======================================================================
+backend/Customer_latest.parquet
 
-This stage must make:
+Expected:
 
-SEC calls: 0
-GLEIF calls: 0
-Web calls: 0
-Stylus calls: 0
+3,670,650 rows
+3,670,650 unique GFCIDs
 
-Do not run recovery scripts that call providers.
+Runtime Client Universe remains:
 
-Do not rerun Stage 2A.7.
+backend/data/client_universe.sqlite3
 
-Do not refetch 3M evidence.
+Do not modify either source.
 
-Tests must use fixtures/mocks/local data only.
+No CCR V1 migration should copy the entire Client Universe into the relationship database.
 
-======================================================================
+Client Record identifiers remain validated through the existing read-only repository boundary.
+
+--------------------------------------------------
+18. STATUS ENDPOINT
+--------------------------------------------------
+
+Inspect:
+
+GET /api/status
+
+If it still advertises Stage 2A.6 as the active product readiness state, update the wording to accurately describe current state.
+
+It should communicate approximately:
+
+CCR_V1_FOUNDATION_READY
+
+or an equivalent existing status convention.
+
+Do not claim:
+
+CCR V1 enrichment complete
+
+because no V1 data migration/research has occurred.
+
+Do not advertise Stage 2A.7 frontier research as an active production capability.
+
+Preserve backwards-compatible fields where possible.
+
+--------------------------------------------------
+19. SCHEMA MIGRATION
+--------------------------------------------------
+
+The current schema is v9.
+
+Implement the smallest safe schema migration required for these corrections.
+
+Expected next schema version:
+
+v10
+
+unless repository conventions provide a compelling reason otherwise.
+
+The migration may include:
+
+coverage reason-code correction
+LEGACY_REFERENCE retention mode support
+minimal ccr_v1_events table
+minimal event support association if required
+
+Do not redesign unrelated Stage 1 tables.
+
+Do not drop Stage 2 tables.
+
+Do not delete Stage 2 rows.
+
+Do not destructively rename historical structures.
+
+Because current CCR V1 tables are empty, normalize these semantics now rather than preserving an incorrect empty contract for compatibility.
+
+Migration must be:
+
+deterministic
+idempotent
+replay-safe
+foreign-key safe
+
+--------------------------------------------------
+20. REQUIRED TESTS
+--------------------------------------------------
+
+Preserve all existing tests.
+
+Add focused tests for:
+
+CANONICAL HISTORICAL EVIDENCE
+
+1. direct ordinary evidence resolves.
+
+2. normalized relationship_observation_evidence resolves.
+
+3. recovery evidence resolves.
+
+4. duplicate reachability does not double-count evidence.
+
+5. Cabot candidate-originated normalized evidence resolves.
+
+6. candidate evidence alone does not create an accepted edge.
+
+7. rejected/inadmissible evidence remains ineligible.
+
+GRAPH/API CONSISTENCY
+
+8. accepted relationship detail and graph eligibility see the same admissible evidence set.
+
+9. neighbor calculation uses canonical evidence resolution.
+
+10. network calculation uses canonical evidence resolution.
+
+11. traversal hop eligibility uses canonical evidence resolution.
+
+COVERAGE
+
+12. IDENTITY_UNRESOLVED is represented as:
+NOT_RESEARCHED + IDENTITY_UNRESOLVED reason.
+
+13. NOT_PRIORITIZED is represented as NOT_RESEARCHED reason.
+
+14. FAMILY_NOT_IN_SCOPE is represented as NOT_RESEARCHED reason.
+
+15. provider failure cannot become RESEARCHED_NONE_FOUND.
+
+16. PARTIAL remains distinct from RESEARCHED_NONE_FOUND.
+
+17. UNAVAILABLE remains distinct from RESEARCHED_NONE_FOUND.
+
+RETENTION
+
+18. LEGACY_REFERENCE can be persisted.
+
+19. LEGACY_REFERENCE cannot imply FULL_REPLAY.
+
+20. FULL_SNAPSHOT consistency rules remain valid.
+
+EVENTS
+
+21. event can be persisted without a relationship.
+
+22. acquisition event does not automatically create owns.
+
+23. facility-signing event does not automatically create lends_to.
+
+24. litigation-settlement event does not automatically create a persistent relationship.
+
+INVARIANTS
+
+25. fuzzy merge count remains zero.
+
+26. synthetic direct edge count remains zero.
+
+27. historical Stage 2 rows remain unchanged.
+
+28. Client Universe remains unchanged.
+
+29. source master remains unchanged.
+
+30. CCR V1 relationship tables remain unpopulated unless a test transaction uses temporary/test storage.
+
+--------------------------------------------------
+21. VALIDATE CURRENT 3M GRAPH CONSISTENCY
+--------------------------------------------------
+
+After implementing the canonical evidence resolver, inspect the existing production-like local relationship database read-only.
+
+Report:
+
+historical accepted observations:
+expected 4
+
+graph-visible accepted edges before patch:
+3
+
+graph-visible accepted edges after patch:
+expected investigation result, not forced
+
+For every historical observation report:
+
+observation ID
+endpoint
+historical type
+resolved admissible evidence count
+evidence linkage mechanisms
+graph-visible yes/no
+reason
+
+Particularly confirm:
+
+Cabot normalized ordinary evidence recognized:
+YES / NO
+
+Do not alter the historical rows.
+
+--------------------------------------------------
+22. NO EXTERNAL ACTIVITY
+--------------------------------------------------
+
+During this stage:
+
+SEC calls = 0
+GLEIF calls = 0
+Web calls = 0
+Stylus calls = 0
+provider recovery calls = 0
+frontier research calls = 0
+
+new research findings = 0
+new research candidates = 0
+new accepted research relationships = 0
+
+Do not rerun 3M research.
+
+--------------------------------------------------
 23. NO FRONTEND
-======================================================================
+--------------------------------------------------
 
 Frontend modifications:
 
 0
 
-Do not build the graph UI.
+Do not work on:
 
-Do not change navigation.
+network map
+dashboard
+search UI
+evidence UI
+relationship UI
+design/styling
 
-Do not add V1 pages.
+Backend consistency only.
 
-Do not add evidence drawers.
+--------------------------------------------------
+24. CREATE REPORT
+--------------------------------------------------
 
-Backend/domain foundation only.
+Create:
 
-======================================================================
-24. SOURCE MASTER INTEGRITY
-======================================================================
+backend/data/CCR_V1_FOUNDATION_STAGE_1_1_REPORT.md
 
-At the end verify:
-
-Customer_latest.parquet unchanged
-
-Client Universe:
-3,670,650 rows expected
-
-GFCID uniqueness unchanged
-
-No Client Universe source records inserted/updated/deleted by this stage.
-
-CCR V1 data must remain additive around the Client Universe.
-
-======================================================================
-25. COMPATIBILITY WITH CURRENT APIs
-======================================================================
-
-Do not break existing bounded client APIs.
-
-Do not intentionally break existing read-only Stage 2 audit/relationship APIs.
-
-If compatibility requires a thin adapter, add the smallest safe adapter.
-
-Do not expose the full new V1 API in this stage.
-
-A future stage will introduce the proper CCR V1 API surface after V1 data has been migrated/replayed.
-
-======================================================================
-26. REQUIRED DOCUMENTATION
-======================================================================
-
-Create one implementation report:
-
-backend/data/CCR_V1_FOUNDATION_STAGE_1_REPORT.md
-
-It must contain:
+The report must include:
 
 1. Executive result
+2. Stage 1 baseline
+3. Files changed
+4. Schema v9 -> v10 changes
+5. Canonical evidence resolver
+6. Direct ordinary evidence handling
+7. Normalized ordinary evidence handling
+8. Recovery evidence handling
+9. Evidence deduplication
+10. Cabot consistency repair
+11. 3M graph validation
+12. Coverage semantic correction
+13. NOT_RESEARCHED reason model
+14. LEGACY_REFERENCE retention model
+15. Minimal event foundation
+16. Event/relationship separation
+17. Status endpoint result
+18. Historical compatibility
+19. Test results
+20. SQLite integrity
+21. Client Universe integrity
+22. Source-master integrity
+23. External-call verification
+24. Remaining V1 unknowns
+25. Recommended next action
 
-2. Reconciliation report used as baseline
+--------------------------------------------------
+25. FINAL STATUS FORMAT
+--------------------------------------------------
 
-3. Exact schema version before/after
+At completion output exactly:
 
-4. New CCR V1 domain concepts implemented
-
-5. New tables
-
-6. New indexes/constraints
-
-7. Repository/domain contracts added or adapted
-
-8. Identity-link model
-
-9. Document/evidence/passage model
-
-10. Claim model
-
-11. Relationship/version model
-
-12. Qualifier model
-
-13. Evidence-basis model
-
-14. Enrichment-coverage model
-
-15. Event handling decision
-
-16. Existing Stage 2 compatibility
-
-17. Existing 3M data integrity
-
-18. Client Universe integrity
-
-19. Terminology/boundary checks
-
-20. Tests added
-
-21. Full test results
-
-22. Known deferrals
-
-23. Recommended next CCR stage
-
-Keep the recommendation concise.
-
-Do NOT write the entire next implementation prompt.
-
-======================================================================
-27. VALIDATION
-======================================================================
-
-Run:
-
-- backend test suite;
-- compile/static checks already standard for this repository;
-- SQLite foreign-key check;
-- schema verification;
-- migration replay/idempotence check;
-- read-only existing Stage 2 API sanity checks where practical;
-- Client Universe integrity checks.
-
-No external network calls.
-
-======================================================================
-28. REQUIRED FINAL STATUS
-======================================================================
-
-Finish your response with exactly this style:
-
-CCR V1 FOUNDATION — STAGE 1
+CCR V1 FOUNDATION — STAGE 1.1
 
 Status: PASS / PARTIAL / FAIL
 
-Reconciliation baseline:
-<actual report used>
-
 Schema before:
-<actual>
-
 Schema after:
-<actual>
 
-New CCR V1 tables:
-<count and names>
-
-Existing Stage 2 tables deleted:
-0
-
-Historical relationship rows modified:
-0
+Historical Stage 2 tables deleted:
+Historical Stage 2 rows modified:
 
 Client Universe rows:
-<actual>
+Client Universe modifications:
+Source-master modifications:
 
-Client Universe source modifications:
+Historical 3M accepted observations:
+
+Graph-visible accepted 3M edges before:
+Graph-visible accepted 3M edges after:
+
+Cabot normalized ordinary evidence recognized:
+
+Canonical evidence resolver:
+PASS / PARTIAL / FAIL
+
+Direct ordinary evidence:
+PASS / FAIL
+
+Normalized ordinary evidence:
+PASS / FAIL
+
+Recovery evidence:
+PASS / FAIL
+
+Evidence deduplication:
+PASS / FAIL
+
+Graph/API evidence semantics aligned:
+YES / NO
+
+Coverage outcome model:
+PASS / PARTIAL / FAIL
+
+NOT_RESEARCHED reason codes:
+PASS / PARTIAL / FAIL
+
+LEGACY_REFERENCE retention:
+PASS / FAIL
+
+Event foundation:
+PASS / PARTIAL / FAIL
+
+Event does not automatically create relationship:
+PASS / FAIL
+
+Identity foundation unchanged:
+YES / NO
+
+CCR V1 relationship rows migrated from historical 3M:
 0
-
-Identity-link foundation:
-PASS / FAIL
-
-Document/evidence foundation:
-PASS / FAIL
-
-Atomic-claim foundation:
-PASS / FAIL
-
-Relationship/version foundation:
-PASS / FAIL
-
-Qualifier foundation:
-PASS / FAIL
-
-Evidence-basis foundation:
-PASS / FAIL
-
-Enrichment-coverage foundation:
-PASS / FAIL
 
 External provider calls:
 0
 
-New relationship research performed:
+New research findings:
 0
 
-New accepted relationships:
+New accepted research relationships:
 0
 
-New candidates from research:
+Fuzzy merges:
 0
 
-New paths:
+Synthetic direct edges:
 0
 
 Frontend files modified:
 0
 
 Backend tests:
-<actual>
+passed / failed / skipped
 
-Foreign-key errors:
-<actual>
+SQLite foreign-key check:
+
+SQLite quick check:
 
 Migration replay:
-PASS / FAIL
-
-Existing 3M historical data preserved:
-YES / NO
-
-Fuzzy auto-merges introduced:
-0
-
-Synthetic direct edges introduced:
-0
 
 Report:
-backend/data/CCR_V1_FOUNDATION_STAGE_1_REPORT.md
+backend/data/CCR_V1_FOUNDATION_STAGE_1_1_REPORT.md
 
 Recommended next action:
-<one concise sentence>
 
-======================================================================
-29. STOP CONDITION
-======================================================================
-
-After completing this Stage 1 foundation:
-
-STOP.
-
-Do not proceed automatically to:
-
-- historical-data migration;
-- 3M replay;
-- new provider research;
-- connection mining;
-- Stage 2A.8;
-- frontend work;
-- PostgreSQL;
-- graph database work.
-
-We will review Stage 1 before authorizing the next CCR implementation stage.
+Do not begin the next stage automatically.
