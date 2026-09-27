@@ -1,560 +1,270 @@
-CCR V1 — STAGE 7
-CONTROLLED REAL-WORLD ENRICHMENT PILOT
-
+CCR V1 — STAGE 7.1 COVERAGE CORRECTION + CONTROLLED SEC RESUME
 You are the implementation agent.
-
-This stage begins the first controlled real factual-enrichment exercise after the approved CCR V1 identity, evidence, relationship, correlation, API, and UI foundations.
-
-DO NOT redesign the architecture.
-
-DO NOT broaden the product.
-
-DO NOT manufacture correlation results.
-
-The objective is to populate the existing governed factual graph with a small amount of high-quality real-world relationship data and determine whether meaningful correlations emerge naturally.
-
-============================================================
-1. APPROVED BASELINE
-============================================================
-
-Treat the following as frozen and authoritative:
-
-- Client Universe:
-  3,670,650 authoritative Client Records
-
-- Client Record / Legal Entity separation
-
-- identity eligibility:
-  VERIFIED + EXACT
-
-- no fuzzy identity merge
-
-- no synthetic direct relationship
-
-- factual network:
-  ACCEPTED CCR V1 relationship versions only
-
-- supporting evidence required
-
-- Document -> Passage -> Atomic Claim -> Relationship model
-
-- qualifier independence
-
-- relationship-version history
-
-- query-time derived correlations only
-
-- no persisted derived-result rows
-
-- six approved correlation definitions only:
-
-  SHARED_CONTROLLER
-  SHARED_SUPPLIER
-  SHARED_CUSTOMER
-  SUPPLY_CHAIN
-  SHARED_LENDER
-  SHARED_PRODUCT_DEPENDENCY
-
-- maximum derived depth:
-  exactly two relationship hops
-
-- coverage independent from result count
-
-- zero result is NOT a universal negative
-
-- current Stage 5 / 5.1 / 6.1 API and UI contracts
-
-Do not change these contracts unless an actual blocking implementation defect is proven.
-
-============================================================
-2. STAGE 7 PURPOSE
-============================================================
-
-Build a small real, evidence-backed factual graph around a controlled pilot.
-
-The pilot must test whether the existing correlation engine produces useful derived correlations naturally once enough accepted factual relationships exist.
-
-The pilot is NOT successful merely because a correlation is produced.
-
-Zero correlations is a valid outcome.
-
-Do not select evidence or weaken gates in order to force a correlation result.
-
-============================================================
-3. PRE-FLIGHT SAFETY AUDIT
-============================================================
-
-Before performing any external research or enrichment, confirm three things.
-
-A. AMBIGUOUS EXTERNAL ENTITY SAFETY
-
-Prove in code/tests that a discovered external Legal Entity whose provider identifier maps ambiguously to multiple Client Records cannot automatically become a VERIFIED+EXACT Client Record identity link.
-
-This must be structurally prevented.
-
-It must not merely happen to be absent in current data.
-
-Explicit named-client queries may continue to use an already-persisted qualifying identity link.
-
-Broad discovered-entity match-back must remain ambiguity-safe.
-
-B. REJECTED / CONTEXT-ONLY OBSERVATION RETENTION
-
-Determine where non-accepted observations are currently retained.
-
-Examples:
-
-- rejected evidence
-- insufficient evidence
-- context-only claims
-- candidate relationship claims
-- Cabot-shaped cases
-
-They must remain distinguishable from:
-
-"this relationship was never observed."
-
-They do NOT need to appear in the factual relationship network.
-
-Do not create a new major subsystem if an existing audit/candidate surface already provides this.
-
-Document exactly where these observations remain accessible.
-
-C. STALENESS POLICY
-
-Inspect whether a governed platform-wide freshness/staleness policy already exists.
-
-If it exists:
-- identify it,
-- use it unchanged.
-
-If it does not exist:
-- do NOT invent a broad new policy in this stage,
-- record the absence as an explicit Stage 7 limitation,
-- continue using existing governed temporal fields honestly.
-
-Stop Stage 7 before enrichment if A is not structurally safe.
-
-============================================================
-4. PILOT SELECTION PRINCIPLE
-============================================================
-
-Start from the existing real 3M case.
-
-The initial anchor remains:
-
-Client Record:
-GFCID 0000426083
-client_id 437487
-3M
-
-Existing governed facts include:
-
-- 3M -> 3M India: owns
-- 3M -> Solventum: owns
-- 3M -> Solventum: supplies
-
-Use these as starting facts, NOT as a target pattern to manufacture.
-
-Expand the pilot to a SMALL bounded real entity set.
-
-Target size:
-
-approximately 5–15 additional relevant entities / Client Records / discovered Legal Entities.
-
-Selection must be plausibility-based, not correlation-result-based.
-
-Reasonable selection rationales include:
-
-- entities explicitly named in primary documents concerning pilot entities;
-- real subsidiaries / controlled entities;
-- significant disclosed customers or suppliers;
-- financing counterparties explicitly disclosed;
-- entities involved in disclosed product dependencies;
-- industry peers selected BEFORE relationship research begins;
-- entities naturally reached from documents already being researched.
-
-DO NOT select an entity because:
-
-"adding this entity will create SHARED_SUPPLIER"
-
-or
-
-"we need something to make SHARED_LENDER non-zero."
-
-Persist an auditable pilot-selection manifest BEFORE relationship research begins.
-
-For every selected entity record:
-
-- selection reason
-- source of selection
-- whether selected before research
-- known Client Record if any
-- unresolved/discovered entity status if applicable
-
-============================================================
-5. ENTITY-CENTRIC / DOCUMENT-CENTRIC RESEARCH
-============================================================
-
-Research must be entity/document-centric.
-
-Do NOT research pair-by-pair looking for a requested answer.
-
-A document should be processed once and may generate multiple atomic claims concerning multiple entities.
-
-Reuse:
-
-- source documents
-- passages
-- extracted claims
-- identity evidence
-- provider results
-- registry records
-
-across all applicable Client Records and research scopes.
-
-Avoid duplicated provider calls and duplicated evidence objects.
-
-============================================================
-6. RESEARCH SCOPE
-============================================================
-
-Use ONLY relationship families classified ACTIVE in the frozen CCR V1 research-scope policy.
-
-Do not expand the ontology.
-
-Do not activate previously deferred relationship types.
-
-Do not introduce provides_professional_services_to if it remains deferred.
-
-Do not introduce litigation unless already ACTIVE under the frozen approved policy.
-
-Do not reinterpret historical Stage 2 relationship labels directly into CCR V1 truth.
-
-Historical material may only be used through the governed evidence/claim acceptance pipeline.
-
-============================================================
-7. ACCEPTANCE RULES
-============================================================
-
-Use the frozen CCR V1 acceptance rules EXACTLY.
-
-IMPORTANT:
-
-Do not invent a new universal evidence threshold.
-
-Use the approved per-relationship-type acceptance rules and evidence-basis requirements from the frozen V1 policy.
-
-Every correlation-eligible factual hop must satisfy all existing gates, including:
-
-- qualifying endpoint identity;
-- approved relationship type;
-- correct direction;
-- required relationship acceptance state;
-- admissible evidence;
-- required source/evidence-basis standard for that relationship type;
-- temporal validity;
-- complete lineage.
-
-No pilot exception.
-
-No manual analyst override that bypasses the policy.
-
-No lower identity gate because an entity "obviously" looks correct.
-
-No model inference as evidence.
-
-No co-mention-only relationship.
-
-No fuzzy or name-only merge.
-
-============================================================
-8. PROVIDERS / SOURCES
-============================================================
-
-Use existing provider infrastructure only.
-
-Permitted providers/sources should remain governed by the frozen source policy, including where applicable:
-
-- GLEIF for Legal Entity identity
-- SEC / regulatory filing retrieval
-- official company / issuer sources
-- approved Web retrieval
-- approved secondary sources only according to policy
-
-Remember:
-
-retrieval mechanism != evidence source.
-
-A Web provider retrieving an SEC filing does not turn the SEC filing into "Web evidence."
-
-Preserve source class separately from retrieval mechanism.
-
-All provider attempts must remain auditable.
-
-============================================================
-9. DOCUMENT AND PASSAGE RETENTION
-============================================================
-
-For newly researched material, improve replayability wherever licensing/source policy permits.
-
-Persist:
-
-- canonical source reference
-- retrieval metadata
-- document/source hash where available
-- exact evidence passage
-- passage locator / section / offsets where available
-- extraction provenance
-- policy version
-- research run
-- timestamps
-- retention/replay capability
-
-Do not falsely classify evidence as FULL_REPLAY when only a passage/reference is retained.
-
-============================================================
-10. IDENTITY RESOLUTION
-============================================================
-
-Resolve newly discovered entities through the existing governed identity pipeline.
-
-Strong identifiers should be preferred where available.
-
-Possible states remain governed.
-
-Only qualifying VERIFIED + EXACT links may participate as Client Record endpoints under current correlation eligibility.
-
-External Legal Entities may remain external.
-
-It is valid for enrichment to discover a real Legal Entity that cannot be safely matched back to a Client Record.
-
-Do not force match-back simply to increase internal network density.
-
-============================================================
-11. RELATIONSHIP INGESTION
-============================================================
-
-For every accepted relationship:
-
-persist through the CCR V1 model:
-
-Document
--> Passage
--> Atomic Claim
--> Relationship
--> Relationship Version
--> Relationship Support
--> independent Qualifiers
-
-Do not write directly into graph/result structures.
-
-Do not create a relationship merely because a graph path would be useful.
-
-Do not modify historical Stage 2 rows.
-
-============================================================
-12. COVERAGE
-============================================================
-
-Track enrichment coverage for each researched:
-
-- Legal Entity
-- relationship family
-- scope
-- source set
-- policy version
-- as-of date
-
-Use the governed outcomes unchanged.
-
-Do not translate PARTIAL into RESEARCHED_NONE_FOUND.
-
-Do not translate NOT_RESEARCHED into negative evidence.
-
-A completed provider call does not imply complete real-world coverage.
-
-============================================================
-13. CORRELATION EVALUATION
-============================================================
-
-After sufficient accepted factual relationships have been created, run the existing six Stage 4/5 correlation definitions unchanged.
-
-Do not create new definitions.
-
-Do not increase depth.
-
-Do not persist derived results.
-
-Evaluate correlations naturally from the newly enriched accepted graph.
-
-For each returned derived result record:
-
-- definition
-- source Client Record
-- target Client Record
-- intermediate Legal Entity
-- exact qualifying relationship/version hops
-- relationship directions
-- evidence lineage
-- identity lineage
-- qualifiers
-- temporal validity
-- coverage
-- warnings
-- visibility/suppression metadata
-- deterministic explanation
-
-If result count is zero, preserve zero_is_not_universal_negative semantics.
-
-============================================================
-14. UI VALIDATION
-============================================================
-
-Do NOT redesign or materially expand the frontend.
-
-Only use the existing Stage 6.1 workspace to validate real pilot outputs.
-
-If the pilot naturally produces a non-zero derived correlation:
-
-verify that the current UI correctly renders:
-
-- factual network edges
-- derived correlation overlay / halo
-- correlation definition
-- intermediate Legal Entity
-- two underlying factual hops
-- evidence drilldown
-- identity lineage
-- qualifiers
-- coverage
-- warnings
-- query-time / non-persisted state
-
-If the pilot produces zero derived correlations:
-
-do NOT fabricate a UI demo.
-
-Show the honest zero-result state.
-
-============================================================
-15. DO NOT IMPLEMENT
-============================================================
-
-Absolutely do NOT implement:
-
-- new correlation definitions
-- depth > 2
-- recursive traversal
-- portfolio-wide graph mining
-- AI Analyst
-- AI Create Correlation
-- correlation authoring
-- user-defined correlation configuration
-- fuzzy identity matching
-- synthetic relationships
-- synthetic correlation fixtures in production data
-- statistical / market correlation
-- exposure logic
-- old 16K / thousandClients priority cohort
-- PostgreSQL migration
-- graph database
-- broad 3.67M enrichment
-- major UI redesign
-
-============================================================
-16. SUCCESS CRITERIA
-============================================================
-
-Report the pilot against these dimensions.
-
-Do NOT collapse them into a composite score.
-
-A. Identity precision
-- every VERIFIED+EXACT link reviewed
-- no unsupported merge
-
-B. Relationship precision
-- accepted facts manually spot-checkable against exact evidence
-
-C. Evidence replayability
-- every accepted claim traceable to retained passage and source reference
-- replay limitations explicitly identified
-
-D. Coverage honesty
-- PARTIAL / NOT_RESEARCHED / UNAVAILABLE preserved correctly
-
-E. Relationship reuse
-- evidence/documents reused instead of duplicated client-by-client retrieval
-
-F. Naturally discovered correlations
-- report any real non-zero matches
-- zero remains acceptable
-
-G. Analyst usability
-- existing workspace can explain why a factual or derived result exists
-
-H. Determinism
-- rerun does not duplicate facts, claims, identities, relationships, versions, or qualifiers
-
-I. Source / Client Universe safety
-- source parquet unchanged
-- Client Universe unchanged
-- historical Stage 2 records unchanged
-
-============================================================
-17. REQUIRED REPORT
-============================================================
-
+Stage 7 has already executed once and stopped correctly with:
+- run status PARTIAL_PROVIDER_SCOPE
+- frozen 8-entity pilot manifest
+- no new accepted relationships
+- no manufactured correlations
+- SEC research not executed because SEC operational configuration was absent
+- GLEIF executed
+- Web not executed
+Senior review has now authorized a narrow Stage 7 continuation only.
+DO NOT START STAGE 8.
+1. Immutable Stage 7 pilot boundary
+Resume the exact same frozen selection manifest and fingerprint.
+Do NOT:
+- add entities;
+- remove entities;
+- substitute entities;
+- change the selection rationale;
+- change the ontology;
+- change identity gates;
+- change relationship acceptance gates;
+- change evidence-basis rules;
+- change the six correlation definitions;
+- change two-hop maximum depth;
+- enable recursive traversal;
+- perform fuzzy identity matching;
+- manufacture or synthesize relationship edges;
+- weaken VERIFIED + EXACT;
+- weaken ACCEPTED relationship-version requirements;
+- redesign the UI;
+- implement AI Analyst;
+- implement AI Create Correlation;
+- begin Stage 8.
+Frozen population remains:
+- ROOT_3M
+- KNOWN_3M_INDIA
+- KNOWN_SOLVENTUM
+- KNOWN_CABOT
+- UNRESOLVED_AEARO
+- UNRESOLVED_3M_BELGIUM
+- UNRESOLVED_BNY_TRUSTEE
+- UNRESOLVED_EPA
+PART A — Coverage semantic correction
+Before any SEC network request, audit the current Stage 7 coverage implementation.
+Coverage must be evaluated at least at:
+entity × relationship_family × required_source_scope × as_of_date × policy_version
+Do not use the run-level PARTIAL_PROVIDER_SCOPE as a substitute for these records.
+Implement the following explicit three-way rule.
+A1. PROVIDER_SPECIFIC_NO_FINDING
+One source class was successfully queried and returned no qualifying finding.
+This alone must NOT imply:
+RESEARCHED_NONE_FOUND
+for the relationship family.
+A2. RESEARCHED_NONE_FOUND
+This is permitted only when:
+- every source class required for that entity + family under the governed source policy was actually attempted;
+- each required source returned a valid response, including explicit empty results;
+- no qualifying accepted claim was found;
+- no required source is unavailable, blocked, skipped, or unexecuted.
+A3. PARTIAL
+Must be emitted if at least one required source class:
+- could not be queried;
+- lacked required operational configuration;
+- failed because of provider outage;
+- was otherwise unavailable.
+A successful negative result from one source must never compensate for another required source that never ran.
+PART B — Audit the current 3M India coverage state
+Current Stage 7 reporting has:
+KNOWN_3M_INDIA = RESEARCHED_NONE_FOUND / CURRENT
+while other entities were PARTIAL because SEC did not execute.
+Do not simply relabel it.
+Determine from the actual governed source-scope configuration:
+1. Which source classes are required for each ACTIVE relationship family for 3M India?
+2. Is SEC actually required, optional, or not applicable?
+3. Is Web required, optional, or not applicable?
+4. Was the complete governed required-source set actually executed?
+If GLEIF alone legitimately satisfies a specific family’s required source scope, preserve the complete result.
+If SEC was required but unexecuted, correct the family coverage outcome to PARTIAL.
+Report the decision family by family, not as an undocumented global label.
+Add regression tests for this exact distinction.
+PART C — SEC configuration must be operational-only
+Configure the required SEC EDGAR request identity/contact mechanism using environment/configuration appropriate to the existing provider implementation.
+Do not hardcode personal credentials or secrets into source files.
+Before changing the operational SEC configuration, capture:
+- frozen selection-manifest hash;
+- pilot input fingerprint;
+- ontology/config fingerprint;
+- correlation-definition catalogue fingerprint;
+- acceptance-policy fingerprint if available;
+- relationship database schema/version;
+- existing accepted relationship count;
+- existing correlation-definition count.
+After the configuration change, capture them again.
+Assert mechanically that all semantic fingerprints are byte-identical.
+The SEC operational configuration must not change:
+- pilot population;
+- selection manifest;
+- source-policy semantics;
+- ontology;
+- identity gates;
+- relationship gates;
+- correlation catalogue;
+- correlation depth.
+If any semantic fingerprint changes unexpectedly:
+STOP. DO NOT RUN RESEARCH.
+PART D — EPA ontology-fit disposition
+Do not silently delete EPA from the frozen selection.
+Determine whether any currently ACTIVE V1 relationship type could legitimately have EPA as an endpoint.
+Current ACTIVE types are exactly:
+- owns
+- controls
+- lends_to
+- provides_credit_support
+- supplies
+- depends_on_products_of
+Do not add a regulatory relationship type.
+If EPA cannot participate in an ACTIVE V1 relationship under the frozen ontology:
+- preserve EPA in the frozen pilot manifest;
+- classify the applicable research family/scope as NOT_ELIGIBLE or the already-governed equivalent;
+- give an explicit governed reason such as OUTSIDE_ACTIVE_ONTOLOGY_SCOPE;
+- do not treat GLEIF NOT_FOUND as the decisive reason;
+- do not attempt to manufacture an entity identity merely to keep EPA in the graph.
+Report the exact disposition.
+PART E — Resume the SAME Stage 7 pilot
+Only after Parts A–D pass, resume the same Stage 7 pilot.
+Use the existing persisted manifest and run identity/resume mechanism.
+Do not create a replacement pilot run merely to bypass the previous partial result.
+The intended evidence pipeline remains:
+source document
+→
+stored document snapshot/reference
+→
+exact passage
+→
+atomic claim
+→
+endpoint identity resolution
+→
+relationship acceptance
+→
+relationship version
+→
+qualifier
+→
+query-time correlation evaluation
+No model-generated text may itself become evidence.
+PART F — Provider sequence
+F1. SEC
+Run SEC as the next primary relationship-research source.
+Use the existing provider/evidence infrastructure.
+Research must remain document-centric.
+Do not perform client-pair answer-shopping.
+Extract only explicit claims supported by actual retained source passages.
+F2. GLEIF
+Continue using GLEIF primarily for legal-entity identity resolution and registered-entity evidence.
+Do not interpret:
+- NOT_FOUND
+- ambiguous name search
+- multiple candidates
+as negative relationship evidence.
+Do not auto-promote ambiguous candidates.
+F3. Web
+Keep Web disabled initially.
+After SEC completes, identify explicit named unresolved evidence or identity gaps.
+Only then may approved Web/official sources be used, and only for those named gaps.
+Do not enable broad Web crawling simply because the provider is available.
+PART G — Specific unresolved endpoint handling
+Aearo
+GLEIF NOT_FOUND is not final.
+Attempt resolution through authoritative SEC/official-document exact legal-name evidence.
+3M Belgium
+Preserve AMBIGUOUS until exact legal-entity evidence distinguishes the entity.
+BNY trustee
+Preserve ambiguity unless a filing identifies the precise registered trustee entity.
+Also distinguish trustee/facility context from an actual V1 relationship endpoint.
+Do not create a financing relationship solely from an administrative/trustee role.
+EPA
+Follow Part D ontology-fit rules.
+PART H — Relationship acceptance remains frozen
+A factual graph edge may enter CCR V1 only when all existing gates pass.
+At minimum:
+- endpoint identity is eligible under frozen policy;
+- required identity state/type passes;
+- source evidence is admissible;
+- atomic claim is explicit;
+- relationship type is one of the frozen ontology types;
+- direction is explicit and valid;
+- relationship version reaches ACCEPTED;
+- relationship support/evidence lineage exists.
+No candidate/context-only/rejected observation becomes factual simply because it helps produce a correlation.
+PART I — Correlation behavior
+Do not change the correlation engine.
+Preserve exactly the current six definitions:
+- SHARED_CONTROLLER
+- SHARED_SUPPLIER
+- SHARED_CUSTOMER
+- SUPPLY_CHAIN
+- SHARED_LENDER
+- SHARED_PRODUCT_DEPENDENCY
+Correlations remain:
+- query-time;
+- derived from accepted factual relationships;
+- maximum two relationship hops;
+- non-persisted as derived-result rows;
+- evidence/identity gated.
+Evaluate all six again after enrichment.
+Zero results are acceptable.
+A positive correlation must arise naturally from accepted graph facts.
+PART J — Stage 7 completion criterion
+Stage 7 is NOT complete merely because SEC successfully runs.
+Declare Stage 7 complete only when every applicable:
+selected entity × ACTIVE relationship family
+has reached a governed terminal research outcome such as:
+- RESEARCHED_FOUND
+- valid RESEARCHED_NONE_FOUND
+- NOT_ELIGIBLE
+- or another explicitly governed terminal state justified by the frozen policy.
+No applicable entity/family pair may remain PARTIAL because a required provider was not executed.
+Also require:
+- every identity attempt has an explicit final state;
+- all accepted claims have evidence lineage;
+- replay/idempotence passes;
+- no fuzzy merges;
+- no synthetic factual relationships;
+- no ambiguous candidate auto-promotion;
+- no manufactured correlations;
+- all six definitions evaluated after the final graph state.
+A non-zero correlation is NOT required for Stage 7 success.
+PART K — Required validation/report
 Create:
-
-backend/data/CCR_V1_STAGE_7_CONTROLLED_ENRICHMENT_PILOT_REPORT.md
-
-The report must contain:
-
-1. Executive result
-2. Pre-flight safety audit
-3. Pilot selection manifest
-4. Research scope
-5. Provider/source activity
-6. Documents retrieved
-7. Evidence/passages retained
-8. Entity identities discovered
-9. Client Record match-backs
-10. Ambiguous/unresolved identities
-11. Atomic claims
-12. Accepted relationships
-13. Candidate/rejected/context-only observations
-14. Qualifiers
-15. Coverage by entity/family
-16. Correlation evaluation for all six definitions
-17. Any naturally discovered correlations
-18. Exact relationship hops for every derived result
-19. UI positive/zero-result validation
-20. Replay/idempotence
-21. Database integrity
-22. Client Universe integrity
-23. Source-master integrity
-24. Remaining limitations
-25. Recommendation for next stage
-
-Also produce a machine-readable run manifest.
-
-============================================================
-18. STOP CONDITION
-============================================================
-
-When Stage 7 completes:
-
-STOP.
-
-Do not automatically continue into:
-
-- AI Analyst
-- AI Create Correlation
-- configurable authoring
-- broader enrichment
-- recursive graph expansion
-- UI redesign
-
-Return the report and wait for senior review.
+backend/data/CCR_V1_STAGE_7_1_SEC_RESUME_REPORT.md
+and an updated machine-readable run manifest if the current architecture uses one.
+Report:
+1. pre/post semantic fingerprints;
+2. proof pilot selection remained frozen;
+3. SEC operational configuration status without exposing sensitive values;
+4. per-entity × family required-source scope;
+5. corrected coverage outcomes;
+6. 3M India coverage determination and rationale;
+7. EPA ontology-fit disposition;
+8. provider attempts by source;
+9. retrieved source documents;
+10. retained passages;
+11. atomic claims;
+12. endpoint identity decisions;
+13. accepted relationship versions;
+14. qualifiers;
+15. candidate/context/rejected observations;
+16. coverage state by entity/family;
+17. before/after factual relationship counts;
+18. before/after six correlation-definition results;
+19. exact relationship hops for every non-zero correlation, if any;
+20. replay/idempotence;
+21. SQLite integrity;
+22. Client Universe unchanged;
+23. source master unchanged;
+24. external calls performed;
+25. remaining limitations;
+26. explicit Stage 7 completion decision.
+Run all relevant backend regression tests.
+Do not modify the frontend.
+STOP CONDITION
+Stop after Stage 7.1/resumed Stage 7 validation.
+Do not start Stage 8.
+End with exactly one of:
+STAGE 7 COMPLETE — READY FOR SENIOR REVIEW
+or
+STAGE 7 STILL PARTIAL — SENIOR REVIEW REQUIRED
+Explain precisely why.
