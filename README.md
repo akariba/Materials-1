@@ -1,81 +1,49 @@
-Internal bank data discovery only — do not modify any data or configuration.
-I want to know whether the bank already holds GLEIF / LEI / Legal Entity relationship data anywhere internally, so that we can reuse governed internal data instead of repeatedly calling the external GLEIF API.
-Search across every internal database, data lake, warehouse, catalog, governed dataset, reference-data source, client-master source, entity-master source, regulatory dataset, counterparty dataset, KYC dataset, risk dataset, and other data source that you are authorized to inspect.
-Look for both explicit GLEIF references and equivalent fields.
-Search for terms/fields such as:
-- GLEIF
-- LEI
-- legal_entity_identifier
-- legal_entity_id
-- lei_legal_name
-- LEI status
-- entity status
-- direct parent
-- ultimate parent
-- direct_parent_lei
-- ultimate_parent_lei
-- relationship record
-- relationship status
-- relationship period
-- relationship qualifier
-- Level 1
-- Level 2
-- RR-CDF
-- LEI-CDF
-- GLEIF Golden Copy
-- GLEIF Concatenated Files
-- GLEIF delta
-- legal entity hierarchy / ownership hierarchy / parent hierarchy
-Also search for datasets that may contain GLEIF-derived information without using the word GLEIF.
-For every relevant dataset found, report:
-1. System / database / platform name
-2. Schema / dataset / table name
-3. Business owner or data domain, if visible
-4. Relevant fields
-5. Whether it contains:
+I understand you are providing internal documentation/knowledge, not executing queries against the database.
+Based only on the available Citi/AMC Confluence documentation, prepare the exact technical integration specification needed for a developer in VS Code to consume:
+- AMCDATA.LEI_GENERAL_INFO
+- AMCDATA.LEI_LEI_REL
+I need implementation details, not another conceptual assessment.
+For each dataset provide:
+1. Exact platform/system where the table physically resides.
+2. Exact database/catalog/schema/table or view name.
+3. Supported access mechanism:
+   - JDBC
+   - ODBC
+   - internal API
+   - Spark
+   - data service
+   - file/extract
+   - other
+4. Connection/service name if documented.
+5. Required entitlement/access group if documented.
+6. Exact column names and types relevant to:
+   - GFCID
    - LEI
    - legal name
    - entity status
    - jurisdiction
-   - direct parent
-   - ultimate parent
-   - ownership/control relationship
+   - relationship type
+   - child LEI/GFCID
+   - parent LEI/GFCID
    - relationship status
-   - effective dates / validity dates
-6. Source/provenance if known:
-   - direct GLEIF feed
-   - copied from GLEIF
-   - internal mastered data
-   - vendor data
-   - unknown
-7. Refresh frequency / latest available date
-8. Approximate record count / coverage, if available
-9. Whether the data is historical/versioned or current-state only
-10. Whether there is a reliable key to map it to our client universe, especially:
-    - GFCID
-    - LEI
-    - legal_entity_id
-    - CAGID
-    - another mastered entity ID
-Then answer these specific questions:
-A. Do we already have an internal authoritative or near-authoritative LEI/GLEIF dataset?
-B. Do we already have GLEIF Level-2-style direct-parent / ultimate-parent relationship data internally?
-C. Is there an internal mastered Legal Entity hierarchy that may be more appropriate than calling GLEIF externally?
-D. Can any discovered dataset be joined reliably to Customer_latest.parquet / the Client Universe using LEI, legal_entity_id, GFCID, or another identifier?
-E. Which internal source would be the strongest candidate for CCR identity verification and ownership/control enrichment?
-Do not rank sources merely by convenience. Explain differences in:
-- provenance
-- freshness
-- completeness
-- identifier quality
-- relationship coverage
-- historical depth
-If multiple copies of the same GLEIF data exist, identify which appears to be the mastered/governed version and which appear to be downstream copies.
-If access permissions prevent inspection of a promising dataset, list it separately as:
-POTENTIAL SOURCE — ACCESS NOT AVAILABLE
-Do not create tables, run updates, alter schemas, request new access, or change configurations.
-Finish with:
-INTERNAL GLEIF/LEI DATA FOUND: YES / NO
-INTERNAL PARENT/HIERARCHY DATA FOUND: YES / NO
-BEST CANDIDATE DATASET(S): <names>
-EXTERNAL GLEIF API STILL NECESSARY: YES / NO / ONLY FOR GAPS
+   - effective/start/end dates
+   - source/update/version dates
+7. Exact join keys between LEI_GENERAL_INFO and LEI_LEI_REL.
+8. Exact documented mapping to GFCID / Client Universe.
+9. Meaning of DIRECTPARENT and ULTIMATEPARENT.
+10. Whether rows are current-state or historical/versioned.
+11. Refresh frequency.
+12. Any known duplicate/cardinality rules.
+13. Any documented data-quality caveats.
+14. Read-only example SQL for:
+    - lookup by GFCID
+    - lookup by LEI
+    - retrieve direct parent
+    - retrieve ultimate parent
+15. Existing internal service/API/view that should be preferred over direct table access, if one exists.
+Do not claim that you queried live data unless you actually did.
+Clearly mark each item as:
+- DOCUMENTED
+- NOT DOCUMENTED
+- INFERRED
+The output will be handed to a developer implementing this in VS Code.
