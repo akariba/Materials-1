@@ -1,404 +1,546 @@
 You are continuing work on the existing CCR Relationship Intelligence repository.
 
-The CAM indexing and PDF-repair phases are already complete enough to proceed with one remaining blocker:
+The CAM indexing phase is complete enough to proceed.
 
-BLOCKED_BY_ENTITY_MENTION_INDEX
+Current validated state:
 
-Do NOT repeat the architecture audit.
-Do NOT redesign the application.
-Do NOT perform relationship extraction yet.
-Do NOT perform SEC or web enrichment yet.
+- CAM_INDEX_READY_WITH_WARNINGS
+- 66 CAM documents in scope
+- 60 successfully parsed
+- 6 PDF timeouts remain recorded as coverage warnings
+- 3,565 indexed passages
+- entity-mention resolution has been repaired
+- NVIDIA Corporation exact-name resolution works
+- bare NVIDIA remains ambiguous when appropriate
+- NVIDIA reconciliation completed successfully
+- 43 NVIDIA-related passages are available from the indexed CAM corpus
+- source/document/page/section provenance is preserved
 
-This is a targeted IMPLEMENTATION/FIX task.
+Do NOT repeat the indexing work.
+Do NOT rebuild the canonical entity master.
+Do NOT perform another architecture audit.
 
-Current observed state:
+This is an EXECUTION task.
 
-- 66 CAM documents
-- 37 PDFs
-- 27 PDFs parsed successfully
-- 10 PDFs timed out
-- 29 DOCX/TXT parsed successfully
-- 3,015 passages
-- 1,752 entity mentions
-- NVIDIA transparent text retrieval finds 33 passages across 12 documents
-- Canonical NVIDIA seed resolution works
-- Exact passage provenance is intact
-- The current blocker is entity-mention resolution
+The objective is:
 
-Two specific issues have been observed:
+Take the existing retrieved NVIDIA CAM passages and determine which passages establish actual evidence-backed relationships between NVIDIA and another entity.
 
-1. Field/schema labels such as "CAGID" can be incorrectly treated as entity mentions.
-2. Legal-name normalization is too aggressive. For example:
-   NVIDIA Corporation
-   NVIDIA Limited
-   NVIDIA Corp
-   can collapse to the same normalized key such as "nvidia", causing valid exact-name matches to become ambiguous.
+Use this pipeline:
 
-The objective of this task is:
+RETRIEVED NVIDIA PASSAGES
+→ MAP: relationship extraction
+→ SEMANTIC LLM CHECKER
+→ DETERMINISTIC CHECKER
+→ REDUCE / DEDUPLICATE
+→ FINAL VERIFIED NVIDIA CAM RELATIONSHIPS
 
-Fix entity mention candidate generation and resolution so that valid company mentions resolve conservatively and deterministically without false positives.
-
-==================================================
-1. TRACE CURRENT ENTITY-MENTION LOGIC
-==================================================
-
-Inspect the current code responsible for:
-
-passage text
-→ mention candidate extraction
-→ name normalization
-→ canonical candidate lookup
-→ ambiguity handling
-→ cam_entity_mentions output
-
-Identify the exact files/functions involved.
-
-Do not change code until the current logic is traced.
+Do not proceed to SEC or web enrichment yet.
 
 ==================================================
-2. FIX FALSE ENTITY CANDIDATES
+PHASE 1 — LOAD THE EXISTING NVIDIA RETRIEVAL SET
 ==================================================
 
-Create a conservative exclusion mechanism for obvious schema/field labels.
+Reuse the existing indexed artifacts.
 
-At minimum, labels such as these must never become entity candidates merely because they appear in text:
+Locate and load the NVIDIA retrieval results already produced from:
 
-CAGID
-GFCID
-CIK
-LEI
-ISIN
-CUSIP
-BBG_Ticker
-Ticker
-Identifier
-Entity ID
-Reference ID
-Document ID
-Record Type
-Source
-Section
-Page
-Rating
-Currency
-Country
+cam_passages
+cam_entity_mentions
+NVIDIA reconciliation artifacts
+canonical entity data
 
-Do not hard-code only these exact examples if the repository has a better field-label registry.
+Do not rescan the complete raw CAM folder unless needed to retrieve surrounding context for an already-selected passage.
 
-Prefer reusing schema metadata or a controlled exclusion set.
+Start from the existing approximately 43 NVIDIA-related passages.
 
-The exclusion must apply only to field labels / metadata tokens, not to genuine company names that happen to contain similar text.
+For every input passage retain:
 
-==================================================
-3. CHANGE RESOLUTION PRECEDENCE
-==================================================
-
-Implement conservative resolution precedence.
-
-Use this order:
-
-1. Exact identifier match
-2. Exact canonical legal-name match
-3. Exact validated alias match
-4. Case-insensitive exact legal-name match
-5. Case-insensitive exact alias match
-6. Controlled normalized-name match
-7. Controlled fuzzy/high-confidence fallback if already part of the architecture
-
-Important:
-
-EXACT CANONICAL LEGAL NAME MUST WIN BEFORE SUFFIX-STRIPPED NORMALIZATION.
-
-Example:
-
-"NVIDIA Corporation"
-
-must resolve directly to the canonical record whose legal_name is exactly NVIDIA Corporation if that record is unique.
-
-Do not first normalize it to "nvidia" and then declare ambiguity among multiple NVIDIA-family entities.
-
-==================================================
-4. KEEP NORMALIZATION CONSERVATIVE
-==================================================
-
-Inspect current normalization logic.
-
-Do not globally remove legal suffixes too early.
-
-If normalization strips:
-
-Corporation
-Corp
-Limited
-Ltd
-Inc
-LLC
-PLC
-SA
-AG
-etc.
-
-then use suffix-stripped normalization only as a fallback candidate-generation step.
-
-Do not use the suffix-stripped form as the primary identity key.
-
-Preserve both:
-
-raw_name
-normalized_full_name
-normalized_suffix_stripped_name
-
-or the repository-equivalent structure.
-
-==================================================
-5. HANDLE SHORT / PARTIAL NAMES CORRECTLY
-==================================================
-
-A mention such as:
-
-"NVIDIA"
-
-may legitimately match multiple canonical entities.
-
-Do not force it to NVIDIA Corporation unless there is additional valid evidence such as:
-
-- validated alias mapping
-- exact identifier in the same passage/context
-- deterministic client/CAGID context already attached to the source
-- other existing authoritative mapping
-
-If multiple valid canonical entities remain:
-
-resolution_status = AMBIGUOUS
-
-If none remain:
-
-resolution_status = UNRESOLVED
-
-Do not use the fact that NVIDIA is the current seed query to force resolution.
-
-==================================================
-6. FIX CAM_ENTITY_MENTIONS OUTPUT
-==================================================
-
-Rebuild the affected mention-index rows.
-
-Each row should retain:
-
-mention_id
-passage_id
 document_id
-mentioned_name
-normalized_mentioned_name
+filename
+source_folder
+page
+section
+heading
+passage_id
+exact passage text
+retrieval method
+canonical NVIDIA seed identity
+
+Do not modify the original evidence text.
+
+==================================================
+PHASE 2 — ADD ONLY NECESSARY SURROUNDING CONTEXT
+==================================================
+
+For each NVIDIA passage, retrieve limited neighboring context when required to interpret the relationship correctly.
+
+Examples:
+
+- previous paragraph
+- next paragraph
+- same section
+- relevant table row/header
+
+Do not send entire CAMs to the model unless the existing passage is impossible to interpret without broader context.
+
+Record exactly which context was supplied.
+
+==================================================
+PHASE 3 — MAP: EVIDENCE-BASED RELATIONSHIP EXTRACTION
+==================================================
+
+Run relationship extraction independently across the retrieved evidence units.
+
+This is the MAP stage.
+
+The objective is to identify explicit relationships such as:
+
+ownership
+parent/subsidiary
+guarantee
+lender/borrower
+customer/supplier
+major customer
+major supplier
+commercial dependency
+strategic partnership
+joint venture
+investment
+sponsor/SPV
+distribution
+licensing
+service provider
+technology dependency
+financing relationship
+other explicitly evidenced relationships
+
+Do not force findings into the example taxonomy if another legitimate relationship is explicitly supported.
+
+For every proposed relationship return:
+
+source_entity_name
+target_entity_name
+relationship_type
+direction
+relationship_details
+
+source_document_id
+source_filename
+page
+section
+passage_id
+
+exact_evidence_excerpt
+
+maker_confidence
+maker_model
+extraction_version
+
+IMPORTANT RULES:
+
+1. A co-mention is NOT a relationship.
+2. The relationship must be supported by exact text.
+3. Direction must be explicit or strongly grounded.
+4. If evidence is insufficient, return NO_RELATIONSHIP.
+5. Do not use graph proximity, Jaccard, hop distance or existing network structure as evidence.
+6. Do not infer a relationship merely because it is economically plausible.
+7. Preserve exact CAM evidence.
+
+==================================================
+PHASE 4 — RESOLVE THE OTHER ENTITY
+==================================================
+
+For each proposed relationship, resolve the non-NVIDIA entity against the existing canonical entity universe.
+
+Use the repaired precedence:
+
+1. exact identifier
+2. exact canonical legal name
+3. exact validated alias
+4. case-insensitive exact legal/alias
+5. controlled normalized matching
+6. existing conservative fuzzy fallback
+
+Return:
+
+extracted_entity_name
 canonical_entity_id
 CAGID
 GFCID
-match_method
-match_score if applicable
+CIK if available
+LEI if available
+resolution_method
 resolution_status
 ambiguity_reason
 
-The match_method should clearly distinguish:
-
-exact_identifier
-exact_legal_name
-exact_alias
-case_insensitive_legal_name
-case_insensitive_alias
-normalized_name
-fuzzy
-other
-
-==================================================
-7. NVIDIA RECONCILIATION TEST
-==================================================
-
-Run NVIDIA retrieval again after the fix.
-
-Use both:
-
-A. transparent passage-text search
-B. structured cam_entity_mentions retrieval
-
-For every NVIDIA-related passage found by transparent text search, classify the structured result as:
+Allowed statuses:
 
 MATCHED
 AMBIGUOUS
 UNRESOLVED
-EXCLUDED_AS_FALSE_ENTITY_CANDIDATE
-MISSING_FROM_MENTION_INDEX
 
-Produce a reconciliation table with:
+Do not force ambiguous entities.
 
-document_id
-filename
-page
-section
+A relationship with an ambiguous target may be retained as REVIEW_REQUIRED but must not silently become VERIFIED.
+
+==================================================
+PHASE 5 — SEMANTIC LLM CHECKER
+==================================================
+
+Add an independent semantic checker for each maker relationship.
+
+This checker must receive:
+
+- original source passage
+- necessary surrounding context
+- maker-proposed relationship
+- resolved entity identities
+
+The checker must independently decide whether the relationship is actually supported.
+
+The checker should validate:
+
+- source entity
+- target entity
+- relationship type
+- direction
+- exact evidence
+- whether the claim is speculative
+- whether the evidence merely co-mentions the entities
+- whether the evidence refers to the correct legal entity
+
+Return exactly one of:
+
+ACCEPT
+REJECT
+CORRECT
+NEEDS_REVIEW
+
+If CORRECT, return the corrected relationship.
+
+Also return:
+
+checker_reason
+checker_confidence
+checker_model
+evidence_supported = true/false
+
+The semantic checker must not simply repeat the maker output.
+
+==================================================
+PHASE 6 — EXISTING DETERMINISTIC CHECKER
+==================================================
+
+After semantic validation, run the existing deterministic checker unchanged.
+
+Validate:
+
+schema
+required fields
+relationship taxonomy
+evidence presence
+document provenance
+entity anchoring
+identifier consistency
+invalid self-links
+missing source/target
+direction requirements
+confidence/status rules
+
+Keep semantic and deterministic checker results separately.
+
+Final status should conceptually be:
+
+VERIFIED
+REJECTED
+REVIEW_REQUIRED
+
+Do not hide intermediate decisions.
+
+==================================================
+PHASE 7 — REDUCE / DEDUPLICATE
+==================================================
+
+Now REDUCE the accepted relationship findings.
+
+The purpose is NOT to summarize them into prose.
+
+The reducer must:
+
+- group duplicate relationship claims
+- preserve every contributing citation
+- preserve every source passage
+- preserve source document/page/section
+- preserve differing dates where available
+- retain disagreement instead of overwriting it
+- retain multiple supporting CAMs
+
+Conceptually group by:
+
+source canonical entity
+target canonical entity
+normalized relationship type
+direction
+
+Do NOT collapse materially different relationships.
+
+For example:
+
+NVIDIA → supplier_to → Company A
+
+must remain separate from:
+
+NVIDIA → strategic_partner_of → Company A
+
+unless business rules explicitly define them as equivalent.
+
+==================================================
+PHASE 8 — BUILD FINAL RELATIONSHIP RECORDS
+==================================================
+
+Create a structured relationship artifact.
+
+Prefer Parquet and/or JSONL consistent with the repository.
+
+Suggested fields:
+
+relationship_id
+
+source_entity_id
+source_entity_name
+source_CAGID
+source_GFCID
+
+target_entity_id
+target_entity_name
+target_CAGID
+target_GFCID
+
+relationship_type
+direction
+
+source_type = CAM
+
+evidence_count
+supporting_document_count
+
+evidence_records [
+    document_id
+    filename
+    page
+    section
+    passage_id
+    exact_excerpt
+]
+
+maker_confidence
+semantic_checker_status
+semantic_checker_confidence
+deterministic_checker_status
+final_status
+
+entity_resolution_status
+
+valid_from if explicitly known
+valid_to if explicitly known
+
+maker_model
+semantic_checker_model
+pipeline_version
+created_at
+
+Do not invent valid_from/valid_to if the CAM does not provide them.
+
+==================================================
+PHASE 9 — KEEP NO-RELATIONSHIP RESULTS
+==================================================
+
+Do not discard negative examples.
+
+For passages where NVIDIA is mentioned but no relationship is established, record:
+
 passage_id
-exact passage text
-query_term
-mentioned_name
-canonical_entity_id
-CAGID
-GFCID
-match_method
-resolution_status
-ambiguity_reason
-text_search_found
-mention_index_found
+document_id
+reason = NO_RELATIONSHIP
+checker confirmation if applicable
+
+This is important for measuring false positives later.
 
 ==================================================
-8. SPECIFIC NVIDIA EXPECTATION
+PHASE 10 — HUMAN-READABLE NVIDIA REVIEW REPORT
 ==================================================
 
-If the passage contains exactly:
+Produce a review report containing:
 
-"NVIDIA Corporation"
+A. NVIDIA seed identity
 
-and there is one canonical legal-name record exactly equal to NVIDIA Corporation,
-then the result should be MATCHED to that record.
+B. Input retrieval summary
+- passages reviewed
+- documents represented
 
-If the passage contains only:
+C. Maker results
+- relationships proposed
+- no-relationship results
 
-"NVIDIA"
+D. Semantic checker
+- accepted
+- corrected
+- rejected
+- needs review
 
-and multiple canonical entities remain after authoritative alias/identifier checks,
-then AMBIGUOUS is acceptable.
+E. Deterministic checker
+- passed
+- rejected
+- warnings
 
-Do not force all NVIDIA-family mentions to the same entity.
+F. Final verified relationships
 
-==================================================
-9. FALSE-CANDIDATE TEST
-==================================================
+For each final relationship show:
 
-Explicitly test passages containing labels such as:
+Source Entity
+Relationship Type
+Target Entity
+Direction
+Canonical IDs
+CAM Filename
+Page
+Section
+Exact Evidence
+Maker Confidence
+Semantic Checker Result
+Deterministic Checker Result
+Final Status
 
-CAGID:
-GFCID:
-LEI:
-CIK:
-ISIN:
+G. Review-required cases
 
-Confirm these are not emitted as legal entity mentions unless there is some separate legitimate entity-name context.
+H. Rejected cases
 
-Report how many false schema-label mentions were removed.
-
-==================================================
-10. REGRESSION CHECK
-==================================================
-
-Ensure the fix does not break:
-
-- exact identifier matching
-- exact legal-name matching for other companies
-- alias matching
-- existing canonical entity IDs
-- CAGID/GFCID joins
-- document/passsage provenance
-- DuckDB/Parquet compatibility
-
-Run the relevant existing tests.
-
-Add narrowly scoped tests for:
-
-- exact legal name beats normalized ambiguity
-- short name remains ambiguous when appropriate
-- field labels are excluded
-- alias still resolves correctly
-- identifier match still has highest priority
+I. No-relationship examples
 
 ==================================================
-11. DO NOT CHANGE THESE
-==================================================
-
-Do NOT:
-
-- modify canonical source-of-truth data
-- merge or split canonical entities
-- change CAGID/GFCID master data
-- change relationship extraction prompts
-- perform relationship extraction
-- add MapReduce
-- add SEC
-- add web
-- change graph metrics
-- change frontend
-- migrate database
-- force ambiguous names to the current seed entity
-
-This task is only:
-
-MENTION CANDIDATE FIX
-+
-RESOLUTION PRECEDENCE FIX
-+
-NVIDIA RECONCILIATION
-+
-REGRESSION TESTING
-
-==================================================
-12. FINAL REPORT
+PHASE 11 — QUALITY METRICS
 ==================================================
 
 Report:
 
-1. Root cause
-   - why CAGID became an entity mention
-   - why NVIDIA Corporation became ambiguous
+NVIDIA passages processed
+documents represented
 
-2. Code changed
-   - exact files/functions
+maker relationships proposed
+maker NO_RELATIONSHIP results
 
-3. Mention index results
-   - total mentions before
-   - total mentions after
-   - false field-label mentions removed
-   - MATCHED
-   - AMBIGUOUS
-   - UNRESOLVED
+semantic checker:
+ACCEPT
+CORRECT
+REJECT
+NEEDS_REVIEW
 
-4. NVIDIA reconciliation
-   - transparent text-search passages
-   - structured mention-index passages
-   - correctly matched NVIDIA Corporation mentions
-   - ambiguous short NVIDIA mentions
-   - unresolved NVIDIA mentions
-   - missing mentions
-   - false CAGID/GFCID/etc. mentions removed
+deterministic checker:
+passed
+rejected
+warnings
 
-5. Regression tests
-   - tests run
-   - tests passed
-   - tests failed
+final:
+VERIFIED relationships
+REVIEW_REQUIRED relationships
+REJECTED relationships
 
-6. Final status
+canonical target entities:
+MATCHED
+AMBIGUOUS
+UNRESOLVED
+
+relationships with:
+exact evidence
+missing evidence
+multiple supporting passages
+multiple supporting CAMs
+
+Do NOT claim precision/recall yet unless human gold labels exist.
+
+==================================================
+PHASE 12 — DO NOT DO THESE THINGS
+==================================================
+
+Do NOT:
+
+- run SEC enrichment
+- run web enrichment
+- use market data
+- use Jaccard as evidence
+- use hop distance as evidence
+- use weighted path distance as evidence
+- infer hidden relationships
+- redesign the frontend
+- rebuild the CAM index
+- rebuild canonical entities
+- change CAGID/GFCID source data
+- migrate database technology
+- process unrelated seed entities
+- produce portfolio-level executive summaries
+- overwrite original CAM evidence
+
+This phase is strictly:
+
+RETRIEVE EXISTING NVIDIA PASSAGES
+→ EXTRACT
+→ SEMANTIC CHECK
+→ DETERMINISTIC CHECK
+→ REDUCE
+→ PERSIST VERIFIED RELATIONSHIPS
+
+==================================================
+PHASE 13 — REQUIRED ARTIFACTS
+==================================================
+
+Create repository-consistent equivalents of:
+
+nvidia_cam_relationship_candidates.jsonl
+nvidia_cam_relationships.parquet
+nvidia_cam_no_relationship.jsonl
+nvidia_cam_review_required.jsonl
+nvidia_cam_relationship_report.xlsx or equivalent
+nvidia_cam_relationship_metrics.json
+
+Do not overwrite unrelated production artifacts.
+
+==================================================
+PHASE 14 — FINAL STATUS
+==================================================
 
 Return exactly one of:
 
-CAM_INDEX_READY
+NVIDIA_CAM_RELATIONSHIPS_READY
 
-CAM_INDEX_READY_WITH_WARNINGS
+NVIDIA_CAM_RELATIONSHIPS_READY_WITH_WARNINGS
 
-BLOCKED_BY_ENTITY_MENTION_INDEX
+BLOCKED_BY_LLM_EXTRACTION
 
-BLOCKED_BY_REGRESSION
+BLOCKED_BY_SEMANTIC_CHECKER
 
-BLOCKED_BY_UNKNOWN_ERROR
+BLOCKED_BY_ENTITY_RESOLUTION
 
-CAM_INDEX_READY should only be returned if:
+BLOCKED_BY_DETERMINISTIC_CHECKER
 
-- exact legal-name resolution works correctly,
-- schema labels are no longer treated as entities,
-- NVIDIA text retrieval and mention-index retrieval reconcile materially,
-- ambiguous short names remain ambiguous rather than being forced,
-- existing identifier/entity resolution behavior remains intact.
+BLOCKED_BY_PIPELINE_ERROR
+
+Also report the reason.
 
 ==================================================
 STOP CONDITION
 ==================================================
 
-STOP after the entity-mention index is repaired and NVIDIA reconciliation passes.
+STOP once:
 
-Do NOT proceed to relationship extraction.
+1. all currently retrieved NVIDIA CAM passages have been processed,
+2. maker relationship candidates exist,
+3. independent semantic checking is complete,
+4. deterministic checking is complete,
+5. duplicate findings are consolidated without losing citations,
+6. final verified/rejected/review-required relationship artifacts exist,
+7. a human-readable NVIDIA relationship report exists.
 
-The next phase will use the corrected retrieved passages for evidence-backed relationship extraction.
+Do NOT proceed to SEC or web enrichment.
+
+The next phase will independently enrich and validate the resulting NVIDIA CAM relationship set using SEC filings and approved web evidence, while preserving each source separately.
