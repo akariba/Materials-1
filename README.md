@@ -1,285 +1,295 @@
-Good. The ADK runtime/interpreter issue is now resolved.
+Once the current ADK grounded-search issue is fixed and the bounded smoke test passes, make the approved web/ADK capability a permanent, self-contained part of the CCR Correlation project.
 
-The CCR project is using the correct virtual environment and the bounded ADK request completes successfully.
+IMPORTANT:
+RPR may be used only as a reference implementation.
+CCR must NOT require:
+- the RPR repository
+- the RPR virtual environment
+- RPR source files
+- RPR launch scripts
+- RPR PYTHONPATH entries
+- RPR-specific environment assumptions
+- an already-running RPR service
 
-Do NOT revisit package installation or interpreter configuration unless new evidence shows a regression.
-
-The remaining blocker is now specifically the grounding/citation contract.
-
-Current smoke-test result:
-
-- ADK application status: OK
-- Request completed successfully
-- Attempts: 1
-- Answer returned: ~1,526 characters
-- Grounding events: 1
-- External citations: 0
-- Accepted evidence records: 0
-- Rejected citations: 5
-- Final evidence status: no_grounded_citations
-
-The NVIDIA external-enrichment phase remains paused.
-
-Yesterday this ADK/web-search pattern worked using the APR/RPR project implementation as the reference.
-
-Your task is to determine why ADK is now returning an answer but CCR is not obtaining valid external URL/date/verbatim-excerpt citation records.
-
-DO NOT redesign the solution.
-DO NOT replace ADK.
-DO NOT use public web search outside the approved ADK mechanism.
-DO NOT rerun the full NVIDIA enrichment yet.
+The goal is that a completely new session can clone/open CCR Correlation, follow the CCR project setup, and successfully run the ADK grounded-web smoke test without knowing that RPR exists.
 
 ==================================================
-1. COMPARE WITH THE APR/RPR KNOWN-WORKING IMPLEMENTATION
+1. PROVE CURRENT CCR VS RPR DEPENDENCIES
 ==================================================
 
-Locate the APR/RPR implementation we used as the working reference yesterday.
+Trace the complete CCR ADK/web path.
 
-Compare the complete ADK web-search path against the current CCR implementation.
+For every imported module, configuration file, environment variable, launch script and runtime dependency used by CCR web search, identify whether it comes from:
 
-Specifically compare:
+- CCR repository
+- CCR .venv
+- shared approved enterprise dependency
+- RPR repository
+- RPR .venv
+- global Python
+- user-machine PATH/PYTHONPATH
+- another external location
 
-- Agent/model construction
-- model name
-- tools configuration
-- Google Search / enterprise search tool configuration
-- Runner/session setup
-- API/version configuration
-- response/event streaming
-- grounding metadata extraction
-- citation extraction
-- URL extraction
-- title/source extraction
-- publication date extraction
-- text/snippet extraction
-- final response serialization
+Explicitly report any hidden RPR dependency.
 
-Do not compare only prompts.
-
-Trace the full working data path.
+Do not assume copying the implementation yesterday made CCR independent. Prove it.
 
 ==================================================
-2. INSPECT THE RAW ADK RESPONSE/EVENT OBJECT
+2. REMOVE RUNTIME DEPENDENCY ON RPR
 ==================================================
 
-For one bounded smoke query, inspect the raw ADK response/events before CCR transforms them.
+If CCR currently imports or reaches into RPR at runtime, migrate the required approved implementation into CCR using the smallest maintainable change.
 
-Do not expose secrets or tokens.
+CCR must own its own equivalents of the required:
+- ADK agent construction
+- approved web-search adapter
+- grounding/citation extraction
+- evidence-quality validation
+- provider configuration
+- launch integration
+- tests
 
-Determine whether the raw ADK result actually contains any of the following or SDK-equivalent structures:
+Do not create duplicate dead implementations.
 
-- grounding metadata
-- grounding chunks
-- grounding supports
-- web/source objects
-- citation metadata
-- retrieved context metadata
-- URLs
-- source titles
-- snippets
-- search-entry points
+Do not modify RPR.
 
-Record which fields are present.
+Do not use absolute paths to RPR.
 
-The key question is:
-
-A. ADK is not returning grounded sources at all
-
-OR
-
-B. ADK returns source metadata, but the CCR wrapper/parser is failing to extract it
-
-Prove which one is true.
+After migration, temporarily make RPR unavailable to the smoke test if practical and prove CCR still works.
 
 ==================================================
-3. TRACE THE 5 REJECTED CITATIONS
+3. PIN THE REQUIRED DEPENDENCIES IN CCR
 ==================================================
 
-The previous smoke run reported:
+The working environment must not depend on someone having manually installed packages in a previous terminal.
 
-rejected citations = 5
+Inspect the repository's dependency-management mechanism:
+- requirements*.txt
+- pyproject.toml
+- uv/poetry configuration
+- lock file
+- environment bootstrap scripts
 
-Inspect each rejected item.
+Add the actual approved ADK dependencies used by CCR there.
 
-For each show:
+Pin versions appropriately so a recreated CCR environment gets a compatible ADK stack.
 
-- raw citation/source representation
-- URL present? yes/no
-- source title present? yes/no
-- publication date present? yes/no
-- source excerpt/snippet present? yes/no
-- exact rejection reason
+Do not simply rely on:
+`pip install google-adk`
+having been run manually.
 
-Determine whether they are being rejected because of:
+If exact pinning is required for the known-good implementation, record it explicitly.
 
-- missing URL
-- internal/non-external URL
-- missing date
-- missing verbatim source text
-- malformed URL
-- parser mismatch
-- unsupported ADK response schema
-- metadata lost during serialization
-- other confirmed reason
-
-Do not just report "failed grounding."
+If a compatible version range is safer, justify it and ensure the adapter is version-tolerant.
 
 ==================================================
-4. CHECK SDK VERSION DIFFERENCE AGAINST APR/RPR
+4. MAKE THE CCR VENV AUTHORITATIVE
 ==================================================
 
-Current CCR environment:
+Ensure CCR has one documented and deterministic Python runtime.
 
-- google-adk 2.11.0
-- google-genai 2.28.0
+Verify:
+- intended Python version
+- `.venv` creation command
+- dependency installation command
+- VS Code interpreter setting if repository policy allows it
+- launch scripts use the CCR interpreter
+- tests use the CCR interpreter
 
-APR/RPR reference environment:
+Do not allow the application silently to fall back to global Citi Python if `.venv` exists.
 
-- google-adk 2.6.1
-- google-genai 2.16.0
+Add an early diagnostic or startup guard if appropriate so the application fails clearly with something like:
 
-Determine whether the response/citation/grounding object schema changed between these versions in a way that affects the current parser.
+WRONG_CCR_RUNTIME
 
-Do NOT downgrade immediately.
+rather than later claiming:
 
-First inspect actual runtime objects and the relevant installed SDK interfaces.
+WEB_PROVIDER_UNAVAILABLE
 
-If CCR's parser expects the older APR/RPR response structure, identify the exact mismatch.
-
-Prefer making the adapter version-tolerant rather than blindly downgrading, unless repository constraints clearly require exact version parity.
-
-==================================================
-5. VERIFY THE SEARCH TOOL IS ACTUALLY ENABLED
-==================================================
-
-Confirm that the working smoke test is not merely calling the LLM without an active search tool.
-
-Verify at runtime:
-
-- which agent is instantiated
-- which tools are attached
-- whether the approved search tool is present
-- whether a search/grounding event actually executes
-- whether source metadata returns from that tool
-
-An answer generated from model knowledge alone is NOT a successful web-search test.
+when the wrong interpreter is being used.
 
 ==================================================
-6. CHECK THE CCR CITATION CONTRACT
+5. REMOVE OR NEUTRALIZE STALE ADK PATHS
 ==================================================
 
-Trace the current CCR requirement for a web evidence record.
+Search CCR for obsolete or conflicting web-provider implementations, including:
+- old ADK adapters
+- legacy imports
+- unused provider switches
+- stale configuration
+- old model/provider names
+- fallback code that silently bypasses grounded search
+- hard-coded RPR paths
+- global-Python assumptions
 
-Current expected minimum appears to be:
+Do NOT delete code blindly.
 
+For each conflicting path:
+- prove whether it is used
+- remove it if genuinely obsolete and safe to remove
+- otherwise consolidate it into the canonical CCR ADK path
+
+There must be one clearly identifiable production ADK/web path.
+
+==================================================
+6. MAKE CONFIGURATION REPRODUCIBLE
+==================================================
+
+Ensure all non-secret configuration required for ADK is represented inside CCR.
+
+Examples:
+- provider selection
+- model configuration
+- grounding/search-tool configuration
+- API/version settings
+- timeout/retry settings
+- evidence-contract settings
+
+Secrets/credentials must NOT be committed.
+
+Instead:
+- document required environment variable names
+- provide an `.env.example` or repository-consistent equivalent if permitted
+- validate required variables on startup
+- never print secret values
+
+==================================================
+7. PRESERVE THE GROUNDING CONTRACT
+==================================================
+
+The permanent CCR implementation must preserve the current evidence requirements.
+
+A successful ADK answer alone is NOT enough.
+
+The canonical CCR path must retain:
+- grounded source metadata
 - external URL
-- source/publication date
-- exact/verbatim excerpt or source text
+- publisher/title
+- publication date where genuinely supplied/verified
+- exact grounded excerpt/snippet
+- retrieval timestamp
+- evidence status
 
-Confirm the actual code contract.
-
-Then determine whether ADK provides:
-
-- all three directly
-- some fields directly and some derivable from grounded source metadata
-- or insufficient evidence
-
-Do not weaken the contract merely to make the test pass.
+Do not weaken the evidence contract to make installation easier.
 
 ==================================================
-7. APPLY THE SMALLEST FIX
+8. CREATE A REPRODUCIBILITY SMOKE TEST
 ==================================================
 
-Once the exact mismatch is proven, apply only the smallest necessary fix.
+Add a small bounded test that can be run in any new CCR session.
 
-Examples of acceptable fixes:
+It must prove:
 
-- read grounding metadata from the correct ADK SDK field
-- support both old and new ADK response schemas
-- preserve grounding metadata before response serialization
-- correctly extract external URLs from grounding chunks
-- correctly map source title/snippet/date fields
-- fix the CCR adapter dropping citation metadata
+CCR interpreter correct
+→ ADK imports successfully
+→ approved search tool is attached
+→ grounded search executes
+→ grounding metadata is received
+→ at least one valid external source can be extracted
+→ CCR evidence adapter accepts the record
 
-Do NOT fabricate missing dates/excerpts.
+The test must NOT:
+- run full NVIDIA enrichment
+- depend on RPR
+- mutate production artifacts
+- require CAM re-extraction
 
-Do NOT treat internal gateway URLs as external citations.
-
-Do NOT accept model-written URLs unless grounded metadata proves them.
+Provide one simple command to run it.
 
 ==================================================
-8. RUN A NEW BOUNDED SMOKE TEST
+9. TEST FROM A CLEAN CCR CONTEXT
 ==================================================
 
-Use one simple query involving NVIDIA and one known company.
+After implementing the permanent setup, test from a fresh process.
 
-The smoke test must prove the full path:
+Preferably verify from:
+- a newly opened terminal/process
+- CCR project root
+- CCR `.venv`
+- no RPR process running
+- no RPR path in PYTHONPATH
 
-ADK search executes
-→ grounded source returned
-→ real external URL extracted
-→ publisher/source extracted
-→ date extracted when genuinely available
-→ exact source excerpt/snippet retained
-→ CCR evidence contract evaluates it
+Where practical, also verify dependency installation from the committed dependency specification in a clean temporary environment.
+
+The purpose is to prove this is reproducible and not merely working because of the current session state.
+
+==================================================
+10. COMMIT THE WORKING STATE
+==================================================
+
+Once all tests pass:
+
+1. inspect `git status`
+2. include only the CCR changes required for this ADK fix
+3. do NOT commit:
+   - secrets
+   - tokens
+   - `.env` containing credentials
+   - temporary logs
+   - generated NVIDIA enrichment outputs unless they already belong in source control
+   - unrelated edits
+
+Commit the working ADK configuration to the CCR repository.
+
+Use a clear commit message such as:
+
+`fix(web): make CCR ADK grounded search self-contained and reproducible`
 
 Report:
+- commit hash
+- files committed
+- files deliberately excluded
+- dependency versions recorded
 
-ADK request: PASS/FAIL
-Search tool execution: PASS/FAIL
-Grounding metadata present: YES/NO
-External URLs: count
-Accepted citations: count
-Rejected citations: count
-Evidence-contract result: PASS/FAIL
-
-Show one accepted citation record if available.
+If repository policy prevents committing directly, prepare the exact changes and report:
+COMMIT_READY_NOT_APPLIED
 
 ==================================================
-9. COMPARE APR/RPR VS CCR
+11. FINAL INDEPENDENCE TEST
 ==================================================
 
-Produce a concise comparison:
+After the commit, answer these explicitly:
 
-APR/RPR known-working path:
-- ADK version
-- GenAI version
-- search tool
-- grounding response fields
-- citation extraction path
+Can CCR ADK run without the RPR repository? YES/NO
+Can CCR ADK run without the RPR virtual environment? YES/NO
+Can a new CCR session restore dependencies from committed project configuration? YES/NO
+Does CCR force/use its intended interpreter? YES/NO
+Does the grounded-search smoke test pass? YES/NO
+Is the evidence/citation contract still enforced? YES/NO
+Are any RPR runtime references left? YES/NO
 
-CCR current path:
-- ADK version
-- GenAI version
-- search tool
-- grounding response fields
-- citation extraction path
+If any answer except the last one is NO, do not declare this complete.
 
-Exact difference:
-- ...
+The final answer for:
+"Are any RPR runtime references left?"
+must be NO.
 
 ==================================================
-10. FINAL STATUS
+12. DO NOT CONTINUE NVIDIA YET
+==================================================
+
+Even after the permanent ADK setup is committed, STOP.
+
+Do NOT automatically rerun:
+- NVIDIA web enrichment
+- SEC
+- CAM
+- reconciliation
+- graph construction
+
+I want the infrastructure permanently fixed and committed first.
+
+==================================================
+FINAL STATUS
 ==================================================
 
 Return exactly one:
 
-ADK_GROUNDED_SEARCH_READY
-
-ADK_GROUNDED_SEARCH_READY_WITH_WARNING
-
-BLOCKED_BY_SEARCH_TOOL_CONFIGURATION
-
-BLOCKED_BY_ADK_GROUNDING_RESPONSE
-
-BLOCKED_BY_CITATION_ADAPTER
-
-BLOCKED_BY_EVIDENCE_CONTRACT
-
-BLOCKED_BY_SDK_VERSION_MISMATCH
-
-ROOT_CAUSE_NOT_PROVEN
-
-STOP after the bounded grounded-search smoke test.
-
-Do NOT resume full NVIDIA external enrichment automatically.
+CCR_ADK_SELF_CONTAINED_AND_COMMITTED
+CCR_ADK_SELF_CONTAINED_COMMIT_READY
+BLOCKED_BY_CCR_DEPENDENCY_SETUP
+BLOCKED_BY_CONFIGURATION
+BLOCKED_BY_GROUNDING
+BLOCKED_BY_RPR_RUNTIME_DEPENDENCY
+BLOCKED_BY_REPOSITORY_POLICY
+BLOCKED_BY_PIPELINE_ERROR
