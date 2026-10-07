@@ -1,241 +1,199 @@
-Continue from the current CCR ADK self-containment task.
+Stop trying to make ADK grounding metadata itself satisfy the CCR evidence contract.
 
-Current state:
+Implement a bounded direct-source fallback for CCR external enrichment.
 
-- CCR runtime dependency audit complete.
-- Isolated dependency lock added.
-- CCR interpreter authority enforced.
-- Stale runtime assumptions removed.
-- Deterministic smoke coverage added.
-- Clean candidate runtime validated.
-- The current remaining blocker is:
+The architecture should be:
 
-BLOCKED_BY_GROUNDING
+SEARCH / DISCOVERY
+→ RESOLVE REAL PUBLISHER URL
+→ FETCH DIRECT SOURCE
+→ EXTRACT GROUNDED EVIDENCE
+→ CCR EVIDENCE VALIDATOR
 
-Do NOT revisit environment recreation, interpreter selection, package installation, RPR migration, CAM extraction, SEC enrichment, or NVIDIA enrichment unless the grounding investigation proves one of those is directly responsible.
-
-This is now a targeted grounding-debug task.
+The search provider is for discovery only.
 
 ==================================================
-1. TRACE THE STRICT EVIDENCE PATH END TO END
+SOURCE PRIORITY
 ==================================================
 
-Run exactly one bounded ADK grounded-search smoke test.
+Use sources in this order:
 
-Trace:
+1. SEC / EDGAR
+2. Official company investor-relations pages
+3. Official annual reports
+4. Official company press releases
+5. Regulatory / exchange disclosures
+6. Yahoo Finance
+7. Investing.com
+8. Other approved credible financial/business sources
 
-query
-→ ADK agent
-→ search tool
-→ raw ADK events
-→ grounding metadata
-→ citation/source extraction
-→ CCR normalization
-→ strict evidence validator
-→ final evidence status
-
-Capture the state at every boundary.
-
-Do not summarize prematurely.
+Prefer primary sources whenever possible.
 
 ==================================================
-2. INSPECT RAW ADK GROUNDING OBJECTS
+GOOGLE SEARCH
 ==================================================
 
-Before CCR transforms the response, inspect the raw runtime objects.
+Google/simple search may be used to discover candidate URLs.
 
-Determine whether ADK returns any of:
+A Google search-result URL or Google redirect URL is NOT itself evidence.
 
-- grounding_metadata
-- grounding_chunks
-- grounding_supports
-- web sources
-- source URLs
-- source titles
-- retrieved snippets
-- search entry points
-- citation metadata
-- publication dates
+Resolve/search for the actual publisher URL.
 
-Do not expose secrets.
+Examples:
 
-Report the actual object field names present in the installed ADK/GenAI versions.
+sec.gov/...
+investor.nvidia.com/...
+intel.com/...
+hut8.com/...
+finance.yahoo.com/...
+investing.com/...
 
-The key question is:
-
-A. the provider returned no usable grounding
-
-OR
-
-B. grounding exists but CCR failed to extract it
-
-Prove which one.
+Then fetch the publisher page directly.
 
 ==================================================
-3. TRACE EVERY REJECTED CITATION
+EVIDENCE CONTRACT
 ==================================================
 
-For every candidate citation rejected by the strict evidence layer, report:
+A source can become accepted CCR evidence only after direct retrieval of the publisher/source page.
 
-- raw provider object
-- extracted URL
-- extracted title/publisher
-- extracted date
-- extracted snippet/excerpt
-- grounding/support reference
-- exact rejection reason
+Capture:
 
-Classify each rejection as:
+- final resolved URL
+- publisher/domain
+- page/document title
+- publication/filing date when available
+- retrieval timestamp
+- exact source excerpt
+- entity pair
+- relationship claim
 
-MISSING_URL
-MISSING_GROUNDING
-MISSING_EXCERPT
-MISSING_DATE
-NON_EXTERNAL_URL
-UNSUPPORTED_SCHEMA
-SERIALIZATION_LOSS
-PARSER_BUG
-OTHER_CONFIRMED_REASON
+Do not fabricate missing fields.
 
-Do not simply report "no grounded citations."
+If publication date is genuinely unavailable, retain DATE_NOT_AVAILABLE rather than rejecting otherwise strong primary-source evidence solely because the page does not expose a date, unless existing governance explicitly requires a date.
 
 ==================================================
-4. VERIFY THE SEARCH TOOL REALLY EXECUTED
+SEC
 ==================================================
 
-Confirm at runtime:
+For company relationships, search SEC directly wherever possible.
 
-- the approved search tool is attached to the ADK agent;
-- the tool actually executed;
-- the answer was not generated only from model knowledge;
-- grounding/search events were emitted.
+Use:
 
-If no search tool execution occurred, return:
+CIK
+company name
+10-K
+10-Q
+8-K
+13D/G
+S-1
+424B
+other relevant filings
 
-BLOCKED_BY_SEARCH_TOOL_CONFIGURATION
-
-==================================================
-5. COMPARE RAW PROVIDER OUTPUT TO CCR EXPECTATIONS
-==================================================
-
-Document the exact CCR strict evidence contract.
-
-For example:
-
-URL required?
-publisher/title required?
-publication date required?
-verbatim snippet required?
-grounding support ID required?
-
-Then compare that contract field-by-field with what ADK actually returns.
-
-Do NOT weaken the evidence contract yet.
-
-First determine exactly which required field is failing.
+Extract evidence directly from the SEC filing rather than from Google snippets.
 
 ==================================================
-6. CHECK SDK-SCHEMA COMPATIBILITY
+COMPANY ANNUAL REPORTS / IR
 ==================================================
 
-The current CCR environment may use a newer ADK/GenAI version than the older reference implementation.
+Search official company domains for:
 
-Inspect whether CCR's citation parser expects an older object schema.
+annual reports
+investor-relations pages
+press releases
+partnership announcements
+investment announcements
+customer/supplier disclosures
 
-Check for renamed/moved fields such as:
+Direct company disclosure should be treated as high-authority evidence.
 
-grounding_metadata
-grounding_chunks
-grounding_supports
-web
-uri/url
+==================================================
+YAHOO FINANCE / INVESTING.COM
+==================================================
+
+These may be used as secondary sources for:
+
+- market data
+- financial metrics
+- corporate events
+- company profiles
+- relationship/event discovery
+
+Preserve the direct article/page URL and exact extracted text.
+
+Do not use these to override contradictory SEC or official-company disclosures.
+
+==================================================
+BOUNDED SMOKE TEST
+==================================================
+
+Do not run the full NVIDIA universe yet.
+
+Test only:
+
+NVIDIA Corporation
++
+Intel Corporation
+
+Try to establish independently:
+
+1. NVIDIA equity investment in Intel
+2. NVIDIA / Intel strategic partnership
+
+Use:
+
+SEC
+official NVIDIA/Intel sources
+then Yahoo Finance / Investing.com only if useful.
+
+Return for each evidence record:
+
+source_type
+publisher
+final_url
 title
-segment/text
+publication_date
+exact_excerpt
+relationship_type
+direction
+evidence_status
 
-If the data exists under a new schema, make the CCR adapter version-tolerant.
+Expected evidence_status:
 
-Do not blindly downgrade packages.
-
-==================================================
-7. APPLY THE SMALLEST VERIFIED FIX
-==================================================
-
-Only after root cause is proven, apply the smallest fix.
-
-Acceptable fixes include:
-
-- extract grounding from the correct current SDK field;
-- preserve grounding metadata before serialization;
-- correctly map grounding chunks/supports;
-- correctly extract real external URLs;
-- correctly associate grounded snippets with URLs;
-- support both known ADK response schemas.
-
-Do NOT:
-
-- fabricate URLs;
-- fabricate publication dates;
-- use model-written citations as grounded evidence;
-- accept internal gateway URLs as external sources;
-- weaken fail-closed behavior.
+SUPPORTS
+CONTRADICTS
+MENTIONS_ONLY
+INSUFFICIENT
 
 ==================================================
-8. RUN ONE STRICT GROUNDED-SMOKE TEST
+IMPORTANT
 ==================================================
 
-After the fix, run one fresh-process smoke test.
+Do not depend on opaque Google redirect URLs.
 
-Require:
+Do not require ADK grounding metadata to contain the entire evidence record.
 
-search tool executed = YES
-grounding metadata present = YES
-external URL count >= 1
-grounded excerpt count >= 1
-accepted strict evidence records >= 1
+Google/search is discovery.
+The directly retrieved publisher page is the evidence source.
 
-Report:
-
-simple_answer_status
-strict_evidence_status
-search_tool_execution
-grounding_metadata_present
-external_urls
-accepted_citations
-rejected_citations
-
-Show one accepted evidence record.
+Do not weaken source provenance.
 
 ==================================================
-9. DO NOT CONTINUE TO NVIDIA YET
+SUCCESS CRITERIA
 ==================================================
 
-Even if the grounding smoke test passes, STOP.
+The smoke test passes if at least one direct source can be retrieved and produces:
 
-Do not rerun:
-- NVIDIA enrichment
-- CAM
-- SEC
-- reconciliation
-- graph analytics
+- real publisher URL
+- exact page text
+- relationship evidence
+- inspectable provenance
 
-The infrastructure must be proven first.
+Return:
 
-==================================================
-FINAL STATUS
-==================================================
+DIRECT_SOURCE_EVIDENCE_READY
 
-Return exactly one:
+or:
 
-CCR_ADK_GROUNDING_READY
+BLOCKED_BY_DIRECT_SOURCE_ACCESS
 
-BLOCKED_BY_SEARCH_TOOL_CONFIGURATION
-
-BLOCKED_BY_PROVIDER_GROUNDING
-
-BLOCKED_BY_CITATION_ADAPTER
-
-BLOCKED_BY_EVIDENCE_CONTRACT
-
-BLOCKED_BY_SDK_SCHEMA_MISMATCH
-
-ROOT_CAUSE_NOT_PROVEN
+STOP after the NVIDIA/Intel smoke test.
