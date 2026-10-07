@@ -1,199 +1,117 @@
-Stop trying to make ADK grounding metadata itself satisfy the CCR evidence contract.
+The previous result BLOCKED_BY_DIRECT_SOURCE_ACCESS is not yet proven.
 
-Implement a bounded direct-source fallback for CCR external enrichment.
+The run shows:
 
-The architecture should be:
+- SEC discovery candidates: 0
+- ADK discovery: no_grounded_citations
+- direct fetches: 0
+- validation attempts: 0
+- direct fetch errors: []
 
-SEARCH / DISCOVERY
-→ RESOLVE REAL PUBLISHER URL
-→ FETCH DIRECT SOURCE
-→ EXTRACT GROUNDED EVIDENCE
-→ CCR EVIDENCE VALIDATOR
+Therefore no direct publisher URL was actually fetched.
 
-The search provider is for discovery only.
+Do NOT run another discovery loop.
 
-==================================================
-SOURCE PRIORITY
-==================================================
+For this smoke test, BYPASS discovery and seed known authoritative direct URLs explicitly.
 
-Use sources in this order:
+Test these NVIDIA / Intel sources:
 
-1. SEC / EDGAR
-2. Official company investor-relations pages
-3. Official annual reports
-4. Official company press releases
-5. Regulatory / exchange disclosures
-6. Yahoo Finance
-7. Investing.com
-8. Other approved credible financial/business sources
+1. NVIDIA official newsroom:
+https://nvidianews.nvidia.com/news/nvidia-and-intel-to-develop-ai-infrastructure-and-personal-computing-products
 
-Prefer primary sources whenever possible.
+2. NVIDIA Investor Relations:
+https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-and-Intel-to-Develop-AI-Infrastructure-and-Personal-Computing-Products/default.aspx
 
-==================================================
-GOOGLE SEARCH
-==================================================
+3. Intel SEC filing:
+https://www.sec.gov/Archives/edgar/data/50863/000005086325000155/intc-20250915.htm
 
-Google/simple search may be used to discover candidate URLs.
+4. Intel SEC exhibit / announcement:
+https://www.sec.gov/Archives/edgar/data/50863/000005086325000155/a09152025form8-kex991.htm
 
-A Google search-result URL or Google redirect URL is NOT itself evidence.
+The expected facts are:
 
-Resolve/search for the actual publisher URL.
+A. NVIDIA and Intel announced a collaboration to jointly develop data-center and PC products.
 
-Examples:
-
-sec.gov/...
-investor.nvidia.com/...
-intel.com/...
-hut8.com/...
-finance.yahoo.com/...
-investing.com/...
-
-Then fetch the publisher page directly.
+B. NVIDIA agreed to invest approximately $5 billion in Intel common stock.
 
 ==================================================
-EVIDENCE CONTRACT
+TEST ONLY DIRECT FETCH
 ==================================================
 
-A source can become accepted CCR evidence only after direct retrieval of the publisher/source page.
+For each seeded URL:
 
-Capture:
+1. Fetch the URL directly.
+2. Report HTTP/result status.
+3. Extract:
+   - final URL
+   - publisher
+   - title
+   - publication/filing date
+   - source text
+4. Search the returned source text for evidence relevant to:
+   - NVIDIA / Intel strategic collaboration
+   - NVIDIA $5bn Intel investment
+5. Preserve an exact source excerpt.
+6. Run the existing deterministic evidence validator.
 
-- final resolved URL
-- publisher/domain
-- page/document title
-- publication/filing date when available
-- retrieval timestamp
-- exact source excerpt
-- entity pair
-- relationship claim
-
-Do not fabricate missing fields.
-
-If publication date is genuinely unavailable, retain DATE_NOT_AVAILABLE rather than rejecting otherwise strong primary-source evidence solely because the page does not expose a date, unless existing governance explicitly requires a date.
-
-==================================================
-SEC
-==================================================
-
-For company relationships, search SEC directly wherever possible.
-
-Use:
-
-CIK
-company name
-10-K
-10-Q
-8-K
-13D/G
-S-1
-424B
-other relevant filings
-
-Extract evidence directly from the SEC filing rather than from Google snippets.
+Do NOT call ADK.
+Do NOT use Google discovery.
+Do NOT use SEC discovery.
+Do NOT run CAM.
+Do NOT run broader enrichment.
 
 ==================================================
-COMPANY ANNUAL REPORTS / IR
+IMPORTANT DIAGNOSTIC
 ==================================================
 
-Search official company domains for:
+We need to distinguish:
 
-annual reports
-investor-relations pages
-press releases
-partnership announcements
-investment announcements
-customer/supplier disclosures
+A. DIRECT_FETCH_WORKS
+   URLs can be retrieved and evidence extracted.
 
-Direct company disclosure should be treated as high-authority evidence.
+B. DIRECT_FETCH_NETWORK_BLOCKED
+   Direct outbound retrieval itself is prohibited.
 
-==================================================
-YAHOO FINANCE / INVESTING.COM
-==================================================
+C. DIRECT_FETCH_PARSER_FAILED
+   Page retrieved but parser cannot extract usable content.
 
-These may be used as secondary sources for:
+D. EVIDENCE_VALIDATOR_FAILED
+   Page and text retrieved, but CCR rejects otherwise valid evidence.
 
-- market data
-- financial metrics
-- corporate events
-- company profiles
-- relationship/event discovery
-
-Preserve the direct article/page URL and exact extracted text.
-
-Do not use these to override contradictory SEC or official-company disclosures.
+The previous status BLOCKED_BY_DIRECT_SOURCE_ACCESS must NOT be returned simply because discovery produced zero URLs.
 
 ==================================================
-BOUNDED SMOKE TEST
+SUCCESS CONDITION
 ==================================================
 
-Do not run the full NVIDIA universe yet.
-
-Test only:
-
-NVIDIA Corporation
-+
-Intel Corporation
-
-Try to establish independently:
-
-1. NVIDIA equity investment in Intel
-2. NVIDIA / Intel strategic partnership
-
-Use:
-
-SEC
-official NVIDIA/Intel sources
-then Yahoo Finance / Investing.com only if useful.
-
-Return for each evidence record:
-
-source_type
-publisher
-final_url
-title
-publication_date
-exact_excerpt
-relationship_type
-direction
-evidence_status
-
-Expected evidence_status:
-
-SUPPORTS
-CONTRADICTS
-MENTIONS_ONLY
-INSUFFICIENT
-
-==================================================
-IMPORTANT
-==================================================
-
-Do not depend on opaque Google redirect URLs.
-
-Do not require ADK grounding metadata to contain the entire evidence record.
-
-Google/search is discovery.
-The directly retrieved publisher page is the evidence source.
-
-Do not weaken source provenance.
-
-==================================================
-SUCCESS CRITERIA
-==================================================
-
-The smoke test passes if at least one direct source can be retrieved and produces:
+At least one seeded direct source must produce:
 
 - real publisher URL
-- exact page text
-- relationship evidence
-- inspectable provenance
+- real source text
+- source date
+- exact evidence excerpt
+- validated NVIDIA/Intel relationship evidence
 
-Return:
+Expected examples include:
 
-DIRECT_SOURCE_EVIDENCE_READY
+NVIDIA ↔ Intel
+relationship: strategic_partner / strategic_collaboration
 
-or:
+NVIDIA → Intel
+relationship: equity_investor / investor_in
 
-BLOCKED_BY_DIRECT_SOURCE_ACCESS
+==================================================
+FINAL STATUS
+==================================================
 
-STOP after the NVIDIA/Intel smoke test.
+Return exactly one:
+
+DIRECT_FETCH_WORKS
+
+DIRECT_FETCH_NETWORK_BLOCKED
+
+DIRECT_FETCH_PARSER_FAILED
+
+EVIDENCE_VALIDATOR_FAILED
+
+STOP after this test.
