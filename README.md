@@ -1,784 +1,340 @@
 You are continuing work on the existing CCR Relationship Intelligence repository.
 
-The immediate objective is to build a searchable CAM evidence corpus from the existing heterogeneous raw-data folder and integrate it cleanly with the existing DuckDB / Parquet architecture.
+The CAM indexing phase has already been implemented.
 
-This phase is NOT relationship extraction.
-This phase is NOT SEC enrichment.
-This phase is NOT web enrichment.
-This phase is NOT MapReduce relationship extraction.
+Current state:
 
-The objective is:
+- CAM evidence indexing layer exists.
+- cam_documents.parquet exists.
+- cam_passages.parquet exists.
+- cam_entity_mentions.parquet exists.
+- DuckDB/Parquet integration exists.
+- inspect_db.py exists.
+- search_cam.py exists.
+- NVIDIA canonical entity resolution works.
+- deterministic text retrieval works.
+- relationship extraction has NOT been run yet.
 
-Convert the existing CAM repository into a deterministic, inspectable, searchable evidence layer that can later support entity-centric queries such as:
+The current blocker is:
 
-"Find every CAM passage potentially relevant to NVIDIA."
+BLOCKED_BY_PARSING
 
-Do not redesign the existing application.
-Do not overwrite existing canonical data structures.
-Do not modify production relationship logic.
+because PDF CAM documents were intentionally skipped/guarded to prevent parser stalls.
 
-Proceed autonomously through the following steps.
+Current observed results include approximately:
 
-==================================================
-PHASE 0 — INSPECT THE EXISTING DATA ARCHITECTURE
-==================================================
+- 66 CAM documents
+- 29 parsed successfully
+- 37 failed/skipped PDFs
+- 1053 passages generated
 
-Before creating anything new, inspect the current repository and determine exactly what already exists.
+A second issue exists:
 
-Locate:
+- NVIDIA canonical identity resolves successfully.
+- plain passage-text search finds NVIDIA candidate passages.
+- structured entity-mention retrieval currently returns fewer or zero matching passages.
 
-- existing DuckDB files
-- .duckdb files
-- .db files
-- DuckDB connection code
-- DuckDB initialization logic
-- Parquet views/tables
-- SQL schema definitions
-- canonical entity structures
-- CAGID/GFCID structures
-- existing relationship tables
-- existing CAM tables
-- existing evidence structures
+This is an IMPLEMENTATION/FIX task.
 
-Identify:
+Do NOT perform another architecture audit.
 
-- active DuckDB file/path
-- whether DuckDB is persistent or created dynamically
-- schemas
-- tables
-- views
-- external Parquet files queried through DuckDB
+Do NOT proceed to relationship extraction.
 
-Open the existing DuckDB in READ-ONLY mode first wherever technically possible.
-
-Do not modify the database during discovery.
-
-Produce an inventory for every table/view containing:
-
-schema
-object_name
-object_type
-row_count
-columns
-column_types
-likely primary/business keys
-source file if external
-likely purpose
-
-Pay particular attention to anything representing:
-
-canonical entities
-CAGID
-GFCID
-client/customer master
-entity aliases
-normalized entity names
-relationships
-relationship evidence
-CAM/document metadata
-
-Determine whether a canonical entity table already exists.
-
-If one exists, treat it as the existing source of truth unless the repository clearly indicates otherwise.
-
-DO NOT create a second competing canonical entity master.
+The objective is to make the CAM index complete and reliable before relationship extraction starts.
 
 ==================================================
-PHASE 1 — INSPECT THE RAW DATA FOLDER
+1. FIX PDF PARSING SAFELY
 ==================================================
 
-Recursively inspect the existing raw-data / CAM repository exactly as it currently exists.
+Inspect the existing PDF parsing implementation.
 
-Do not rename, move, delete, reorganize, or modify source files.
+Identify the exact reason PDF parsing was guarded/disabled.
 
-Identify and classify:
+Determine whether the issue is:
 
-PDF
-DOCX
-DOC
-XLS
-XLSX
-CSV
-JSON
-Parquet
-TXT
-other formats
+- parser library stall
+- specific malformed PDFs
+- encrypted PDFs
+- scanned/image-only PDFs
+- extremely large PDFs
+- table-heavy PDFs
+- timeout handling
+- multiprocessing/thread interaction
+- file corruption
+- other
 
-The repository may contain a mixture of:
+Do not guess.
 
-CAM PDFs/DOCX
-CAGID reference files
-Excel files
-JSON files
-customer/entity data
-Parquet files
-supporting metadata
-previously generated artifacts
+Implement bounded PDF parsing.
 
-Do not assume every file is a CAM.
+Requirements:
 
-==================================================
-PHASE 2 — CLASSIFY FILE ROLES
-==================================================
+- every PDF must be attempted individually
+- one bad PDF must never hang the full indexing run
+- use a strict per-file timeout
+- record parser start/end time
+- record parser failure reason
+- preserve page provenance
+- preserve original text where available
+- do not summarize or rewrite content
+- do not silently skip failures
 
-Classify every source file into one of:
+Use the existing parser where possible.
 
-CAM_DOCUMENT
-ENTITY_REFERENCE
-CAGID_REFERENCE
-CUSTOMER_MASTER
-SUPPORTING_METADATA
-EXISTING_DERIVED_ARTIFACT
-UNKNOWN
-UNSUPPORTED
+Only introduce a fallback parser if required.
 
-If uncertain, use UNKNOWN.
+Do NOT use OCR unless a PDF is genuinely image-only and the repository already has an approved OCR path.
 
-Do not infer business meaning from filenames alone when content inspection is required.
-
-Create a raw-file inventory.
+If OCR is not available/approved, mark image-only PDFs clearly as requiring OCR rather than inventing text.
 
 ==================================================
-PHASE 3 — BUILD A NON-DESTRUCTIVE DOCUMENT MANIFEST
+2. ADD PARSER FALLBACK LOGIC
 ==================================================
 
-Create one structured record per source document/file.
+For each PDF attempt:
 
-Use fields approximately equivalent to:
+PRIMARY PARSER
+→ if success, keep result
+
+If timeout/failure:
+→ try bounded fallback parser if available and appropriate
+
+If fallback also fails:
+→ record explicit failure
+
+Suggested statuses:
+
+PARSED_PRIMARY
+PARSED_FALLBACK
+IMAGE_ONLY_NEEDS_OCR
+ENCRYPTED
+CORRUPT
+TIMEOUT
+EMPTY_TEXT
+FAILED_OTHER
+
+Every failure must retain:
 
 document_id
 filename
-full_path
-relative_path
-source_folder
-file_type
-file_size
-file_hash
-classification
-CAGID
-GFCID
-client_name
-canonical_entity_id
-document_date
+error_type
+error_message
 parser_used
-parse_status
-parse_warning
-created_at
+elapsed_time
 
-Rules:
+==================================================
+3. REBUILD ONLY THE PDF PORTION
+==================================================
 
-- document_id must be stable and reproducible
-- calculate a file hash for duplicate detection
-- do not infer CAGID from uncertain fuzzy matching
-- leave unknown fields null
-- do not alter source files
+Do not unnecessarily reprocess working DOCX/TXT/JSON documents.
 
-Persist the manifest as:
+Process the previously failed/skipped PDF CAMs.
+
+Merge the successful PDF outputs back into:
 
 cam_documents.parquet
-
-or use an equivalent repository-consistent name.
-
-==================================================
-PHASE 4 — PARSE THE CAM DOCUMENTS
-==================================================
-
-Parse only files classified as CAM/document content.
-
-Preserve source provenance.
-
-For PDFs preserve where possible:
-
-document_id
-page_number
-section/header
-paragraph/text block
-source order
-table indicator
-source position
-
-Do not remove page provenance.
-
-For DOCX preserve:
-
-document_id
-heading hierarchy
-section
-paragraph
-table content
-source order
-
-For structured formats preserve their existing structure where practical.
-
-IMPORTANT:
-
-Do not summarize source content.
-Do not paraphrase source content.
-Do not use an LLM to rewrite source text.
-Preserve original evidence text.
-
-==================================================
-PHASE 5 — CREATE PASSAGE-LEVEL SEARCH RECORDS
-==================================================
-
-Convert parsed CAM content into searchable passages.
-
-Prefer semantic/business boundaries such as:
-
-heading
-section
-paragraph group
-table
-page
-
-Avoid arbitrary very small chunks unless technically required.
-
-Every passage must retain full provenance.
-
-Target schema:
-
-passage_id
-document_id
-page_number
-section
-heading
-block_type
-sequence_number
-text
-source_location
-character_count
-token_estimate if available
-
-Persist as:
-
 cam_passages.parquet
 
-==================================================
-PHASE 6 — REUSE THE EXISTING CANONICAL ENTITY DATA
-==================================================
+non-destructively.
 
-Inspect the existing DuckDB / Parquet data and determine how canonical entities are currently represented.
+Preserve stable document IDs.
 
-Possible identifiers include:
-
-canonical_entity_id
-CAGID
-GFCID
-legal_name
-normalized_name
-aliases
-CIK
-LEI
-ISIN
-CUSIP
-ticker
-other identifiers
-
-Use the existing entity structure.
-
-Do not create a competing entity universe.
-
-Document exactly which table/file is being used as the canonical entity source.
+Do not duplicate documents or passages.
 
 ==================================================
-PHASE 7 — BUILD ENTITY-MENTION INDEXING
+4. VERIFY PAGE/SECTION PROVENANCE
 ==================================================
 
-Create an entity-mention index from CAM passages.
+For successfully parsed PDFs verify:
 
-This is for RETRIEVAL only.
+- document_id
+- filename
+- page_number
+- sequence_number
+- section/header if detectable
+- exact passage text
+- source_location
 
-Do NOT infer business relationships yet.
+No PDF passage should lose its source document reference.
 
-For each mention capture approximately:
+Page number must be present whenever technically available.
 
-mention_id
-passage_id
+==================================================
+5. FIX ENTITY-MENTION INDEX CONSISTENCY
+==================================================
+
+NVIDIA currently resolves correctly in the canonical entity master, but structured entity-mention retrieval does not fully match transparent passage-text retrieval.
+
+Investigate why.
+
+Trace:
+
+canonical NVIDIA identity
+→ legal name / aliases
+→ passage matching
+→ entity mention creation
+→ canonical entity resolution
+→ cam_entity_mentions
+→ search_cam.py
+
+Identify the exact mismatch.
+
+Possible causes to inspect:
+
+- case normalization
+- punctuation
+- NVIDIA vs NVIDIA Corporation
+- alias handling
+- mention extraction rules
+- canonical name normalization
+- mention resolver thresholds
+- missing mention creation
+- passage filtering
+- CAGID/GFCID join mismatch
+
+Do not loosen matching globally without evidence.
+
+==================================================
+6. REQUIRE RETRIEVAL CONSISTENCY
+==================================================
+
+After repair, run NVIDIA again.
+
+Compare:
+
+A. transparent passage-text search
+B. structured cam_entity_mentions retrieval
+
+Every obvious deterministic NVIDIA mention found by text search should either:
+
+- appear in structured mention retrieval, OR
+- have an explicit documented reason why it is excluded.
+
+Generate a reconciliation table:
+
 document_id
-mentioned_name
-normalized_mentioned_name
+passage_id
+text_search_match
+mention_index_match
 canonical_entity_id
-CAGID
-GFCID
-match_method
-match_score
 resolution_status
-ambiguity_reason
+difference_reason
 
-Allowed resolution statuses:
+==================================================
+7. REBUILD ENTITY-MENTION INDEX
+==================================================
+
+Rebuild only the necessary entity-mention records after fixing the bug.
+
+Do not recreate the canonical entity master.
+
+Do not modify CAGID/GFCID source-of-truth data.
+
+Preserve:
 
 MATCHED
 AMBIGUOUS
 UNRESOLVED
 
-Prefer deterministic resolution using this general precedence:
-
-1. exact known identifier
-2. exact canonical legal name
-3. known alias
-4. normalized exact name
-5. controlled high-confidence matching
-
 Do not force ambiguous matches.
 
-Persist as:
-
-cam_entity_mentions.parquet
-
 ==================================================
-PHASE 8 — BUILD THE ENTITY-CENTRIC SEARCH LAYER
+8. RUN COMPLETE INDEX VALIDATION
 ==================================================
 
-Create a reusable retrieval function conceptually equivalent to:
+After the PDF repair and mention-index repair, report:
 
-search_entity(seed_entity)
+CAM documents discovered
+PDF documents
+DOCX documents
+other supported CAM documents
 
-It should accept inputs such as:
+parsed successfully
+failed
+parsed with fallback
+image-only needing OCR
+timeouts
+corrupt/encrypted
 
-NVIDIA
-NVIDIA Corporation
-canonical_entity_id
-CAGID
-GFCID
+passages generated
 
-The function should:
+entity mentions generated
 
-1. Resolve the seed entity against the existing canonical entity master.
-2. Retrieve validated names, aliases and identifiers.
-3. Search all indexed CAM passages.
-4. Return candidate passages with full provenance.
+MATCHED mentions
+AMBIGUOUS mentions
+UNRESOLVED mentions
 
-Return approximately:
-
-seed_entity
-canonical_entity_id
-CAGID
-GFCID
-document_id
-filename
-source_folder
-page_number
-section
-matched_term
-passage_id
-passage_text
-retrieval_method
-retrieval_reason
-
-IMPORTANT:
-
-This stage only discovers potentially relevant evidence.
-
-It must NOT claim that a relationship exists.
+missing page provenance
+missing document provenance
+duplicate passage IDs
+duplicate document IDs
 
 ==================================================
-PHASE 9 — USE TRANSPARENT SEARCH FIRST
+9. NVIDIA SMOKE TEST
 ==================================================
 
-For the first implementation prioritize:
+Run:
 
-exact company-name search
-normalized-name search
-known aliases
-identifier search
-CAGID search
-GFCID search
-
-Use DuckDB SQL and Parquet scanning where appropriate.
-
-Do not introduce vector databases or embeddings unless:
-
-- they already exist and are part of the current architecture, OR
-- deterministic retrieval is demonstrated to have significant recall problems
-
-The first retrieval layer should be transparent, debuggable and reproducible.
-
-==================================================
-PHASE 10 — INTEGRATE WITH EXISTING DUCKDB
-==================================================
-
-Do NOT overwrite existing tables.
-
-Do NOT replace the existing canonical entity structure.
-
-Preferred approach:
-
-Keep CAM-derived datasets in Parquet:
-
-cam_documents.parquet
-cam_passages.parquet
-cam_entity_mentions.parquet
-
-Expose them through the existing DuckDB as tables or views.
-
-Conceptually:
-
-cam_documents
-cam_passages
-cam_entity_mentions
-
-The integration should allow joins such as:
-
-canonical_entity
-→ canonical_entity_id / CAGID / GFCID
-→ cam_entity_mentions
-→ cam_passages
-→ cam_documents
-
-Reuse existing business keys.
-
-Do not duplicate canonical identifiers unnecessarily.
-
-If the repository already uses a different but equivalent persistence architecture, follow the existing architecture rather than forcing this exact implementation.
-
-==================================================
-PHASE 11 — BUILD A READ-ONLY DATABASE INSPECTOR
-==================================================
-
-Create a simple read-only inspection utility so the user can inspect what the agent built without needing advanced SQL knowledge.
-
-Example:
-
-python inspect_db.py
-
-It should display:
-
-DuckDB path
-schemas
-tables
-views
-row counts
-
-Support functions equivalent to:
-
-python inspect_db.py tables
-python inspect_db.py describe <table>
-python inspect_db.py sample <table>
-python inspect_db.py search NVIDIA
-
-The utility must be READ-ONLY by default.
-
-The purpose is to make the DuckDB architecture visible and understandable.
-
-==================================================
-PHASE 12 — NVIDIA RETRIEVAL SMOKE TEST
-==================================================
-
-Use NVIDIA only as a seed-client example.
-
-IMPORTANT:
-
-Do NOT assume any dedicated NVIDIA CAM exists.
-
-NVIDIA is simply the seed entity being investigated.
-
-Resolve NVIDIA against the existing canonical entity universe.
-
-Use available validated identity information such as:
-
-NVIDIA
-NVIDIA Corporation
-CAGID
-GFCID
-known canonical aliases
-other existing validated identifiers
-
-Then search the entire indexed CAM corpus.
+python search_cam.py NVIDIA
 
 Report:
 
-seed resolution status
-canonical entity matched
-CAGID if available
-GFCID if available
-number of CAM documents indexed
-number successfully parsed
-number failed
-number linked to entities
-number ambiguous
-number unresolved
-number of candidate CAM documents containing relevant NVIDIA mentions
-number of candidate passages
-
-For sample results provide:
-
-filename
-document_id
-CAGID if available
-page
-section
-matched term
-retrieval method
-retrieval reason
-exact source passage
-
-Do not call these relationships.
-
-For example:
-
-A CAM mentioning NVIDIA in general market commentary is only a candidate passage.
-
-No relationship should be asserted at this stage.
-
-==================================================
-PHASE 13 — CREATE A HUMAN REVIEW REPORT
-==================================================
-
-Generate a human-readable inspection report.
-
-Prefer:
-
-cam_index_summary.xlsx
-
-if appropriate spreadsheet dependencies already exist.
-
-Otherwise CSV/Markdown is acceptable.
-
-Suggested tabs/sections:
-
-DuckDB Inventory
-Raw File Inventory
-CAM Documents
-Parse Failures
-Duplicate Files
-CAGID Mapping
-Ambiguous Entities
-Unresolved Entities
-NVIDIA Retrieval Results
-Integration Map
-
-The spreadsheet/report is only for human inspection.
-
-The real machine-readable artifacts remain Parquet/DuckDB.
-
-==================================================
-PHASE 14 — CREATE AN ARCHITECTURE INTEGRATION MAP
-==================================================
-
-Document exactly:
-
-EXISTING STRUCTURES REUSED
-
-For example:
-
-existing DuckDB
-canonical entity table
-CAGID master
-GFCID master
-existing aliases
-existing reference data
-
-NEW STRUCTURES ADDED
-
-For example:
-
-cam_documents
-cam_passages
-cam_entity_mentions
-
-JOIN KEYS
-
-For example:
-
+canonical seed resolution
 canonical_entity_id
 CAGID
 GFCID
+legal_name
+
+candidate documents from transparent text search
+candidate passages from transparent text search
+
+candidate documents from entity-mention retrieval
+candidate passages from entity-mention retrieval
+
+reconciliation differences
+
+Show sample passages with:
+
+filename
 document_id
+page
+section
 passage_id
+exact text
+retrieval method
 
-EXISTING STRUCTURES NOT MODIFIED
-
-Explicitly list them.
-
-CONFLICTS FOUND
-
-Examples:
-
-multiple competing entity masters
-duplicate CAGIDs
-conflicting schemas
-duplicate IDs
-inconsistent aliases
-two different relationship models
-
-Do not silently resolve architectural conflicts.
-
-Report them.
+Do NOT claim relationships yet.
 
 ==================================================
-PHASE 15 — QUALITY CHECKS
-==================================================
-
-Check the indexing layer for:
-
-duplicate source files
-duplicate document IDs
-duplicate passage IDs
-empty parsed documents
-failed PDFs
-failed DOCX
-missing page provenance
-missing document provenance
-missing CAGIDs
-ambiguous entity resolution
-unresolved entities
-unexpected encodings
-very large passages
-very small/unusable passages
-
-Generate a parse/index quality report.
-
-==================================================
-PHASE 16 — DO NOT DO THESE THINGS YET
+10. DO NOT DO THESE THINGS
 ==================================================
 
 Do NOT:
 
-perform final relationship extraction
-infer supplier relationships
-infer customer relationships
-infer ownership relationships
-infer guarantees
-infer lending relationships
-perform SEC enrichment
-perform web enrichment
-run graph proximity
-calculate Jaccard
-calculate weighted path distance
-run hidden-relationship discovery
-redesign the frontend
-migrate to PostgreSQL
-introduce Neo4j
-introduce Hadoop
-introduce Spark
-introduce MapReduce relationship extraction
-rewrite the canonical entity system
-change existing production relationship logic
-overwrite existing DuckDB tables
-delete existing Parquet artifacts
-send all CAMs together to an LLM
+- perform relationship extraction
+- run LLM MapReduce
+- add semantic relationship inference
+- run SEC enrichment
+- run web enrichment
+- calculate graph distance
+- calculate Jaccard
+- add hidden relationships
+- redesign frontend
+- migrate database
+- rewrite canonical entity logic
+- change existing business relationship taxonomy
 
-This phase is strictly:
+This phase is only:
 
-INSPECT
-→ INVENTORY
-→ PARSE
-→ INDEX
-→ LINK
-→ SEARCH
-→ VERIFY
+PDF PARSING REPAIR
++
+ENTITY-MENTION INDEX REPAIR
++
+INDEX VALIDATION
 
 ==================================================
-REQUIRED OUTPUT ARTIFACTS
+11. FINAL STATUS
 ==================================================
-
-Create or confirm equivalents of:
-
-cam_documents.parquet
-cam_passages.parquet
-cam_entity_mentions.parquet
-
-duckdb_inventory.json
-raw_file_inventory.json
-integration_map.json
-parse_quality_report.json
-
-cam_index_summary.xlsx
-
-Create read-only utilities equivalent to:
-
-inspect_db.py
-search_cam.py
-
-Do not overwrite unrelated production artifacts.
-
-==================================================
-FINAL REPORT
-==================================================
-
-When finished, provide a concise report containing:
-
-1. EXISTING DUCKDB
-
-Report:
-
-database location
-schemas discovered
-tables/views discovered
-canonical entity source
-CAGID/GFCID structures found
-existing relationship structures found
-
-2. RAW DATA INVENTORY
-
-Report:
-
-total files
-CAM documents
-entity/reference files
-unsupported files
-duplicates
-
-3. PARSING RESULTS
-
-Report:
-
-documents parsed successfully
-failures
-warnings
-PDF results
-DOCX results
-provenance quality
-
-4. NEW INDEXING ARTIFACTS
-
-List exact files/tables/views created.
-
-5. DUCKDB INTEGRATION
-
-Explain exactly:
-
-what existing objects were reused
-what new objects were added
-how they connect
-which join keys are used
-
-6. NVIDIA RETRIEVAL TEST
-
-Report:
-
-seed resolution
-canonical identity used
-candidate documents
-candidate passages
-sample passages with provenance
-
-Do NOT claim any relationship exists.
-
-7. DATA-QUALITY GAPS
-
-List factual issues such as:
-
-missing CAGIDs
-ambiguous aliases
-unparsed PDFs
-duplicate files
-missing provenance
-unresolved entities
-
-8. READ-ONLY INSPECTION INSTRUCTIONS
-
-Show exactly how the user can inspect:
-
-tables
-schemas
-row counts
-sample records
-NVIDIA search results
-
-using the created inspection utilities.
-
-9. FINAL STATUS
 
 Return exactly one of:
 
@@ -786,29 +342,37 @@ CAM_INDEX_READY
 
 CAM_INDEX_READY_WITH_WARNINGS
 
+BLOCKED_BY_PDF_PARSER
+
+BLOCKED_BY_IMAGE_ONLY_PDFS
+
+BLOCKED_BY_ENTITY_MENTION_INDEX
+
 BLOCKED_BY_SOURCE_DATA
 
-BLOCKED_BY_PARSING
+BLOCKED_BY_UNKNOWN_ERROR
 
-BLOCKED_BY_EXISTING_DB_CONFLICT
+CAM_INDEX_READY should only be returned if:
 
-Include the reasons.
+1. all parseable CAM documents are indexed,
+2. PDF failures are explicitly classified,
+3. one bad PDF cannot stall the pipeline,
+4. NVIDIA transparent search and entity-mention search are materially consistent,
+5. provenance remains intact.
 
 ==================================================
 STOP CONDITION
 ==================================================
 
-STOP when:
+STOP once:
 
-1. the existing DuckDB has been inspected
-2. the raw CAM repository has been inventoried
-3. CAM content has been parsed into searchable passages
-4. CAM-derived Parquet/index artifacts exist
-5. those artifacts are integrated non-destructively with the existing DuckDB architecture
-6. the read-only database inspector exists
-7. NVIDIA retrieval has been tested
-8. the final integration report has been produced
+- PDF parsing is bounded and reliable,
+- failed PDFs are classified,
+- the index is rebuilt,
+- entity-mention retrieval is repaired,
+- NVIDIA retrieval consistency is verified,
+- final index-quality metrics are produced.
 
-Do NOT proceed to relationship extraction.
+Do NOT continue to relationship extraction.
 
-The next phase will take the retrieved passages for a seed entity such as NVIDIA and determine which passages actually establish evidence-backed relationships between entities.
+The next phase will perform evidence-backed relationship extraction on retrieved passages.
