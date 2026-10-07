@@ -1,801 +1,613 @@
-You are auditing an existing application called **CCR Relationship Intelligence**.
+You are continuing work on the existing **CCR Relationship Intelligence / CCR Correlation** repository.
 
-DO NOT modify code yet.
+The architecture audit is complete.
 
-Your first task is to inspect the entire repository and determine exactly how the current system works end-to-end. Do not assume that UI labels or existing implementation choices are correct.
+The current design has been assessed as a credible POC foundation. Do NOT redesign the entire application.
 
-The application is intended eventually to support a large entity universe (~3 million entities) and discover evidence-backed relationships between entities using:
+The immediate objective is now:
 
-1. Entity/client master data, currently available primarily as Parquet.
-2. Identifier/reference data, including where available:
-   - CAGID
-   - GFCID
-   - LEI
-   - CIK
-   - ISIN
-   - CUSIP
-   - ticker
-   - Bloomberg or other identifiers
-3. Credit Approval Memos (CAMs), approximately 1,600 documents, potentially in:
-   - PDF
-   - DOCX
-   - TXT
-   - JSON
-   - other semi-structured formats
-4. SEC filings.
-5. Web/public-source evidence.
+> **Prove whether the existing CAM → entity → relationship → evidence → checker pipeline is accurate before scaling to ~1,600 CAMs or adding further enrichment.**
 
-The purpose is NOT necessarily to calculate a conventional Pearson market correlation coefficient.
+Proceed autonomously through the scope below.
 
-The primary objective is to discover and represent **entity relationships / dependencies**, including direct and derived network relationships, with strong evidence and traceability.
+Do not stop for confirmation unless there is a genuine external blocker.
 
-The frontend currently exposes concepts including:
+---
 
-- Correlation
-- Direct
-- Indirect
-- Hidden
-- Citi Indirect Exposure
-- Hop Distance
-- Jaccard Co-Exposure
-- Weighted Path Distance
-- Evidence Status
-- Source Precedence
-- CAM Upload
-- Credit Risk Intelligence
-- Live Market Data
-- entity identifiers
-- relationship records
-- Stress Analytics
-- Portfolio Analytics
-- Risk Heatmap
+# PHASE 0 — FREEZE THE BASELINE
 
-I need you to determine whether the backend implementation supporting these concepts is logically, mathematically, and technically correct.
+Before changing any production logic:
 
-# PHASE 1 — REPOSITORY DISCOVERY
+1. Record the current Git commit/hash if available.
+2. Record:
+   - current extraction prompt/version
+   - current model configuration
+   - checker configuration
+   - important confidence thresholds
+   - canonical entity artifact path/version
+3. Record the current relevant test results.
 
-Inspect the complete repository.
+Create a benchmark metadata file containing these values.
 
-Identify:
+The objective is reproducibility.
 
-- frontend structure
-- backend structure
-- API routes
-- database/storage implementation
-- schemas/models
-- CAM-processing code
-- document parsers
-- LLM calls
-- prompts
-- entity matching/resolution
-- relationship extraction
-- graph construction
-- distance calculations
-- relationship classification
-- SEC integration
-- web-search integration
-- market-data integration
-- caching
-- persistence
-- test suite
-- configuration
-- sample/mock data
+Do NOT modify the production extraction logic during this phase.
 
-Trace the complete flow:
+---
 
-`source data -> ingestion -> parsing -> extraction -> entity resolution -> relationship creation -> validation -> persistence -> API -> frontend`
+# PHASE 1 — CREATE A 10-CAM BENCHMARK SAMPLE
 
-For every important component, provide the exact file and function/class responsible.
+Build a reproducible benchmark of approximately **10 CAM documents**.
 
-Do not infer functionality from filenames. Verify it in code.
+Use a fixed random seed where randomness is involved.
 
-# PHASE 2 — ENTITY MASTER
+However, do NOT simply choose 10 fully random documents.
 
-Determine exactly what the application considers an "entity".
+The sample should deliberately cover several useful situations.
 
-Answer:
+Where possible include:
 
-1. What is the canonical entity schema?
-2. What field is the primary/canonical entity ID?
-3. Can one entity have multiple identifiers?
-4. How are aliases represented?
-5. How are parent companies and subsidiaries represented?
-6. How are duplicate entities detected?
-7. How are entity names normalized?
-8. What happens when two companies have similar names?
-9. What happens when an identifier disagrees with a company name?
-10. Is CAGID treated as authoritative?
-11. What precedence exists between:
-    - CAGID
-    - GFCID
-    - LEI
-    - CIK
-    - ISIN
-    - CUSIP
-    - ticker
-    - company name
-12. Can securities such as an ISIN incorrectly become separate "companies"?
-13. Does the implementation distinguish:
-    - legal entity
-    - obligor
-    - borrower
-    - issuer
-    - counterparty
-    - security
-    - group
-    - parent
-    - subsidiary?
+- PDF
+- DOCX
+- simple CAM
+- complex CAM
+- multiple entities in one CAM
+- parent/subsidiary discussion
+- ownership relationship
+- guarantee relationship
+- lender/borrower relationship
+- customer/supplier or other commercial dependency
+- entity aliases/name variations
+- ambiguous entity resolution
+- directional relationship
+- entities co-mentioned with **no actual relationship**
+- at least one CAM where few or no usable relationships exist
+
+Do not manually cherry-pick only easy examples.
+
+Create:
+
+`benchmarks/cam10/manifest.json`
+
+For every selected CAM record:
+
+- benchmark_document_id
+- original filename
+- source path
+- format
+- file size
+- document hash
+- selection reason
+- parser expected
+- notes
+
+Do not copy or alter the original CAMs unnecessarily.
+
+---
+
+# PHASE 2 — RUN PARSING ONLY
+
+Run the existing ingestion/parser on the 10 selected CAMs.
+
+Do not run SEC or web enrichment.
+
+For every CAM produce:
+
+- parser used
+- number of pages if available
+- sections identified
+- paragraphs/text blocks
+- tables detected
+- extracted character count
+- warnings
+- parsing failures
+
+Persist the parsed intermediate representation.
+
+Create something similar to:
+
+`benchmarks/cam10/parsed/`
+
+Also produce a compact parsing report.
 
 Very important:
 
-Do NOT assume the 3-million-row client file contains "counterparties".
+Verify preservation of:
 
-For the core data model, determine whether these should instead be treated as neutral **entities**, with roles assigned later according to exposure/context.
+- document identity
+- page number
+- section
+- source location
+- relevant table information
+- exact text
 
-# PHASE 3 — CAM DATA STRUCTURE
+Do NOT fix parser behavior yet.
 
-This is one of the most important parts of the audit.
+Record failures first.
 
-Find every piece of code that handles CAMs.
+---
 
-Determine:
+# PHASE 3 — RUN THE EXISTING CAM PIPELINE UNCHANGED
 
-1. What CAM file formats are currently supported?
-2. How are PDFs processed?
-3. How are DOCX files processed?
-4. How are TXT files processed?
-5. How are JSON CAMs processed?
-6. Is structured JSON unnecessarily flattened into text?
-7. Are PDF page numbers retained?
-8. Are headings retained?
-9. Are paragraphs retained?
-10. Are tables preserved?
-11. Are table rows/columns reconstructed correctly?
-12. Are identifiers preserved exactly?
-13. Are financial figures preserved?
-14. Are document metadata and dates retained?
-15. Are source document IDs assigned?
-16. Can every extracted fact be traced back to the exact CAM?
-17. Can evidence be traced to:
-    - document
-    - page
-    - section
-    - paragraph/table
-    - exact supporting text?
+Run the CURRENT pipeline on those 10 CAMs.
 
-Determine the actual current intermediate CAM representation.
+No SEC.
 
-Show me an example of the current internal representation after ingestion.
+No web.
 
-For example, establish whether the system currently creates something conceptually like:
+No market-data enrichment.
 
-```json
-{
-  "document_id": "...",
-  "document_type": "CAM",
-  "pages": [],
-  "sections": [],
-  "tables": [],
-  "entities": [],
-  "relationships": []
-}
-```
+Use:
 
-Do not propose a new schema until you show me what currently exists.
+`CAM only`
 
-# PHASE 4 — CAM RELATIONSHIP EXTRACTION
+For every document capture all intermediate stages, not only the final output.
 
-Inspect precisely what the LLM is being asked to extract.
+Capture:
 
-Find and reproduce the current extraction prompt(s).
+### Entity extraction
+- entity name exactly as extracted
+- entity type if available
+- identifiers
+- source location
+- confidence
 
-Determine whether the CAM pipeline extracts:
+### Entity resolution
+- extracted entity
+- canonical entity ID
+- CAGID
+- GFCID
+- matching method
+- identifier used
+- normalized-name score if applicable
+- resolution status
+- ambiguity/conflict flags
 
-- primary entity
-- all legal entities mentioned
-- entity identifiers
-- relationship source
-- relationship target
+### Relationship maker output
+- source entity
 - relationship type
+- target entity
 - direction
 - exact evidence
-- document/page/section reference
+- page
+- section
 - confidence
-- extraction/model version
+- model/version
 
-Determine whether relationships are being **inferred without evidence**.
+### Checker output
+- accepted
+- rejected
+- review_required
+- warnings/errors
+- grounding result
+- taxonomy result
+- entity-anchor result
 
-The following rule should generally hold:
+### Final output
+- final relationship record
+- evidence status
+- whether persisted/eligible
+- reason if excluded
 
-> Two entities appearing in the same CAM does NOT by itself establish a relationship.
+Create machine-readable artifacts, preferably JSONL/Parquet.
 
-Check whether the implementation violates this rule.
+Do not change production results to make the benchmark look better.
 
-Determine how it handles relationships such as:
+---
 
-- owns
-- owned_by
-- parent_of
-- subsidiary_of
-- controls
-- controlled_by
-- guarantor_of
-- guaranteed_by
-- borrower_from
-- lender_to
-- customer_of
-- supplier_to
-- sponsor_of
-- SPV_of
-- affiliate_of
-- joint_venture_with
-- partner_of
-- investor_in
-- acquired/acquired_by
-- merged_with
-- services
-- distribution
-- licensing
-- major customer concentration
-- major supplier concentration
-- financing dependency
-- shared guarantor
-- shared parent
-- shared ownership
+# PHASE 4 — CREATE THE HUMAN GOLD-LABEL REVIEW PACK
 
-Do not require the relationship taxonomy to be completely closed.
+This is extremely important.
 
-Determine whether the current design allows discovery of legitimate new relationship types while still normalizing them into a governed taxonomy.
+Do NOT let the same LLM generate "gold truth" and then measure itself against that gold truth.
 
-# PHASE 5 — MAKER / CHECKER
+Create a human-review file/template.
 
-Determine whether a genuine **maker-checker** mechanism currently exists.
+Prefer:
 
-I do NOT mean simply calling an LLM twice.
+`benchmarks/cam10/gold_labels.csv`
 
-Identify:
+or XLSX if the repository already has a suitable spreadsheet dependency.
 
-### Maker
+For each potential relationship / relevant entity pair provide fields such as:
 
-What component initially extracts:
+```text
+benchmark_document_id
+filename
 
-`Entity A -> relationship -> Entity B`
+source_entity_name
+source_entity_canonical_id
+
+target_entity_name
+target_entity_canonical_id
+
+system_relationship_type
+system_direction
+
+evidence_page
+evidence_section
+evidence_excerpt
+
+GOLD_relationship_exists
+GOLD_relationship_type
+GOLD_source_entity
+GOLD_target_entity
+GOLD_direction
+GOLD_evidence_correct
+GOLD_entity_resolution_correct
+
+reviewer_comment
+review_status
+```
+
+Gold-label fields must initially be EMPTY.
+
+The system must not pre-fill them as truth.
+
+The purpose is for a human reviewer to establish ground truth independently.
+
+---
+
+# PHASE 5 — INCLUDE NEGATIVE CASES
+
+Do not evaluate only extracted relationships.
+
+Create explicit candidate pairs for cases where:
+
+- two entities occur in the same CAM
+- but no evidence-backed relationship exists.
+
+These are necessary to detect hallucinated relationships.
+
+Mark these for human review as potential negative examples.
+
+The benchmark must test the system's ability to correctly say:
+
+`NO RELATIONSHIP`
+
+---
+
+# PHASE 6 — BUILD THE BENCHMARK SCORING HARNESS
+
+Create benchmark scoring code that runs ONLY after human gold labels have been completed.
+
+Do not invent missing labels.
+
+If labels are missing, report:
+
+`BENCHMARK_NOT_READY_FOR_SCORING`
+
+The scoring harness should calculate:
+
+### Entity extraction
+
+- precision
+- recall
+- F1
+
+### Entity resolution
+
+- exact entity-resolution accuracy
+- ambiguous/unresolved rate
+
+### Relationships
+
+- relationship precision
+- relationship recall
+- relationship F1
+
+A relationship match should consider:
+
+- source entity
+- target entity
+- relationship existence
+- normalized relationship type
+
+### Direction
+
+Calculate direction accuracy separately.
+
+### Relationship type
+
+Calculate relationship-type accuracy separately.
+
+### Evidence grounding
+
+Calculate:
+
+- exact/acceptable evidence rate
+- wrong-evidence rate
+- missing-evidence rate
+
+### Negative cases
+
+Calculate false-positive rate for cases where no relationship exists.
 
 ### Checker
 
-What independently verifies that proposed relationship?
+Calculate:
 
-Determine:
+- accepted relationships that are actually correct
+- accepted relationships that are incorrect
+- rejected relationships that were actually correct
+- review-required cases
+- checker agreement with human gold
 
-1. Does the checker receive the original source evidence?
-2. Does it independently verify the relationship?
-3. Can it reject the maker's output?
-4. Can it correct:
-   - source entity
-   - target entity
-   - relationship type
-   - direction
-   - evidence
-5. Does it return an explicit status such as:
-   - accepted
-   - rejected
-   - ambiguous
-   - needs_review?
-6. Is the maker output accidentally anchoring the checker?
-7. Are maker and checker using the exact same prompt?
-8. Are they using independent reasoning?
-9. Is there deterministic validation in addition to LLM validation?
-10. Are checker decisions persisted?
+Pay special attention to:
 
-Explain whether the current implementation genuinely deserves to be called maker-checker.
+**incorrect relationships that pass the checker.**
 
-If not, explain exactly why.
+Those are particularly important.
 
-# PHASE 6 — RELATIONSHIP DATA MODEL
+---
 
-Find the actual relationship schema.
+# PHASE 7 — CREATE ERROR TAXONOMY
 
-Show all fields.
-
-Determine whether the system can represent at minimum:
+For every benchmark failure, classify the root cause into one of:
 
 ```text
-relationship_id
-source_entity_id
-target_entity_id
-relationship_type
-relationship_direction
-source_document_id
-source_type
-evidence
-page/section
-extraction_confidence
-validation_status
-maker_model
-checker_model
-created_at
-valid_from
-valid_to
+PARSING
+ENTITY_EXTRACTION
+ENTITY_RESOLUTION
+RELATIONSHIP_EXTRACTION
+RELATIONSHIP_TYPE
+RELATIONSHIP_DIRECTION
+EVIDENCE_GROUNDING
+CHECKER_FAILURE
+SCHEMA
+OTHER
 ```
 
-Do not assume these exact fields are required; compare this concept with the actual implementation.
+Allow secondary causes where necessary.
 
-Critically determine whether **evidence is attached to the relationship edge**, rather than only the entity.
+Generate an error-analysis report grouped by root cause.
 
-# PHASE 7 — DIRECT, INDIRECT AND HIDDEN
+Do not propose architectural changes until the root causes are known.
 
-The frontend has:
+---
 
-- Direct
-- Indirect
-- Hidden
+# PHASE 8 — VERIFY THREE SPECIFIC RISKS FROM THE ARCHITECTURE AUDIT
 
-Find the backend definitions.
+The previous audit identified three areas needing particular attention.
 
-For each, tell me exactly what it means mathematically/algorithmically.
+## A. Maker-checker
 
-Validate whether the current definitions make sense.
+Current implementation appears to be:
 
-A likely conceptual model would be:
+`LLM maker + deterministic checker`
 
-### Direct
-An evidence-backed edge exists:
+rather than independent semantic LLM-vs-LLM verification.
 
-`A -> B`
+For the 10-CAM benchmark, quantify:
 
-### Indirect
-No direct edge is required, but a path exists:
+- semantic relationship errors generated by maker
+- how many deterministic checker catches
+- how many incorrect relationships survive checker
 
-`A -> X -> B`
+Do NOT add a second LLM checker yet.
 
-### Hidden
-Potentially a non-obvious dependency discovered through graph topology, common exposure, common ownership, common guarantor, shared supplier/customer, etc.
+First measure whether it is necessary.
 
-But DO NOT assume these definitions are correct.
+---
 
-Tell me what the code actually does.
+## B. Hidden relationships
 
-If "Hidden" is merely an arbitrary label produced by an LLM, flag it.
+Do NOT include topology/Jaccard candidates as verified relationships in CAM benchmark accuracy.
 
-# PHASE 8 — DISTANCE
-
-The frontend contains:
-
-- Hop Distance
-- Weighted Path Distance
-
-Find their implementation.
-
-For Hop Distance, verify whether it is effectively shortest graph path:
+Keep separate concepts:
 
 ```text
-A -> B = 1
-A -> X -> B = 2
-A -> X -> Y -> B = 3
+EVIDENCE_BACKED_RELATIONSHIP
+TOPOLOGY_CANDIDATE
 ```
 
-Determine:
+A high Jaccard score does NOT prove that A and B have an actual relationship.
 
-- directed or undirected?
-- relationship-type aware?
-- confidence aware?
-- source-quality aware?
-- disconnected behavior?
-- maximum traversal depth?
-- cycle handling?
+For this CAM benchmark, evaluate evidence-backed edges only.
 
-Then inspect **Weighted Path Distance**.
+---
 
-Give me the exact formula used.
+## C. Correlation terminology
 
-Explain what every weight represents.
+Do not calculate Pearson correlation because no time-series statistical correlation model currently exists.
 
-Verify that stronger relationships result in a sensible distance.
+For this benchmark:
 
-Check for mathematically suspicious transformations.
+`correlation` means nothing mathematically unless explicitly supported by implemented time-series data.
 
-For example, if relationship strength is `w`, distance may need some transformation such as:
-
-`distance = 1 / w`
-
-or
-
-`distance = -log(w)`
-
-depending on the model.
-
-Do not change anything yet; tell me what is actually implemented and whether it is defensible.
-
-# PHASE 9 — JACCARD CO-EXPOSURE
-
-The UI explicitly contains **Jaccard Co-Exposure**.
-
-Find the implementation and exact formula.
-
-Determine what the sets actually represent.
-
-For example, if:
-
-`N(A)` = counterparties/entities connected to A
-
-and
-
-`N(B)` = counterparties/entities connected to B
-
-then a Jaccard similarity might be:
-
-```text
-J(A,B) = |N(A) ∩ N(B)| / |N(A) ∪ N(B)|
-```
-
-But do NOT assume that is what the code implements.
-
-Show:
-
-- actual formula
-- actual sets
-- empty-set handling
-- whether relationship types are considered
-- whether edge strengths are considered
-- whether direct exposure and graph neighbors are being mixed incorrectly
-
-Assess whether this metric is meaningful for CCR.
-
-# PHASE 10 — "CORRELATION" TERMINOLOGY
-
-This is critical.
-
-Determine whether the system calculates an actual statistical correlation coefficient from time-series observations.
-
-For example:
-
-- equity returns
-- CDS spread changes
-- bond-spread changes
-- PD changes
-- market factors
-
-If there is NO such time-series calculation, then determine whether the UI term **Correlation** is misleading.
-
-We may actually be modeling:
+Treat current graph outputs as:
 
 - relationship
 - dependency
-- interconnectedness
+- proximity
 - co-exposure
-- network proximity
+- graph distance
 
-rather than statistical correlation.
+Do NOT alter UI terminology during this phase.
 
-Flag every place where "correlation" is used in a way that could mislead users or model-risk reviewers.
+---
 
-Do not rename anything yet.
+# PHASE 9 — DO NOT CHANGE THESE YET
 
-# PHASE 11 — SEC FILINGS
+Do NOT yet:
 
-Inspect current SEC implementation.
+- migrate to PostgreSQL
+- introduce Neo4j
+- introduce Hadoop
+- introduce MapReduce
+- introduce Spark
+- process all 1,600 CAMs
+- enable broad web enrichment
+- enable SEC enrichment for this benchmark
+- redesign the frontend
+- rewrite the entity canonicalizer
+- change relationship thresholds to improve benchmark results
+- change prompts after seeing individual benchmark results
 
-Determine:
+We need an unbiased baseline first.
 
-1. How is an entity mapped to a CIK?
-2. What happens when CIK is missing?
-3. What filings are retrieved?
-4. What sections are processed?
-5. Does the SEC pipeline extract relationships between the registrant and other entities?
-6. Does it retain filing/accession/date/page/section evidence?
-7. Are subsidiary lists processed?
-8. Are guarantees processed?
-9. Are ownership disclosures processed?
-10. Are major customers/suppliers extracted when explicitly disclosed?
-11. Are exhibits processed?
-12. Is SEC evidence kept separate from CAM evidence?
+---
 
-The fact that an SEC filing belongs to one registrant must NOT imply that every company appearing in it has a relationship.
+# PHASE 10 — RELATIONSHIP CONTRACT ASSESSMENT
 
-Verify this.
+Do not refactor it yet.
 
-# PHASE 12 — WEB RELATIONSHIPS
+Using the 10-CAM output, determine whether all final relationships can consistently populate the following conceptual contract:
 
-Inspect web-based discovery.
+```text
+relationship_id
 
-Determine:
+source_entity_id
+source_entity_name
 
-- what search queries are generated
-- which sources are permitted
-- whether web results are treated as evidence or fact
-- how source reliability is scored
-- whether source URLs/titles/dates/passages are stored
-- whether multiple sources can support the same relationship
-- whether conflicting evidence is handled
-- whether stale relationships expire
-- whether web evidence can override CAM/SEC evidence
+target_entity_id
+target_entity_name
 
-Find the implementation of **Source Precedence**.
+relationship_type
+relationship_direction
 
-Show the exact precedence rules.
+source_type
+source_document_id
+source_document_name
 
-Assess whether those rules are defensible.
+evidence_page
+evidence_section
+evidence_excerpt
 
-# PHASE 13 — CITI INDIRECT EXPOSURE
+confidence
+validation_status
 
-The UI contains **Citi Indirect Exposure — CAM disclosure only**.
+maker_model
+checker_type
+checker_model_or_version
 
-Find exactly what this means in backend code.
+valid_from
+valid_to
 
-Explain:
+created_at
+updated_at
+```
 
-- what constitutes indirect exposure
-- how it is extracted
-- whether it means financial exposure or merely an entity relationship
-- whether amounts are captured
-- whether currencies are normalized
-- whether dates/maturities are captured
-- whether indirect exposure can be double counted
-- why CAM is the only accepted source, if that is an intentional rule
+For every field classify:
 
-Flag any ambiguity.
+```text
+AVAILABLE
+PARTIAL
+MISSING
+NOT_APPLICABLE
+```
 
-# PHASE 14 — DATA STORAGE
+This will inform the next architecture change after validation.
 
-Determine exactly where data currently lives.
+---
 
-Check whether the application uses:
+# PHASE 11 — OUTPUTS
 
-- flat JSON
-- CSV
-- Parquet
-- SQLite
-- DuckDB
-- PostgreSQL
-- graph database
-- in-memory structures
-- browser/local storage
+Create:
 
-Show me the actual architecture.
+```text
+benchmarks/cam10/
+    manifest.json
+    benchmark_metadata.json
 
-Assess separately:
+    parsed/
+    baseline_outputs/
 
-### Analytical processing
-Would DuckDB/Parquet be appropriate?
+    gold_labels.csv
+    negative_cases.csv
 
-### Production/front-end serving
-Would PostgreSQL or another persistent database be more appropriate?
+    benchmark_metrics.py
+    README.md
+```
 
-### Graph analytics
-Can graph calculations reasonably be performed in Python/PostgreSQL, or is a dedicated graph database actually justified?
+If appropriate also generate:
 
-Do NOT recommend distributed technology such as Hadoop/MapReduce merely because the final entity universe is 3 million rows.
+```text
+cam10_baseline_summary.json
+cam10_error_analysis.json
+```
 
-Assess actual workload first.
+Do not overwrite normal production artifacts.
 
-# PHASE 15 — PERFORMANCE AND SCALE
+---
 
-The target universe is approximately:
+# FINAL REPORT
 
-- 3 million entities
-- ~1,600 CAMs initially
-- potentially substantial SEC/web enrichment
-- potentially millions of relationship edges
+At the end, give me a concise report with:
 
-Assess:
+## 1. Selected 10 CAMs
 
-- expected entity table size
-- relationship table growth
-- indexing
-- entity lookup latency
-- graph traversal performance
-- CAM ingestion throughput
-- LLM cost
-- duplicate processing
-- caching
-- incremental processing
-
-Determine whether processing each request by scanning all CAMs would be a design error.
-
-The intended architecture should likely process each CAM once and persist extracted relationships for reuse.
-
-Verify whether the current application already does this.
-
-# PHASE 16 — DATA QUALITY
-
-Find all current data-quality checks.
-
-Evaluate:
-
-### Entity resolution
-- exact identifier match
-- normalized-name match
-- alias match
-- ambiguity detection
-- duplicate detection
-
-### Relationship extraction
-- evidence required
-- correct direction
-- valid entities
-- relationship normalization
-- duplicate edge detection
-
-### Document processing
-- parsing completeness
-- page preservation
-- table preservation
-- unreadable content handling
-
-### Graph
-- orphan nodes
-- self-loops
-- impossible relationships
-- duplicate/reversed relationships
-- cycle behavior
-
-### Provenance
-Can every displayed relationship be traced back to its source?
-
-# PHASE 17 — TESTING / GOLD DATASET
-
-Find existing tests.
-
-Determine whether there is a real validation dataset.
-
-If not, propose a small first benchmark using approximately:
+Filename, format and why selected.
 
-- 10 CAMs
-- ~10–20 entities
-- positive relationship examples
-- difficult aliases
-- multiple entities in one CAM
-- negative examples where no relationship exists
-- at least one ambiguous relationship
-- at least one parent/subsidiary case
-- at least one guarantee or ownership case
+## 2. Parsing results
 
-The benchmark should allow us to calculate at least:
+Which parsed successfully and any structural problems.
 
-- entity precision
-- entity recall
-- relationship precision
-- relationship recall
-- direction accuracy
-- relationship-type accuracy
-- evidence-grounding accuracy
-- entity-resolution accuracy
-- checker acceptance/rejection accuracy
+## 3. Baseline extraction results
 
-Also test that the system correctly returns **no relationship** rather than hallucinating one.
+For each CAM:
 
-# PHASE 18 — FRONTEND/BACKEND CONSISTENCY
+```text
+entities extracted
+entities resolved
+relationships proposed
+relationships accepted
+relationships rejected
+review required
+```
 
-Inspect every item visible in the frontend and determine whether it is backed by real production logic.
+## 4. Evidence quality
 
-Specifically trace:
-
-- Unique Companies
-- Unique Relationships
-- Database Records
-- Reference Entities
-- Citi Indirect Exposure
-- Search company/CAGID/GFCID/LEI/CIK/BBG
-- All / Direct / Indirect / Hidden
-- CAM Upload
-- Reset
-- Rotate
-- Credit Risk Intelligence
-- Rating
-- Financials
-- Identity
-- Relationships
-- Distance
-- Live Market Data
-- Filterable Relationship Database
-- Hop Distance
-- Jaccard Co-Exposure
-- Weighted Path Distance
-- Evidence Status
-- Source Precedence
+Count relationships with:
 
-For each item classify it as:
+- exact usable evidence
+- weak evidence
+- missing evidence
 
-`REAL`
-`PARTIAL`
-`MOCK`
-`PLACEHOLDER`
-`BROKEN`
-`UNVERIFIED`
+## 5. Checker behavior
 
-Provide backend evidence supporting the classification.
+How many maker outputs were blocked or flagged.
 
-# PHASE 19 — SECURITY AND GOVERNANCE
+## 6. Gold dataset status
 
-Check:
+Clearly state that accuracy cannot be calculated until human gold labels are completed.
 
-- uploaded CAM storage
-- temporary files
-- sensitive-data logging
-- document deletion
-- prompt logging
-- LLM data transmission
-- API authentication
-- path traversal
-- arbitrary file upload
-- malformed PDFs/JSON
-- prompt injection from CAM documents
-- web-source prompt injection
-- model output validation
+Do NOT invent accuracy numbers.
 
-Because CAM text is untrusted model input, check whether document content could instruct the LLM to ignore extraction rules.
+## 7. Human review instructions
 
-# FINAL DELIVERABLE
+Explain exactly which columns I need to fill in.
 
-Do NOT give me a generic architecture essay.
+## 8. Structural gaps observed
 
-Produce an evidence-based audit from this repository.
+Only factual findings from the benchmark.
 
-Structure the response as:
+## 9. Recommendation
 
-## 1. Current architecture
-A compact end-to-end diagram and explanation.
+Answer only:
 
-## 2. Current data model
-Entity, identifier, CAM/document, relationship and evidence schemas.
+- READY_FOR_HUMAN_LABELING
+- BLOCKED_BY_PARSING
+- BLOCKED_BY_PIPELINE_ERROR
 
-## 3. CAM processing
-Exactly what happens to PDF / DOCX / TXT / JSON.
+with reasons.
 
-## 4. Maker-checker
-What exists, what does not, and whether it is genuinely independent.
+---
 
-## 5. Relationship logic
-Direct / indirect / hidden definitions and implementation.
+# STOP CONDITION
 
-## 6. Mathematics
-Exact formulas for:
-- hop distance
-- weighted path distance
-- Jaccard co-exposure
-- any score called correlation
+Once:
 
-## 7. Source enrichment
-CAM / SEC / web / market-data behavior and source precedence.
+1. the 10 CAMs have been processed,
+2. the baseline artifacts exist,
+3. the blank human gold-label pack exists,
+4. the scoring harness exists,
+5. the summary has been produced,
 
-## 8. Database/storage
-Current implementation and scalability assessment.
+STOP.
 
-## 9. Frontend-to-backend verification
-For every visible frontend feature, classify:
-REAL / PARTIAL / MOCK / PLACEHOLDER / BROKEN / UNVERIFIED.
+Do not start fixing extraction behavior.
 
-## 10. Accuracy risks
-Rank as:
-- Critical
-- High
-- Medium
-- Low
+Do not scale beyond the 10 CAMs.
 
-## 11. Missing definitions
-Anything that the existing implementation uses without a precise business or mathematical definition.
-
-## 12. Recommended target architecture
-Only after documenting the current implementation.
-
-## 13. Minimal 10-CAM pilot
-Give the exact workflow we should use to validate this architecture before scaling.
-
-## 14. Questions that require business clarification
-Only ask questions that cannot be answered from the repository.
-
-For every material conclusion, cite the exact file path and relevant function/class/code section.
-
-Do not make code changes.
-
-Do not silently assume that something is correct because it already exists.
-
-Pay particular attention to the difference between:
-
-**statistical correlation**
-
-and
-
-**entity relationship / dependency / network proximity**.
-
-The objective of this audit is to determine whether what has already been built is genuinely defensible for a CCR relationship-intelligence application before we scale it.
+The next phase will begin only after human gold labels have been completed and baseline accuracy has been measured.
