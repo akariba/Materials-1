@@ -2,303 +2,223 @@ Continue from the current CCR ADK self-containment task.
 
 Current state:
 
-- CCR ADK implementation changes are in place.
-- search_si_svy03.py now separates:
-  - simple diagnostic answer
-  - strict grounded-evidence provider result
-- no_grounded_citations / grounding_unavailable correctly fail closed.
-- focused regression: 31 passed.
-- prior clean-candidate regression: 456 passed, 1 skipped.
-- wrong/inherited runtime correctly fails closed with exit code 78.
-- editor diagnostics are clean.
-- no commit has yet been made.
+- CCR runtime dependency audit complete.
+- Isolated dependency lock added.
+- CCR interpreter authority enforced.
+- Stale runtime assumptions removed.
+- Deterministic smoke coverage added.
+- Clean candidate runtime validated.
+- The current remaining blocker is:
 
-The only current infrastructure blocker is:
-
-setup.ps1 cannot recreate the actual CCR project environment because processes:
-
-PID 33460
-PID 4128
-
-are still using the environment and appear to be PDF-repair workers.
-
-This is now a targeted completion task.
-
-DO NOT redesign ADK.
-DO NOT rerun CAM extraction.
-DO NOT rerun NVIDIA enrichment.
-DO NOT change relationship logic.
-DO NOT use RPR at runtime.
-
-==================================================
-1. VERIFY THE TWO BLOCKING PROCESSES
-==================================================
-
-Inspect PID 33460 and PID 4128.
-
-For each report:
-
-- executable
-- command line
-- parent process
-- working directory if available
-- start time
-- whether it belongs to CCR
-- whether it is specifically a PDF-repair worker
-- whether it is still doing useful work or is stale
-
-Do not terminate anything until ownership is proven.
-
-If either process is unrelated to CCR, STOP and report the blocker.
-
-==================================================
-2. SAFELY STOP ONLY THE CONFIRMED CCR PDF WORKERS
-==================================================
-
-If both PIDs are confirmed to be old/stale CCR PDF-repair workers:
-
-stop them gracefully first.
-
-If graceful shutdown is not possible, terminate only those confirmed worker processes.
-
-Do NOT terminate:
-- VS Code
-- current shell
-- unrelated Python processes
-- RPR
-- user applications
-
-Report exactly what was stopped.
-
-==================================================
-3. RECREATE THE CCR ENVIRONMENT FROM PROJECT CONFIG
-==================================================
-
-Run the existing CCR setup/bootstrap path.
-
-The environment must be recreated using only CCR-owned project configuration.
-
-It must NOT depend on:
-
-- RPR repository
-- RPR .venv
-- global Python packages
-- manual package installs from a previous session
-- RPR PYTHONPATH
-- absolute RPR paths
-
-Use the committed/intended CCR dependency definitions.
-
-Report:
-
-- Python version
-- new CCR interpreter path
-- google-adk version
-- google-genai version
-- all relevant provider dependencies
-- dependency source file(s)
-
-==================================================
-4. PROVE RPR IS NOT REQUIRED
-==================================================
-
-Search CCR runtime paths for any remaining RPR dependency.
-
-Check:
-
-- imports
-- sys.path manipulation
-- PYTHONPATH
-- absolute paths
-- launch scripts
-- configuration
-- subprocess calls
-- test fixtures
-- provider adapters
-
-RPR may remain referenced in documentation or comments as historical/reference material, but it must not be required at runtime.
-
-Return:
-
-RPR_RUNTIME_DEPENDENCIES = 0
-
-or STOP with the exact remaining dependency.
-
-==================================================
-5. RUN THE FRESH-ENVIRONMENT ADK SMOKE TEST
-==================================================
-
-From a brand-new process using the recreated CCR .venv, run the bounded grounded-search smoke test.
-
-The test must prove the entire production path:
-
-CCR .venv
-→ ADK import
-→ approved search tool attached
-→ search executes
-→ grounding metadata returned
-→ external source extracted
-→ URL extracted
-→ source/publisher extracted
-→ grounded excerpt/snippet extracted
-→ date retained where genuinely available
-→ strict CCR evidence contract evaluates result
-
-Report separately:
-
-simple_answer_status
-strict_evidence_status
-
-The simple answer succeeding is NOT enough.
-
-The strict evidence path must succeed.
-
-Expected successful outcome:
-
-strict_evidence_status = ACCEPTED
-
-with at least one valid grounded external evidence record.
-
-If it returns:
-
-no_grounded_citations
-grounding_unavailable
 BLOCKED_BY_GROUNDING
 
-STOP.
+Do NOT revisit environment recreation, interpreter selection, package installation, RPR migration, CAM extraction, SEC enrichment, or NVIDIA enrichment unless the grounding investigation proves one of those is directly responsible.
 
-Do not commit an ungrounded configuration as complete.
-
-==================================================
-6. RESTART / NEW-SESSION REPRODUCIBILITY TEST
-==================================================
-
-After the first successful smoke test:
-
-close that test process.
-
-Start another fresh process from the CCR root.
-
-Do not reuse imported Python state.
-
-Run the same smoke test again.
-
-This proves the setup survives a new session.
-
-Both runs must succeed using the CCR environment alone.
+This is now a targeted grounding-debug task.
 
 ==================================================
-7. CHECK PROJECT BOOTSTRAP
+1. TRACE THE STRICT EVIDENCE PATH END TO END
 ==================================================
 
-Verify that a future user/session can reproduce the environment using documented CCR commands.
+Run exactly one bounded ADK grounded-search smoke test.
 
-Confirm that:
+Trace:
 
-- required dependencies are declared
-- setup.ps1 or equivalent creates/repairs the environment
-- VS Code selects the CCR interpreter where appropriate
-- wrong interpreter produces a clear failure
-- no manual pip command from this session is required
+query
+→ ADK agent
+→ search tool
+→ raw ADK events
+→ grounding metadata
+→ citation/source extraction
+→ CCR normalization
+→ strict evidence validator
+→ final evidence status
 
-Update README/setup documentation only where necessary.
+Capture the state at every boundary.
+
+Do not summarize prematurely.
+
+==================================================
+2. INSPECT RAW ADK GROUNDING OBJECTS
+==================================================
+
+Before CCR transforms the response, inspect the raw runtime objects.
+
+Determine whether ADK returns any of:
+
+- grounding_metadata
+- grounding_chunks
+- grounding_supports
+- web sources
+- source URLs
+- source titles
+- retrieved snippets
+- search entry points
+- citation metadata
+- publication dates
 
 Do not expose secrets.
 
+Report the actual object field names present in the installed ADK/GenAI versions.
+
+The key question is:
+
+A. the provider returned no usable grounding
+
+OR
+
+B. grounding exists but CCR failed to extract it
+
+Prove which one.
+
 ==================================================
-8. RUN TESTS
+3. TRACE EVERY REJECTED CITATION
 ==================================================
 
-Run:
+For every candidate citation rejected by the strict evidence layer, report:
 
-- focused ADK tests
-- grounding/citation tests
-- environment/runtime guard tests
-- relevant regression suite
+- raw provider object
+- extracted URL
+- extracted title/publisher
+- extracted date
+- extracted snippet/excerpt
+- grounding/support reference
+- exact rejection reason
+
+Classify each rejection as:
+
+MISSING_URL
+MISSING_GROUNDING
+MISSING_EXCERPT
+MISSING_DATE
+NON_EXTERNAL_URL
+UNSUPPORTED_SCHEMA
+SERIALIZATION_LOSS
+PARSER_BUG
+OTHER_CONFIRMED_REASON
+
+Do not simply report "no grounded citations."
+
+==================================================
+4. VERIFY THE SEARCH TOOL REALLY EXECUTED
+==================================================
+
+Confirm at runtime:
+
+- the approved search tool is attached to the ADK agent;
+- the tool actually executed;
+- the answer was not generated only from model knowledge;
+- grounding/search events were emitted.
+
+If no search tool execution occurred, return:
+
+BLOCKED_BY_SEARCH_TOOL_CONFIGURATION
+
+==================================================
+5. COMPARE RAW PROVIDER OUTPUT TO CCR EXPECTATIONS
+==================================================
+
+Document the exact CCR strict evidence contract.
+
+For example:
+
+URL required?
+publisher/title required?
+publication date required?
+verbatim snippet required?
+grounding support ID required?
+
+Then compare that contract field-by-field with what ADK actually returns.
+
+Do NOT weaken the evidence contract yet.
+
+First determine exactly which required field is failing.
+
+==================================================
+6. CHECK SDK-SCHEMA COMPATIBILITY
+==================================================
+
+The current CCR environment may use a newer ADK/GenAI version than the older reference implementation.
+
+Inspect whether CCR's citation parser expects an older object schema.
+
+Check for renamed/moved fields such as:
+
+grounding_metadata
+grounding_chunks
+grounding_supports
+web
+uri/url
+title
+segment/text
+
+If the data exists under a new schema, make the CCR adapter version-tolerant.
+
+Do not blindly downgrade packages.
+
+==================================================
+7. APPLY THE SMALLEST VERIFIED FIX
+==================================================
+
+Only after root cause is proven, apply the smallest fix.
+
+Acceptable fixes include:
+
+- extract grounding from the correct current SDK field;
+- preserve grounding metadata before serialization;
+- correctly map grounding chunks/supports;
+- correctly extract real external URLs;
+- correctly associate grounded snippets with URLs;
+- support both known ADK response schemas.
+
+Do NOT:
+
+- fabricate URLs;
+- fabricate publication dates;
+- use model-written citations as grounded evidence;
+- accept internal gateway URLs as external sources;
+- weaken fail-closed behavior.
+
+==================================================
+8. RUN ONE STRICT GROUNDED-SMOKE TEST
+==================================================
+
+After the fix, run one fresh-process smoke test.
+
+Require:
+
+search tool executed = YES
+grounding metadata present = YES
+external URL count >= 1
+grounded excerpt count >= 1
+accepted strict evidence records >= 1
 
 Report:
 
-passed
-failed
-skipped
-warnings
+simple_answer_status
+strict_evidence_status
+search_tool_execution
+grounding_metadata_present
+external_urls
+accepted_citations
+rejected_citations
 
-Do not fix unrelated pre-existing failures.
-
-==================================================
-9. COMMIT ONLY AFTER THE CLEAN SMOKE PASSES
-==================================================
-
-If and only if:
-
-- the CCR environment was recreated successfully,
-- ADK is installed from CCR project configuration,
-- RPR_RUNTIME_DEPENDENCIES = 0,
-- fresh-process grounded search succeeds,
-- strict evidence contract passes,
-- relevant tests pass,
-
-then prepare and commit the CCR changes.
-
-Before committing:
-
-inspect git status.
-
-Exclude:
-
-- secrets
-- credentials
-- local .env files
-- temporary logs
-- generated enrichment output
-- cache files
-- virtual environment files
-- unrelated changes
-
-Commit message:
-
-fix(web): make CCR ADK grounded search self-contained and reproducible
-
-Report:
-
-- commit hash
-- committed files
-- deliberately excluded files
-- google-adk version
-- google-genai version
-- Python version
+Show one accepted evidence record.
 
 ==================================================
-10. FINAL PROOF
+9. DO NOT CONTINUE TO NVIDIA YET
 ==================================================
 
-Answer explicitly:
+Even if the grounding smoke test passes, STOP.
 
-CCR environment recreated from project config: YES/NO
-CCR uses its own .venv: YES/NO
-google-adk installed from CCR dependency config: YES/NO
-RPR repository required at runtime: YES/NO
-RPR virtual environment required: YES/NO
-Global Python required: YES/NO
-Fresh-process ADK search works: YES/NO
-Grounding metadata returned: YES/NO
-Strict evidence contract passes: YES/NO
-New-session rerun passes: YES/NO
-Changes committed: YES/NO
+Do not rerun:
+- NVIDIA enrichment
+- CAM
+- SEC
+- reconciliation
+- graph analytics
 
-Required successful answers:
-
-YES
-YES
-YES
-NO
-NO
-NO
-YES
-YES
-YES
-YES
-YES
+The infrastructure must be proven first.
 
 ==================================================
 FINAL STATUS
@@ -306,16 +226,16 @@ FINAL STATUS
 
 Return exactly one:
 
-CCR_ADK_SELF_CONTAINED_AND_COMMITTED
-CCR_ADK_SELF_CONTAINED_COMMIT_READY
-BLOCKED_BY_ACTIVE_PROCESS
-BLOCKED_BY_CCR_ENV_RECREATION
-BLOCKED_BY_RPR_RUNTIME_DEPENDENCY
-BLOCKED_BY_GROUNDING
-BLOCKED_BY_TEST_FAILURE
-BLOCKED_BY_REPOSITORY_POLICY
-BLOCKED_BY_PIPELINE_ERROR
+CCR_ADK_GROUNDING_READY
 
-STOP after this.
+BLOCKED_BY_SEARCH_TOOL_CONFIGURATION
 
-Do NOT resume NVIDIA external enrichment automatically.
+BLOCKED_BY_PROVIDER_GROUNDING
+
+BLOCKED_BY_CITATION_ADAPTER
+
+BLOCKED_BY_EVIDENCE_CONTRACT
+
+BLOCKED_BY_SDK_SCHEMA_MISMATCH
+
+ROOT_CAUSE_NOT_PROVEN
