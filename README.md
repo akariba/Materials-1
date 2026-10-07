@@ -1,117 +1,137 @@
-The previous result BLOCKED_BY_DIRECT_SOURCE_ACCESS is not yet proven.
+CLIENT DEMO MODE — USE ONLY PROVEN WORKING DIRECT SOURCES.
 
-The run shows:
+DIRECT_FETCH_WORKS has been validated.
 
-- SEC discovery candidates: 0
-- ADK discovery: no_grounded_citations
-- direct fetches: 0
-- validation attempts: 0
-- direct fetch errors: []
+For the demo, do NOT use native ADK grounding.
 
-Therefore no direct publisher URL was actually fetched.
+Do NOT use opaque Google redirect URLs.
 
-Do NOT run another discovery loop.
+Do NOT rely on search snippets as evidence.
 
-For this smoke test, BYPASS discovery and seed known authoritative direct URLs explicitly.
-
-Test these NVIDIA / Intel sources:
-
-1. NVIDIA official newsroom:
-https://nvidianews.nvidia.com/news/nvidia-and-intel-to-develop-ai-infrastructure-and-personal-computing-products
-
-2. NVIDIA Investor Relations:
-https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-and-Intel-to-Develop-AI-Infrastructure-and-Personal-Computing-Products/default.aspx
-
-3. Intel SEC filing:
-https://www.sec.gov/Archives/edgar/data/50863/000005086325000155/intc-20250915.htm
-
-4. Intel SEC exhibit / announcement:
-https://www.sec.gov/Archives/edgar/data/50863/000005086325000155/a09152025form8-kex991.htm
-
-The expected facts are:
-
-A. NVIDIA and Intel announced a collaboration to jointly develop data-center and PC products.
-
-B. NVIDIA agreed to invest approximately $5 billion in Intel common stock.
+Use only direct publisher/source pages that are already proven accessible in this CCR environment.
 
 ==================================================
-TEST ONLY DIRECT FETCH
+APPROVED DEMO SOURCE TYPES
 ==================================================
 
-For each seeded URL:
+Use this priority:
 
-1. Fetch the URL directly.
-2. Report HTTP/result status.
-3. Extract:
-   - final URL
-   - publisher
-   - title
-   - publication/filing date
-   - source text
-4. Search the returned source text for evidence relevant to:
-   - NVIDIA / Intel strategic collaboration
-   - NVIDIA $5bn Intel investment
-5. Preserve an exact source excerpt.
-6. Run the existing deterministic evidence validator.
+1. SEC / EDGAR direct filing URLs
+2. Official company Investor Relations pages
+3. Official company newsroom / press release pages
+4. Official annual report pages
+5. Other direct official corporate disclosure pages
 
-Do NOT call ADK.
-Do NOT use Google discovery.
-Do NOT use SEC discovery.
-Do NOT run CAM.
-Do NOT run broader enrichment.
+Only use Yahoo Finance / Investing.com if a direct fetch has already been confirmed to work.
 
 ==================================================
-IMPORTANT DIAGNOSTIC
+DEMO RETRIEVAL RULE
 ==================================================
 
-We need to distinguish:
+For every external evidence item:
 
-A. DIRECT_FETCH_WORKS
-   URLs can be retrieved and evidence extracted.
+DIRECT SOURCE URL
+→ HTTP fetch
+→ page text
+→ publisher/title/date
+→ exact excerpt
+→ deterministic CCR validation
+→ display
 
-B. DIRECT_FETCH_NETWORK_BLOCKED
-   Direct outbound retrieval itself is prohibited.
-
-C. DIRECT_FETCH_PARSER_FAILED
-   Page retrieved but parser cannot extract usable content.
-
-D. EVIDENCE_VALIDATOR_FAILED
-   Page and text retrieved, but CCR rejects otherwise valid evidence.
-
-The previous status BLOCKED_BY_DIRECT_SOURCE_ACCESS must NOT be returned simply because discovery produced zero URLs.
+The source page itself is the evidence.
 
 ==================================================
-SUCCESS CONDITION
+FIVE-COMPANY DEMO
 ==================================================
 
-At least one seeded direct source must produce:
+Build the demo around:
 
-- real publisher URL
-- real source text
-- source date
-- exact evidence excerpt
-- validated NVIDIA/Intel relationship evidence
+1. NVIDIA Corporation
+2. Intel Corporation
+3. Hut 8 Corporation
+4. one strong resolved NVIDIA-related entity from current CAM artifacts
+5. one additional strong resolved NVIDIA-related entity from current CAM artifacts
 
-Expected examples include:
+Prefer CoreWeave and Cerebras only if they are already present and resolvable in the existing CAM artifacts.
 
-NVIDIA ↔ Intel
-relationship: strategic_partner / strategic_collaboration
-
-NVIDIA → Intel
-relationship: equity_investor / investor_in
+Do not fabricate relationships.
 
 ==================================================
-FINAL STATUS
+EXTERNAL EVIDENCE
 ==================================================
 
-Return exactly one:
+For NVIDIA / Intel, reuse the known working direct sources that already passed:
 
-DIRECT_FETCH_WORKS
+- NVIDIA official newsroom / IR
+- Intel SEC filing
+- Intel SEC exhibit
 
-DIRECT_FETCH_NETWORK_BLOCKED
+For the other entities:
 
-DIRECT_FETCH_PARSER_FAILED
+First inspect existing CAM candidates.
 
-EVIDENCE_VALIDATOR_FAILED
+Then use a maximum of 1–3 direct official sources per relationship.
 
-STOP after this test.
+Do not perform broad discovery.
+
+If no working direct official URL is quickly available:
+keep the CAM relationship status as-is.
+
+Do not block the demo.
+
+==================================================
+FRONTEND
+==================================================
+
+Populate:
+
+- identity
+- verified relationships
+- review-required relationships separately
+- exact CAM excerpts
+- direct-source corroboration where available
+- final direct URL
+- publisher
+- date if available
+- evidence status
+
+Verified = solid edge.
+Review Required = dashed edge.
+
+==================================================
+DEMO SAFETY
+==================================================
+
+Disable or bypass:
+- native ADK grounded search
+- generic web enrichment
+- broken live investigation path
+
+If the user clicks external enrichment, either:
+- use the direct-source path only, or
+- show "External enrichment limited to verified direct sources for demo"
+
+Do not expose provider errors.
+
+==================================================
+STOP CONDITION
+==================================================
+
+STOP as soon as:
+
+- five companies are selectable
+- NVIDIA is populated
+- graph works
+- Intel/Hut 8 relationships are visible
+- two additional companies are visible
+- evidence can be opened
+- direct-source corroboration works where available
+- no ADK dependency is required
+
+Return exactly:
+
+FIVE_COMPANY_DIRECT_SOURCE_DEMO_READY
+
+or
+
+FIVE_COMPANY_DIRECT_SOURCE_DEMO_READY_WITH_WARNINGS
