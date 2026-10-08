@@ -1,232 +1,804 @@
-CCR Relationship Intelligence — 10-Company DuckDB Production View and Fast Frontend
+# CoreAI Relationship Intelligence — Full Backend, Prompt and Data-Integrity Audit
 
-OBJECTIVE
+## OBJECTIVE
 
-Consolidate the implementation around only 10 selected companies.
+Perform a comprehensive, READ-ONLY technical investigation of the existing **CoreAI Relationship Intelligence** application.
 
-Do not analyze, enrich, calculate graph paths for, or display the entire production entity universe.
+This is a separate colleague-developed application.
 
-Create a dedicated, optimized DuckDB analytical layer restricted to the 10-company cohort, and make the existing production frontend use that layer exclusively.
+Do not confuse it with our CCR Correlation / CCR Relationship Intelligence project.
 
-This is a focused production implementation, not a demonstration.
+Our own CCR production implementation is being developed independently and must remain untouched.
 
-1. Fixed company cohort
+The purpose of this investigation is to understand the colleague's complete implementation, identify its useful technical approaches and establish whether any displayed relationships, financial figures, confidence ratings or supporting evidence are fabricated, unsupported, incorrectly attributed or misleading.
 
-Use the following 10 priority organizations:
+**Do not redesign, rebuild or modify the colleague's application.**
 
-1. NVIDIA
-2. Oracle
-3. OpenAI
-4. Microsoft
-5. Amazon
-6. Alphabet
-7. CoreWeave
-8. Intel
-9. Hut 8
-10. TSMC
+Produce a detailed implementation reconstruction, including the actual LLM prompts used by the application.
 
-Resolve each organization to its appropriate canonical legal entity using the existing production entity master.
+---
 
-Store validated CAGIDs and available other identifiers in one cohort configuration.
+## 1. LOCATE THE REAL PROJECT
 
-Do not fabricate legal entities, identifiers or Citi client status. Flag unresolved companies for review instead of silently substituting another company.
+Identify the project responsible for generating:
 
-2. Create dedicated DuckDB views
+`CoreAI_relationship_report_20260928.html`
 
-Reuse the current DuckDB-over-Parquet architecture.
+The report is described as a counterparty relationship intelligence report containing approximately 43 relationship records, using credit approval memos, SEC filings and news sources.
 
-Implement these logical views, adapting their names and schemas to existing code where appropriate:
+Potential relevant local workspace:
 
-* v_cohort_entities — the selected canonical entities.
-* v_cohort_relationships — physical relationship records between cohort entities.
-* v_cohort_verified_edges — fully evidence-verified direct graph edges.
-* v_cohort_indirect_paths — graph-derived paths within the cohort.
-* v_cohort_candidates — hidden and review-required candidate records.
-* v_cohort_facts — CAM and validated external facts attributed to cohort entities.
-* v_cohort_exposures — sourced Citi EXP, TFA and facility data.
-* v_cohort_evidence — citations and provenance for cohort records.
+`C:\Users\ak54743\Downloads\phr-tool-main`
 
-Use existing data models and verification rules.
+However, do not assume this workspace contains the report's backend. It may only be where the report is being viewed.
 
-Strict cohort boundary: both graph endpoints and every intermediate path entity must belong to the 10-company cohort. External company mentions may remain in source evidence, but they must not create additional analytical nodes or trigger enrichment outside the cohort.
+Locate the actual generating application using a bounded search of relevant local project folders, configuration files, Git history, scripts and report metadata.
 
-If this restriction prevents indirect paths from being formed, show zero valid paths rather than manufacturing connections.
+Search for:
 
-Do not overwrite full-universe Parquet data or create a new persistent production database.
+- CoreAI
+- relationship intelligence
+- relationship extraction
+- Credit Approval Memo
+- relationship report generation
+- maker/checker
+- MapReduce
+- LLM prompts
+- report templates
+- relationship records
+- source evidence
+- confidence scoring
+- XLSX/CSV exports
 
-3. Optimize performance
+Find the original backend, not merely the generated HTML file.
 
-DuckDB views alone are not sufficient if every request must rescan millions of rows.
+If the source project cannot be located, clearly distinguish what can be established from the report from what remains unknown.
 
-Implement an efficient bounded preparation process:
+Do not invent an architecture based on filenames.
 
-1. Resolve the cohort CAGIDs once.
-2. Filter the existing production Parquet inputs.
-3. Reuse source pushdown and efficient DuckDB joins.
-4. Persist compact, refreshable cohort Parquet snapshots where appropriate.
-5. Create DuckDB views over the compact cohort data.
-6. Precompute eligible relationship graphs and indirect paths.
-7. Cache expensive deterministic aggregations.
-8. Refresh the cohort only through an explicit controlled operation.
+---
 
-Keep one authoritative source of truth; cohort snapshots are rebuildable derived artifacts.
+## 2. RECONSTRUCT THE ENTIRE BACKEND ARCHITECTURE
 
-Do not execute R2D2, Opus or large CAM searches during ordinary frontend page loading.
+Identify all backend components and the actual execution sequence.
 
-4. Switch the frontend exclusively to the cohort
+Trace the complete flow:
 
-The production frontend at http://127.0.0.1:8000/ must default to the 10-company cohort.
+Input documents
+→ document ingestion
+→ text extraction
+→ entity identification
+→ relationship extraction
+→ AI processing
+→ evidence checking
+→ aggregation/deduplication
+→ confidence calculation
+→ output persistence
+→ HTML/report generation.
 
-All four pages must use the same active cohort.
+Determine whether this is the real sequence or whether the implementation differs.
 
-Correlation
+For each actual component, document:
 
-Display only the 10 primary companies.
+- Module/file name
+- Function/class
+- Purpose
+- Input schema
+- Output schema
+- Data transformations
+- AI/model dependency
+- Validation behavior
+- Error handling
+- Storage location
+- Downstream consumer
 
-* No long list of millions of entities.
-* No automatic insertion of secondary companies.
-* Real verified direct relationships.
-* Real graph-derived indirect paths.
-* Hidden candidates shown separately.
-* Real graph selection and evidence drill-down.
+Identify whether the implementation uses:
 
-Relationship Records
+- Python
+- FastAPI or another backend
+- LangChain
+- Google ADK
+- R2D2
+- Claude
+- OpenAI models
+- Custom LLM gateway
+- MapReduce
+- Parallel processing
+- Agent orchestration
+- Maker/checker validation
+- Deterministic validation
+- Human review
 
-Load only records eligible for the cohort.
+Report only components found in the actual project.
 
-Keep all valid relationship types between each selected pair.
+Do not infer an agent architecture merely because the report contains AI-generated text.
 
-Provide filtering, searching, fullscreen expansion and fast table navigation.
+Create an accurate end-to-end architecture diagram in Mermaid.
 
-Credit Risk Intelligence
+---
 
-When a user clicks a company, immediately populate its available:
+## 3. RECOVER ALL ACTUAL LLM PROMPTS
 
-* Ratings
-* Financials
-* Identity
-* Ownership/hierarchy
-* Relationships
-* Exposure information
-* Graph distances
-* Evidence/provenance
+**This is a priority requirement.**
 
-Stress Analytics, Portfolio Analytics and Risk Heatmap
+Find every prompt involved in creating the relationship intelligence output.
 
-Calculate and display information only for the active cohort.
+Inspect:
 
-No default queries over millions of entities.
+- Python prompt constants
+- Prompt templates
+- Markdown/TXT prompt files
+- JSON/YAML configurations
+- Agent instructions
+- Model request builders
+- System messages
+- User messages
+- Critic/checker instructions
+- Refinement prompts
+- Aggregation prompts
+- Report generation prompts
 
-5. Fast data loading and interaction
+Recover prompts for any implemented stages such as:
 
-Target the following performance after warmup on the current workstation:
+1. CAM document understanding
+2. Entity identification
+3. Corporate hierarchy extraction
+4. Ownership extraction
+5. Relationship discovery
+6. Relationship classification
+7. Evidence extraction
+8. SEC filing analysis
+9. Web/news investigation
+10. Relationship verification
+11. Contradiction checking
+12. Confidence assessment
+13. Relationship aggregation
+14. Portfolio summarization
+15. HTML report construction
 
-Action	Performance target
-Initial frontend load	Under 2 seconds
-Fetch 10 entities	Under 200 ms
-Fetch cohort relationships	Under 500 ms
-Select company and populate dossier	Under 500 ms
-Switch dossier tabs	Under 200 ms
-Graph filter or selection	Under 300 ms
-Open relationship evidence	Under 500 ms
+Do not invent prompts for stages that do not exist.
 
-These are engineering targets, not assumed results. Measure actual latency and report any missed targets.
+For every discovered prompt, document:
 
-Use bounded payloads, efficient API responses, server-side filtering and cached deterministic data where appropriate.
+**PROMPT ID**
 
-Do not reinitialize the full graph or reload unrelated panels when a user changes one company selection.
+**SOURCE FILE AND LINE RANGE**
 
-6. Preserve accuracy
+**PURPOSE**
 
-All information must come from production CAM, canonical entity records, validated external sources or explicitly identified deterministic calculations.
+**MODEL USED**
 
-Preserve:
+**SYSTEM PROMPT — EXACT TEXT**
 
-* FACT
-* DERIVED
-* EXPOSURE
-* AI_CANDIDATE
-* REVIEW_REQUIRED
-* VERIFIED
+**USER PROMPT TEMPLATE — EXACT TEXT**
 
-Do not display review-required relationships as verified.
+**VARIABLES AND THEIR SOURCES**
 
-Do not invent exposure amounts, credit ratings, relationship strengths or missing financials.
+**EXPECTED OUTPUT FORMAT**
 
-Use existing taxonomy, scoring and validation modules.
+**JSON SCHEMA, IF ANY**
 
-7. Complete controlled enrichment
+**VALIDATION APPLIED**
 
-For these 10 companies only:
+**RETRY/ERROR HANDLING**
 
-* Use existing CAM evidence.
-* Identify missing facts and relationships.
-* Run targeted R2D2 retrieval when explicitly invoked.
-* Run Claude Opus refinement when explicitly invoked.
-* Validate any new findings.
-* Update cohort snapshots.
-* Refresh the frontend views.
+**NEXT PIPELINE STAGE**
 
-Do not schedule research for the full canonical universe or automatically rerun investigations on browser refresh.
+Preserve the original wording in a local technical appendix, subject to applicable information-handling restrictions.
 
-8. Acceptance tests
+Redact credentials, tokens and secrets, but do not replace actual prompt logic with generic descriptions.
 
-Verify:
+If prompts are generated dynamically, reconstruct their templates and variable binding from code.
 
-* Exactly 10 configured primary companies.
-* All resolvable entries use actual canonical identities.
-* DuckDB views return only eligible cohort entities and edges.
-* No full-universe query runs on ordinary frontend page loading.
-* No extra graph nodes appear outside the cohort.
-* No unsupported path contributes to verified indirect results.
-* Relationship Records matches the cohort data.
-* Clicking each company updates the dossier.
-* All frontend pages use the same cohort.
-* Data and evidence remain accurate.
-* Full production Parquet artifacts remain unchanged.
-* Existing tests pass.
-* Application restart preserves the cohort configuration.
-* Page refresh does not trigger enrichment.
-* Measured response times are reported.
+If the model receives the full CAM, selected sections, chunks, retrieval results or summarized context, identify exactly which.
 
-9. Final delivery
+Determine whether models are allowed to use general knowledge or must rely strictly on supplied evidence.
+
+---
+
+## 4. INVESTIGATE DOCUMENT INGESTION
+
+Determine exactly how the application processes credit approval memos.
+
+Identify:
+
+- Original document directories
+- PDF/DOCX support
+- Number of actual unique documents
+- Document parsing libraries
+- Table extraction
+- Text extraction
+- Chunking and chunk sizes
+- Document section recognition
+- Context-window handling
+- Metadata retention
+- Page references
+- Source hashing
+- Duplicate handling
+- Parsing failures
+
+The generated report claims a corpus of approximately 49 credit approval memos.
+
+Verify this independently.
 
 Report:
 
-COHORT COMPANIES: 10
+- Documents discovered
+- Unique document hashes
+- Documents successfully parsed
+- Documents skipped
+- Documents partially parsed
+- Documents used in relationship extraction
+- Documents actually cited in final records
 
-CANONICAL ENTITIES RESOLVED:
+Check whether source documents are truncated before reaching the LLM.
 
-DUCKDB COHORT VIEWS:
+Check whether numeric fields, names, tables or contractual clauses are lost during extraction.
 
-COHORT RELATIONSHIP RECORDS:
+Investigate whether CAM evidence was extracted from actual document text or from intermediate AI summaries.
 
-VERIFIED DIRECT:
+---
 
-VERIFIED INDIRECT:
+## 5. TRACE RELATIONSHIP DATA POPULATION
 
-HIDDEN / REVIEW REQUIRED:
+For every output relationship, establish the complete lineage:
 
-CAM FACTS:
+Original document
+→ extracted text
+→ specific evidence passage
+→ model input
+→ model output
+→ checker/validator
+→ normalized relationship
+→ stored record
+→ displayed report row.
 
-CITI EXP / TFA COVERAGE:
+Identify all locations where data can be introduced or modified.
 
-INITIAL PAGE LOAD TIME:
+Pay special attention to:
 
-COMPANY SELECTION LATENCY:
+- Hardcoded sample relationships
+- Static JSON datasets
+- Fallback records
+- Test fixtures
+- Example outputs
+- Prepopulated dictionaries
+- Cached LLM responses
+- Manual edits
+- Synthetic enrichment
+- Default values
+- Missing-value substitutions
+- Generated financial figures
 
-RELATIONSHIP API LATENCY:
+Determine whether the final report combines genuine extracted relationships with manually entered or preloaded relationships.
 
-DOSSIER POPULATION LATENCY:
+If manual records exist, identify how they are labeled and validated.
 
-GRAPH PERFORMANCE:
+Inspect whether relationship descriptions are verbatim source facts, source-grounded paraphrases, AI interpretations or unsupported assertions.
 
-TEST RESULTS:
+---
 
-PRODUCTION URL:
+## 6. AUDIT EVERY RELATIONSHIP RECORD
 
-COMMIT HASH:
+Perform a record-by-record investigation of the generated relationship report.
 
-REMAINING BLOCKERS:
+Do not check only a small sample.
 
-Implement the bounded DuckDB views, switch the existing frontend to them, optimize interactions, and deliver a working 10-company production application. Do not restart architectural audits or scale beyond the cohort.
+For each physical relationship record, retrieve:
+
+- Record ID
+- Entity A
+- Entity B
+- Canonical identifiers
+- Relationship type
+- Relationship direction
+- Contract/deal description
+- Claimed financial amount
+- Citi indirect exposure
+- Source document
+- Source location
+- Evidence excerpt
+- Source date
+- Confidence
+- Validation result
+- Generation method
+- AI-processing status
+
+Compare the record against its actual underlying source.
+
+Test:
+
+**Entity accuracy**
+
+Do both legal entities exist and match the source?
+
+**Relationship accuracy**
+
+Does the source actually support the claimed relationship type?
+
+**Directionality**
+
+Is ownership, guarantee, financing or customer/supplier direction correct?
+
+**Financial accuracy**
+
+Are disclosed amounts represented correctly, including currency, scale and units?
+
+**Date accuracy**
+
+Are transaction dates, source dates and effective dates distinguished?
+
+**Source accuracy**
+
+Does the claimed source exist and contain the asserted information?
+
+**Evidence accuracy**
+
+Does the supporting excerpt contain the relevant claim?
+
+**Confidence accuracy**
+
+Does the assigned confidence correspond to the actual quality of evidence?
+
+**Duplicate accuracy**
+
+Are bidirectional representations and repeated evidence counted appropriately?
+
+Do not count the reverse direction of the same relationship as an independent supporting fact.
+
+---
+
+## 7. DETECT FABRICATED OR UNSUPPORTED INFORMATION
+
+Search specifically for:
+
+- Invented relationships
+- Invented company identifiers
+- Fabricated CAM references
+- Fake source citations
+- Unsupported financial amounts
+- Unsupported guarantees
+- Incorrect ownership statements
+- Hallucinated partnerships
+- Misattributed exposures
+- Fabricated dates
+- Invented confidence scores
+- LLM-generated excerpts not present in source documents
+- Information introduced through static/demo fallback paths
+
+Also detect subtler failures:
+
+- Real company but wrong legal entity
+- Real transaction but wrong participant
+- Real source but unsupported conclusion
+- Real agreement but incorrect financing amount
+- Source mentions two companies without establishing a relationship
+- Parent-company exposure incorrectly assigned to subsidiary
+- Bidirectional relationship counted twice
+- Missing source labeled as verified
+- AI summary promoted into evidence
+- Expired or superseded relationships presented as current
+
+Use explicit findings:
+
+**SUPPORTED**
+
+The original source supports the stated relationship and material attributes.
+
+**PARTIALLY_SUPPORTED**
+
+The main relationship exists, but some details or classifications are unsupported.
+
+**UNSUPPORTED**
+
+The cited source does not establish the claim.
+
+**CONTRADICTED**
+
+The source conflicts with the stated relationship or attribute.
+
+**UNVERIFIABLE**
+
+The necessary source is unavailable or cannot be independently examined.
+
+**SYNTHETIC_OR_HARDCODED**
+
+The record comes from test, mock, demonstration or manually constructed data without appropriate production-evidence treatment.
+
+**DUPLICATE**
+
+The record repeats an existing fact or direction without adding independent evidence.
+
+Do not label a record fabricated merely because a document is inaccessible.
+
+Reserve a finding of fabrication for evidence of generated or invented content, not simple verification failure.
+
+Keep all original records unchanged.
+
+---
+
+## 8. FINANCIAL AND EXPOSURE VALIDATION
+
+Inspect all numerical values in the report.
+
+In particular examine:
+
+- Syndicated financing amounts
+- Facility commitments
+- Credit facilities
+- Guarantees
+- Investment values
+- Ownership percentages
+- Citi indirect exposure
+- Revenue dependencies
+- Maturity dates
+- Currency denominations
+
+Trace each reported figure to its original evidence.
+
+Examples requiring particular care include reported financing commitments above USD 900 million and descriptions of syndicated financing arrangements.
+
+Confirm whether these values represent:
+
+- Entire syndicated facility
+- Citi participation
+- Borrower exposure
+- Parent guarantee
+- Total project financing
+- Historical facility amount
+- Undrawn commitment
+
+These values are not interchangeable.
+
+Check whether the report's `Not Quantifiable` field reflects an actual inability to quantify Citi exposure or simply missing calculations.
+
+Do not generate missing values.
+
+Document units and currency conversions where used.
+
+---
+
+## 9. INVESTIGATE AI CONFIDENCE CALCULATION
+
+The report displays confidence labels including HIGH and VERY HIGH.
+
+Find the exact implementation responsible for assigning them.
+
+Determine whether confidence comes from:
+
+- Model self-assessment
+- Rule-based calculation
+- Source reliability
+- Evidence count
+- Cross-source corroboration
+- Entity-resolution confidence
+- Maker/checker agreement
+- Manually assigned values
+
+Retrieve the actual formula, thresholds or prompt instructions.
+
+Determine whether confidence is evidence-based or merely requested from the LLM.
+
+Check for default HIGH or VERY HIGH values.
+
+A model's self-reported confidence must not be treated as proof of relationship accuracy.
+
+Report cases where the confidence appears overstated.
+
+---
+
+## 10. ANALYZE THE MAKER/CHECKER AND MAPREDUCE DESIGN
+
+Determine whether the implementation genuinely uses a multi-stage extraction and checking pipeline.
+
+If present, explain each stage in detail:
+
+**MAP**
+
+How relationship candidates are extracted from individual CAMs or chunks.
+
+**SEMANTIC CHECKER**
+
+Whether another model reviews candidates against original evidence.
+
+**DETERMINISTIC VALIDATOR**
+
+Whether exact evidence, identifiers, taxonomy and source fields are programmatically checked.
+
+**REDUCE**
+
+How individual CAM findings are aggregated.
+
+**DEDUPLICATION**
+
+How parallel relationships, bidirectional records and repeated sources are handled.
+
+**FINAL SYNTHESIS**
+
+How the report combines entity-level and portfolio-level information.
+
+For each stage, identify the exact code, prompt, model and output.
+
+Verify that the checker receives independent access to source evidence rather than only the maker's JSON.
+
+Check whether rejected relationships can reappear during aggregation or HTML generation.
+
+If there is no genuine independent checker, report that clearly.
+
+---
+
+## 11. INSPECT STORAGE AND EXPORTS
+
+Determine where final relationship records are stored.
+
+Identify:
+
+- JSON files
+- CSV files
+- XLSX files
+- SQLite or other databases
+- Parquet files
+- In-memory structures
+- HTML-embedded JSON
+- Browser-local data
+- Generated reports
+
+Inspect whether the HTML is:
+
+- Standalone/static
+- Loaded from a backend API
+- Populated by embedded JSON
+- Dynamically querying a database
+
+Inspect the CSV/XLSX export implementation.
+
+Determine whether exports contain exactly the displayed validated records or a different underlying dataset.
+
+Test whether filtering affects export correctly.
+
+Check if the displayed count of approximately 43 records represents:
+
+- Physical relationship records
+- Unique entity pairs
+- Bidirectional entries
+- Deduplicated facts
+- Aggregated report rows
+
+Explain any difference.
+
+---
+
+## 12. VERIFY REPRODUCIBILITY
+
+Determine whether the same inputs and existing saved responses can reproduce the final report.
+
+Inspect:
+
+- Run configuration
+- Model names and versions
+- Prompts
+- Temperature
+- Token limits
+- Retries
+- Parallelism
+- Intermediate artifacts
+- Execution logs
+- Timestamps
+- Human review interventions
+
+If an offline replay using existing artifacts is safe and available, run it without changing the colleague's original files.
+
+Do not initiate a large new LLM job or repeatedly call internal providers.
+
+Do not overwrite original outputs.
+
+If complete reproduction is impossible, explain why.
+
+---
+
+## 13. COMPARE WITH OUR CCR ARCHITECTURE
+
+After completing the independent audit, provide a concise technical comparison against our current CCR Relationship Intelligence design.
+
+Compare only relevant concepts:
+
+- CAM extraction
+- Canonical entity resolution
+- Relationship discovery
+- Source validation
+- LLM prompting
+- Semantic checking
+- Deterministic checking
+- Confidence
+- Relationship deduplication
+- Hierarchy extraction
+- Direct/indirect classification
+- Exposure attribution
+- Data persistence
+- Report rendering
+
+Classify each useful colleague-project technique as:
+
+- REUSABLE
+- REUSABLE_WITH_CHANGES
+- NOT_RECOMMENDED
+- INSUFFICIENT_EVIDENCE
+
+Do not copy or integrate any code into our CCR project.
+
+Do not introduce dependencies on the colleague's repository.
+
+Do not assume their report contains verified facts without completing the audit.
+
+---
+
+## 14. DELIVER A DETAILED TECHNICAL REPORT
+
+Create a local report:
+
+`COREAI_TECHNICAL_IMPLEMENTATION_AND_DATA_AUDIT.md`
+
+Include:
+
+### Part A — Executive findings
+
+What the application actually does, what works, and what cannot be verified.
+
+### Part B — Architecture
+
+Real pipeline diagram and component-by-component implementation.
+
+### Part C — Prompt inventory
+
+Every actual prompt, its source location, model, variables, schema and role in the processing pipeline.
+
+### Part D — Document processing
+
+Actual CAM inventory, extraction, parsing, retrieval and evidence lineage.
+
+### Part E — Relationship generation
+
+Exact relationship extraction, classification, scoring, deduplication and validation logic.
+
+### Part F — Data population
+
+How records enter the output and how manual, cached, hardcoded or generated values are handled.
+
+### Part G — Record-by-record authenticity audit
+
+A table covering every final physical relationship record, including source verification and identified defects.
+
+### Part H — Financial integrity
+
+Findings about financing amounts, ownership percentages and Citi exposure values.
+
+### Part I — Confidence methodology
+
+Actual scoring or confidence assignment and whether labels are justified.
+
+### Part J — Storage and frontend
+
+Actual backend persistence, report data loading and export implementation.
+
+### Part K — Reproducibility
+
+Whether results can be reconstructed from available evidence.
+
+### Part L — CCR comparison
+
+Which design elements are worth reusing conceptually in our existing CCR project.
+
+### Part M — Implementation blueprint
+
+Produce a faithful technical blueprint of how the colleague's system is implemented, including module interfaces, stage sequencing, prompts, schemas, model routing and validation gates.
+
+Distinguish IMPLEMENTED behavior from PROPOSED improvements.
+
+Do not create hypothetical prompts and present them as original prompts.
+
+---
+
+## 15. REQUIRED STRUCTURED OUTPUTS
+
+Alongside the Markdown report, produce where feasible:
+
+`coreai_prompt_inventory.md`
+
+Containing complete recovered prompt templates, their source code locations and invocation details.
+
+`coreai_relationship_evidence_audit.csv`
+
+Containing one row per physical relationship with authenticity classification and source evidence findings.
+
+`coreai_architecture.mmd`
+
+Containing the actual end-to-end architecture.
+
+`coreai_data_lineage.json`
+
+Containing source-to-output lineage for every traceable relationship record.
+
+Save these as local audit artifacts only, without changing the colleague's source project.
+
+Do not include secrets or restricted raw document contents in an unauthorized output location.
+
+---
+
+## 16. STRICT EXECUTION RULES
+
+- READ ONLY on the colleague's project.
+- Do not modify the existing CCR Correlation project.
+- Do not edit the generated HTML report.
+- Do not change source relationships.
+- Do not add fake data to complete missing records.
+- Do not run broad AI enrichment.
+- Do not initiate an expensive reprocessing of all CAMs.
+- Do not expose credentials or tokens.
+- Do not weaken certificate verification.
+- Do not assume a reporting claim is true without locating its evidence.
+- If sources are unavailable, classify them UNVERIFIABLE.
+- Do not claim an internal or external data source was checked unless it actually was.
+- Document all unresolved questions.
+
+Use actual code and source evidence to support every technical conclusion.
+
+## 17. FINAL SUMMARY
+
+Return:
+
+```text
+COREAI RELATIONSHIP INTELLIGENCE — AUDIT
+
+ACTUAL BACKEND LOCATED: YES/NO
+PROJECT ROOT:
+PRIMARY ENTRY POINT:
+MODEL PROVIDERS:
+
+CAM DOCUMENTS CLAIMED:
+CAM DOCUMENTS FOUND:
+CAM DOCUMENTS ACTUALLY PROCESSED:
+
+PROMPTS RECOVERED:
+PROMPTS FULLY DOCUMENTED:
+
+PHYSICAL RELATIONSHIP RECORDS:
+UNIQUE ENTITY PAIRS:
+
+SUPPORTED:
+PARTIALLY_SUPPORTED:
+UNSUPPORTED:
+CONTRADICTED:
+UNVERIFIABLE:
+SYNTHETIC_OR_HARDCODED:
+DUPLICATE:
+
+FINANCIAL AMOUNT ISSUES:
+EXPOSURE ATTRIBUTION ISSUES:
+IDENTITY RESOLUTION ISSUES:
+CONFIDENCE SCORING ISSUES:
+
+MAKER/CHECKER:
+MAPREDUCE:
+DETERMINISTIC VALIDATION:
+SOURCE TRACEABILITY:
+REPRODUCIBILITY:
+
+REUSABLE CCR DESIGN ELEMENTS:
+HIGH-RISK IMPLEMENTATION PATTERNS:
+
+TECHNICAL REPORT PATH:
+PROMPT INVENTORY PATH:
+RECORD AUDIT PATH:
+ARCHITECTURE PATH:
+DATA LINEAGE PATH:
+
+FILES MODIFIED IN SOURCE PROJECT: 0
+```
+
+**EXECUTE THE INVESTIGATION, RECOVER THE REAL IMPLEMENTATION AND ORIGINAL PROMPTS, TRACE EVERY RELATIONSHIP TO ITS EVIDENCE, AND IDENTIFY UNSUPPORTED OR FABRICATED CONTENT.**
+
+Do not implement a replacement application.
+
+Do not modify our CCR project.
+
+Stop after delivering the complete technical and data-integrity audit.
