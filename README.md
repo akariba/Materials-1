@@ -1,206 +1,91 @@
-DO NOT IMPLEMENT FROM THE OCTOBER 1 AUDIT DIRECTLY.
+Before frontend integration, validate the NVIDIA backend artifacts.
 
-That file is historical and partially superseded.
+Do NOT modify frontend.
+Do NOT run new enrichment.
+Do NOT create another relationship store.
 
-Use today's cleanup addendum and current runtime as authoritative.
-
-Perform a bounded CURRENT-vs-HISTORICAL reconciliation only.
-
-==================================================
-1. CURRENT STATE FIRST
-==================================================
-
-Inspect the CURRENT production runtime and report:
-
-- current production relationship artifact path
-- current row count
-- current schema
-- current relationship types
-- DIRECT / INDIRECT / HIDDEN counts
-- evidence statuses
-- source types
-- provenance fields
-- scoring/weight fields
-- canonical entity ID fields
-- whether multiple edge types per pair are preserved
-
-Do not use October 1 counts as current facts.
-
-==================================================
-2. RECOVER ONLY ANALYTICAL LOGIC
-==================================================
-
-From the historical implementation identify the exact reusable code for:
-
-- canonical relationship taxonomy
-- base relationship weights
-- source-quality weights
-- recency multiplier
-- financial-materiality multiplier
-- relationship score formula
-- hierarchy / parent / ultimate-parent logic
-- direct / indirect / hidden classification
-- typed path logic
-- candidate scoring / ranking
-
-For each item classify:
-
-KEEP_CURRENT
-REUSE_HISTORICAL_LOGIC
-ADAPT
-DO_NOT_RESTORE
-
-==================================================
-3. DO NOT RESTORE THESE HISTORICAL BEHAVIORS
-==================================================
-
-Explicitly reject:
-
-- monolithic old src/main.py architecture
-- old four-company sample mode
-- duplicate-CAGID row processing
-- old demo runtime paths
-- placeholder extractors/checkers
-- verify=False TLS behavior
-- RPR-named runtime dependencies
-- silent unknown-type fallback weight of 0.3
-- old generated-report architecture
-- old 59-row output as source of truth
-
-==================================================
-4. TAXONOMY NORMALIZATION
-==================================================
-
-The old audit shows noncanonical values such as:
-
-named_supplier/customer
-board_interlock / key_person_overlap
-M&A activity (divestiture)
-M&A activity (acquisition)
-acquisition
-debt/financing
-
-Do not assign these a generic 0.3 score.
-
-Create/reuse explicit mapping:
-
-raw_relationship_type
-→ canonical_relationship_type
-→ taxonomy_status
-
-taxonomy_status:
-
-CANONICAL
-NORMALIZED_ALIAS
-REVIEW_REQUIRED
-UNSUPPORTED
-
-Only CANONICAL or validated NORMALIZED_ALIAS values may enter verified graph scoring.
-
-==================================================
-5. CURRENT CAM IS PRIMARY INTERNAL EVIDENCE
-==================================================
-
-The historical audit says CAM was not active in the old extraction path.
-
-That is obsolete.
-
-Current architecture must use:
-
-CAM evidence index
-+
-canonical entity resolution
-+
-existing relationship artifact
-+
-external evidence
-+
-R2D2
-+
-Opus refinement
-
-CAM must not be omitted.
-
-==================================================
-6. SECURITY / CONFIG CLEANUP
-==================================================
-
-Do not restore:
-
-verify=False
-
-or old RPR environment-variable dependencies.
-
-Report any remaining references to:
-
-RPR_VERTEX_BASE_URL
-RPR_STEP25_MAX_CONCURRENT
-RPR-specific paths/configuration
-
-and classify whether they are still active.
-
-Do not change them yet unless clearly safe and CCR-specific replacement already exists.
-
-==================================================
-7. ENTITY DUPLICATION
-==================================================
-
-The historical audit identified duplicate CAGIDs in the old reference list.
-
-Check the CURRENT canonical entity universe.
-
-Do not assume this old defect still exists.
+1. Explain exactly what the 246-row additive production snapshot is.
 
 Report:
+- source artifact(s)
+- original production row count
+- snapshot row count
+- whether it is a subset, deduplicated view, merged view, or replacement
+- whether any production relationships were dropped
+- whether the canonical production relationship artifact was modified
 
-physical rows
-unique CAGIDs
-duplicate CAGID count
-whether current canonical loader deduplicates correctly
+The existing production relationship source of truth must NOT be replaced
+by a bounded NVIDIA artifact.
 
-Do not change canonicalization unless current evidence proves a defect.
+2. Validate the 31 indirect paths.
 
-==================================================
-8. FINAL DELTA REPORT
-==================================================
+For every indirect path confirm:
+- origin = NVIDIA where applicable
+- destination
+- intermediate entities
+- hop count
+- every underlying edge ID
+- every underlying edge evidence status
+
+No REVIEW_REQUIRED, AI_CANDIDATE, unsupported, or rejected edge may be used
+to generate a VERIFIED indirect path.
+
+Report:
+VERIFIED_EDGE_ONLY_PATHS = YES/NO
+
+3. Validate Citi EXP / TFA absence.
+
+Search the repaired CAM index and exact NVIDIA-linked CAM records for:
+- Citi EXP
+- Citi exposure
+- TFA
+- facility amount
+- total facility
+- exposure
+- committed amount
+- limit
+
+Determine whether:
+A. NVIDIA genuinely has no exact subject-level value, or
+B. values exist but current field mapping failed.
+
+Return:
+CITI_EXP = NOT_PRESENT_IN_SOURCE / MAPPING_GAP / POPULATED
+TFA = NOT_PRESENT_IN_SOURCE / MAPPING_GAP / POPULATED
+
+Do not estimate values.
+
+4. Confirm the 3 verified direct relationships.
+
+For each report:
+- source entity
+- target entity
+- relationship type
+- direction
+- exact evidence source
+- exact excerpt
+- canonical IDs
+- evidence status
+
+5. Confirm candidate isolation.
+
+The 63 candidates and all review-required records must remain outside
+verified graph calculations.
+
+Report:
+CANDIDATES_USED_AS_VERIFIED = 0
+
+6. Final status
 
 Return:
 
-CURRENT RELATIONSHIP ARTIFACT:
-<path / rows>
+PRODUCTION_SOURCE_OF_TRUTH_PRESERVED = YES/NO
+VERIFIED_EDGE_ONLY_PATHS = YES/NO
+CANDIDATES_USED_AS_VERIFIED = <count>
+CITI_EXP = ...
+TFA = ...
+VERIFIED_DIRECT = <count>
+INDIRECT_PATHS = <count>
+TESTS = <passed>/<total>
 
-CURRENT TAXONOMY:
-<count>
-
-HISTORICAL LOGIC TO REUSE:
-<list>
-
-HISTORICAL LOGIC TO REJECT:
-<list>
-
-CURRENT CAM ACTIVE:
-YES/NO
-
-CURRENT DUPLICATE-CAGID ISSUE:
-YES/NO
-
-CURRENT RPR RUNTIME DEPENDENCY:
-YES/NO
-
-CURRENT verify=False:
-YES/NO
-
-SCORING:
-CURRENT / ADAPT HISTORICAL / MISSING
-
-INDIRECT PATH LOGIC:
-CURRENT / ADAPT HISTORICAL / MISSING
-
-HIERARCHY:
-CURRENT / ADAPT HISTORICAL / MISSING
-
-STOP after this report.
-
-Do not edit frontend.
-Do not run broad enrichment.
-Do not create another relationship store.
+STOP after validation.
