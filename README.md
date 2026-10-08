@@ -1,305 +1,388 @@
-ORACLE CONTROLLED CAM EXTRACTION EXPERIMENT — IMPLEMENT AND EXECUTE
+TASK: Senior Software Engineer — Complete CCR Correlation Repository Cleanup and Restructuring
+
+Role
+
+Act as a Principal Software Engineer and Software Architect with extensive experience in enterprise Python applications, FastAPI, React, financial risk analytics, data engineering, and AI/LLM platforms.
+
+Your assignment is to perform a comprehensive repository audit, structural cleanup, and professional reorganization of the existing CCR CORRELATION / CCR Relationship Intelligence project.
+
+This is an implementation task, not merely a recommendation or documentation exercise.
+
+The desired outcome is a clean, maintainable, professional repository suitable for continued enterprise development and eventual controlled deployment.
+
+1. Primary objectives
+
+1. Inspect the complete repository recursively.
+2. Understand the actual system architecture, dependencies, entry points, and execution paths.
+3. Identify redundant, obsolete, generated, temporary, duplicated, and unused files.
+4. Remove unnecessary files and directories safely.
+5. Consolidate duplicated implementations and documentation.
+6. Organize the remaining source code into a consistent, professional structure.
+7. Preserve all essential business logic, data pipelines, and working integrations.
+8. Ensure backend, frontend, APIs, tests, and data ingestion continue functioning.
+9. Reduce unnecessary repository complexity and improve developer navigation.
+10. Produce a clear final report describing every significant change.
+
+Do not simply move everything into new folders. The objective is to genuinely eliminate unnecessary complexity and clutter.
+
+2. Mandatory discovery phase
+
+Before modifying anything, investigate the repository thoroughly.
+
+Inspect:
+
+* Python source files and their imports
+* FastAPI routes and application initialization
+* React/TypeScript frontend and build configuration
+* CAM extraction and normalization pipelines
+* Entity resolution and identifier mapping
+* Direct and indirect relationship discovery
+* Oracle CAM integration and database interfaces
+* R2D2/LLM integration and model routing
+* AI refinement, validation, and evidence provenance
+* Correlation and portfolio analytics
+* Reports, scripts, tests, documentation, and configuration
+* Runtime artifacts, caches, experiment folders, logs, and generated files
+* Git status, ignored files, and uncommitted changes
+
+Build an internal dependency map and determine which files are actively used.
+
+Do not assume a file is unnecessary simply because its name looks old or unfamiliar.
+
+3. Target repository architecture
+
+Aim for a clean structure similar to:
+
+CCR-Correlation/
+│
+├── backend/
+│   ├── api/
+│   ├── core/
+│   ├── services/
+│   ├── models/
+│   ├── repositories/
+│   └── integrations/
+│       ├── cam/
+│       ├── oracle/
+│       └── r2d2/
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── pipelines/
+│   ├── ingestion/
+│   ├── normalization/
+│   ├── enrichment/
+│   ├── entity_resolution/
+│   └── relationship_analysis/
+│
+├── analytics/
+│   ├── correlation/
+│   ├── network/
+│   ├── portfolio/
+│   └── stress/
+│
+├── config/
+│
+├── scripts/
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── regression/
+│
+├── docs/
+│   ├── architecture.md
+│   ├── data_flow.md
+│   └── setup.md
+│
+├── data/
+│   ├── reference/
+│   └── samples/
+│
+├── output/
+│
+├── .gitignore
+├── .env.example
+├── pyproject.toml
+├── requirements.txt
+└── README.md
 
-Objective
+This is a reference architecture, not a mandatory migration.
 
-The current CCR production workflow has been completed, validated and committed. Preserve that working implementation.
+Adapt it to the actual application. Do not introduce layers, abstraction, or directories without genuine functional justification.
 
-Now implement and execute a controlled Oracle Corporation CAM relationship extraction experiment, comparing three approaches:
+Avoid unnecessary refactoring of stable business logic.
 
-* A — Existing CCR indexed extraction pipeline
-* B — Colleague-style MapReduce LLM pipeline
-* C — Hybrid indexed retrieval + MapReduce + independent Opus review
+4. File and folder cleanup
 
-This is an evidence-quality and extraction-completeness experiment, not a frontend redesign or a general repository audit.
+Classify every relevant directory and file into one of four categories.
 
-Do not execute this prompt while another Luna task has uncommitted changes. First confirm the previous task has finished and the working baseline is preserved.
+A. KEEP
 
-Repositories and reference material
+Preserve all actively used application components, configuration, reference data, required documentation, and operational dependencies.
 
-Primary CCR project:
+B. CONSOLIDATE
 
-C:\Users\ak54743\Downloads\Param\CCR Correlation
+Identify duplicated functionality, redundant helper modules, outdated parallel implementations, and repetitive documentation.
 
-Colleague’s implementation, READ ONLY:
+Consolidate only when equivalent behavior has been demonstrated.
 
-C:\Users\ak54743\Downloads\phr-tool-main (1)\phr-tool-main
+C. DELETE
 
-Relevant colleague implementation:
+Remove genuinely unnecessary items, including:
 
-* phr-backend/src/phr_backend/services/orchestrator.py
-* phr-backend/src/phr_backend/services/agents/cam_distiller.py
-* phr-backend/src/phr_backend/services/agents/subportfolio.py
-* phr-backend/src/phr_backend/services/agents/portfolio.py
-* phr-backend/src/phr_backend/services/analysis_config_loader.py
-* phr-backend/templates/indirect_exposure.yaml
-* Implemented maker/checker prompts and output schemas
+* Python __pycache__ directories
+* .pytest_cache and .ruff_cache
+* Temporary files
+* Obsolete debug logs
+* Unused browser-testing profiles
+* Disposable browser screenshots and recordings
+* Regenerable frontend build artifacts where appropriate
+* Abandoned experimental scripts
+* Duplicate temporary exports
+* Unused test fixtures and redundant test files
+* Stale local benchmark outputs
+* Redundant intermediate JSON/CSV artifacts
+* Empty directories
+* Obsolete backups whose content is safely preserved elsewhere
 
-Colleague audit package:
+D. PRESERVE FOR REVIEW
 
-C:\Users\ak54743\Downloads\CoreAI_Audit_2026-10-08
+Retain files with uncertain ownership, unknown dependencies, unique business data, or potentially useful historical experiment results.
 
-Historical report for comparison only:
+Generate a deletion manifest containing the file path, reason, dependency verification, and disposition.
 
-C:\Users\ak54743\Downloads\Param\CCR Correlation\output\reports\CoreAI_relationship_report_20260928.html
+Critical deletion rules
 
-IMPORTANT: The historical report’s source-producing job and document-level provenance were not established by the earlier audit. Its 12 Oracle relationship records are unverified reference candidates, NOT a validated truth set. Do not copy them into production or treat their count as an acceptance target.
+* Do not blindly delete the entire test suite.
+* Preserve meaningful unit, integration, regression, and API contract tests.
+* Remove obsolete tests only when demonstrably superseded or irrelevant.
+* Do not delete CAM source artifacts or unique historical evidence.
+* Do not delete live database files, reference datasets, or required enrichment outputs.
+* Do not delete manually reviewed AI decisions or analyst overrides.
+* Preserve experiment results needed to compare relationship-discovery quality.
+* Do not discard uncommitted user changes.
+* Never delete credentials, environment configurations, or operational data without first assessing dependencies and recovery requirements.
+* Never modify or delete files outside the repository.
 
-Phase 1 — Establish Oracle source coverage
+Create a recoverable baseline before cleanup. Do not put sensitive data, credentials, or large proprietary datasets into a Git commit or unsecured backup.
 
-Use Oracle Corporation’s exact canonical entity identity, CAGID 1005020529, subject to confirmation against the current canonical master.
+For safe, verified disposable files, perform deletion. For uncertain or potentially valuable files, preserve them and report them separately.
 
-Discover all CAM documents in the existing indexed corpus that actually contain evidence about Oracle, including CAMs whose primary subject is another client.
+5. Specific attention: output directory
 
-Use the existing:
+The current project contains extensive historical output, including generated relationship graphs, enrichment files, experiment artifacts, JSON reports, temporary browser outputs, and logs.
 
-* cam_documents
-* cam_passages
-* cam_entity_mentions
-* Canonical entity master
-* DuckDB/Parquet query infrastructure
+Audit this directory carefully.
 
-Report:
+Separate:
 
-1. Total indexed CAM documents.
-2. Oracle-related documents.
-3. Oracle-related passages.
-4. Direct legal-name matches.
-5. Identifier matches.
-6. Alias matches.
-7. Ambiguous matches.
-8. Relevant PDF parsing failures/timeouts.
-9. Documents excluded and why.
+1. Outputs actively required by the application.
+2. Source-of-truth and evidence artifacts.
+3. Historical experiments that may be useful.
+4. Reproducible intermediate artifacts.
+5. Disposable outputs.
 
-Do not assume that Oracle Corporation and ORACLE GLOBAL SERVICES ROMANIA SRL are the same legal entity.
+Eliminate repeated temporary outputs where safe.
 
-Preserve exact legal identity, canonical IDs and parent/subsidiary mappings separately.
+Retain meaningful experiment comparisons and relationship evidence.
 
-Also preserve external relationship counterparties outside the ten-company cohort when correctly resolved.
+Ensure the application never depends accidentally on an obsolete generated artifact.
 
-If the source corpus does not support a meaningful comparison, report the limitation before performing expensive LLM calls.
+Avoid keeping hundreds of files in the main application directory when they belong in properly managed runtime output storage.
 
-Phase 2 — Implement three independent approaches
+6. Tests and quality engineering
 
-Pipeline A — Existing CCR baseline
+Review the entire testing strategy.
 
-Run the currently implemented indexed CAM extraction and verification pipeline.
+Identify tests that:
 
-Do not alter its extraction logic to improve its results during this experiment.
+* Verify important business behavior
+* Protect financial calculations
+* Validate CAM extraction
+* Validate entity matching
+* Verify direct and indirect relationships
+* Protect API contracts
+* Validate model outputs and evidence provenance
 
-Persist:
+Retain these.
 
-* Retrieved source passages.
-* Raw maker outputs.
-* Candidate relationships.
-* Semantic validation decisions.
-* Deterministic validation decisions.
-* Accepted relationships.
-* Review-required relationships.
-* Rejected findings with reasons.
+Remove or consolidate tests that are obsolete, duplicated, or tied exclusively to discontinued implementations.
 
-Pipeline B — Colleague-style MapReduce
+Organize the remaining test suite logically.
 
-Reproduce the useful processing structure from the colleague’s implementation inside a new, isolated CCR experimental module.
+Do not remove tests merely to make the project appear smaller.
 
-Architecture:
+7. Preserve critical CCR functionality
 
-CAM documents/chunks
-→ Parallel MAP relationship distillation
-→ Intermediate semantic checker
-→ REDUCE cross-document consolidation
-→ Final semantic checker
-→ Deterministic validation
-→ Structured relationship records
+The cleanup must not compromise:
 
-Adopt the proven design concepts, not the colleague’s unverified historical relationship dataset.
+* CAM document ingestion
+* TFA and counterparty identifier mapping
+* CAGID, GFCID, LEI, CIK, and other supported identifiers
+* Direct relationship discovery
+* Indirect and multi-hop relationship discovery
+* Parent/subsidiary relationship mapping
+* Ownership and financial relationship extraction
+* Oracle database integration
+* R2D2 integration
+* Claude/Opus refinement where configured
+* Evidence verification and confidence assessments
+* Correlation analytics
+* Network graphs
+* Portfolio analytics
+* Stress analytics
+* Existing frontend UI and navigation
 
-The MAP prompt must require:
+Preserve provenance, source references, confidence scores, and review-required classifications.
 
-* Named subject and related legal entity.
-* Directional relationship.
-* Explicit relationship category.
-* Exact CAM excerpt.
-* Source document and passage/page reference.
-* Identifiers when explicitly available.
-* A relationship assertion supported by the excerpt.
+Do not replace actual data with mocked or fabricated data to make tests pass.
 
-The checker must reject unsupported or speculative edges.
+8. Current application behavior must be preserved
 
-Do not count co-mentions, general industry exposure, financial discussion or proximity as physical relationships.
+The application is accessible locally at:
 
-The REDUCE process must preserve distinct relationships and all supporting citations rather than merging everything by entity pair.
+http://127.0.0.1:8000/
 
-Pipeline C — Hybrid
+Existing features and routes must remain compatible.
 
-Use CCR’s indexed retrieval to identify Oracle-relevant evidence first.
+Verify that the cleanup does not introduce regressions in:
 
-Then:
+* /api/stats
+* Live entity selection
+* Relationship maps
+* Database record statistics
+* Exposure analytics
+* Network graphs
+* Available API endpoints and frontend screens
 
-Indexed retrieval
-→ Context-aware MAP extraction
-→ Semantic checker
-→ REDUCE / consolidation
-→ Independent Claude Opus refinement
-→ Existing deterministic checker
-→ Canonical identity reconciliation
-→ Final evidence-backed graph records
+The application currently has incomplete or unavailable live-data displays. Record this as a baseline condition.
 
-Opus must independently review evidence and verify:
+Do not interpret an existing data-loading problem as a cleanup regression, and do not claim the cleanup has fixed it without evidence.
 
-* Entity A and B identities.
-* Relationship direction.
-* Relationship taxonomy.
-* Whether the excerpt actually asserts the relationship.
-* Whether the source is primary or indirect.
-* Whether aliases or subsidiaries were improperly merged.
-* Whether a relationship is duplicated or contradicted elsewhere.
+Do not redesign the frontend or change its appearance.
 
-Opus may correct or reject proposals. It must not invent source excerpts, IDs or relationships.
+9. Safe implementation strategy
 
-Use approved existing enterprise model routes and the CCR virtual environment. Do not introduce public consumer API access or a dependency on the colleague’s runtime.
+Execute the work in controlled stages.
 
-Phase 3 — Common verification contract
+Stage 1 — Inventory
 
-All three pipelines must be evaluated against the same verification policy.
+Map all source files, dependencies, execution entry points, and active runtime paths.
 
-A relationship can be VERIFIED only if:
+Stage 2 — Baseline
 
-1. Its source document is identifiable.
-2. The exact excerpt can be found in the underlying source.
-3. The relevant source location is retained.
-4. Both endpoints are resolved to appropriate canonical entities, or a clearly governed external-entity policy permits the target.
-5. Direction and relationship category are supported.
-6. Semantic validation passes.
-7. Deterministic validation passes.
+Record Git status, application startup behavior, relevant API responses, frontend build status, and test results.
 
-Anything unresolved must remain REVIEW_REQUIRED or REJECTED.
+Establish a recoverable baseline.
 
-Preserve these distinctions:
+Stage 3 — Cleanup
 
-* Physical direct relationship
-* Verified multi-hop indirect relationship
-* Candidate hidden dependency
-* Unverified relationship proposal
-* Purely topological proximity
+Delete verified disposable files, remove obsolete clutter, consolidate safe duplicates, and update .gitignore.
 
-A multi-hop path is not a new direct physical relationship.
+Stage 4 — Structural organization
 
-Never create a verified relationship from a candidate hidden dependency without source evidence for the underlying edges.
+Move source files into logical directories where beneficial.
 
-Never promote a relationship only because a confidence label says HIGH or VERY_HIGH.
+Update imports, paths, references, scripts, and configurations.
 
-Do not write any of the three experimental outputs into existing verified production tables.
+Prefer minimal, incremental changes over a large architectural rewrite.
 
-Phase 4 — Controlled comparative execution
+Stage 5 — Verification
 
-Execute all three pipelines for Oracle.
+Run available checks appropriate to the repository:
 
-Use the same underlying CAM corpus and record source coverage differences explicitly.
+* Python import verification
+* Backend startup
+* API smoke tests
+* Frontend build
+* Essential unit tests
+* Integration tests where dependencies are available
+* Entity resolution and CAM pipeline regression tests
+* Relationship graph integrity checks
+* Git diff and file-path consistency checks
 
-Keep model configurations, evaluation criteria and resource budgets comparable. If different models or context budgets are needed, disclose them in the comparison.
+Do not report checks as passed unless they actually execute successfully.
 
-Record separately:
+Stage 6 — Final cleanup
 
-* Retrieval time.
-* MAP time.
-* Checker time.
-* REDUCE time.
-* Total elapsed time.
-* Model calls and token usage, where available.
-* Approximate relative execution cost.
+Remove residual temporary files generated by the cleanup itself.
 
-Do not permit one experiment’s results to seed another.
+Update documentation and verify that the resulting repository has a clear entry point.
 
-SEC and web enrichment should remain out of the primary CAM-only comparison. They may be used afterward in a clearly separated corroboration exercise, not to compensate silently for missing CAM evidence.
+10. Repository hygiene
 
-Phase 5 — Oracle comparison report
+Ensure:
 
-Generate one comparison table:
+* One clear backend startup procedure
+* One clear frontend startup procedure
+* Consistent configuration management
+* Appropriate .gitignore rules
+* No unnecessary generated files under source directories
+* No accidental source-code duplication
+* No hardcoded secrets
+* No machine-specific absolute paths
+* Clean import structure
+* Reproducible Windows development setup
+* Clear dependency specifications
+* No unnecessary package installations
 
-Metric	A: Indexed	B: MapReduce	C: Hybrid
-Relevant documents			
-Processed passages			
-Raw candidates			
-Verified distinct relationships			
-Review required			
-Rejected			
-Unique supporting citations			
-Identity ambiguities			
-Duplicate proposals			
-Unsupported relationship proposals			
-Runtime			
-Model usage/cost			
+Keep the solution compatible with the existing Windows development environment.
 
-Also produce a relationship-level comparison with:
+Do not introduce Docker, a new framework, a database migration, or external services solely for repository cleanup.
 
-* Oracle legal entity.
-* Related entity.
-* Relationship type/direction.
-* Pipeline(s) finding the relationship.
-* Exact citation reference.
-* Verification outcome.
-* Reason for disagreement between pipelines.
+11. Final deliverables
 
-Calculate overlap and unique contribution:
+After implementation, provide:
 
-* Verified relationships common to all three.
-* Verified only by A.
-* Verified only by B.
-* Verified only by C.
-* Verified by two methods but absent from the third.
+A. Repository structure
 
-Manually inspect a bounded, representative set of accepted, rejected and disputed relationship records against the actual CAM source. Do not use LLM agreement as an independent accuracy measure.
+Show the resulting simplified directory tree, excluding caches and generated artifacts.
 
-Classify additional findings as genuine discoveries, duplicates, ambiguous identities or false positives.
+B. Cleanup summary
 
-Compare the historical colleague Oracle records only as an unverified candidate coverage checklist. Explain which can be reproduced from actual available CAM evidence and which cannot.
+Report the number of:
 
-Do not artificially maximize the relationship count.
+* Files removed
+* Directories removed
+* Files reorganized
+* Duplicate implementations consolidated
+* Files preserved for review
 
-Phase 6 — Decision and recommendation
+C. Deletion manifest
 
-Provide Luna’s independent technical assessment:
+List removed files and the reason for deletion. Provide a separate list of files preserved because safe deletion could not be established.
 
-1. Which architecture produces the best verified relationship coverage?
-2. Which produces fewer false positives?
-3. Which most reliably preserves provenance?
-4. Which handles cross-document evidence best?
-5. Which creates the most unresolved entity ambiguity?
-6. What is the latency and model cost trade-off?
-7. Is the hybrid objectively better enough to justify adopting it?
-8. Should MapReduce become a fallback only for difficult CAMs?
-9. Which implementation should be used for the remaining nine companies?
+D. Verification results
 
-Provide a proposed final production architecture, but do not activate it across the other nine companies yet.
+Show actual executed tests, build results, API checks, failures, and environmental limitations.
 
-Deliverables
+E. Remaining technical debt
 
-Persist experimental artifacts under a clearly identified new CCR experiment directory, including:
+Identify unresolved architectural problems separately from the repository cleanup.
 
-* Oracle source coverage manifest.
-* Three raw extraction outputs.
-* Three checker decision sets.
-* Three verified relationship datasets.
-* Rejected/review datasets.
-* Comparison CSV/JSON.
-* Evidence audit report.
-* Model execution statistics.
-* Final architecture recommendation.
+12. Non-negotiable constraints
 
-Add focused tests and run relevant existing regression tests.
+1. No frontend redesign.
+2. No unnecessary business-logic rewriting.
+3. No loss of CAM evidence or relationship data.
+4. No loss of AI refinement functionality.
+5. No destruction of important experiments.
+6. No removal of essential regression tests.
+7. No changes to external enterprise systems.
+8. No broad destructive operations without verified scope and recoverability.
+9. No unrelated feature development.
+10. No declaring success without validation.
 
-Do not modify the colleague’s repository, canonical master, production verified relationships, or established frontend design.
+FINAL INSTRUCTION
 
-Do not mark the experiment successful without actually running it and producing measurable results.
+Act like a senior engineer responsible for maintaining this codebase long-term.
 
-Final status must be one of:
+Inspect first, establish a baseline, execute safe cleanup and restructuring, verify the results, and report exactly what changed.
 
-* ORACLE_COMPARISON_COMPLETE
-* BLOCKED_BY_SOURCE_COVERAGE
-* BLOCKED_BY_MODEL_RUNTIME
-* BLOCKED_BY_VERIFICATION
-* PARTIAL_COMPARISON
+The goal is a smaller, cleaner, easier-to-navigate CCR Correlation repository with no unnecessary clutter and no avoidable functional regressions.
 
-Finish with a clear recommendation based on the observed evidence, not assumptions.
-
-Execute the experiment now, after confirming that no other Luna task is still modifying the baseline.
+Do not stop after producing a plan. Execute the verified cleanup, and clearly identify any deletions that require a separate decision.
