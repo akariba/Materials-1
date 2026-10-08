@@ -1,310 +1,318 @@
-CLEANUP PHASE IS COMPLETE.
+CLEANUP IS ACCEPTED.
 
-Now implement ONE bounded NVIDIA end-to-end backend integration.
+Do not undo the completed cleanup commits.
 
-Do NOT redesign the frontend yet.
-Do NOT create new storage technology.
-Do NOT create SQLite.
-Do NOT restore demo-only paths.
+Do not continue repository cleanup now.
+Do not change the frontend yet.
+Do not reopen ADK grounding debugging.
+Do not restore SQLite.
 
-Use the cleaned current architecture:
-
-Parquet = persistent analytical artifacts
-DuckDB = analytical/query layer
-API = application access layer
+We now move to the REAL production CCR relationship pipeline.
 
 ==================================================
-1. NVIDIA CAM FACTS
+FIRST: CONFIRM THE PRODUCTION RELATIONSHIP STORE
 ==================================================
 
-Using the existing CAM index and canonical entity data, extract all available
-NVIDIA-related facts already present in CAM.
+Before implementing anything, inspect the current 364-row production
+relationship artifact loaded by the production API.
 
-Populate where available:
+Report:
+
+- exact Parquet/file path
+- schema
+- row count
+- unique entity count
+- relationship types
+- evidence-status values
+- source/provenance values
+- direct/indirect/hidden representation if any
+- canonical entity ID fields
+- whether multiple relationships between the same pair are supported
+- whether hierarchy/ownership relationships already exist
+- whether relationship strength/scoring already exists
+
+Do not create another relationship store.
+
+This current production relationship artifact must be reused or carefully
+extended.
+
+==================================================
+SECOND: NVIDIA PRODUCTION SLICE
+==================================================
+
+Find NVIDIA Corporation by canonical CAGID/entity ID in the production
+canonical universe.
+
+Then extract the complete NVIDIA-connected slice from:
+
+1. current production relationship artifact
+2. CAM passages / entity mentions
+3. existing CAM-derived relationship candidates
+4. existing validated external evidence
+5. existing review-required candidates
+
+Report what ALREADY exists before generating anything new.
+
+==================================================
+THIRD: CAM FACTS AND EXPOSURES
+==================================================
+
+For NVIDIA and its connected entities, inspect CAM deterministically for:
 
 - Citi EXP
 - TFA
-- facilities
+- facility amounts
 - lending exposure
 - RLR
 - FORR
 - country of risk
-- industry/sector
-- parent/subsidiary hierarchy
+- industry / sector
+- parent
+- subsidiary
 - ownership
 - guarantor
 - collateral
 - maturity
-- customer/supplier relationships
-- investment
+- customer
+- supplier
+- investor / investee
 - strategic partnership
-- contractual relationship
-- lease/offtake
-- other explicit relationship facts
+- lease
+- offtake
+- financing
+- material contracts
+- hierarchy relationships
 
-Every value must retain provenance.
+For each extracted value preserve:
 
-Do not fabricate missing values.
+- canonical entity ID
+- field name
+- raw value
+- normalized value
+- CAM document
+- page/section
+- exact excerpt
+- extraction timestamp
 
-==================================================
-2. CANONICAL RELATIONSHIP STORAGE
-==================================================
-
-Use the current canonical relationship schema.
-
-Verified DIRECT relationships must live in the current persistent
-relationship artifact, preferably the existing Parquet equivalent.
-
-Preserve separately:
-
-- source_entity_id
-- target_entity_id
-- relationship_type
-- subtype
-- direction
-- fact_class
-- source_type
-- source_document/url
-- source_excerpt
-- source_date
-- confidence
-- evidence_status
-- relationship_strength
-- provenance
-
-Do not collapse multiple relationship types for the same entity pair.
-
-Example:
-
-NVIDIA ↔ Intel strategic partnership
-
-and
-
-NVIDIA → Intel equity investment
-
-must remain separate relationship records.
+Do not infer numerical exposure fields.
 
 ==================================================
-3. FACT CLASSIFICATION
+FOURTH: CANONICAL DATA CLASSES
 ==================================================
 
-Maintain:
+Use:
 
 FACT
 DERIVED
 EXPOSURE
 AI_CANDIDATE
 
-FACT:
-explicit CAM or validated external evidence
+FACT
+= explicit CAM or validated external evidence.
 
-DERIVED:
-deterministic result from verified facts
+EXPOSURE
+= Citi internal exposure information.
 
-EXPOSURE:
-Citi internal exposure data such as Citi EXP/TFA
+DERIVED
+= deterministic calculation from verified facts.
 
-AI_CANDIDATE:
-AI-proposed relationship requiring evidence/review
+AI_CANDIDATE
+= proposed relationship requiring further validation.
 
 Do not mix these classes.
 
 ==================================================
-4. R2D2 ENRICHMENT
+FIFTH: RELATIONSHIP TYPES
 ==================================================
 
-Use the existing approved R2D2 adapter.
+Ensure the production relationship model supports at least:
 
-Generate targeted retrieval tasks for current NVIDIA relationship candidates:
+parent
+subsidiary
+ownership
+investor
+investee
+supplier
+customer
+guarantor
+borrower
+lender
+strategic_partner
+joint_venture
+lessor
+lessee
+offtaker
+provider
+financing
+collateral_dependency
+commercial_dependency
+shared_project
+SPV_relationship
 
-- ownership
-- hierarchy
-- investment
-- supplier/customer
-- strategic partnership
-- financing
-- guarantee
-- collateral
-- lease/offtake
-- shared project
-- SPV
-- commercial dependency
+Do not fabricate missing relationships.
 
-R2D2 output is supporting evidence/context only.
-
-It does not automatically create VERIFIED relationships.
-
-==================================================
-5. OPUS REFINEMENT
-==================================================
-
-Use the existing Opus integration after CAM + R2D2 evidence exists.
-
-Input:
-
-- canonical entities
-- CAM facts
-- CAM relationship candidates
-- R2D2 evidence
-- existing direct-source evidence
-- current verified relationship graph
-
-Opus may:
-
-- reconcile entities
-- normalize relationship type
-- determine direction
-- identify contradictions
-- deduplicate
-- rank candidates
-- identify possible hidden relationships
-
-Opus may NOT:
-
-- invent Citi EXP/TFA
-- fabricate relationship evidence
-- promote unsupported candidates to FACT
-
-Require schema-valid JSON.
+Do not collapse different relationship types between the same entity pair.
 
 ==================================================
-6. DIRECT SOURCE VALIDATION
+SIXTH: INDIRECT
 ==================================================
 
-Reuse the already working direct-source pipeline:
-
-real URL
-→ fetch
-→ source text
-→ publisher/title/date
-→ exact excerpt
-→ deterministic validator
-
-Priority:
-
-SEC / EDGAR
-official investor relations
-official company newsroom
-annual report
-approved direct publisher
-
-Do not return to ADK grounding debugging.
-
-==================================================
-7. INDIRECT RELATIONSHIPS
-==================================================
-
-Generate indirect relationships ONLY from verified graph edges.
+Indirect relationships must be graph-derived from VERIFIED direct edges.
 
 Example:
 
 NVIDIA → A
 A → B
 
-produces:
+creates:
 
 NVIDIA → A → B
 
-Store:
+Store separately from direct facts:
 
 - origin
 - destination
-- path entity IDs
-- hop_count
-- relationship types
+- path
+- hop count
+- edge relationship types
 - path strength
-- evidence references for every underlying edge
+- supporting edge IDs
 
-Use the recovered typed-path implementation if available.
-
-Do not ask the LLM to invent indirect paths.
+Use recovered typed-path logic if it exists.
 
 ==================================================
-8. HIDDEN RELATIONSHIPS
+SEVENTH: HIDDEN / REVIEW REQUIRED
 ==================================================
 
-R2D2/Opus may identify hidden dependencies.
+Hidden relationships are not automatically facts.
 
-Initially store these as:
-
-AI_CANDIDATE
-REVIEW_REQUIRED
-
-Examples:
+R2D2 / Opus may identify:
 
 - common supplier
 - common customer
 - shared project
-- common SPV
-- shared guarantor
-- shared financing source
+- shared SPV
+- common financing
+- common guarantor
 - infrastructure dependency
+- revenue dependency
 
-Only promote after independent supporting evidence is validated.
+Initially store as:
 
-==================================================
-9. DUCKDB VIEWS
-==================================================
+AI_CANDIDATE
+REVIEW_REQUIRED
 
-Expose the canonical data through DuckDB views.
+For every REVIEW_REQUIRED item, retain an explicit reason such as:
 
-At minimum confirm readable views for:
+ENTITY_AMBIGUOUS
+INSUFFICIENT_EVIDENCE
+CONTRADICTORY_EVIDENCE
+MISSING_DIRECT_SOURCE
+UNRESOLVED_DIRECTION
+UNRESOLVED_CANONICAL_ID
 
-- canonical entities
-- CAM facts
-- exposures
-- direct relationships
-- relationship candidates
-- indirect paths
-- evidence/provenance
-
-No duplicate source-of-truth database.
+This will make "Review Required" meaningful in the UI later.
 
 ==================================================
-10. NVIDIA ACCEPTANCE TEST
+EIGHTH: R2D2 + OPUS
 ==================================================
 
-Confirm:
+Only after existing production/CAM facts have been inventoried:
 
-[ ] NVIDIA canonical identity resolves
-[ ] CAM Citi EXP populated where present
-[ ] CAM TFA populated where present
-[ ] RLR/FORR populated where present
-[ ] hierarchy/ownership facts extracted
-[ ] direct relationships persisted
-[ ] multiple edges between same pair preserved
-[ ] R2D2 executes
-[ ] Opus returns valid structured output
-[ ] direct-source validator works
-[ ] indirect paths generated from verified edges
-[ ] hidden candidates remain review-required
-[ ] provenance retained
-[ ] no SQLite production dependency
-[ ] no RPR dependency
-[ ] no demo data dependency
-[ ] tests pass
+Use R2D2 for targeted evidence retrieval.
 
-STOP before frontend integration.
+Then use Opus to refine:
+
+- entity reconciliation
+- hierarchy
+- ownership
+- relationship classification
+- direction
+- duplicate handling
+- contradictions
+- candidate ranking
+
+Opus must return structured JSON.
+
+Opus may not create Citi EXP/TFA.
+
+Opus may not promote unsupported relationships to FACT.
+
+==================================================
+NINTH: DIRECT EXTERNAL SOURCES
+==================================================
+
+Reuse the already-proven direct-fetch implementation.
+
+Do not depend on generic grounded-search metadata.
+
+Use:
+
+SEC
+official company IR
+company newsroom
+annual reports
+approved direct publisher sources
+
+Known URL
+→ direct fetch
+→ source text
+→ exact excerpt
+→ deterministic validator
+
+==================================================
+TENTH: DO NOT TOUCH FRONTEND YET
+==================================================
+
+The frontend currently has only a static delivered artifact.
+
+Do not continue editing frontend/dist/index.html while building the backend.
+
+First make the NVIDIA backend production slice correct.
+
+Frontend integration will be a separate phase.
+
+==================================================
+ACCEPTANCE REPORT
+==================================================
 
 Report:
 
-NVIDIA FACTS:
+PRODUCTION RELATIONSHIP ARTIFACT:
+<path>
+
+ROWS:
 <count>
 
-DIRECT RELATIONSHIPS:
+NVIDIA EXISTING DIRECT:
 <count>
 
-INDIRECT PATHS:
+NVIDIA NEW VERIFIED DIRECT:
 <count>
 
-HIDDEN / AI CANDIDATES:
+NVIDIA INDIRECT:
+<count>
+
+NVIDIA REVIEW_REQUIRED:
+<count>
+
+HIERARCHY RELATIONSHIPS:
+<count>
+
+OWNERSHIP RELATIONSHIPS:
 <count>
 
 CITI EXP:
-POPULATED / NOT_PRESENT_IN_CAM
+POPULATED / NOT_PRESENT
 
 TFA:
-POPULATED / NOT_PRESENT_IN_CAM
+POPULATED / NOT_PRESENT
+
+RLR:
+<value/not present>
+
+FORR:
+<value/not present>
 
 R2D2:
 WORKING / BLOCKED
@@ -315,20 +323,9 @@ WORKING / BLOCKED
 DIRECT SOURCE:
 WORKING / BLOCKED
 
-DUCKDB VIEWS:
-<list>
-
 TESTS:
 <passed>/<total>
 
-Return:
+Do not alter the frontend.
 
-NVIDIA_BACKEND_READY
-
-or
-
-NVIDIA_BACKEND_READY_WITH_WARNINGS
-
-or
-
-NVIDIA_BACKEND_BLOCKED
+STOP after the NVIDIA production backend slice is complete.
