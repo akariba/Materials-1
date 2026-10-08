@@ -1,172 +1,82 @@
-EXECUTE THE CCR IMPLEMENTATION — WRITE ACTUAL CODE
+I understand and accept your execution limitations. You do not need access to my local VS Code repository, terminal, running FastAPI server, or local filesystem.
 
-You have already produced CCR_Implementation_Blueprint.md.
+Your task is SOURCE-CODE GENERATION, not local code execution.
 
-I did not request another architecture document. I requested a fully implemented, functional CCR Relationship Intelligence application.
+You have already produced CCR_Implementation_Blueprint.md, covering the complete CCR Relationship Intelligence architecture.
 
-The planning phase is complete. You must now act as a Principal Software Engineer and implement the solution directly in my VS Code workspace.
+The architecture phase is finished. Do not regenerate the blueprint, repeat your environment limitations, or produce another implementation plan.
 
-1. Stop generating planning documents
+What I require
 
-Do not produce another blueprint, architecture proposal, pseudocode specification, or implementation checklist as your primary deliverable.
+Generate the actual, complete, executable source code for the new, self-contained CCR Relationship Intelligence project described in your blueprint.
 
-Your deliverables must be actual source-code changes, executable functionality, working APIs, validated data pipelines, and passing tests.
+The code must cover:
 
-Use the existing blueprint as the implementation specification, but first reconcile it against the actual repository.
+1. Project configuration and dependency management.
+2. Input-folder CAM ingestion (PDF, DOCX, TXT, XLSX).
+3. Source-preserving parsing, passage indexing and retrieval.
+4. Canonical counterparty resolution using CAGID, GFCID and supported identifiers.
+5. DuckDB and Parquet data storage.
+6. Evidence-grounded MapReduce relationship extraction.
+7. Independent semantic checking and deterministic validation.
+8. Claude Opus/R2D2 refinement with strict verification gates.
+9. SEC and approved web enrichment.
+10. Financial data extraction, TFA/OSUC and exposure validation.
+11. Verified direct relationships, review candidates and indirect graph paths.
+12. FastAPI endpoints.
+13. React frontend with Correlation, Credit Risk Intelligence, Portfolio Analytics, Stress Analytics and Risk Heatmap.
+14. Complete automated tests.
+15. Windows startup scripts and deployment documentation.
 
-2. Work directly in the existing CCR Correlation project
+Critical instruction: GENERATE FILES, NOT SPECIFICATIONS
 
-Inspect the repository and determine which capabilities already exist.
+Use the exact repository structure and file responsibilities already defined in CCR_Implementation_Blueprint.md.
 
-Reuse working components, including:
+For each file, provide:
 
-* FastAPI backend
-* React frontend
-* DuckDB and Parquet architecture
-* CAM document ingestion
-* Canonical entity resolution
-* Existing verified relationship processing
-* Opus/R2D2 integration
-* Credit Risk Intelligence panels
-* Network graph components
-* Existing PHR-compatible data structures
+* Exact relative filesystem path.
+* Complete source-code content.
+* All required imports.
+* Classes, functions, schemas and implementations.
+* Error handling and bounded execution.
+* Integration with the other generated modules.
 
-Do not create a competing project or second implementation.
+No pseudocode, abbreviated implementations, TODO: implement placeholders, or example-only code in required production paths.
 
-Do not replace working components unless a specific defect requires a verified change.
+Where enterprise credentials or actual source data are unavailable, implement clearly defined configuration and fail-closed adapters. Never invent credentials, internal endpoint contracts, evidence, or test results.
 
-Preserve all validated business logic, source evidence, and financial data.
+If an API contract is genuinely unavailable, isolate it behind a typed interface, clearly mark the integration as requiring configuration, and provide executable tests using explicitly labelled fixtures.
 
-3. Implement the blueprint in actual code
+Delivery format
 
-Follow the blueprint’s logical implementation sequence, beginning with the smallest end-to-end working path.
+Preferred: Generate a downloadable ZIP containing the complete project folder and all files, if your environment supports generating file artifacts.
 
-First implementation milestone
+Otherwise: Generate complete source-code file artifacts in manageable batches. Every artifact must contain real code, not an architectural description. Ensure the batches can be combined directly into the repository with no missing dependencies.
 
-Build and connect:
+Use your existing blueprint as the architecture contract. Do not introduce a competing architecture.
 
-1. Canonical entity ingestion and resolution.
-2. CAM document extraction.
-3. Persistent Parquet outputs and DuckDB views.
-4. Verified relationship extraction and storage.
-5. Live FastAPI entity and relationship endpoints.
-6. React frontend integration showing actual backend data.
+Implementation batches
 
-The first milestone must produce an operational application, not an empty repository skeleton.
+Batch 1 — Complete project scaffold, configuration, dependency files, input scanner, document parsers, canonical entity loader, DuckDB/Parquet storage, and initial tests.
 
-Second implementation milestone
+Batch 2 — Retrieval/indexing and evidence-grounded MapReduce extraction, semantic checker, deterministic checker, identity resolution, reducer and tests.
 
-Implement:
+Batch 3 — R2D2/Opus refinement, approved SEC/web enrichment, financial enrichment and verification policies.
 
-* Evidence-grounded MapReduce extraction
-* Semantic and deterministic validation
-* Entity identity verification
-* R2D2/Opus relationship refinement
-* Direct and indirect relationship discovery
-* Verified versus review-required classifications
-* Relationship provenance and audit trail
+Batch 4 — Relationship graph, indirect paths, analytics, exposure calculations, and API endpoints.
 
-Third implementation milestone
+Batch 5 — Complete React frontend, synchronized entity selection, all financial columns and relationships, risk visualizations and reporting.
 
-Implement accurate enrichment of the available client universe:
+Batch 6 — Windows startup scripts, integration tests, configuration documentation and deployment packaging.
 
-* Legal entity identifiers
-* Parent and subsidiary structures
-* External ratings
-* Financial information
-* Ownership and financing relationships
-* Credit risk metrics where sufficient data exists
-* Approved market and external evidence retrieval
-* Per-client enrichment status and source provenance
+Begin immediately
 
-Run a validated ten-client pilot before scaling to the full eligible universe.
+Generate Batch 1 as complete source-code files now.
 
-Do not manufacture information when data is unavailable.
+Do not respond with another blueprint or tell me that you cannot modify my local repository. I am not asking you to modify it.
 
-Fourth implementation milestone
+I am asking you to author the complete file contents so that I can place them into my VS Code project or hand them to a code-execution-capable agent.
 
-Complete the existing frontend integration:
+After Batch 1, provide a file manifest and identify the next batch. Clearly distinguish generated code from code actually tested or executed.
 
-* Entity search and selection
-* Credit Risk Intelligence
-* Relationship graph
-* Direct, indirect, and hidden-candidate filters
-* Physical relationship records
-* Portfolio analytics
-* Stress analytics
-* Risk heatmap
-
-Preserve the current UI design and ensure all panels use real backend data.
-
-4. Implement incrementally and verify
-
-For each implementation batch:
-
-1. Identify the exact existing files to modify.
-2. Write or modify the code directly.
-3. Update dependencies and imports where needed.
-4. Run relevant unit tests.
-5. Run integration checks when possible.
-6. Fix errors caused by your changes.
-7. Report files actually changed and tests actually executed.
-8. Continue to the next batch.
-
-Do not mark an implementation stage complete without executable code and verification.
-
-5. Preserve the critical risk-data rules
-
-The system must maintain:
-
-* One deterministic canonical entity record per ordinary CAGID, with documented split behavior where required.
-* No unverified automatic merging of entities.
-* Separate evidence, identity, semantic, deterministic, and analyst-review states.
-* No promotion of an LLM-generated claim into verified graph topology without the required validation.
-* Preservation of multiple physical relationships between the same entities.
-* No invented ratings, financials, correlations, or Citi exposures.
-* No parent-level financials presented as subsidiary financials.
-* Full evidence and provenance for published relationships.
-
-6. Demonstrate actual execution
-
-Start the application locally using the existing documented startup procedure.
-
-Verify:
-
-* FastAPI starts successfully.
-* The frontend loads.
-* The client registry returns real entities.
-* Entity selection retrieves the correct profile.
-* The relationship API returns persisted records.
-* Graph edges correspond to actual validated relationships.
-* Available credit information populates the correct entity.
-* Missing information is explicitly identified.
-* The application does not remain indefinitely in loading states.
-
-If a test cannot run because of unavailable credentials or external infrastructure, record that limitation instead of claiming success.
-
-7. Mandatory completion report
-
-At the end of each batch, report:
-
-* Files created
-* Files modified
-* Working functionality implemented
-* Tests executed and results
-* Remaining defects
-* Next implementation batch
-
-Do not substitute descriptions of files for the files themselves.
-
-FINAL DIRECTIVE
-
-Stop planning. Start coding now.
-
-Use the existing blueprint as technical guidance, reconcile it with the current repository, and implement directly in the workspace.
-
-Do not ask me to manually create individual source files.
-
-Do not produce another Markdown artifact as your main output.
-
-The result must be working application code, not another specification.
-
-Begin with repository inspection and the first executable implementation milestone immediately.
+Proceed with code generation.
