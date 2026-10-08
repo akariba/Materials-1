@@ -1,388 +1,502 @@
-TASK: Senior Software Engineer — Complete CCR Correlation Repository Cleanup and Restructuring
-
-Role
-
-Act as a Principal Software Engineer and Software Architect with extensive experience in enterprise Python applications, FastAPI, React, financial risk analytics, data engineering, and AI/LLM platforms.
-
-Your assignment is to perform a comprehensive repository audit, structural cleanup, and professional reorganization of the existing CCR CORRELATION / CCR Relationship Intelligence project.
-
-This is an implementation task, not merely a recommendation or documentation exercise.
-
-The desired outcome is a clean, maintainable, professional repository suitable for continued enterprise development and eventual controlled deployment.
-
-1. Primary objectives
-
-1. Inspect the complete repository recursively.
-2. Understand the actual system architecture, dependencies, entry points, and execution paths.
-3. Identify redundant, obsolete, generated, temporary, duplicated, and unused files.
-4. Remove unnecessary files and directories safely.
-5. Consolidate duplicated implementations and documentation.
-6. Organize the remaining source code into a consistent, professional structure.
-7. Preserve all essential business logic, data pipelines, and working integrations.
-8. Ensure backend, frontend, APIs, tests, and data ingestion continue functioning.
-9. Reduce unnecessary repository complexity and improve developer navigation.
-10. Produce a clear final report describing every significant change.
-
-Do not simply move everything into new folders. The objective is to genuinely eliminate unnecessary complexity and clutter.
-
-2. Mandatory discovery phase
-
-Before modifying anything, investigate the repository thoroughly.
-
-Inspect:
-
-* Python source files and their imports
-* FastAPI routes and application initialization
-* React/TypeScript frontend and build configuration
-* CAM extraction and normalization pipelines
-* Entity resolution and identifier mapping
-* Direct and indirect relationship discovery
-* Oracle CAM integration and database interfaces
-* R2D2/LLM integration and model routing
-* AI refinement, validation, and evidence provenance
-* Correlation and portfolio analytics
-* Reports, scripts, tests, documentation, and configuration
-* Runtime artifacts, caches, experiment folders, logs, and generated files
-* Git status, ignored files, and uncommitted changes
-
-Build an internal dependency map and determine which files are actively used.
-
-Do not assume a file is unnecessary simply because its name looks old or unfamiliar.
-
-3. Target repository architecture
-
-Aim for a clean structure similar to:
-
-CCR-Correlation/
-│
-├── backend/
-│   ├── api/
-│   ├── core/
-│   ├── services/
-│   ├── models/
-│   ├── repositories/
-│   └── integrations/
-│       ├── cam/
-│       ├── oracle/
-│       └── r2d2/
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── package.json
-│
-├── pipelines/
-│   ├── ingestion/
-│   ├── normalization/
-│   ├── enrichment/
-│   ├── entity_resolution/
-│   └── relationship_analysis/
-│
-├── analytics/
-│   ├── correlation/
-│   ├── network/
-│   ├── portfolio/
-│   └── stress/
-│
-├── config/
-│
-├── scripts/
-│
-├── tests/
-│   ├── unit/
-│   ├── integration/
-│   └── regression/
-│
-├── docs/
-│   ├── architecture.md
-│   ├── data_flow.md
-│   └── setup.md
-│
-├── data/
-│   ├── reference/
-│   └── samples/
-│
-├── output/
-│
-├── .gitignore
-├── .env.example
-├── pyproject.toml
-├── requirements.txt
-└── README.md
+TASK: Build a Complete, Accuracy-First Entity Enrichment Engine for CCR Relationship Intelligence
 
-This is a reference architecture, not a mandatory migration.
+ROLE
 
-Adapt it to the actual application. Do not introduce layers, abstraction, or directories without genuine functional justification.
+Act as a Principal Software Engineer, Senior Credit Risk Data Architect, and AI/LLM Engineering Specialist.
 
-Avoid unnecessary refactoring of stable business logic.
+Your assignment is to upgrade the existing CCR Relationship Intelligence platform into a comprehensive entity and relationship enrichment system.
 
-4. File and folder cleanup
+This is an implementation task, not a research proposal.
 
-Classify every relevant directory and file into one of four categories.
+Primary objective: Enrich every eligible entity in the available client universe with the maximum amount of accurate, verifiable information obtainable from approved data sources.
 
-A. KEEP
+Do not restrict enrichment to the five-company demonstration cohort or the small subset currently represented in the relationship graph.
 
-Preserve all actively used application components, configuration, reference data, required documentation, and operational dependencies.
+1. Critical problem to solve
 
-B. CONSOLIDATE
+The current system contains a large universe of companies, counterparties, lenders, investors, subsidiaries, SPVs, and other relationship participants.
 
-Identify duplicated functionality, redundant helper modules, outdated parallel implementations, and repetitive documentation.
+However, only a small fraction have meaningful enriched information.
 
-Consolidate only when equivalent behavior has been demonstrated.
+Many entities currently lack:
 
-C. DELETE
+* Verified legal identity
+* Parent and subsidiary information
+* Entity classifications
+* External credit ratings
+* Financial information
+* Industry and geographic classifications
+* Ownership information
+* Credit and lending relationships
+* Direct and indirect relationship evidence
+* Market indicators
+* Connection to other entities
+* Evidence provenance and confidence assessments
 
-Remove genuinely unnecessary items, including:
+The application must evolve from a primarily name-and-relationship display into an entity intelligence platform.
 
-* Python __pycache__ directories
-* .pytest_cache and .ruff_cache
-* Temporary files
-* Obsolete debug logs
-* Unused browser-testing profiles
-* Disposable browser screenshots and recordings
-* Regenerable frontend build artifacts where appropriate
-* Abandoned experimental scripts
-* Duplicate temporary exports
-* Unused test fixtures and redundant test files
-* Stale local benchmark outputs
-* Redundant intermediate JSON/CSV artifacts
-* Empty directories
-* Obsolete backups whose content is safely preserved elsewhere
+2. Enrich the complete universe
 
-D. PRESERVE FOR REVIEW
+Identify the actual source of the selectable PHR client universe and other active entity registries.
 
-Retain files with uncertain ownership, unknown dependencies, unique business data, or potentially useful historical experiment results.
+Determine which records represent:
 
-Generate a deletion manifest containing the file path, reason, dependency verification, and disposition.
+1. Actual Citi clients or counterparties.
+2. Legal entities belonging to a parent group.
+3. Banks, lenders, agents, and syndicate members.
+4. Investors and shareholders.
+5. Subsidiaries, SPVs, and joint ventures.
+6. Customers, vendors, and other commercial counterparties.
+7. Named entities without confirmed legal identity.
+8. Generic or anonymized descriptors that cannot be uniquely resolved.
 
-Critical deletion rules
+Implement a deterministic, deduplicated master entity registry.
 
-* Do not blindly delete the entire test suite.
-* Preserve meaningful unit, integration, regression, and API contract tests.
-* Remove obsolete tests only when demonstrably superseded or irrelevant.
-* Do not delete CAM source artifacts or unique historical evidence.
-* Do not delete live database files, reference datasets, or required enrichment outputs.
-* Do not delete manually reviewed AI decisions or analyst overrides.
-* Preserve experiment results needed to compare relationship-discovery quality.
-* Do not discard uncommitted user changes.
-* Never delete credentials, environment configurations, or operational data without first assessing dependencies and recovery requirements.
-* Never modify or delete files outside the repository.
+Each source record must remain traceable to its origin.
 
-Create a recoverable baseline before cleanup. Do not put sensitive data, credentials, or large proprietary datasets into a Git commit or unsecured backup.
+Do not merge two legal entities merely because their names are similar.
 
-For safe, verified disposable files, perform deletion. For uncertain or potentially valuable files, preserve them and report them separately.
+Distinguish parent companies, branches, subsidiaries, and individual obligors.
 
-5. Specific attention: output directory
+Every eligible entity must enter the enrichment workflow, not just entities that already have network connections.
 
-The current project contains extensive historical output, including generated relationship graphs, enrichment files, experiment artifacts, JSON reports, temporary browser outputs, and logs.
+Unresolvable or anonymized records must remain visible with an explicit status rather than being assigned fabricated identities.
 
-Audit this directory carefully.
+3. Canonical entity resolution
 
-Separate:
+Implement robust identity resolution using available identifiers:
 
-1. Outputs actively required by the application.
-2. Source-of-truth and evidence artifacts.
-3. Historical experiments that may be useful.
-4. Reproducible intermediate artifacts.
-5. Disposable outputs.
+* CAGID
+* GFCID
+* TFA identifiers
+* LEI
+* CIK
+* ISIN, where applicable
+* Ticker and exchange
+* Official legal name
+* Registered jurisdiction
+* Company registration number, where supported
 
-Eliminate repeated temporary outputs where safe.
+Apply deterministic identifier matching before fuzzy matching.
 
-Retain meaningful experiment comparisons and relationship evidence.
+Use candidate generation and evidence-based disambiguation for ambiguous names.
 
-Ensure the application never depends accidentally on an obsolete generated artifact.
+For example, distinguish:
 
-Avoid keeping hundreds of files in the main application directory when they belong in properly managed runtime output storage.
+* Digital Realty Trust from its individual subsidiary entities.
+* JPMorgan Chase & Co. from JPMorgan Chase Bank, N.A.
+* Citi legal entities from Citi business divisions.
+* Investment funds from their asset managers.
+* SPVs from their sponsors and parent groups.
 
-6. Tests and quality engineering
+Use the LLM only to assist with ambiguous candidate resolution, never to invent identifiers.
 
-Review the entire testing strategy.
+Maintain verified, probable, ambiguous, and unresolved identity states.
 
-Identify tests that:
+4. Data source hierarchy
 
-* Verify important business behavior
-* Protect financial calculations
-* Validate CAM extraction
-* Validate entity matching
-* Verify direct and indirect relationships
-* Protect API contracts
-* Validate model outputs and evidence provenance
+Use all existing approved data integrations and reusable functionality.
 
-Retain these.
+Tier 1 — Internal authoritative information
 
-Remove or consolidate tests that are obsolete, duplicated, or tied exclusively to discontinued implementations.
+Prioritize:
 
-Organize the remaining test suite logically.
+* CAM documents and extracted fields
+* Existing canonical client records
+* TFA mappings
+* Citi exposure information, when available and authorized
+* Existing verified relationship artifacts
+* Existing client reference data
+* Available Oracle data
+* Previously validated analyst overrides
+
+These sources should establish internal identity and internal relationships.
+
+Tier 2 — Authoritative external sources
 
-Do not remove tests merely to make the project appear smaller.
+Where accessible through approved connectors, retrieve:
 
-7. Preserve critical CCR functionality
+* SEC EDGAR disclosures
+* Relevant national corporate registries
+* Company annual reports
+* Audited financial statements
+* Official investor relations documents
+* External rating agency publications
+* Official ownership disclosures
+* Official debt and financing disclosures
 
-The cleanup must not compromise:
+Use jurisdiction-appropriate sources. Do not assume every entity is an SEC filer.
 
-* CAM document ingestion
-* TFA and counterparty identifier mapping
-* CAGID, GFCID, LEI, CIK, and other supported identifiers
-* Direct relationship discovery
-* Indirect and multi-hop relationship discovery
-* Parent/subsidiary relationship mapping
-* Ownership and financial relationship extraction
-* Oracle database integration
-* R2D2 integration
-* Claude/Opus refinement where configured
-* Evidence verification and confidence assessments
-* Correlation analytics
-* Network graphs
-* Portfolio analytics
-* Stress analytics
-* Existing frontend UI and navigation
+Tier 3 — Supplementary information
 
-Preserve provenance, source references, confidence scores, and review-required classifications.
+Use approved market and external research sources to discover:
 
-Do not replace actual data with mocked or fabricated data to make tests pass.
+* Recent financing arrangements
+* Major business relationships
+* Ownership changes
+* Joint ventures
+* Strategic partnerships
+* Material acquisitions
+* Customer and supplier dependencies
+* Potential indirect exposure pathways
 
-8. Current application behavior must be preserved
+Use these sources to generate candidates that require verification.
 
-The application is accessible locally at:
+Preserve source authority, date, URL or internal document reference, and extraction details.
 
-http://127.0.0.1:8000/
+Never represent unverified news or AI inference as authoritative fact.
 
-Existing features and routes must remain compatible.
+5. Build the enrichment pipeline
 
-Verify that the cleanup does not introduce regressions in:
+Implement the following workflow:
 
-* /api/stats
-* Live entity selection
-* Relationship maps
-* Database record statistics
-* Exposure analytics
-* Network graphs
-* Available API endpoints and frontend screens
+COMPLETE ENTITY UNIVERSE
+          |
+          v
+CANONICAL IDENTITY RESOLUTION
+          |
+          v
+INTERNAL CAM / TFA / REFERENCE DATA
+          |
+          v
+APPROVED EXTERNAL DATA RETRIEVAL
+          |
+          v
+STRUCTURED FACT EXTRACTION
+          |
+          v
+ENTITY & RELATIONSHIP MATCHING
+          |
+          v
+R2D2 / APPROVED LLM REFINEMENT
+          |
+          v
+DETERMINISTIC EVIDENCE VALIDATION
+          |
+          v
+ENRICHED ENTITY REGISTRY
+          |
+          v
+VERIFIED RELATIONSHIP GRAPH
+          |
+          v
+CREDIT RISK INTELLIGENCE UI
 
-The application currently has incomplete or unavailable live-data displays. Record this as a baseline condition.
+Every stage should produce a structured output with a clear status and provenance.
 
-Do not interpret an existing data-loading problem as a cleanup regression, and do not claim the cleanup has fixed it without evidence.
+Preserve the existing code and reuse working components instead of creating duplicate pipelines.
 
-Do not redesign the frontend or change its appearance.
+6. LLM-assisted enrichment using R2D2 and Opus
 
-9. Safe implementation strategy
+Investigate the existing R2D2 integration and approved model routing.
 
-Execute the work in controlled stages.
+Use the currently available models according to their strengths.
 
-Stage 1 — Inventory
+Evidence extraction
 
-Map all source files, dependencies, execution entry points, and active runtime paths.
+Use an approved efficient model to process retrieved evidence and extract structured facts.
 
-Stage 2 — Baseline
+Relationship refinement
 
-Record Git status, application startup behavior, relevant API responses, frontend build status, and test results.
+Use Claude Opus through the approved R2D2 route, where available, to assess:
 
-Establish a recoverable baseline.
+* Whether two entities have a genuine relationship.
+* Whether a relationship is direct or indirect.
+* The type and direction of the relationship.
+* Whether the relationship involves ownership, financing, lending, guarantees, or commercial dependence.
+* Whether the relationship is current or historical.
+* Whether evidence supports the specific legal entities involved.
+* Whether the relationship should be accepted or flagged for review.
 
-Stage 3 — Cleanup
+The LLM must return structured results linked to the evidence.
 
-Delete verified disposable files, remove obsolete clutter, consolidate safe duplicates, and update .gitignore.
+Do not ask models to generate unsupported relationships from general knowledge.
 
-Stage 4 — Structural organization
+Do not transmit confidential internal identifiers, exposure amounts, or CAM content to unapproved external services.
 
-Move source files into logical directories where beneficial.
+All processing must comply with existing enterprise-approved data handling and AI access restrictions.
 
-Update imports, paths, references, scripts, and configurations.
+7. Relationship intelligence
 
-Prefer minimal, incremental changes over a large architectural rewrite.
+For each entity, discover and validate relevant relationships.
 
-Stage 5 — Verification
+Prioritize:
 
-Run available checks appropriate to the repository:
+* Parent/subsidiary
+* Ownership and control
+* Borrower/lender
+* Loan syndication
+* Guarantor/guaranteed entity
+* Sponsor/SPV
+* Joint venture
+* Investor/investee
+* Customer/supplier
+* Strategic partnership
+* Other supported financial dependencies
 
-* Python import verification
-* Backend startup
-* API smoke tests
-* Frontend build
-* Essential unit tests
-* Integration tests where dependencies are available
-* Entity resolution and CAM pipeline regression tests
-* Relationship graph integrity checks
-* Git diff and file-path consistency checks
+Classify each as:
 
-Do not report checks as passed unless they actually execute successfully.
+DIRECT: Verified direct connection supported by appropriate evidence.
 
-Stage 6 — Final cleanup
+INDIRECT: A traceable multi-hop connection composed of valid underlying relationships.
 
-Remove residual temporary files generated by the cleanup itself.
+HIDDEN CANDIDATE: A potentially material connection discovered through analysis but requiring further evidence or human review.
 
-Update documentation and verify that the resulting repository has a clear entry point.
+Do not classify speculative relationships as confirmed.
 
-10. Repository hygiene
+Preserve multiple independent relationships between the same two entities.
 
-Ensure:
+For every relationship, store:
 
-* One clear backend startup procedure
-* One clear frontend startup procedure
-* Consistent configuration management
-* Appropriate .gitignore rules
-* No unnecessary generated files under source directories
-* No accidental source-code duplication
-* No hardcoded secrets
-* No machine-specific absolute paths
-* Clean import structure
-* Reproducible Windows development setup
-* Clear dependency specifications
-* No unnecessary package installations
+* Source entity ID
+* Target entity ID
+* Relationship type
+* Direction
+* Evidence references
+* Source date and effective date, if available
+* Confidence and verification status
+* LLM refinement outcome
+* Human review status
 
-Keep the solution compatible with the existing Windows development environment.
+Avoid confusing a facility participant, arranger, agent, or lender with a direct creditor to every named participant.
 
-Do not introduce Docker, a new framework, a database migration, or external services solely for repository cleanup.
+8. Credit risk enrichment
 
-11. Final deliverables
+Populate the existing Credit Risk Intelligence panel from verified data.
 
-After implementation, provide:
+Identity
 
-A. Repository structure
+Legal name, canonical identifiers, jurisdiction, group, parent, and entity classification.
 
-Show the resulting simplified directory tree, excluding caches and generated artifacts.
+External ratings
 
-B. Cleanup summary
+Agency, rating, outlook, rating date, rated legal entity, and source.
 
-Report the number of:
+Do not substitute parent ratings for subsidiary ratings.
 
-* Files removed
-* Directories removed
-* Files reorganized
-* Duplicate implementations consolidated
-* Files preserved for review
+Do not confuse Citi internal ORR with external agency ratings.
 
-C. Deletion manifest
+Financials
 
-List removed files and the reason for deletion. Provide a separate list of files preserved because safe deletion could not be established.
+Retrieve available financial statements and key financial indicators:
 
-D. Verification results
+* Revenue
+* EBITDA
+* Total assets
+* Total debt
+* Net debt
+* Equity
+* Operating cash flow
+* Liquidity metrics
+* Leverage ratios
+* Interest coverage
 
-Show actual executed tests, build results, API checks, failures, and environmental limitations.
+Each numeric observation must preserve its reporting period, currency, units, consolidation basis, and source.
 
-E. Remaining technical debt
+Do not invent financials for private entities or SPVs.
 
-Identify unresolved architectural problems separately from the repository cleanup.
+Market data
 
-12. Non-negotiable constraints
+Where verified data exists, provide:
 
-1. No frontend redesign.
-2. No unnecessary business-logic rewriting.
-3. No loss of CAM evidence or relationship data.
-4. No loss of AI refinement functionality.
-5. No destruction of important experiments.
-6. No removal of essential regression tests.
-7. No changes to external enterprise systems.
-8. No broad destructive operations without verified scope and recoverability.
-9. No unrelated feature development.
-10. No declaring success without validation.
+* Equity information
+* CDS information
+* Bond or credit-spread indicators
+* Relevant market movements
 
-FINAL INSTRUCTION
+Private entities without listed securities should have an appropriate unavailable or not-applicable status.
 
-Act like a senior engineer responsible for maintaining this codebase long-term.
+Relationships
 
-Inspect first, establish a baseline, execute safe cleanup and restructuring, verify the results, and report exactly what changed.
+Display direct, indirect, and review-required connections with evidence and relationship type.
 
-The goal is a smaller, cleaner, easier-to-navigate CCR Correlation repository with no unnecessary clutter and no avoidable functional regressions.
+Risk indicators
 
-Do not stop after producing a plan. Execute the verified cleanup, and clearly identify any deletions that require a separate decision.
+Calculate supported risk indicators using explicit, documented methodologies.
+
+Do not fabricate default probabilities, credit correlations, or exposure amounts.
+
+9. Coverage and completeness tracking
+
+Implement a coverage registry for the entire entity universe.
+
+Each entity should have an enrichment status:
+
+* Pending
+* In progress
+* Enriched
+* Partially enriched
+* Unresolved
+* Failed
+* Review required
+
+Track field-level coverage separately from entity-level completion.
+
+A completed attempt does not mean all requested data exists.
+
+Add backend metrics for:
+
+* Total eligible entities
+* Attempted entities
+* Successfully resolved identities
+* Partially enriched entities
+* Verified financial records
+* Verified external ratings
+* Verified relationships
+* Indirect paths discovered
+* Review-required relationships
+* Failed requests
+* Unresolvable records
+
+Keep entity universe counts separate from graph node counts, client counts, and relationship counts.
+
+All displayed counts must be sourced from real backend records.
+
+10. Efficient, resumable processing
+
+The universe must be processed without requiring one enormous synchronous request.
+
+Implement:
+
+* Bounded enrichment jobs
+* Configurable concurrency
+* Rate limiting
+* Retry with exponential backoff
+* Timeouts
+* Persistent checkpoints
+* Resume after interruption
+* Idempotent processing
+* Deduplicated retrieval
+* Model token and cost tracking
+* Per-entity error isolation
+* Incremental updates
+
+Do not rerun successful enrichment unnecessarily.
+
+Cache validated facts with timestamps and sensible refresh policies.
+
+Do not automatically restart expensive AI jobs merely because the browser refreshes or the backend restarts.
+
+Provide explicit user controls for starting, pausing, and resuming enrichment.
+
+11. Quality validation
+
+Accuracy takes priority over quantity.
+
+Enforce:
+
+1. Deterministic identity matching where possible.
+2. Evidence-backed factual assertions.
+3. Correct legal-entity attribution.
+4. Relationship direction validation.
+5. Separation of confirmed facts and hypotheses.
+6. Detection of contradictory evidence.
+7. Date and source freshness tracking.
+8. Preservation of historical relationships.
+9. Human review for ambiguous material relationships.
+10. No fabricated identities, financials, or exposure amounts.
+
+Create regression cases for similarly named companies, parent/subsidiary ambiguity, syndicated lending relationships, SPVs, and anonymous counterparties.
+
+Use an independently reviewed reference set to measure identity matching precision and recall, relationship precision and recall, and false-positive rates.
+
+Do not improve reported coverage by lowering evidence standards.
+
+12. Frontend integration
+
+Maintain the existing CCR Relationship Intelligence design.
+
+Do not redesign or replace the UI.
+
+Improve the existing components to support:
+
+* Complete searchable entity registry
+* Individual entity enrichment status
+* Field-level source and freshness information
+* Verified direct and indirect relationships
+* Review-required candidates
+* Available financial and rating information
+* Enrichment progress and failure explanations
+
+Make sure selecting any eligible entity loads that entity’s own enriched record.
+
+Do not display the previous selected entity’s data or a generic fallback profile.
+
+Avoid rendering hundreds of entities simultaneously in the network map.
+
+Load entity-specific subgraphs on demand, with appropriate pagination and expansion.
+
+13. Execution plan
+
+Implement incrementally:
+
+Phase 1 — Diagnose
+
+Identify why the selectable universe is significantly larger than the enriched graph universe.
+
+Audit the existing enrichment pipeline, identity mappings, source coverage, and database persistence.
+
+Phase 2 — Master registry
+
+Ensure all eligible entities are represented consistently with canonical identifiers and source lineage.
+
+Phase 3 — Enrichment integration
+
+Connect internal and authorized external retrieval to the canonical registry.
+
+Phase 4 — AI refinement
+
+Integrate structured, evidence-constrained R2D2/Opus refinement and deterministic validation.
+
+Phase 5 — Persistent storage
+
+Store enriched entity profiles, relationship evidence, enrichment states, and refresh timestamps.
+
+Phase 6 — Full-universe execution
+
+Run a representative pilot covering public companies, private companies, banks, subsidiaries, and SPVs.
+
+Validate the pilot and correct systematic errors before scaling to the entire eligible universe.
+
+Phase 7 — Frontend verification
+
+Confirm enriched results appear in the existing application with correct attribution and confidence.
+
+Preserve existing functionality throughout.
+
+14. Final acceptance criteria
+
+The task is complete only when:
+
+* Every eligible entity is registered and has an enrichment status.
+* Every eligible entity has been attempted or has a documented exclusion reason.
+* Successfully retrieved facts are persisted and can be retrieved through the API.
+* Entity identity is validated before relationships are published.
+* Direct, indirect, and review-required relationships are clearly distinguished.
+* External ratings and financials appear only when supported by evidence.
+* No existing validated CAM relationships are lost.
+* Failed entities can be retried independently.
+* Enrichment can resume after interruption.
+* The frontend displays the correct data for the selected legal entity.
+* Tests demonstrate no material regression in existing functionality.
+
+Provide final quantitative coverage metrics and a list of unresolved entities.
+
+Do not claim that an entity is fully enriched when authoritative information is unavailable.
+
+NON-NEGOTIABLE INSTRUCTIONS
+
+* Preserve the existing frontend design.
+* Preserve working backend functionality.
+* Reuse existing R2D2 integrations.
+* Use Opus for complex refinement only when justified.
+* Do not create another disconnected enrichment pipeline.
+* Do not use fabricated or demo data.
+* Do not mix parent and subsidiary financials or ratings.
+* Do not expose proprietary internal records to unapproved services.
+* Do not undertake unrelated repository cleanup or major architectural redesign.
+* Do not stop at analysis; implement and verify the solution.
+
+FINAL OBJECTIVE
+
+Transform CCR Relationship Intelligence from a limited relationship visualization into an evidence-backed entity intelligence platform capable of enriching the entire available client universe, identifying accurate direct and indirect relationships, and supporting credit risk analysis through reliable, traceable information.
