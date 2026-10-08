@@ -1,331 +1,206 @@
-CLEANUP IS ACCEPTED.
+DO NOT IMPLEMENT FROM THE OCTOBER 1 AUDIT DIRECTLY.
 
-Do not undo the completed cleanup commits.
+That file is historical and partially superseded.
 
-Do not continue repository cleanup now.
-Do not change the frontend yet.
-Do not reopen ADK grounding debugging.
-Do not restore SQLite.
+Use today's cleanup addendum and current runtime as authoritative.
 
-We now move to the REAL production CCR relationship pipeline.
+Perform a bounded CURRENT-vs-HISTORICAL reconciliation only.
 
 ==================================================
-FIRST: CONFIRM THE PRODUCTION RELATIONSHIP STORE
+1. CURRENT STATE FIRST
 ==================================================
 
-Before implementing anything, inspect the current 364-row production
-relationship artifact loaded by the production API.
+Inspect the CURRENT production runtime and report:
 
-Report:
-
-- exact Parquet/file path
-- schema
-- row count
-- unique entity count
-- relationship types
-- evidence-status values
-- source/provenance values
-- direct/indirect/hidden representation if any
+- current production relationship artifact path
+- current row count
+- current schema
+- current relationship types
+- DIRECT / INDIRECT / HIDDEN counts
+- evidence statuses
+- source types
+- provenance fields
+- scoring/weight fields
 - canonical entity ID fields
-- whether multiple relationships between the same pair are supported
-- whether hierarchy/ownership relationships already exist
-- whether relationship strength/scoring already exists
+- whether multiple edge types per pair are preserved
 
-Do not create another relationship store.
-
-This current production relationship artifact must be reused or carefully
-extended.
+Do not use October 1 counts as current facts.
 
 ==================================================
-SECOND: NVIDIA PRODUCTION SLICE
+2. RECOVER ONLY ANALYTICAL LOGIC
 ==================================================
 
-Find NVIDIA Corporation by canonical CAGID/entity ID in the production
-canonical universe.
+From the historical implementation identify the exact reusable code for:
 
-Then extract the complete NVIDIA-connected slice from:
+- canonical relationship taxonomy
+- base relationship weights
+- source-quality weights
+- recency multiplier
+- financial-materiality multiplier
+- relationship score formula
+- hierarchy / parent / ultimate-parent logic
+- direct / indirect / hidden classification
+- typed path logic
+- candidate scoring / ranking
 
-1. current production relationship artifact
-2. CAM passages / entity mentions
-3. existing CAM-derived relationship candidates
-4. existing validated external evidence
-5. existing review-required candidates
+For each item classify:
 
-Report what ALREADY exists before generating anything new.
-
-==================================================
-THIRD: CAM FACTS AND EXPOSURES
-==================================================
-
-For NVIDIA and its connected entities, inspect CAM deterministically for:
-
-- Citi EXP
-- TFA
-- facility amounts
-- lending exposure
-- RLR
-- FORR
-- country of risk
-- industry / sector
-- parent
-- subsidiary
-- ownership
-- guarantor
-- collateral
-- maturity
-- customer
-- supplier
-- investor / investee
-- strategic partnership
-- lease
-- offtake
-- financing
-- material contracts
-- hierarchy relationships
-
-For each extracted value preserve:
-
-- canonical entity ID
-- field name
-- raw value
-- normalized value
-- CAM document
-- page/section
-- exact excerpt
-- extraction timestamp
-
-Do not infer numerical exposure fields.
+KEEP_CURRENT
+REUSE_HISTORICAL_LOGIC
+ADAPT
+DO_NOT_RESTORE
 
 ==================================================
-FOURTH: CANONICAL DATA CLASSES
+3. DO NOT RESTORE THESE HISTORICAL BEHAVIORS
 ==================================================
 
-Use:
+Explicitly reject:
 
-FACT
-DERIVED
-EXPOSURE
-AI_CANDIDATE
-
-FACT
-= explicit CAM or validated external evidence.
-
-EXPOSURE
-= Citi internal exposure information.
-
-DERIVED
-= deterministic calculation from verified facts.
-
-AI_CANDIDATE
-= proposed relationship requiring further validation.
-
-Do not mix these classes.
+- monolithic old src/main.py architecture
+- old four-company sample mode
+- duplicate-CAGID row processing
+- old demo runtime paths
+- placeholder extractors/checkers
+- verify=False TLS behavior
+- RPR-named runtime dependencies
+- silent unknown-type fallback weight of 0.3
+- old generated-report architecture
+- old 59-row output as source of truth
 
 ==================================================
-FIFTH: RELATIONSHIP TYPES
+4. TAXONOMY NORMALIZATION
 ==================================================
 
-Ensure the production relationship model supports at least:
+The old audit shows noncanonical values such as:
 
-parent
-subsidiary
-ownership
-investor
-investee
-supplier
-customer
-guarantor
-borrower
-lender
-strategic_partner
-joint_venture
-lessor
-lessee
-offtaker
-provider
-financing
-collateral_dependency
-commercial_dependency
-shared_project
-SPV_relationship
+named_supplier/customer
+board_interlock / key_person_overlap
+M&A activity (divestiture)
+M&A activity (acquisition)
+acquisition
+debt/financing
 
-Do not fabricate missing relationships.
+Do not assign these a generic 0.3 score.
 
-Do not collapse different relationship types between the same entity pair.
+Create/reuse explicit mapping:
 
-==================================================
-SIXTH: INDIRECT
-==================================================
+raw_relationship_type
+→ canonical_relationship_type
+→ taxonomy_status
 
-Indirect relationships must be graph-derived from VERIFIED direct edges.
+taxonomy_status:
 
-Example:
-
-NVIDIA → A
-A → B
-
-creates:
-
-NVIDIA → A → B
-
-Store separately from direct facts:
-
-- origin
-- destination
-- path
-- hop count
-- edge relationship types
-- path strength
-- supporting edge IDs
-
-Use recovered typed-path logic if it exists.
-
-==================================================
-SEVENTH: HIDDEN / REVIEW REQUIRED
-==================================================
-
-Hidden relationships are not automatically facts.
-
-R2D2 / Opus may identify:
-
-- common supplier
-- common customer
-- shared project
-- shared SPV
-- common financing
-- common guarantor
-- infrastructure dependency
-- revenue dependency
-
-Initially store as:
-
-AI_CANDIDATE
+CANONICAL
+NORMALIZED_ALIAS
 REVIEW_REQUIRED
+UNSUPPORTED
 
-For every REVIEW_REQUIRED item, retain an explicit reason such as:
-
-ENTITY_AMBIGUOUS
-INSUFFICIENT_EVIDENCE
-CONTRADICTORY_EVIDENCE
-MISSING_DIRECT_SOURCE
-UNRESOLVED_DIRECTION
-UNRESOLVED_CANONICAL_ID
-
-This will make "Review Required" meaningful in the UI later.
+Only CANONICAL or validated NORMALIZED_ALIAS values may enter verified graph scoring.
 
 ==================================================
-EIGHTH: R2D2 + OPUS
+5. CURRENT CAM IS PRIMARY INTERNAL EVIDENCE
 ==================================================
 
-Only after existing production/CAM facts have been inventoried:
+The historical audit says CAM was not active in the old extraction path.
 
-Use R2D2 for targeted evidence retrieval.
+That is obsolete.
 
-Then use Opus to refine:
+Current architecture must use:
 
-- entity reconciliation
-- hierarchy
-- ownership
-- relationship classification
-- direction
-- duplicate handling
-- contradictions
-- candidate ranking
+CAM evidence index
++
+canonical entity resolution
++
+existing relationship artifact
++
+external evidence
++
+R2D2
++
+Opus refinement
 
-Opus must return structured JSON.
-
-Opus may not create Citi EXP/TFA.
-
-Opus may not promote unsupported relationships to FACT.
-
-==================================================
-NINTH: DIRECT EXTERNAL SOURCES
-==================================================
-
-Reuse the already-proven direct-fetch implementation.
-
-Do not depend on generic grounded-search metadata.
-
-Use:
-
-SEC
-official company IR
-company newsroom
-annual reports
-approved direct publisher sources
-
-Known URL
-→ direct fetch
-→ source text
-→ exact excerpt
-→ deterministic validator
+CAM must not be omitted.
 
 ==================================================
-TENTH: DO NOT TOUCH FRONTEND YET
+6. SECURITY / CONFIG CLEANUP
 ==================================================
 
-The frontend currently has only a static delivered artifact.
+Do not restore:
 
-Do not continue editing frontend/dist/index.html while building the backend.
+verify=False
 
-First make the NVIDIA backend production slice correct.
+or old RPR environment-variable dependencies.
 
-Frontend integration will be a separate phase.
+Report any remaining references to:
+
+RPR_VERTEX_BASE_URL
+RPR_STEP25_MAX_CONCURRENT
+RPR-specific paths/configuration
+
+and classify whether they are still active.
+
+Do not change them yet unless clearly safe and CCR-specific replacement already exists.
 
 ==================================================
-ACCEPTANCE REPORT
+7. ENTITY DUPLICATION
 ==================================================
+
+The historical audit identified duplicate CAGIDs in the old reference list.
+
+Check the CURRENT canonical entity universe.
+
+Do not assume this old defect still exists.
 
 Report:
 
-PRODUCTION RELATIONSHIP ARTIFACT:
-<path>
+physical rows
+unique CAGIDs
+duplicate CAGID count
+whether current canonical loader deduplicates correctly
 
-ROWS:
+Do not change canonicalization unless current evidence proves a defect.
+
+==================================================
+8. FINAL DELTA REPORT
+==================================================
+
+Return:
+
+CURRENT RELATIONSHIP ARTIFACT:
+<path / rows>
+
+CURRENT TAXONOMY:
 <count>
 
-NVIDIA EXISTING DIRECT:
-<count>
+HISTORICAL LOGIC TO REUSE:
+<list>
 
-NVIDIA NEW VERIFIED DIRECT:
-<count>
+HISTORICAL LOGIC TO REJECT:
+<list>
 
-NVIDIA INDIRECT:
-<count>
+CURRENT CAM ACTIVE:
+YES/NO
 
-NVIDIA REVIEW_REQUIRED:
-<count>
+CURRENT DUPLICATE-CAGID ISSUE:
+YES/NO
 
-HIERARCHY RELATIONSHIPS:
-<count>
+CURRENT RPR RUNTIME DEPENDENCY:
+YES/NO
 
-OWNERSHIP RELATIONSHIPS:
-<count>
+CURRENT verify=False:
+YES/NO
 
-CITI EXP:
-POPULATED / NOT_PRESENT
+SCORING:
+CURRENT / ADAPT HISTORICAL / MISSING
 
-TFA:
-POPULATED / NOT_PRESENT
+INDIRECT PATH LOGIC:
+CURRENT / ADAPT HISTORICAL / MISSING
 
-RLR:
-<value/not present>
+HIERARCHY:
+CURRENT / ADAPT HISTORICAL / MISSING
 
-FORR:
-<value/not present>
+STOP after this report.
 
-R2D2:
-WORKING / BLOCKED
-
-OPUS:
-WORKING / BLOCKED
-
-DIRECT SOURCE:
-WORKING / BLOCKED
-
-TESTS:
-<passed>/<total>
-
-Do not alter the frontend.
-
-STOP after the NVIDIA production backend slice is complete.
+Do not edit frontend.
+Do not run broad enrichment.
+Do not create another relationship store.
