@@ -1,232 +1,405 @@
-CCR Relationship Intelligence — 10-Company DuckDB Production View and Fast Frontend
+# CCR Relationship Intelligence — Execute 10-Company Hybrid CAM Pilot and Assess Results
 
-OBJECTIVE
+## Objective
 
-Consolidate the implementation around only 10 selected companies.
+Execute the hybrid CAM extraction approach for the existing ten-company production cohort.
 
-Do not analyze, enrich, calculate graph paths for, or display the entire production entity universe.
+Combine our established CAM evidence index with the MapReduce-style LLM extraction architecture, followed by semantic checking, Opus refinement where appropriate, deterministic verification and graph analytics.
 
-Create a dedicated, optimized DuckDB analytical layer restricted to the 10-company cohort, and make the existing production frontend use that layer exclusively.
+**This is an execution and validation task, not another general audit or architecture proposal.**
 
-This is a focused production implementation, not a demonstration.
+We want measurable results for each company individually, a consolidated comparison, and your independent technical opinion about whether the hybrid approach is better than our previous implementation.
 
-1. Fixed company cohort
+## 1. Scope — exactly 10 production clients
 
-Use the following 10 priority organizations:
+Use the existing canonical production cohort:
 
-1. NVIDIA
-2. Oracle
-3. OpenAI
-4. Microsoft
-5. Amazon
-6. Alphabet
-7. CoreWeave
-8. Intel
-9. Hut 8
-10. TSMC
+1. NVIDIA Corporation
+2. Oracle Corporation
+3. Intel Corporation
+4. Microsoft Corporation
+5. Amazon.com Inc.
+6. Alphabet Inc.
+7. CoreWeave Inc.
+8. Taiwan Semiconductor Manufacturing Company
+9. OpenAI OpCo LLC
+10. Hut 8 Corporation
 
-Resolve each organization to its appropriate canonical legal entity using the existing production entity master.
+Resolve each against the current canonical entity universe.
 
-Store validated CAGIDs and available other identifiers in one cohort configuration.
+Preserve exact legal-entity identities. Do not merge parent companies, subsidiaries or affiliated entities simply because they share a corporate family.
 
-Do not fabricate legal entities, identifiers or Citi client status. Flag unresolved companies for review instead of silently substituting another company.
+Process only these ten as seed companies. Related external entities may be discovered, resolved and retained as counterparties.
 
-2. Create dedicated DuckDB views
+Use actual production CAM documents, indexed evidence and existing production relationship records. No demo or fabricated data.
 
-Reuse the current DuckDB-over-Parquet architecture.
+## 2. Establish baseline before execution
 
-Implement these logical views, adapting their names and schemas to existing code where appropriate:
+For every company capture the current state:
 
-* v_cohort_entities — the selected canonical entities.
-* v_cohort_relationships — physical relationship records between cohort entities.
-* v_cohort_verified_edges — fully evidence-verified direct graph edges.
-* v_cohort_indirect_paths — graph-derived paths within the cohort.
-* v_cohort_candidates — hidden and review-required candidate records.
-* v_cohort_facts — CAM and validated external facts attributed to cohort entities.
-* v_cohort_exposures — sourced Citi EXP, TFA and facility data.
-* v_cohort_evidence — citations and provenance for cohort records.
+- Existing verified direct relationships.
+- Existing review-required candidates.
+- Existing indirect paths.
+- Existing hidden relationship candidates.
+- Unique related companies.
+- Source document coverage.
+- Entity-resolution status.
+- Existing evidence quality.
 
-Use existing data models and verification rules.
+Record this baseline before running additional extraction.
 
-Strict cohort boundary: both graph endpoints and every intermediate path entity must belong to the 10-company cohort. External company mentions may remain in source evidence, but they must not create additional analytical nodes or trigger enrichment outside the cohort.
+Do not modify historical verified records or overwrite the canonical production relationship artifact.
 
-If this restriction prevents indirect paths from being formed, show zero valid paths rather than manufacturing connections.
+## 3. Execute the hybrid extraction
 
-Do not overwrite full-universe Parquet data or create a new persistent production database.
+Use:
 
-3. Optimize performance
+CAM INDEX → RETRIEVE → MAP → SEMANTIC CHECK → REDUCE → OPUS REFINEMENT → DETERMINISTIC VALIDATION → VERIFIED GRAPH.
 
-DuckDB views alone are not sufficient if every request must rescan millions of rows.
+### Stage A — Indexed retrieval
 
-Implement an efficient bounded preparation process:
+For each company:
 
-1. Resolve the cohort CAGIDs once.
-2. Filter the existing production Parquet inputs.
-3. Reuse source pushdown and efficient DuckDB joins.
-4. Persist compact, refreshable cohort Parquet snapshots where appropriate.
-5. Create DuckDB views over the compact cohort data.
-6. Precompute eligible relationship graphs and indirect paths.
-7. Cache expensive deterministic aggregations.
-8. Refresh the cohort only through an explicit controlled operation.
+- Retrieve all relevant indexed CAM documents and passages.
+- Identify applicable company aliases and identifiers.
+- Expand into surrounding sections when necessary.
+- Preserve source document, passage, page and section references.
+- Include relevant third-party CAM evidence that mentions the seed company.
+- Reuse existing parsed documents and avoid unnecessary reindexing.
 
-Keep one authoritative source of truth; cohort snapshots are rebuildable derived artifacts.
+### Stage B — MapReduce relationship extraction
 
-Do not execute R2D2, Opus or large CAM searches during ordinary frontend page loading.
+Use the MapReduce-style techniques studied in the CoreAI project, but implement them within our existing CCR architecture.
 
-4. Switch the frontend exclusively to the cohort
+Process relevant CAM sections in bounded parallel batches.
 
-The production frontend at http://127.0.0.1:8000/ must default to the 10-company cohort.
+Extract all genuinely supported relationships, including:
 
-All four pages must use the same active cohort.
+- Parent/subsidiary and ownership.
+- Strategic partnership.
+- Equity investment.
+- Lending, financing and guarantees.
+- Customer and supplier.
+- Cloud infrastructure and compute dependencies.
+- Joint ventures and contractual arrangements.
+- Material technology and operational dependencies.
+- Other approved canonical relationship types.
 
-Correlation
+Require exact evidence for every candidate.
 
-Display only the 10 primary companies.
+Do not treat simple company co-mentions as relationships.
 
-* No long list of millions of entities.
-* No automatic insertion of secondary companies.
-* Real verified direct relationships.
-* Real graph-derived indirect paths.
-* Hidden candidates shown separately.
-* Real graph selection and evidence drill-down.
+### Stage C — Semantic checker and Opus refinement
 
-Relationship Records
+Apply the existing maker/checker architecture.
 
-Load only records eligible for the cohort.
-
-Keep all valid relationship types between each selected pair.
-
-Provide filtering, searching, fullscreen expansion and fast table navigation.
-
-Credit Risk Intelligence
-
-When a user clicks a company, immediately populate its available:
-
-* Ratings
-* Financials
-* Identity
-* Ownership/hierarchy
-* Relationships
-* Exposure information
-* Graph distances
-* Evidence/provenance
-
-Stress Analytics, Portfolio Analytics and Risk Heatmap
-
-Calculate and display information only for the active cohort.
-
-No default queries over millions of entities.
-
-5. Fast data loading and interaction
-
-Target the following performance after warmup on the current workstation:
-
-Action	Performance target
-Initial frontend load	Under 2 seconds
-Fetch 10 entities	Under 200 ms
-Fetch cohort relationships	Under 500 ms
-Select company and populate dossier	Under 500 ms
-Switch dossier tabs	Under 200 ms
-Graph filter or selection	Under 300 ms
-Open relationship evidence	Under 500 ms
-
-These are engineering targets, not assumed results. Measure actual latency and report any missed targets.
-
-Use bounded payloads, efficient API responses, server-side filtering and cached deterministic data where appropriate.
-
-Do not reinitialize the full graph or reload unrelated panels when a user changes one company selection.
-
-6. Preserve accuracy
-
-All information must come from production CAM, canonical entity records, validated external sources or explicitly identified deterministic calculations.
-
-Preserve:
-
-* FACT
-* DERIVED
-* EXPOSURE
-* AI_CANDIDATE
-* REVIEW_REQUIRED
-* VERIFIED
-
-Do not display review-required relationships as verified.
-
-Do not invent exposure amounts, credit ratings, relationship strengths or missing financials.
-
-Use existing taxonomy, scoring and validation modules.
-
-7. Complete controlled enrichment
-
-For these 10 companies only:
-
-* Use existing CAM evidence.
-* Identify missing facts and relationships.
-* Run targeted R2D2 retrieval when explicitly invoked.
-* Run Claude Opus refinement when explicitly invoked.
-* Validate any new findings.
-* Update cohort snapshots.
-* Refresh the frontend views.
-
-Do not schedule research for the full canonical universe or automatically rerun investigations on browser refresh.
-
-8. Acceptance tests
+Use the approved R2D2 gateway and Opus where available.
 
 Verify:
 
-* Exactly 10 configured primary companies.
-* All resolvable entries use actual canonical identities.
-* DuckDB views return only eligible cohort entities and edges.
-* No full-universe query runs on ordinary frontend page loading.
-* No extra graph nodes appear outside the cohort.
-* No unsupported path contributes to verified indirect results.
-* Relationship Records matches the cohort data.
-* Clicking each company updates the dossier.
-* All frontend pages use the same cohort.
-* Data and evidence remain accurate.
-* Full production Parquet artifacts remain unchanged.
-* Existing tests pass.
-* Application restart preserves the cohort configuration.
-* Page refresh does not trigger enrichment.
-* Measured response times are reported.
+- Correct subject and related entity.
+- Canonical identity.
+- Relationship semantics.
+- Direction.
+- Exact source evidence.
+- Relationship taxonomy.
+- Economic relevance.
 
-9. Final delivery
+Categorize each result as ACCEPT, CORRECT, REJECT or NEEDS_REVIEW.
 
-Report:
+If Opus or another model stage fails, record the failure explicitly rather than claiming successful validation.
 
-COHORT COMPANIES: 10
+### Stage D — Deterministic validation
 
-CANONICAL ENTITIES RESOLVED:
+Enforce mandatory checks before VERIFIED status:
 
-DUCKDB COHORT VIEWS:
+- Exact source provenance.
+- Canonical IDs.
+- Valid excerpt.
+- Direction.
+- Valid taxonomy.
+- No unsupported assertions.
+- No false entity merges.
+- Independent checker outcome.
+- Preserved source lineage.
 
-COHORT RELATIONSHIP RECORDS:
+Unknown relationship types must not silently become `advisor`.
 
-VERIFIED DIRECT:
+Review-required records cannot be promoted automatically.
 
-VERIFIED INDIRECT:
+### Stage E — Reduce and graph analytics
 
-HIDDEN / REVIEW REQUIRED:
+Deduplicate equivalent claims without losing evidence or legitimate parallel relationship types.
 
-CAM FACTS:
+Calculate indirect paths only from eligible verified underlying edges.
 
-CITI EXP / TFA COVERAGE:
+Keep path provenance, intermediate entities, hop counts and edge IDs.
 
-INITIAL PAGE LOAD TIME:
+Do not manufacture indirect or hidden relationships to populate the frontend.
 
-COMPANY SELECTION LATENCY:
+## 4. Generate separate statistics for EACH company
 
-RELATIONSHIP API LATENCY:
+Create one complete report per company.
 
-DOSSIER POPULATION LATENCY:
+Use the following consistent structure:
 
-GRAPH PERFORMANCE:
+### COMPANY: [Legal entity name]
 
-TEST RESULTS:
+**A. Evidence coverage**
 
-PRODUCTION URL:
+- Canonical CAGID:
+- Number of CAM documents searched:
+- Number of documents containing relevant evidence:
+- Number of passages retrieved:
+- Number of MapReduce chunks processed:
+- Source coverage limitations:
 
-COMMIT HASH:
+**B. Relationship extraction**
 
-REMAINING BLOCKERS:
+- Existing verified direct relationships:
+- New raw candidates:
+- Candidates accepted by semantic checker:
+- Candidates corrected:
+- Candidates rejected:
+- Candidates needing review:
+- Candidates passing deterministic verification:
+- Newly verified direct relationships:
+- Total unique verified direct relationships:
+- Unique verified counterparties:
+- Duplicate claims merged:
+- Unsupported or unresolved entity references:
 
-Implement the bounded DuckDB views, switch the existing frontend to them, optimize interactions, and deliver a working 10-company production application. Do not restart architectural audits or scale beyond the cohort.
+**C. Relationship breakdown**
+
+Provide counts by canonical relationship type, such as investor, customer, supplier, strategic partner, lender, guarantor, parent, subsidiary and contractual dependency.
+
+Show the source entity, target entity, direction, type and evidence reference for each newly verified relationship.
+
+**D. Indirect and hidden dependencies**
+
+- Verified indirect paths:
+- New indirect paths compared with baseline:
+- Maximum verified hop distance:
+- Significant shared counterparties:
+- Hidden relationship hypotheses:
+- Evidence-verified hidden relationships:
+- Review-required hidden candidates:
+
+Explain every material indirect path through its underlying verified edges.
+
+**E. Financial and credit-risk significance**
+
+Where the actual evidence permits, identify:
+
+- Citi exposure or facility references.
+- TFA and committed amounts.
+- Material contractual amounts.
+- Ownership percentages.
+- Significant financial dependencies.
+- Potential credit concentrations.
+- Possible contagion pathways.
+
+Do not invent missing amounts or derive Citi exposure from external contracts.
+
+**F. Performance**
+
+- Runtime:
+- Number of LLM calls:
+- Input/output tokens:
+- Estimated cost:
+- Cache hits:
+- Errors or retries:
+- Verification success rate:
+
+**G. Individual assessment**
+
+Provide your technical interpretation:
+
+1. Did the hybrid approach discover meaningful new relationships?
+2. What did indexed-only extraction miss?
+3. What did MapReduce recover?
+4. Were the discoveries economically significant or mostly low-value associations?
+5. What evidence gaps remain?
+6. Is this company sufficiently covered for the pilot?
+7. What precise improvement should be made next?
+
+Give a per-company rating: STRONG / MODERATE / WEAK / INSUFFICIENT EVIDENCE, based on measured extraction quality and evidence coverage, not the company's creditworthiness.
+
+## 5. Produce a consolidated comparison table
+
+Generate the following table using actual execution statistics.
+
+| Company | Baseline verified direct | New verified direct | Total verified direct | Verified indirect paths | Review required | Rejected | Runtime | Quality assessment |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| NVIDIA | | | | | | | | |
+| Oracle | | | | | | | | |
+| Intel | | | | | | | | |
+| Microsoft | | | | | | | | |
+| Amazon | | | | | | | | |
+| Alphabet | | | | | | | | |
+| CoreWeave | | | | | | | | |
+| TSMC | | | | | | | | |
+| OpenAI | | | | | | | | |
+| Hut 8 | | | | | | | | |
+| TOTAL | | | | | | | | |
+
+Ensure count definitions are consistent.
+
+Separate unique business relationships from evidence rows, duplicated mentions, physical records and graph-derived paths.
+
+Do not double-count relationships discovered from both endpoints of the ten-company cohort.
+
+## 6. Evaluate the hybrid approach against the previous pipeline
+
+Compare:
+
+**Previous indexed extraction**
+
+Versus
+
+**New index + MapReduce + checker/refinement pipeline**
+
+Measure:
+
+- Additional verified relationship discoveries.
+- Coverage improvements.
+- Unsupported candidate rate.
+- Entity-resolution quality.
+- New meaningful indirect dependencies.
+- Changes in source traceability.
+- Runtime and cost.
+- Reliability and reproducibility.
+
+A higher raw candidate count alone is not an improvement.
+
+Explain whether additional verified discoveries justify the increased processing complexity and cost.
+
+If the hybrid finds few new verified relationships, investigate whether the limitation is retrieval, relationship extraction, canonical entity resolution, evidence verification or simply absence of evidence.
+
+Do not loosen validation to manufacture a better result.
+
+## 7. Luna — give your independent technical opinion
+
+After completing execution, provide your own evidence-based assessment as the implementation engineer.
+
+Answer these questions directly:
+
+**1. Which approach is better?**
+
+- Existing CAM index extraction alone?
+- Document-level MapReduce alone?
+- Hybrid index + MapReduce?
+
+Explain why, based on the ten-company execution.
+
+**2. Is our relationship database becoming genuinely useful for counterparty credit risk?**
+
+Assess whether the results support meaningful financial, contractual, ownership and infrastructure dependency analysis.
+
+**3. Are we missing important relationships?**
+
+Identify the most likely remaining gaps and whether they arise from missing CAM evidence, extraction quality, identity resolution, missing SEC/web corroboration or validation rules.
+
+**4. Is our indirect-risk methodology defensible?**
+
+Evaluate verified direct-edge coverage, typed paths, hop limits, economic materiality and the distinction between true dependencies and graph proximity.
+
+**5. Is Opus refinement adding measurable value?**
+
+Identify corrected relationships, rejected hallucinations, verified incremental discoveries and additional cost.
+
+**6. Should we scale beyond ten companies?**
+
+Give a clear GO / CONDITIONAL GO / NO GO recommendation with supporting evidence.
+
+**7. What are the five highest-impact next improvements?**
+
+Rank them by expected impact on verified relationship discovery, analytical usefulness and implementation effort.
+
+Do not provide a favorable recommendation just because the implementation completed successfully.
+
+## 8. Implementation and execution safeguards
+
+- Preserve existing production data and relationship source of truth.
+- Keep the ten-company production view in DuckDB.
+- Write new outputs to additive, versioned artifacts.
+- Maintain separate verified, review-required and rejected records.
+- No fake companies, financial values, exposures or relationships.
+- No project-wide reconstruction.
+- No dependency on the CoreAI/PHR runtime.
+- No frontend redesign during this task.
+- Bound API concurrency, retries and execution duration.
+- Capture partial results safely if a model or source fails.
+- Do not claim full completion when companies remain unprocessed.
+- Run focused acceptance tests and full regression tests.
+
+## 9. Deliverables
+
+Produce:
+
+1. `hybrid_cam_10_company_summary.md` — executive summary and your final opinion.
+2. `hybrid_cam_10_company_statistics.csv` — comparable statistics, one row per company.
+3. `hybrid_cam_relationships.parquet` — newly extracted relationship records with provenance and verification status.
+4. `hybrid_cam_indirect_paths.parquet` — verified-edge-only derived paths.
+5. `hybrid_cam_exceptions.md` — unresolved identities, missing evidence, rejected claims and runtime issues.
+6. `hybrid_cam_execution_manifest.json` — exact source hashes, model versions, prompts, timestamps, token consumption and pipeline status.
+
+Use stable paths and avoid duplicating existing relationship stores.
+
+## 10. Final response format
+
+End your execution report with:
+
+- TEN_COMPANIES_PROCESSED: X/10
+- BASELINE_VERIFIED_DIRECT:
+- NEW_VERIFIED_DIRECT:
+- TOTAL_UNIQUE_VERIFIED_DIRECT:
+- VERIFIED_INDIRECT_PATHS:
+- REVIEW_REQUIRED:
+- REJECTED:
+- OPUS_REFINEMENT_STATUS:
+- TOTAL_RUNTIME:
+- ESTIMATED_LLM_COST:
+- TEST_RESULTS:
+- HYBRID_VS_PREVIOUS: BETTER / COMPARABLE / WORSE / INCONCLUSIVE
+- LUNA_RECOMMENDATION: GO / CONDITIONAL_GO / NO_GO
+
+**Execute the ten-company experiment now, produce the individual statistics, and give your independent judgment. Do not stop after another architecture review.**
+
+
+## Reference Project — CoreAI / PHR MapReduce Pipeline
+
+The colleague's project is located at:
+
+**Project root:**
+`C:\Users\ak54743\Downloads\phr-tool-main (1)\phr-tool-main`
+
+**Backend:**
+`C:\Users\ak54743\Downloads\phr-tool-main (1)\phr-tool-main\phr-backend`
+
+**Frontend:**
+`C:\Users\ak54743\Downloads\phr-tool-main (1)\phr-tool-main\phr-frontend`
+
+Inspect the existing backend implementation, particularly:
+
+- `phr-backend/src/phr_backend/services/orchestrator.py`
+- `phr-backend/src/phr_backend/services/agents/cam_distiller.py`
+- `phr-backend/src/phr_backend/services/agents/subportfolio.py`
+- `phr-backend/src/phr_backend/services/agents/portfolio.py`
+- `phr-backend/src/phr_backend/services/agents/base.py`
+- `phr-backend/src/phr_backend/templates/indirect_exposure.yaml`
+- `phr-backend/src/phr_backend/templates/checkers/`
+
+Identify and reuse the applicable **CAM MapReduce extraction, prompts, batching, maker/checker, aggregation and evidence-preservation techniques**.
+
+Integrate the useful techniques into our existing CCR Relationship Intelligence implementation, using our current CAM index, DuckDB/Parquet, canonical entity universe, R2D2 and Opus.
+
+**Important constraints:**
+
+1. Treat the colleague's project as a read-only reference.
+2. Do not modify its files or execute its full pipeline.
+3. Do not import its runtime as a dependency.
+4. Do not copy its report data into our production relationship database.
+5. Adapt its proven extraction techniques and prompts to our stricter canonical-identity and evidence-verification requirements.
+6. Execute and compare the hybrid approach for our existing ten production clients.
+7. Produce individual statistics and your independent technical recommendation.
