@@ -1,203 +1,214 @@
-IMPORTANT STORAGE ARCHITECTURE GUARDRAIL — APPLY THIS BEFORE CONTINUING.
+FIX STRESS ANALYTICS WORLD MAP ONLY.
 
-The previous CCRIG implementation may contain an old SQLite persistence layer.
+Do not redesign the Stress Analytics page.
+Do not modify backend data.
+Do not touch CCRIG recovery, DuckDB/Parquet, CAM, relationships, or demo logic.
 
-DO NOT restore SQLite as a production/runtime database.
-
-The current CCR Relationship Intelligence data architecture is the source of truth and must remain intact.
-
-Current architecture to preserve:
-
-- canonical entities in existing Parquet artifacts
-- CAM documents/passages/entity mentions in existing Parquet artifacts
-- DuckDB as the analytical/query layer over those artifacts
-- existing relationship outputs in Parquet / JSONL or the current repository-equivalent format
-- current API/backend integration
+The current map behavior is incorrect.
 
 ==================================================
-1. RECOVER LOGIC, NOT THE OLD DATABASE
+PROBLEM
 ==================================================
 
-When examining the historical CCRIG implementation, separate:
+The current implementation appears to:
 
-A. reusable BUSINESS / ANALYTICAL LOGIC
+1. take countries contained in the live API response
+2. filter the GeoJSON to those countries
+3. calculate geographic bounds from only those countries
+4. fit those bounds to the entire SVG
 
-from:
+Because the current live data primarily contains the United States,
+the entire map becomes a large USA map.
 
-B. old PERSISTENCE / STORAGE IMPLEMENTATION
+That is NOT the intended design.
 
-Reuse where valuable:
-
-- candidate-first relationship discovery
-- relationship scoring
-- pairwise calibration
-- typed second-order paths
-- path strength
-- CounterpartyRelevance
-- EventRelevance
-- Fact / Derived / Exposure classification
-- relationship normalization
-- tests
-- R2D2/Opus orchestration logic where applicable
-
-Do NOT automatically reuse:
-
-- SQLite database
-- SQLite schemas
-- SQLite repositories/DAOs
-- old database migrations
-- old persistence-specific query code
-- old entity master
-- old duplicate data stores
+Stress Analytics is a GLOBAL country-of-risk map.
 
 ==================================================
-2. SQLITE RULE
+EXPECTED MAP
 ==================================================
 
-Search the historical CCRIG implementation for:
+Always render the COMPLETE WORLD MAP.
 
-sqlite
-sqlite3
-.db files
-SQLAlchemy SQLite URLs
-repository/DAO classes tied to SQLite
+All countries from:
 
-Report exactly what SQLite was used for.
+frontend/public/countries.geojson
 
-Classify each use as:
+must remain visible regardless of whether they have live risk data.
 
-LOGIC_COUPLED_TO_SQLITE
-PERSISTENCE_ONLY
-TEST_FIXTURE
-CACHE
-LEGACY_UNUSED
+Live API data should COLOR / annotate countries.
 
-Do NOT create or modify any SQLite production database.
+It must NOT determine the geographic viewport.
 
-SQLite may remain only as a temporary test fixture if existing isolated tests require it.
+Conceptually:
 
-It must NOT become:
-
-- canonical entity storage
-- CAM storage
-- relationship source of truth
-- exposure source of truth
-- frontend runtime database
+FULL WORLD GEOJSON
+      +
+LIVE COUNTRY RISK DATA
+      ↓
+JOIN BY NORMALIZED COUNTRY / ISO CODE
+      ↓
+COLOR MATCHED COUNTRIES
+      ↓
+UNMATCHED COUNTRIES REMAIN NEUTRAL
 
 ==================================================
-3. CURRENT DUCKDB/PARQUET REMAINS AUTHORITATIVE
+PROJECTION
 ==================================================
 
-Map recovered CCRIG concepts onto the CURRENT schemas.
+Use a normal professional world-map projection.
 
-For example:
+Preferred:
 
-old CCRIG relationship object
+d3.geoNaturalEarth1()
+
+or, if the current implementation already uses another appropriate
+world projection, preserve it.
+
+Use projection.fitExtent() / fitSize() against the FULL WORLD
+FeatureCollection.
+
+IMPORTANT:
+
+NEVER calculate the projection extent from only countries returned by
+the risk API.
+
+Projection bounds must come from the complete world geometry.
+
+==================================================
+COUNTRY DISPLAY
+==================================================
+
+Render every country polygon.
+
+Countries with live risk data:
+
+RED
+AMBER
+GREEN
+UNKNOWN
+
+according to the existing stress-signal logic.
+
+Countries without records:
+
+neutral light grey / existing "No live row" styling.
+
+Do not hide countries without exposure.
+
+The purpose is to preserve geographic context.
+
+==================================================
+DATA JOIN
+==================================================
+
+Keep current country normalization / ISO matching.
+
+Join the API records onto the world polygons.
+
+Example:
+
+United States risk row
         ↓
-current relationship Parquet/schema
-
-old candidate table
+match USA polygon
         ↓
-current candidate artifact/schema
+color USA
 
-old scoring output
+Poland has no row
         ↓
-current relationship records
-
-old path calculations
+still render Poland
         ↓
-current canonical entity IDs + verified edge data
+neutral
 
-Do not duplicate data simply to satisfy the old implementation.
+China has no row
+        ↓
+still render China
+        ↓
+neutral
+
+Do NOT remove Poland/China/etc. from the geometry.
 
 ==================================================
-4. DO NOT CREATE A SECOND SOURCE OF TRUTH
+ENTITY MARKERS
 ==================================================
 
-There must be ONE authoritative representation for each domain:
+Entity markers may be shown on countries containing relevant entities.
 
-Canonical entities
-→ existing canonical Parquet/entity structures
+Do not allow markers to alter map projection or bounds.
 
-CAM evidence
-→ existing CAM index/passages
-
-Relationships
-→ current relationship artifacts/schema
-
-Exposure
-→ CAM-derived current exposure structures
-
-Graph analytics
-→ derived from current verified relationship records
-
-Do not create a parallel SQLite copy that can diverge from these datasets.
+If multiple entities have the same country of risk, cluster/offset them
+slightly if necessary rather than changing map extent.
 
 ==================================================
-5. BEFORE IMPLEMENTING, REPORT
+VIEWPORT
 ==================================================
 
-Before making storage-related changes, show me:
+The first view must show approximately:
 
-CURRENT STORAGE
-- canonical entity location
-- CAM document/passages location
-- relationship storage
-- exposure storage
-- DuckDB views/tables
-- frontend/API read path
+North America
+South America
+Europe
+Africa
+Asia
+Australia
 
-OLD CCRIG STORAGE
-- SQLite files
-- SQLite schemas
-- what data they contained
-- which algorithms depended on them
+in one global view.
 
-REUSE PLAN
-For every old CCRIG module classify:
+Do not automatically zoom to USA or another active country.
 
-REUSE_AS_IS
-ADAPT_TO_CURRENT_SCHEMA
-LOGIC_ONLY
-DO_NOT_REUSE
+Later interactive zoom/pan is fine, but initial state must be WORLD.
 
 ==================================================
-6. TARGET ARCHITECTURE
+RESPONSIVE SIZE
 ==================================================
 
-The target must remain conceptually:
+Use the available Stress Analytics panel width.
 
-Raw / canonical Parquet
-        ↓
-DuckDB analytical/query layer
-        ↓
-CAM + canonical entities + verified relationships
-        ↓
-recovered CCRIG scoring/path algorithms
-        ↓
-derived relationship/graph artifacts
-        ↓
-API
-        ↓
-frontend
+Maintain the map aspect ratio.
 
-NOT:
+Do not distort country geometry to fill the container.
 
-DuckDB + SQLite as competing production databases.
+Leave reasonable margins around the world geometry.
 
 ==================================================
-7. STOP CONDITION
+DO NOT CHANGE
 ==================================================
 
-If the recovered CCRIG algorithms cannot currently operate without recreating SQLite:
+Do not change:
 
-STOP.
+- Stress Analytics business logic
+- stress classifications
+- API schema
+- country-of-risk derivation
+- backend
+- Correlation page
+- Portfolio Analytics
+- Risk Heatmap
+- overall CSS/theme
 
-Explain exactly which modules are coupled to SQLite and propose the smallest adapter needed to run the same logic against the current Parquet/DuckDB structures.
+This is only a geographic rendering correction.
 
-Do NOT create SQLite merely because the historical code expects it.
+==================================================
+ACCEPTANCE TEST
+==================================================
 
-Proceed only after confirming:
+With the current dataset containing mainly USA records:
 
-SQLITE_PRODUCTION_DEPENDENCY = NO
-CURRENT_DUCKDB_PARQUET_ARCHITECTURE_PRESERVED = YES
+[ ] complete world is visible
+[ ] USA is visible in its correct geographic position
+[ ] Europe is visible
+[ ] Africa is visible
+[ ] Asia is visible
+[ ] South America is visible
+[ ] Australia is visible
+[ ] USA receives its live risk styling
+[ ] countries without rows remain neutral
+[ ] NVIDIA marker remains associated with USA if appropriate
+[ ] map does not zoom automatically to USA
+[ ] country shapes are not stretched/distorted
+[ ] existing legend still works
+[ ] compile passes
+
+Take a browser screenshot after the fix.
+
+STOP after the world-map rendering is corrected.
