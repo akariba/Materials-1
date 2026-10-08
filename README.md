@@ -1,502 +1,233 @@
-TASK: Build a Complete, Accuracy-First Entity Enrichment Engine for CCR Relationship Intelligence
+CCR Relationship Intelligence — Professional Layout Rebalancing
 
-ROLE
+Act as a senior frontend engineer and UI/UX architect.
 
-Act as a Principal Software Engineer, Senior Credit Risk Data Architect, and AI/LLM Engineering Specialist.
+Project: C:\Users\ak5743\Downloads\Param\CCR Correlation
 
-Your assignment is to upgrade the existing CCR Relationship Intelligence platform into a comprehensive entity and relationship enrichment system.
+Application: http://127.0.0.1:8000
 
-This is an implementation task, not a research proposal.
+Objective
 
-Primary objective: Enrich every eligible entity in the available client universe with the maximum amount of accurate, verifiable information obtainable from approved data sources.
+Improve the existing Correlation page layout without changing its functionality, backend, data contracts, or visual identity.
 
-Do not restrict enrichment to the five-company demonstration cohort or the small subset currently represented in the relationship graph.
+The priority is to make Credit Risk Intelligence significantly wider, balance the three main columns, eliminate unnecessary whitespace, and make the relationship database easier to read.
 
-1. Critical problem to solve
+This is a frontend layout implementation task, not a redesign.
 
-The current system contains a large universe of companies, counterparties, lenders, investors, subsidiaries, SPVs, and other relationship participants.
+1. Main three-column layout
 
-However, only a small fraction have meaningful enriched information.
+Current layout has three areas:
 
-Many entities currently lack:
+1. Live Entity Universe
+2. Relationship Graph
+3. Credit Risk Intelligence
 
-* Verified legal identity
-* Parent and subsidiary information
-* Entity classifications
-* External credit ratings
-* Financial information
-* Industry and geographic classifications
-* Ownership information
-* Credit and lending relationships
-* Direct and indirect relationship evidence
-* Market indicators
-* Connection to other entities
-* Evidence provenance and confidence assessments
+Implement these desktop proportions:
 
-The application must evolve from a primarily name-and-relationship display into an entity intelligence platform.
+* Entity Universe: 25%
+* Relationship Graph: 40%
+* Credit Risk Intelligence: 35%
 
-2. Enrich the complete universe
+Use CSS Grid or the existing layout framework.
 
-Identify the actual source of the selectable PHR client universe and other active entity registries.
+Apply sensible minimum widths and responsive breakpoints. On smaller screens, stack panels rather than allowing overlapping content or excessive horizontal scrolling.
 
-Determine which records represent:
+Do not modify the existing application color palette or components unnecessarily.
 
-1. Actual Citi clients or counterparties.
-2. Legal entities belonging to a parent group.
-3. Banks, lenders, agents, and syndicate members.
-4. Investors and shareholders.
-5. Subsidiaries, SPVs, and joint ventures.
-6. Customers, vendors, and other commercial counterparties.
-7. Named entities without confirmed legal identity.
-8. Generic or anonymized descriptors that cannot be uniquely resolved.
+2. Credit Risk Intelligence — main priority
 
-Implement a deterministic, deduplicated master entity registry.
+Increase the width of Credit Risk Intelligence to approximately 35% of the main content area.
 
-Each source record must remain traceable to its origin.
+Make the following elements comfortably readable:
 
-Do not merge two legal entities merely because their names are similar.
+* Company name and canonical identifiers
+* Stress and ORR indicators
+* External agency ratings
+* CAM internal ratings
+* Financial metrics
+* Credit exposure
+* Entity identity
+* Relationship evidence
+* Distance analytics
+* Grounded investigation
 
-Distinguish parent companies, branches, subsidiaries, and individual obligors.
+Prevent identifier text, financial labels and metric values from wrapping into narrow columns unnecessarily.
 
-Every eligible entity must enter the enrichment workflow, not just entities that already have network connections.
+Use a responsive two-column grid for financial metrics when space permits.
 
-Unresolvable or anonymized records must remain visible with an explicit status rather than being assigned fabricated identities.
+On narrow widths, automatically switch financial metric cards to one column.
 
-3. Canonical entity resolution
+Preserve all five existing dossier tabs:
 
-Implement robust identity resolution using available identifiers:
+RATING | FINANCIALS | IDENTITY | RELS | DISTANCE
 
-* CAGID
-* GFCID
-* TFA identifiers
-* LEI
-* CIK
-* ISIN, where applicable
-* Ticker and exchange
-* Official legal name
-* Registered jurisdiction
-* Company registration number, where supported
+Keep the panel independently scrollable when necessary.
 
-Apply deterministic identifier matching before fuzzy matching.
+Make its content height visually aligned with the graph rather than arbitrarily extending beyond it.
 
-Use candidate generation and evidence-based disambiguation for ambiguous names.
+3. Entity Universe — reduce excessive length
 
-For example, distinguish:
+The entity list should not determine the total height of the page.
 
-* Digital Realty Trust from its individual subsidiary entities.
-* JPMorgan Chase & Co. from JPMorgan Chase Bank, N.A.
-* Citi legal entities from Citi business divisions.
-* Investment funds from their asset managers.
-* SPVs from their sponsors and parent groups.
+Set a reasonable fixed or viewport-relative panel height, using min()/clamp() or equivalent responsive CSS.
 
-Use the LLM only to assist with ambiguous candidate resolution, never to invent identifiers.
+Use internal vertical scrolling for long entity lists.
 
-Maintain verified, probable, ambiguous, and unresolved identity states.
+Keep the search field visible while scrolling.
 
-4. Data source hierarchy
+Preserve:
 
-Use all existing approved data integrations and reusable functionality.
+* All entity names
+* Canonical identifiers
+* Search functionality
+* Selection state
+* Recent entities
+* Entity filtering
 
-Tier 1 — Internal authoritative information
+Do not delete or restrict the existing PHR entity universe.
 
-Prioritize:
+4. Relationship graph — use space efficiently
 
-* CAM documents and extracted fields
-* Existing canonical client records
-* TFA mappings
-* Citi exposure information, when available and authorized
-* Existing verified relationship artifacts
-* Existing client reference data
-* Available Oracle data
-* Previously validated analyst overrides
-
-These sources should establish internal identity and internal relationships.
-
-Tier 2 — Authoritative external sources
+Reduce the excessive blank space surrounding a small number of nodes.
 
-Where accessible through approved connectors, retrieve:
+The graph should:
 
-* SEC EDGAR disclosures
-* Relevant national corporate registries
-* Company annual reports
-* Audited financial statements
-* Official investor relations documents
-* External rating agency publications
-* Official ownership disclosures
-* Official debt and financing disclosures
+* Fit the selected network into the available canvas
+* Automatically center the selected entity
+* Use an appropriate initial zoom level
+* Preserve pan and manual zoom
+* Preserve node selection and relationship expansion
+* Preserve verified and review-required edge styling
+* Recalculate dimensions when the panel size changes
 
-Use jurisdiction-appropriate sources. Do not assume every entity is an SEC filer.
+Use the existing graph library and layout engine.
 
-Tier 3 — Supplementary information
+Do not change graph data or relationship eligibility.
 
-Use approved market and external research sources to discover:
+For a dense network such as Digital Realty Trust, maintain readable node spacing and avoid label overlap as much as practical.
 
-* Recent financing arrangements
-* Major business relationships
-* Ownership changes
-* Joint ventures
-* Strategic partnerships
-* Material acquisitions
-* Customer and supplier dependencies
-* Potential indirect exposure pathways
+For a small network, do not leave three tiny nodes lost in a huge blank canvas.
 
-Use these sources to generate candidates that require verification.
+5. Harmonize vertical dimensions
 
-Preserve source authority, date, URL or internal document reference, and extraction details.
+The three main panels should align at their top and bottom edges on desktop.
 
-Never represent unverified news or AI inference as authoritative fact.
+Use a common responsive height, for example:
 
-5. Build the enrichment pipeline
+clamp(620px, 76vh, 900px)
 
-Implement the following workflow:
+Treat this as a starting point, not a hardcoded requirement if it conflicts with the existing layout.
 
-COMPLETE ENTITY UNIVERSE
-          |
-          v
-CANONICAL IDENTITY RESOLUTION
-          |
-          v
-INTERNAL CAM / TFA / REFERENCE DATA
-          |
-          v
-APPROVED EXTERNAL DATA RETRIEVAL
-          |
-          v
-STRUCTURED FACT EXTRACTION
-          |
-          v
-ENTITY & RELATIONSHIP MATCHING
-          |
-          v
-R2D2 / APPROVED LLM REFINEMENT
-          |
-          v
-DETERMINISTIC EVIDENCE VALIDATION
-          |
-          v
-ENRICHED ENTITY REGISTRY
-          |
-          v
-VERIFIED RELATIONSHIP GRAPH
-          |
-          v
-CREDIT RISK INTELLIGENCE UI
+Entity list, graph and dossier should manage their own scrolling or canvas dimensions.
 
-Every stage should produce a structured output with a clear status and provenance.
+Avoid nested scrollbars wherever possible.
 
-Preserve the existing code and reuse working components instead of creating duplicate pipelines.
+The page itself must remain scrollable so that the Relationship Records table can be reached.
 
-6. LLM-assisted enrichment using R2D2 and Opus
+6. Physical Relationship Records — improve readability
 
-Investigate the existing R2D2 integration and approved model routing.
+Keep the relationship database below the main three-column workspace.
 
-Use the currently available models according to their strengths.
+Make the table full-width.
 
-Evidence extraction
+Improve the balance of its columns:
 
-Use an approved efficient model to process retrieved evidence and extract structured facts.
+* Connectivity
+* Subject
+* Related Entity
+* Relationship Type
+* Source / Date
+* Citi Exposure
+* TFA
+* Evidence Status
+* Verification
+* Evidence Detail
+* Confidence
 
-Relationship refinement
+Use suitable column widths.
 
-Use Claude Opus through the approved R2D2 route, where available, to assess:
+Allow horizontal scrolling within the table only when required.
 
-* Whether two entities have a genuine relationship.
-* Whether a relationship is direct or indirect.
-* The type and direction of the relationship.
-* Whether the relationship involves ownership, financing, lending, guarantees, or commercial dependence.
-* Whether the relationship is current or historical.
-* Whether evidence supports the specific legal entities involved.
-* Whether the relationship should be accepted or flagged for review.
+Make row evidence expansion easy to access.
 
-The LLM must return structured results linked to the evidence.
+Keep table headers visible during internal table scrolling where supported.
 
-Do not ask models to generate unsupported relationships from general knowledge.
+Do not compress text into unreadable columns or change any stored relationship records.
 
-Do not transmit confidential internal identifiers, exposure amounts, or CAM content to unapproved external services.
+7. General styling
 
-All processing must comply with existing enterprise-approved data handling and AI access restrictions.
+Preserve the current Citi-inspired styling.
 
-7. Relationship intelligence
+Improve only:
 
-For each entity, discover and validate relevant relationships.
+* Column proportions
+* Container heights
+* Internal scrolling
+* Text wrapping
+* Alignment
+* Card spacing
+* Graph canvas scaling
+* Responsive behavior
 
-Prioritize:
+Do not rewrite the frontend, replace components or introduce a new design system.
 
-* Parent/subsidiary
-* Ownership and control
-* Borrower/lender
-* Loan syndication
-* Guarantor/guaranteed entity
-* Sponsor/SPV
-* Joint venture
-* Investor/investee
-* Customer/supplier
-* Strategic partnership
-* Other supported financial dependencies
+Do not modify Portfolio Analytics, Stress Analytics or Risk Heatmap unless a shared CSS change would otherwise break them.
 
-Classify each as:
+8. Technical implementation
 
-DIRECT: Verified direct connection supported by appropriate evidence.
+Inspect the actual frontend source files and CSS.
 
-INDIRECT: A traceable multi-hop connection composed of valid underlying relationships.
+Make changes to the authoritative source, not only the compiled HTML in frontend/dist.
 
-HIDDEN CANDIDATE: A potentially material connection discovered through analysis but requiring further evidence or human review.
+Rebuild the frontend correctly.
 
-Do not classify speculative relationships as confirmed.
+Ensure the production application serves the updated build.
 
-Preserve multiple independent relationships between the same two entities.
+Avoid stale compiled assets and cache confusion.
 
-For every relationship, store:
+9. Validation
 
-* Source entity ID
-* Target entity ID
-* Relationship type
-* Direction
-* Evidence references
-* Source date and effective date, if available
-* Confidence and verification status
-* LLM refinement outcome
-* Human review status
+Test at desktop widths of approximately:
 
-Avoid confusing a facility participant, arranger, agent, or lender with a direct creditor to every named participant.
+* 1920px
+* 1440px
+* 1280px
 
-8. Credit risk enrichment
+Also check a narrower viewport.
 
-Populate the existing Credit Risk Intelligence panel from verified data.
+Validate these entity selections:
 
-Identity
+1. Digital Realty Trust — dense network
+2. Oracle Corporation — sparse or review-only network
+3. NVIDIA Corporation — small verified network
 
-Legal name, canonical identifiers, jurisdiction, group, parent, and entity classification.
+Check that:
 
-External ratings
+* Credit Risk Intelligence is visibly wider
+* Financial metric cards are readable
+* Entity list scrolls independently
+* Search remains usable
+* Graph fits its available area
+* Dense labels do not overlap excessively
+* Evidence rows remain accessible
+* Relationship table remains usable
+* Tab switching preserves state
+* No API or data behavior changes
+* No unintended regressions occur on other pages
 
-Agency, rating, outlook, rating date, rated legal entity, and source.
+10. Final delivery
 
-Do not substitute parent ratings for subsidiary ratings.
+Provide:
 
-Do not confuse Citi internal ORR with external agency ratings.
+1. Files modified.
+2. Final desktop column proportions.
+3. New panel-height strategy.
+4. Graph auto-fit changes.
+5. Relationship table changes.
+6. Frontend build result.
+7. Tests and manual UI validation results.
+8. Application URL.
 
-Financials
+Only commit after validation.
 
-Retrieve available financial statements and key financial indicators:
-
-* Revenue
-* EBITDA
-* Total assets
-* Total debt
-* Net debt
-* Equity
-* Operating cash flow
-* Liquidity metrics
-* Leverage ratios
-* Interest coverage
-
-Each numeric observation must preserve its reporting period, currency, units, consolidation basis, and source.
-
-Do not invent financials for private entities or SPVs.
-
-Market data
-
-Where verified data exists, provide:
-
-* Equity information
-* CDS information
-* Bond or credit-spread indicators
-* Relevant market movements
-
-Private entities without listed securities should have an appropriate unavailable or not-applicable status.
-
-Relationships
-
-Display direct, indirect, and review-required connections with evidence and relationship type.
-
-Risk indicators
-
-Calculate supported risk indicators using explicit, documented methodologies.
-
-Do not fabricate default probabilities, credit correlations, or exposure amounts.
-
-9. Coverage and completeness tracking
-
-Implement a coverage registry for the entire entity universe.
-
-Each entity should have an enrichment status:
-
-* Pending
-* In progress
-* Enriched
-* Partially enriched
-* Unresolved
-* Failed
-* Review required
-
-Track field-level coverage separately from entity-level completion.
-
-A completed attempt does not mean all requested data exists.
-
-Add backend metrics for:
-
-* Total eligible entities
-* Attempted entities
-* Successfully resolved identities
-* Partially enriched entities
-* Verified financial records
-* Verified external ratings
-* Verified relationships
-* Indirect paths discovered
-* Review-required relationships
-* Failed requests
-* Unresolvable records
-
-Keep entity universe counts separate from graph node counts, client counts, and relationship counts.
-
-All displayed counts must be sourced from real backend records.
-
-10. Efficient, resumable processing
-
-The universe must be processed without requiring one enormous synchronous request.
-
-Implement:
-
-* Bounded enrichment jobs
-* Configurable concurrency
-* Rate limiting
-* Retry with exponential backoff
-* Timeouts
-* Persistent checkpoints
-* Resume after interruption
-* Idempotent processing
-* Deduplicated retrieval
-* Model token and cost tracking
-* Per-entity error isolation
-* Incremental updates
-
-Do not rerun successful enrichment unnecessarily.
-
-Cache validated facts with timestamps and sensible refresh policies.
-
-Do not automatically restart expensive AI jobs merely because the browser refreshes or the backend restarts.
-
-Provide explicit user controls for starting, pausing, and resuming enrichment.
-
-11. Quality validation
-
-Accuracy takes priority over quantity.
-
-Enforce:
-
-1. Deterministic identity matching where possible.
-2. Evidence-backed factual assertions.
-3. Correct legal-entity attribution.
-4. Relationship direction validation.
-5. Separation of confirmed facts and hypotheses.
-6. Detection of contradictory evidence.
-7. Date and source freshness tracking.
-8. Preservation of historical relationships.
-9. Human review for ambiguous material relationships.
-10. No fabricated identities, financials, or exposure amounts.
-
-Create regression cases for similarly named companies, parent/subsidiary ambiguity, syndicated lending relationships, SPVs, and anonymous counterparties.
-
-Use an independently reviewed reference set to measure identity matching precision and recall, relationship precision and recall, and false-positive rates.
-
-Do not improve reported coverage by lowering evidence standards.
-
-12. Frontend integration
-
-Maintain the existing CCR Relationship Intelligence design.
-
-Do not redesign or replace the UI.
-
-Improve the existing components to support:
-
-* Complete searchable entity registry
-* Individual entity enrichment status
-* Field-level source and freshness information
-* Verified direct and indirect relationships
-* Review-required candidates
-* Available financial and rating information
-* Enrichment progress and failure explanations
-
-Make sure selecting any eligible entity loads that entity’s own enriched record.
-
-Do not display the previous selected entity’s data or a generic fallback profile.
-
-Avoid rendering hundreds of entities simultaneously in the network map.
-
-Load entity-specific subgraphs on demand, with appropriate pagination and expansion.
-
-13. Execution plan
-
-Implement incrementally:
-
-Phase 1 — Diagnose
-
-Identify why the selectable universe is significantly larger than the enriched graph universe.
-
-Audit the existing enrichment pipeline, identity mappings, source coverage, and database persistence.
-
-Phase 2 — Master registry
-
-Ensure all eligible entities are represented consistently with canonical identifiers and source lineage.
-
-Phase 3 — Enrichment integration
-
-Connect internal and authorized external retrieval to the canonical registry.
-
-Phase 4 — AI refinement
-
-Integrate structured, evidence-constrained R2D2/Opus refinement and deterministic validation.
-
-Phase 5 — Persistent storage
-
-Store enriched entity profiles, relationship evidence, enrichment states, and refresh timestamps.
-
-Phase 6 — Full-universe execution
-
-Run a representative pilot covering public companies, private companies, banks, subsidiaries, and SPVs.
-
-Validate the pilot and correct systematic errors before scaling to the entire eligible universe.
-
-Phase 7 — Frontend verification
-
-Confirm enriched results appear in the existing application with correct attribution and confidence.
-
-Preserve existing functionality throughout.
-
-14. Final acceptance criteria
-
-The task is complete only when:
-
-* Every eligible entity is registered and has an enrichment status.
-* Every eligible entity has been attempted or has a documented exclusion reason.
-* Successfully retrieved facts are persisted and can be retrieved through the API.
-* Entity identity is validated before relationships are published.
-* Direct, indirect, and review-required relationships are clearly distinguished.
-* External ratings and financials appear only when supported by evidence.
-* No existing validated CAM relationships are lost.
-* Failed entities can be retried independently.
-* Enrichment can resume after interruption.
-* The frontend displays the correct data for the selected legal entity.
-* Tests demonstrate no material regression in existing functionality.
-
-Provide final quantitative coverage metrics and a list of unresolved entities.
-
-Do not claim that an entity is fully enriched when authoritative information is unavailable.
-
-NON-NEGOTIABLE INSTRUCTIONS
-
-* Preserve the existing frontend design.
-* Preserve working backend functionality.
-* Reuse existing R2D2 integrations.
-* Use Opus for complex refinement only when justified.
-* Do not create another disconnected enrichment pipeline.
-* Do not use fabricated or demo data.
-* Do not mix parent and subsidiary financials or ratings.
-* Do not expose proprietary internal records to unapproved services.
-* Do not undertake unrelated repository cleanup or major architectural redesign.
-* Do not stop at analysis; implement and verify the solution.
-
-FINAL OBJECTIVE
-
-Transform CCR Relationship Intelligence from a limited relationship visualization into an evidence-backed entity intelligence platform capable of enriching the entire available client universe, identifying accurate direct and indirect relationships, and supporting credit risk analysis through reliable, traceable information.
+Do not perform another backend audit, CAM extraction, database rebuild or entity-enrichment operation. Focus exclusively on layout quality and usability.
