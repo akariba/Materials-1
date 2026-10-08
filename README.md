@@ -1,405 +1,305 @@
-# CCR Relationship Intelligence — Execute 10-Company Hybrid CAM Pilot and Assess Results
+ORACLE CONTROLLED CAM EXTRACTION EXPERIMENT — IMPLEMENT AND EXECUTE
 
-## Objective
+Objective
 
-Execute the hybrid CAM extraction approach for the existing ten-company production cohort.
+The current CCR production workflow has been completed, validated and committed. Preserve that working implementation.
 
-Combine our established CAM evidence index with the MapReduce-style LLM extraction architecture, followed by semantic checking, Opus refinement where appropriate, deterministic verification and graph analytics.
+Now implement and execute a controlled Oracle Corporation CAM relationship extraction experiment, comparing three approaches:
 
-**This is an execution and validation task, not another general audit or architecture proposal.**
+* A — Existing CCR indexed extraction pipeline
+* B — Colleague-style MapReduce LLM pipeline
+* C — Hybrid indexed retrieval + MapReduce + independent Opus review
 
-We want measurable results for each company individually, a consolidated comparison, and your independent technical opinion about whether the hybrid approach is better than our previous implementation.
+This is an evidence-quality and extraction-completeness experiment, not a frontend redesign or a general repository audit.
 
-## 1. Scope — exactly 10 production clients
+Do not execute this prompt while another Luna task has uncommitted changes. First confirm the previous task has finished and the working baseline is preserved.
 
-Use the existing canonical production cohort:
+Repositories and reference material
 
-1. NVIDIA Corporation
-2. Oracle Corporation
-3. Intel Corporation
-4. Microsoft Corporation
-5. Amazon.com Inc.
-6. Alphabet Inc.
-7. CoreWeave Inc.
-8. Taiwan Semiconductor Manufacturing Company
-9. OpenAI OpCo LLC
-10. Hut 8 Corporation
+Primary CCR project:
 
-Resolve each against the current canonical entity universe.
+C:\Users\ak54743\Downloads\Param\CCR Correlation
 
-Preserve exact legal-entity identities. Do not merge parent companies, subsidiaries or affiliated entities simply because they share a corporate family.
+Colleague’s implementation, READ ONLY:
 
-Process only these ten as seed companies. Related external entities may be discovered, resolved and retained as counterparties.
+C:\Users\ak54743\Downloads\phr-tool-main (1)\phr-tool-main
 
-Use actual production CAM documents, indexed evidence and existing production relationship records. No demo or fabricated data.
+Relevant colleague implementation:
 
-## 2. Establish baseline before execution
+* phr-backend/src/phr_backend/services/orchestrator.py
+* phr-backend/src/phr_backend/services/agents/cam_distiller.py
+* phr-backend/src/phr_backend/services/agents/subportfolio.py
+* phr-backend/src/phr_backend/services/agents/portfolio.py
+* phr-backend/src/phr_backend/services/analysis_config_loader.py
+* phr-backend/templates/indirect_exposure.yaml
+* Implemented maker/checker prompts and output schemas
 
-For every company capture the current state:
+Colleague audit package:
 
-- Existing verified direct relationships.
-- Existing review-required candidates.
-- Existing indirect paths.
-- Existing hidden relationship candidates.
-- Unique related companies.
-- Source document coverage.
-- Entity-resolution status.
-- Existing evidence quality.
+C:\Users\ak54743\Downloads\CoreAI_Audit_2026-10-08
 
-Record this baseline before running additional extraction.
+Historical report for comparison only:
 
-Do not modify historical verified records or overwrite the canonical production relationship artifact.
+C:\Users\ak54743\Downloads\Param\CCR Correlation\output\reports\CoreAI_relationship_report_20260928.html
 
-## 3. Execute the hybrid extraction
+IMPORTANT: The historical report’s source-producing job and document-level provenance were not established by the earlier audit. Its 12 Oracle relationship records are unverified reference candidates, NOT a validated truth set. Do not copy them into production or treat their count as an acceptance target.
 
-Use:
+Phase 1 — Establish Oracle source coverage
 
-CAM INDEX → RETRIEVE → MAP → SEMANTIC CHECK → REDUCE → OPUS REFINEMENT → DETERMINISTIC VALIDATION → VERIFIED GRAPH.
+Use Oracle Corporation’s exact canonical entity identity, CAGID 1005020529, subject to confirmation against the current canonical master.
 
-### Stage A — Indexed retrieval
+Discover all CAM documents in the existing indexed corpus that actually contain evidence about Oracle, including CAMs whose primary subject is another client.
 
-For each company:
+Use the existing:
 
-- Retrieve all relevant indexed CAM documents and passages.
-- Identify applicable company aliases and identifiers.
-- Expand into surrounding sections when necessary.
-- Preserve source document, passage, page and section references.
-- Include relevant third-party CAM evidence that mentions the seed company.
-- Reuse existing parsed documents and avoid unnecessary reindexing.
+* cam_documents
+* cam_passages
+* cam_entity_mentions
+* Canonical entity master
+* DuckDB/Parquet query infrastructure
 
-### Stage B — MapReduce relationship extraction
+Report:
 
-Use the MapReduce-style techniques studied in the CoreAI project, but implement them within our existing CCR architecture.
+1. Total indexed CAM documents.
+2. Oracle-related documents.
+3. Oracle-related passages.
+4. Direct legal-name matches.
+5. Identifier matches.
+6. Alias matches.
+7. Ambiguous matches.
+8. Relevant PDF parsing failures/timeouts.
+9. Documents excluded and why.
 
-Process relevant CAM sections in bounded parallel batches.
+Do not assume that Oracle Corporation and ORACLE GLOBAL SERVICES ROMANIA SRL are the same legal entity.
 
-Extract all genuinely supported relationships, including:
+Preserve exact legal identity, canonical IDs and parent/subsidiary mappings separately.
 
-- Parent/subsidiary and ownership.
-- Strategic partnership.
-- Equity investment.
-- Lending, financing and guarantees.
-- Customer and supplier.
-- Cloud infrastructure and compute dependencies.
-- Joint ventures and contractual arrangements.
-- Material technology and operational dependencies.
-- Other approved canonical relationship types.
+Also preserve external relationship counterparties outside the ten-company cohort when correctly resolved.
 
-Require exact evidence for every candidate.
+If the source corpus does not support a meaningful comparison, report the limitation before performing expensive LLM calls.
 
-Do not treat simple company co-mentions as relationships.
+Phase 2 — Implement three independent approaches
 
-### Stage C — Semantic checker and Opus refinement
+Pipeline A — Existing CCR baseline
 
-Apply the existing maker/checker architecture.
+Run the currently implemented indexed CAM extraction and verification pipeline.
 
-Use the approved R2D2 gateway and Opus where available.
+Do not alter its extraction logic to improve its results during this experiment.
 
-Verify:
+Persist:
 
-- Correct subject and related entity.
-- Canonical identity.
-- Relationship semantics.
-- Direction.
-- Exact source evidence.
-- Relationship taxonomy.
-- Economic relevance.
+* Retrieved source passages.
+* Raw maker outputs.
+* Candidate relationships.
+* Semantic validation decisions.
+* Deterministic validation decisions.
+* Accepted relationships.
+* Review-required relationships.
+* Rejected findings with reasons.
 
-Categorize each result as ACCEPT, CORRECT, REJECT or NEEDS_REVIEW.
+Pipeline B — Colleague-style MapReduce
 
-If Opus or another model stage fails, record the failure explicitly rather than claiming successful validation.
+Reproduce the useful processing structure from the colleague’s implementation inside a new, isolated CCR experimental module.
 
-### Stage D — Deterministic validation
+Architecture:
 
-Enforce mandatory checks before VERIFIED status:
+CAM documents/chunks
+→ Parallel MAP relationship distillation
+→ Intermediate semantic checker
+→ REDUCE cross-document consolidation
+→ Final semantic checker
+→ Deterministic validation
+→ Structured relationship records
 
-- Exact source provenance.
-- Canonical IDs.
-- Valid excerpt.
-- Direction.
-- Valid taxonomy.
-- No unsupported assertions.
-- No false entity merges.
-- Independent checker outcome.
-- Preserved source lineage.
+Adopt the proven design concepts, not the colleague’s unverified historical relationship dataset.
 
-Unknown relationship types must not silently become `advisor`.
+The MAP prompt must require:
 
-Review-required records cannot be promoted automatically.
+* Named subject and related legal entity.
+* Directional relationship.
+* Explicit relationship category.
+* Exact CAM excerpt.
+* Source document and passage/page reference.
+* Identifiers when explicitly available.
+* A relationship assertion supported by the excerpt.
 
-### Stage E — Reduce and graph analytics
+The checker must reject unsupported or speculative edges.
 
-Deduplicate equivalent claims without losing evidence or legitimate parallel relationship types.
+Do not count co-mentions, general industry exposure, financial discussion or proximity as physical relationships.
 
-Calculate indirect paths only from eligible verified underlying edges.
+The REDUCE process must preserve distinct relationships and all supporting citations rather than merging everything by entity pair.
 
-Keep path provenance, intermediate entities, hop counts and edge IDs.
+Pipeline C — Hybrid
 
-Do not manufacture indirect or hidden relationships to populate the frontend.
+Use CCR’s indexed retrieval to identify Oracle-relevant evidence first.
 
-## 4. Generate separate statistics for EACH company
+Then:
 
-Create one complete report per company.
+Indexed retrieval
+→ Context-aware MAP extraction
+→ Semantic checker
+→ REDUCE / consolidation
+→ Independent Claude Opus refinement
+→ Existing deterministic checker
+→ Canonical identity reconciliation
+→ Final evidence-backed graph records
 
-Use the following consistent structure:
+Opus must independently review evidence and verify:
 
-### COMPANY: [Legal entity name]
+* Entity A and B identities.
+* Relationship direction.
+* Relationship taxonomy.
+* Whether the excerpt actually asserts the relationship.
+* Whether the source is primary or indirect.
+* Whether aliases or subsidiaries were improperly merged.
+* Whether a relationship is duplicated or contradicted elsewhere.
 
-**A. Evidence coverage**
+Opus may correct or reject proposals. It must not invent source excerpts, IDs or relationships.
 
-- Canonical CAGID:
-- Number of CAM documents searched:
-- Number of documents containing relevant evidence:
-- Number of passages retrieved:
-- Number of MapReduce chunks processed:
-- Source coverage limitations:
+Use approved existing enterprise model routes and the CCR virtual environment. Do not introduce public consumer API access or a dependency on the colleague’s runtime.
 
-**B. Relationship extraction**
+Phase 3 — Common verification contract
 
-- Existing verified direct relationships:
-- New raw candidates:
-- Candidates accepted by semantic checker:
-- Candidates corrected:
-- Candidates rejected:
-- Candidates needing review:
-- Candidates passing deterministic verification:
-- Newly verified direct relationships:
-- Total unique verified direct relationships:
-- Unique verified counterparties:
-- Duplicate claims merged:
-- Unsupported or unresolved entity references:
+All three pipelines must be evaluated against the same verification policy.
 
-**C. Relationship breakdown**
+A relationship can be VERIFIED only if:
 
-Provide counts by canonical relationship type, such as investor, customer, supplier, strategic partner, lender, guarantor, parent, subsidiary and contractual dependency.
+1. Its source document is identifiable.
+2. The exact excerpt can be found in the underlying source.
+3. The relevant source location is retained.
+4. Both endpoints are resolved to appropriate canonical entities, or a clearly governed external-entity policy permits the target.
+5. Direction and relationship category are supported.
+6. Semantic validation passes.
+7. Deterministic validation passes.
 
-Show the source entity, target entity, direction, type and evidence reference for each newly verified relationship.
+Anything unresolved must remain REVIEW_REQUIRED or REJECTED.
 
-**D. Indirect and hidden dependencies**
+Preserve these distinctions:
 
-- Verified indirect paths:
-- New indirect paths compared with baseline:
-- Maximum verified hop distance:
-- Significant shared counterparties:
-- Hidden relationship hypotheses:
-- Evidence-verified hidden relationships:
-- Review-required hidden candidates:
+* Physical direct relationship
+* Verified multi-hop indirect relationship
+* Candidate hidden dependency
+* Unverified relationship proposal
+* Purely topological proximity
 
-Explain every material indirect path through its underlying verified edges.
+A multi-hop path is not a new direct physical relationship.
 
-**E. Financial and credit-risk significance**
+Never create a verified relationship from a candidate hidden dependency without source evidence for the underlying edges.
 
-Where the actual evidence permits, identify:
+Never promote a relationship only because a confidence label says HIGH or VERY_HIGH.
 
-- Citi exposure or facility references.
-- TFA and committed amounts.
-- Material contractual amounts.
-- Ownership percentages.
-- Significant financial dependencies.
-- Potential credit concentrations.
-- Possible contagion pathways.
+Do not write any of the three experimental outputs into existing verified production tables.
 
-Do not invent missing amounts or derive Citi exposure from external contracts.
+Phase 4 — Controlled comparative execution
 
-**F. Performance**
+Execute all three pipelines for Oracle.
 
-- Runtime:
-- Number of LLM calls:
-- Input/output tokens:
-- Estimated cost:
-- Cache hits:
-- Errors or retries:
-- Verification success rate:
+Use the same underlying CAM corpus and record source coverage differences explicitly.
 
-**G. Individual assessment**
+Keep model configurations, evaluation criteria and resource budgets comparable. If different models or context budgets are needed, disclose them in the comparison.
 
-Provide your technical interpretation:
+Record separately:
 
-1. Did the hybrid approach discover meaningful new relationships?
-2. What did indexed-only extraction miss?
-3. What did MapReduce recover?
-4. Were the discoveries economically significant or mostly low-value associations?
-5. What evidence gaps remain?
-6. Is this company sufficiently covered for the pilot?
-7. What precise improvement should be made next?
+* Retrieval time.
+* MAP time.
+* Checker time.
+* REDUCE time.
+* Total elapsed time.
+* Model calls and token usage, where available.
+* Approximate relative execution cost.
 
-Give a per-company rating: STRONG / MODERATE / WEAK / INSUFFICIENT EVIDENCE, based on measured extraction quality and evidence coverage, not the company's creditworthiness.
+Do not permit one experiment’s results to seed another.
 
-## 5. Produce a consolidated comparison table
+SEC and web enrichment should remain out of the primary CAM-only comparison. They may be used afterward in a clearly separated corroboration exercise, not to compensate silently for missing CAM evidence.
 
-Generate the following table using actual execution statistics.
+Phase 5 — Oracle comparison report
 
-| Company | Baseline verified direct | New verified direct | Total verified direct | Verified indirect paths | Review required | Rejected | Runtime | Quality assessment |
-|---|---:|---:|---:|---:|---:|---:|---:|---|
-| NVIDIA | | | | | | | | |
-| Oracle | | | | | | | | |
-| Intel | | | | | | | | |
-| Microsoft | | | | | | | | |
-| Amazon | | | | | | | | |
-| Alphabet | | | | | | | | |
-| CoreWeave | | | | | | | | |
-| TSMC | | | | | | | | |
-| OpenAI | | | | | | | | |
-| Hut 8 | | | | | | | | |
-| TOTAL | | | | | | | | |
+Generate one comparison table:
 
-Ensure count definitions are consistent.
+Metric	A: Indexed	B: MapReduce	C: Hybrid
+Relevant documents			
+Processed passages			
+Raw candidates			
+Verified distinct relationships			
+Review required			
+Rejected			
+Unique supporting citations			
+Identity ambiguities			
+Duplicate proposals			
+Unsupported relationship proposals			
+Runtime			
+Model usage/cost			
 
-Separate unique business relationships from evidence rows, duplicated mentions, physical records and graph-derived paths.
+Also produce a relationship-level comparison with:
 
-Do not double-count relationships discovered from both endpoints of the ten-company cohort.
+* Oracle legal entity.
+* Related entity.
+* Relationship type/direction.
+* Pipeline(s) finding the relationship.
+* Exact citation reference.
+* Verification outcome.
+* Reason for disagreement between pipelines.
 
-## 6. Evaluate the hybrid approach against the previous pipeline
+Calculate overlap and unique contribution:
 
-Compare:
+* Verified relationships common to all three.
+* Verified only by A.
+* Verified only by B.
+* Verified only by C.
+* Verified by two methods but absent from the third.
 
-**Previous indexed extraction**
+Manually inspect a bounded, representative set of accepted, rejected and disputed relationship records against the actual CAM source. Do not use LLM agreement as an independent accuracy measure.
 
-Versus
+Classify additional findings as genuine discoveries, duplicates, ambiguous identities or false positives.
 
-**New index + MapReduce + checker/refinement pipeline**
+Compare the historical colleague Oracle records only as an unverified candidate coverage checklist. Explain which can be reproduced from actual available CAM evidence and which cannot.
 
-Measure:
+Do not artificially maximize the relationship count.
 
-- Additional verified relationship discoveries.
-- Coverage improvements.
-- Unsupported candidate rate.
-- Entity-resolution quality.
-- New meaningful indirect dependencies.
-- Changes in source traceability.
-- Runtime and cost.
-- Reliability and reproducibility.
+Phase 6 — Decision and recommendation
 
-A higher raw candidate count alone is not an improvement.
+Provide Luna’s independent technical assessment:
 
-Explain whether additional verified discoveries justify the increased processing complexity and cost.
+1. Which architecture produces the best verified relationship coverage?
+2. Which produces fewer false positives?
+3. Which most reliably preserves provenance?
+4. Which handles cross-document evidence best?
+5. Which creates the most unresolved entity ambiguity?
+6. What is the latency and model cost trade-off?
+7. Is the hybrid objectively better enough to justify adopting it?
+8. Should MapReduce become a fallback only for difficult CAMs?
+9. Which implementation should be used for the remaining nine companies?
 
-If the hybrid finds few new verified relationships, investigate whether the limitation is retrieval, relationship extraction, canonical entity resolution, evidence verification or simply absence of evidence.
+Provide a proposed final production architecture, but do not activate it across the other nine companies yet.
 
-Do not loosen validation to manufacture a better result.
+Deliverables
 
-## 7. Luna — give your independent technical opinion
+Persist experimental artifacts under a clearly identified new CCR experiment directory, including:
 
-After completing execution, provide your own evidence-based assessment as the implementation engineer.
+* Oracle source coverage manifest.
+* Three raw extraction outputs.
+* Three checker decision sets.
+* Three verified relationship datasets.
+* Rejected/review datasets.
+* Comparison CSV/JSON.
+* Evidence audit report.
+* Model execution statistics.
+* Final architecture recommendation.
 
-Answer these questions directly:
+Add focused tests and run relevant existing regression tests.
 
-**1. Which approach is better?**
+Do not modify the colleague’s repository, canonical master, production verified relationships, or established frontend design.
 
-- Existing CAM index extraction alone?
-- Document-level MapReduce alone?
-- Hybrid index + MapReduce?
+Do not mark the experiment successful without actually running it and producing measurable results.
 
-Explain why, based on the ten-company execution.
+Final status must be one of:
 
-**2. Is our relationship database becoming genuinely useful for counterparty credit risk?**
+* ORACLE_COMPARISON_COMPLETE
+* BLOCKED_BY_SOURCE_COVERAGE
+* BLOCKED_BY_MODEL_RUNTIME
+* BLOCKED_BY_VERIFICATION
+* PARTIAL_COMPARISON
 
-Assess whether the results support meaningful financial, contractual, ownership and infrastructure dependency analysis.
+Finish with a clear recommendation based on the observed evidence, not assumptions.
 
-**3. Are we missing important relationships?**
-
-Identify the most likely remaining gaps and whether they arise from missing CAM evidence, extraction quality, identity resolution, missing SEC/web corroboration or validation rules.
-
-**4. Is our indirect-risk methodology defensible?**
-
-Evaluate verified direct-edge coverage, typed paths, hop limits, economic materiality and the distinction between true dependencies and graph proximity.
-
-**5. Is Opus refinement adding measurable value?**
-
-Identify corrected relationships, rejected hallucinations, verified incremental discoveries and additional cost.
-
-**6. Should we scale beyond ten companies?**
-
-Give a clear GO / CONDITIONAL GO / NO GO recommendation with supporting evidence.
-
-**7. What are the five highest-impact next improvements?**
-
-Rank them by expected impact on verified relationship discovery, analytical usefulness and implementation effort.
-
-Do not provide a favorable recommendation just because the implementation completed successfully.
-
-## 8. Implementation and execution safeguards
-
-- Preserve existing production data and relationship source of truth.
-- Keep the ten-company production view in DuckDB.
-- Write new outputs to additive, versioned artifacts.
-- Maintain separate verified, review-required and rejected records.
-- No fake companies, financial values, exposures or relationships.
-- No project-wide reconstruction.
-- No dependency on the CoreAI/PHR runtime.
-- No frontend redesign during this task.
-- Bound API concurrency, retries and execution duration.
-- Capture partial results safely if a model or source fails.
-- Do not claim full completion when companies remain unprocessed.
-- Run focused acceptance tests and full regression tests.
-
-## 9. Deliverables
-
-Produce:
-
-1. `hybrid_cam_10_company_summary.md` — executive summary and your final opinion.
-2. `hybrid_cam_10_company_statistics.csv` — comparable statistics, one row per company.
-3. `hybrid_cam_relationships.parquet` — newly extracted relationship records with provenance and verification status.
-4. `hybrid_cam_indirect_paths.parquet` — verified-edge-only derived paths.
-5. `hybrid_cam_exceptions.md` — unresolved identities, missing evidence, rejected claims and runtime issues.
-6. `hybrid_cam_execution_manifest.json` — exact source hashes, model versions, prompts, timestamps, token consumption and pipeline status.
-
-Use stable paths and avoid duplicating existing relationship stores.
-
-## 10. Final response format
-
-End your execution report with:
-
-- TEN_COMPANIES_PROCESSED: X/10
-- BASELINE_VERIFIED_DIRECT:
-- NEW_VERIFIED_DIRECT:
-- TOTAL_UNIQUE_VERIFIED_DIRECT:
-- VERIFIED_INDIRECT_PATHS:
-- REVIEW_REQUIRED:
-- REJECTED:
-- OPUS_REFINEMENT_STATUS:
-- TOTAL_RUNTIME:
-- ESTIMATED_LLM_COST:
-- TEST_RESULTS:
-- HYBRID_VS_PREVIOUS: BETTER / COMPARABLE / WORSE / INCONCLUSIVE
-- LUNA_RECOMMENDATION: GO / CONDITIONAL_GO / NO_GO
-
-**Execute the ten-company experiment now, produce the individual statistics, and give your independent judgment. Do not stop after another architecture review.**
-
-
-## Reference Project — CoreAI / PHR MapReduce Pipeline
-
-The colleague's project is located at:
-
-**Project root:**
-`C:\Users\ak54743\Downloads\phr-tool-main (1)\phr-tool-main`
-
-**Backend:**
-`C:\Users\ak54743\Downloads\phr-tool-main (1)\phr-tool-main\phr-backend`
-
-**Frontend:**
-`C:\Users\ak54743\Downloads\phr-tool-main (1)\phr-tool-main\phr-frontend`
-
-Inspect the existing backend implementation, particularly:
-
-- `phr-backend/src/phr_backend/services/orchestrator.py`
-- `phr-backend/src/phr_backend/services/agents/cam_distiller.py`
-- `phr-backend/src/phr_backend/services/agents/subportfolio.py`
-- `phr-backend/src/phr_backend/services/agents/portfolio.py`
-- `phr-backend/src/phr_backend/services/agents/base.py`
-- `phr-backend/src/phr_backend/templates/indirect_exposure.yaml`
-- `phr-backend/src/phr_backend/templates/checkers/`
-
-Identify and reuse the applicable **CAM MapReduce extraction, prompts, batching, maker/checker, aggregation and evidence-preservation techniques**.
-
-Integrate the useful techniques into our existing CCR Relationship Intelligence implementation, using our current CAM index, DuckDB/Parquet, canonical entity universe, R2D2 and Opus.
-
-**Important constraints:**
-
-1. Treat the colleague's project as a read-only reference.
-2. Do not modify its files or execute its full pipeline.
-3. Do not import its runtime as a dependency.
-4. Do not copy its report data into our production relationship database.
-5. Adapt its proven extraction techniques and prompts to our stricter canonical-identity and evidence-verification requirements.
-6. Execute and compare the hybrid approach for our existing ten production clients.
-7. Produce individual statistics and your independent technical recommendation.
+Execute the experiment now, after confirming that no other Luna task is still modifying the baseline.
