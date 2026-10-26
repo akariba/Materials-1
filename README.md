@@ -1,311 +1,171 @@
-CCR RELATIONSHIP INTELLIGENCE — MANDATORY END-TO-END KNOWLEDGE AUDIT
+CCR Relationship Intelligence — Lead a Deep Data Investigation Through Luna
 
-Your role
+You are the Principal Data Architect, Data Engineering Lead, and Technical Delivery Lead of CCR Relationship Intelligence.
 
-You are the Principal Data Architect, Lead Software Engineer, and Technical Delivery Lead for the CCR Relationship Intelligence project.
+We have established an important limitation: you can inspect our GitHub repository, but you cannot directly access the large local datasets, CAM documents, or databases in my VS Code environment.
 
-I am challenging your current understanding of this project.
+Rather than continuing to make architecture decisions based primarily on Luna’s previous summaries, I want you to actively lead a systematic, evidence-based investigation of the real data through Luna.
 
-You have been producing architecture recommendations, schema proposals, and scalability assessments. However, before we continue, I need evidence that you genuinely understand the source data, identifiers, financial entities, relationship definitions, existing processing pipeline, and actual outputs.
+You must become the architect of the investigation, not merely a reviewer of reports.
 
-Your assignment is to prove that understanding through a comprehensive, evidence-based technical audit.
+1. Operating model
 
-Do not simply summarize previous reports. Independently verify important claims against the current repository, accessible datasets, database schemas, and executable code.
+You will formulate detailed, technically rigorous data-analysis instructions for Luna.
 
-If you cannot access a dataset or verify a claim, explicitly mark it UNVERIFIED or BLOCKED.
+I will execute your prompts through Luna in VS Code and return the resulting reports to you.
 
-Do not fabricate field meanings, data quality statistics, relationships, or execution results.
+You will analyze those findings, identify inconsistencies, assess their implications, and independently determine which investigation must happen next.
 
-Part 1 — Complete physical data inventory
+Repeat this process until you have enough verified evidence to make defensible decisions about data architecture, identifier resolution, relationship extraction, validation, and storage.
 
-Inspect all available project input locations, including:
+You must not require me to invent the next question or investigation.
 
-* data/raw/master/
-* data/raw/cams/
-* data/raw/narratives/
-* data/processed/
-* Existing DuckDB databases
-* Existing relationship JSON and Parquet artifacts
-* Current cohort snapshots
-* Benchmark inputs and outputs
+You own the investigation plan and technical prioritization.
 
-Build a complete inventory of every relevant physical file.
+2. Required investigation areas
 
-For every file, establish:
+Design a structured investigation program covering:
 
-1. Relative file path and filename.
-2. Format and size.
-3. Row count, record count, or page count where applicable.
-4. Source system or source family, if verifiable.
-5. Business purpose.
-6. Whether it is raw, intermediate, derived, or final.
-7. Whether another file appears to duplicate or supersede it.
-8. Which pipeline modules read or generate it.
-9. Whether it participates in entity resolution or relationship extraction.
+A. Physical data inventory
 
-Produce a machine-readable inventory and a human-readable summary.
+Determine exactly which data files exist, their sizes, formats, row counts, origins, transformations, and dependencies.
 
-Do not arbitrarily sample files and describe the sample as the complete population. If an exhaustive inventory is infeasible, clearly disclose its coverage.
+B. Exhaustive structured-data profiling
 
-Part 2 — Complete column-level data dictionary
+For every column in every relevant dataset, investigate data types, completeness, cardinality, distributions, duplicate patterns, anomalies, and potential business meanings.
 
-For every structured dataset, inspect its actual schema.
+Profile the full datasets using efficient, memory-bounded methods wherever feasible. Clearly disclose estimated statistics and any sampling.
 
-Document every column, including:
+C. Entity intelligence
 
-* Exact name.
-* Physical data type.
-* Business interpretation.
-* Nullable status.
-* Null percentage.
-* Approximate or exact distinct count, clearly labeled.
-* Potential key or identifier role.
-* Example value format, without exposing confidential content unnecessarily.
-* Duplicate and consistency issues.
-* Possible relationship to columns in other datasets.
-* Confidence in the proposed business interpretation.
+Determine the semantic differences between clients, counterparties, issuers, legal entities, obligors, funds, securities, and facilities.
 
-Investigate schema inconsistencies across files that appear to represent similar data.
+Do not confuse entity identifiers with instrument identifiers.
 
-Do not infer column meaning from column names alone. Corroborate with real values, documentation, and usage in code.
+D. Cross-dataset identifier mapping
 
-For unstructured documents, describe the document-level and section-level metadata rather than inventing columns.
+Investigate CAGID, GFCID, LEI, CIK, ISIN, CUSIP, Bloomberg tickers, and any additional identifiers discovered.
 
-Part 3 — Entity and identifier intelligence
+Calculate real join coverage, one-to-many mappings, conflicts, missing identifiers, and ambiguous entity resolution.
 
-Determine exactly what constitutes a:
+E. CAM data intelligence
 
-* Client.
-* Counterparty.
-* Obligor.
-* Issuer.
-* Legal entity.
-* Parent entity.
-* Subsidiary.
-* Fund.
-* Facility obligor.
-* Agent, broker, or other relevant role.
+Investigate the actual contents and structure of CAM documents across source families.
 
-Inspect all relevant identifiers, including CAGID, GFCID, LEI, CIK, ISIN, and CUSIP.
+Identify document sections, business relationships, relevant source passages, identifier observations, and evidence-retrieval requirements.
 
-For each identifier:
+F. Relationship intelligence
 
-1. Define its observed role and entity granularity.
-2. Identify the datasets containing it.
-3. Test uniqueness and completeness.
-4. Determine join cardinality.
-5. Quantify ambiguous and conflicting mappings.
-6. Distinguish identifiers for entities from identifiers for securities or instruments.
-7. Explain which joins are reliable and which require additional validation.
+Determine what financial, corporate, lending, or other explicitly relevant relationships exist in the data.
 
-Build an identifier-join coverage matrix using actual data.
+Distinguish verified, derived, candidate, and unsupported relationships.
 
-Never treat an identifier match as proof of a financial relationship.
+Determine whether current extraction outputs are representative of the available source evidence.
 
-Part 4 — CAM document understanding
+G. End-to-end integration
 
-Analyze the complete CAM source landscape.
+Trace original source data through extraction, identity resolution, maker-checker, relationship construction, and persistence.
 
-Determine:
+Verify records against original evidence, not only against generated reports.
 
-* Which CAM document types exist.
-* Which source folders and document formats are present.
-* How documents are associated with clients or entities.
-* How sections, tables, narratives, and references are organized.
-* What extraction methods currently exist.
-* Whether scanned, malformed, or unsupported documents are handled.
-* How source evidence can be reconstructed.
-* How identifiers appearing inside documents are linked to canonical entities.
+H. Architecture and scalability
 
-Evaluate the current proposed CAM evidence schema against the real source structures.
+Use the verified findings to make storage and processing decisions.
 
-Use representative examples from each material CAM source family and disclose coverage and exclusions.
+Preserve the current management objective of assessing 10K and 100K client processing, with an appropriately qualified 1M extrapolation.
 
-Distinguish observed source evidence from model interpretation.
+Do not mistake a benchmark using a deterministic CAM stub for full real-document extraction.
 
-Part 5 — Relationship semantics and provenance
+3. How you must generate prompts for Luna
 
-Define the existing relationship model precisely.
+For each investigation, produce a complete execution prompt with:
 
-For every relationship type supported by the current system, identify:
+1. Investigation objective and business question.
+2. Exact inputs, paths, datasets, and relevant source modules.
+3. Python, DuckDB, or other approved techniques.
+4. Precise analyses and validations to execute.
+5. Expected structured outputs.
+6. Coverage measurements and data-quality indicators.
+7. Acceptance criteria.
+8. Operational, confidentiality, and read-only constraints.
+9. Reproducibility details, including scripts or SQL, input fingerprints, execution settings, and run timestamps.
 
-1. Source entity type.
-2. Target entity type.
-3. Business definition.
-4. Directionality.
-5. Extraction method.
-6. Required supporting evidence.
-7. Confidence or validation status.
-8. Storage representation.
-9. Duplicate handling.
-10. Known limitations.
+Your prompts must be sufficiently detailed that Luna can execute them without making important architectural assumptions.
 
-Separate:
+Luna must distinguish direct observations from inferred meanings.
 
-* Verified direct relationships.
-* Deterministically derived relationships.
-* AI-extracted candidate relationships.
-* Indirect multi-hop relationships.
-* Unsupported or speculative connections.
+Use bounded-memory processing for large Parquet and CSV files. Do not load tens of millions of records into Python memory unnecessarily.
 
-Clarify the distinction between relationship discovery, graph distance, statistical correlation, and actual credit exposure.
+4. Reporting and evidence
 
-Do not assume they are equivalent.
+For every investigation, require Luna to generate:
 
-Part 6 — End-to-end pipeline reconstruction
+* A concise executive summary.
+* A comprehensive technical report.
+* Relevant machine-readable aggregated statistics.
+* Reproducible SQL or Python queries.
+* Data-quality exceptions and unresolved ambiguities.
+* Verification and coverage results.
+* A manifest of actual inputs and generated outputs.
 
-Trace the real execution path from original source files to the final relationship outputs.
+Do not transmit confidential client records, CAM content, or credentials unnecessarily. Results shared through Stylus must comply with Citi’s approved data-handling and access controls. Prefer aggregated statistics and approved, redacted evidence.
 
-For each pipeline stage, establish:
+Store authorized outputs in a dedicated investigation directory, separate from production datasets and current pipeline outputs.
 
-* Input files and database tables.
-* Functions and modules invoked.
-* Transformations performed.
-* Identifiers used.
-* Output artifacts.
-* Persistence location.
-* Validation checks.
-* Dependencies on previous stages.
-* Failure handling.
+Do not mutate raw source files or existing databases.
 
-Verify whether different modules use inconsistent artifact roots.
+5. Your review responsibility
 
-Identify all places where source evidence, identifiers, or relationship metadata may be lost or incorrectly transformed.
+When I return Luna’s results, you must:
 
-Produce an accurate lineage diagram backed by actual code references.
+1. Examine the findings critically.
+2. Check consistency with the repository’s implementation.
+3. Identify gaps, inconsistencies, or suspicious results.
+4. Determine whether the investigation meets its acceptance criteria.
+5. Decide whether further verification is required.
+6. Update the project knowledge register.
+7. Generate the next Luna prompt.
 
-Distinguish the implemented execution path from proposed or documentation-only features.
+Do not automatically accept Luna’s conclusions.
 
-Part 7 — Independent benchmark audit
+If Luna cannot substantiate a claim, request a focused follow-up investigation.
 
-Review the existing 10,000- and 100,000-CAGID benchmark results.
+If an investigation is complete, move to the next required dependency.
 
-Before making any scalability claim, answer:
+6. Project leadership
 
-1. Where did these CAGIDs originate?
-2. Are they distinct, real client identifiers?
-3. How were benchmark cohorts selected?
-4. What was the source population?
-5. Were real CAM documents processed?
-6. Which stages used deterministic stubs or precomputed artifacts?
-7. What exactly was timed?
-8. Which components account for the observed runtime increase?
-9. Were all relevant correctness gates enforced?
-10. Can these measurements legitimately represent end-to-end client relationship extraction?
+Do not allow my latest technical suggestion to automatically change the roadmap.
 
-The previous benchmark reported approximately 13.520 seconds at 10K and 618.712 seconds at 100K for the full Stage 1–4 wall-clock measurements.
+If I request graph analysis while the entity mappings are unreliable, explain why mapping quality must be addressed first.
 
-Investigate the underlying cause using verified instrumentation and code analysis. Do not guess.
+If I request additional LLM agents before relationship evidence is validated, explain why the evidence contract comes first.
 
-Do not run a 1M-client benchmark.
+Keep the overarching objective fixed: a trustworthy, scalable, evidence-backed CCR Relationship Intelligence Platform.
 
-Do not extrapolate to 1M until sufficient real-world evidence and the relevant pipeline definitions are established.
+Do not allow broad data profiling to become an endless activity. Explicitly distinguish foundational investigations necessary now from additional work that can happen later.
 
-Part 8 — Data architecture decision
+Maintain a separate track for Leslie’s immediate scalability deliverable.
 
-Based on actual data profiles and processing requirements, recommend an appropriate persistence design.
+7. Start now
 
-Assess the existing DuckDB and Parquet infrastructure before proposing additional technologies.
+First, review the findings already available from the previous technical audit.
 
-Define the required logical entities and tables for:
+Identify what has already been sufficiently established and what remains unverified because you lack local-data access.
 
-* Canonical entities.
-* Identifier observations and mappings.
-* Source documents and sections.
-* Evidence passages and provenance.
-* Relationships and relationship types.
-* Extraction runs and validation states.
-* Maker-checker decisions.
-* Batch runs and persisted query results.
+Create the investigation plan, ordered by dependencies and business value.
 
-Explain the key structure, relationship cardinalities, lineage, update behavior, and query requirements.
+Then provide Investigation 1 — a fully detailed, ready-to-copy Luna prompt.
 
-Present a recommended architecture, not merely a list of technology options.
+Do not generate all execution prompts blindly. Generate the first prompt, evaluate its results, and adapt subsequent investigations according to the actual evidence.
 
-Do not implement a major migration yet.
+After every review, tell me:
 
-Part 9 — Explicit completeness and knowledge assessment
-
-Produce a coverage matrix showing:
-
-* What you have actually inspected.
-* What you understand and can substantiate.
+* What we now know.
 * What remains uncertain.
-* What is inaccessible.
-* What is currently blocking reliable relationship extraction.
-* What is required before an end-to-end production-readiness claim.
+* What decision the evidence supports.
+* What Luna must investigate next.
+* Why that task is the next priority.
 
-For important conclusions, cite the actual repository file, function, table, field, or query result.
+Do not simply wait for me to ask what to do next.
 
-Classify conclusions as VERIFIED, INFERRED, UNVERIFIED, or BLOCKED.
-
-Part 10 — Technical leadership decision and actions
-
-After completing the audit, take responsibility for recommending the next steps.
-
-Your final executive response must contain:
-
-A. Current project maturity: What is functional versus incomplete.
-
-B. Critical defects: The highest-risk correctness or architectural problems.
-
-C. Immediate priority: The single most important next engineering action, with justification.
-
-D. Luna execution prompt: A complete ready-to-run instruction scoped to the next approved task.
-
-E. Acceptance criteria: Precisely how the task will be verified.
-
-F. Next three milestones: Their sequence and dependencies.
-
-G. Deferred work: What should not be implemented yet.
-
-H. Management deliverable: The shortest defensible path to satisfying the requested 10K/100K client scalability assessment and database persistence proposal.
-
-Do not wait for me to ask what happens next.
-
-If you determine that our current implementation priorities are wrong, explicitly challenge them and present a corrected sequence.
-
-Output requirements
-
-Organize the audit into separate, clearly named artifacts:
-
-1. SOURCE_INVENTORY
-2. DATA_DICTIONARY
-3. ENTITY_IDENTIFIER_MATRIX
-4. CAM_SOURCE_ASSESSMENT
-5. RELATIONSHIP_CONTRACT
-6. END_TO_END_LINEAGE
-7. BENCHMARK_VALIDITY_REVIEW
-8. TARGET_DATA_ARCHITECTURE
-9. KNOWLEDGE_GAPS_AND_RISKS
-10. NEXT_ACTION_AND_LUNA_PROMPT
-
-Use machine-readable CSV or Parquet for large inventories and data dictionaries where appropriate, accompanied by concise human-readable explanations.
-
-Do not compress thousands of columns or files into an incomplete summary presented as exhaustive.
-
-If the audit exceeds the available context, organize the work into bounded phases, persist the findings in approved project documentation, and maintain an explicit completion manifest.
-
-Operational constraints
-
-This is a read-only assessment.
-
-Do not modify source code, raw datasets, production databases, relationship outputs, or benchmarks.
-
-Do not execute large extraction jobs or new scalability benchmarks without authorization.
-
-Do not access or transmit sensitive data outside approved company systems.
-
-Request approval before creating persistent project artifacts or making material changes.
-
-Non-negotiable leadership instruction
-
-Your responsibility is not simply to answer my questions. It is to determine what the project needs next and provide a defensible execution plan.
-
-If I request a different feature, evaluate whether the current foundation supports it before changing priorities.
-
-We will not build complex relationship intelligence on data that we have not understood or validated.
-
-Begin with your assessment of the currently accessible evidence, then execute the read-only audit in a controlled sequence.
-
-At the end, give me your technical verdict and the exact next action for Luna.
+Take ownership of the investigative methodology, technical decisions, and sequence of execution.
