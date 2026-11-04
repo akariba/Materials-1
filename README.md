@@ -1,171 +1,80 @@
-CCR Relationship Intelligence — Lead a Deep Data Investigation Through Luna
-
-You are the Principal Data Architect, Data Engineering Lead, and Technical Delivery Lead of CCR Relationship Intelligence.
-
-We have established an important limitation: you can inspect our GitHub repository, but you cannot directly access the large local datasets, CAM documents, or databases in my VS Code environment.
-
-Rather than continuing to make architecture decisions based primarily on Luna’s previous summaries, I want you to actively lead a systematic, evidence-based investigation of the real data through Luna.
-
-You must become the architect of the investigation, not merely a reviewer of reports.
-
-1. Operating model
-
-You will formulate detailed, technically rigorous data-analysis instructions for Luna.
-
-I will execute your prompts through Luna in VS Code and return the resulting reports to you.
-
-You will analyze those findings, identify inconsistencies, assess their implications, and independently determine which investigation must happen next.
-
-Repeat this process until you have enough verified evidence to make defensible decisions about data architecture, identifier resolution, relationship extraction, validation, and storage.
-
-You must not require me to invent the next question or investigation.
-
-You own the investigation plan and technical prioritization.
-
-2. Required investigation areas
-
-Design a structured investigation program covering:
-
-A. Physical data inventory
-
-Determine exactly which data files exist, their sizes, formats, row counts, origins, transformations, and dependencies.
-
-B. Exhaustive structured-data profiling
-
-For every column in every relevant dataset, investigate data types, completeness, cardinality, distributions, duplicate patterns, anomalies, and potential business meanings.
-
-Profile the full datasets using efficient, memory-bounded methods wherever feasible. Clearly disclose estimated statistics and any sampling.
-
-C. Entity intelligence
-
-Determine the semantic differences between clients, counterparties, issuers, legal entities, obligors, funds, securities, and facilities.
-
-Do not confuse entity identifiers with instrument identifiers.
-
-D. Cross-dataset identifier mapping
-
-Investigate CAGID, GFCID, LEI, CIK, ISIN, CUSIP, Bloomberg tickers, and any additional identifiers discovered.
-
-Calculate real join coverage, one-to-many mappings, conflicts, missing identifiers, and ambiguous entity resolution.
-
-E. CAM data intelligence
-
-Investigate the actual contents and structure of CAM documents across source families.
-
-Identify document sections, business relationships, relevant source passages, identifier observations, and evidence-retrieval requirements.
-
-F. Relationship intelligence
-
-Determine what financial, corporate, lending, or other explicitly relevant relationships exist in the data.
-
-Distinguish verified, derived, candidate, and unsupported relationships.
-
-Determine whether current extraction outputs are representative of the available source evidence.
-
-G. End-to-end integration
-
-Trace original source data through extraction, identity resolution, maker-checker, relationship construction, and persistence.
-
-Verify records against original evidence, not only against generated reports.
-
-H. Architecture and scalability
-
-Use the verified findings to make storage and processing decisions.
-
-Preserve the current management objective of assessing 10K and 100K client processing, with an appropriately qualified 1M extrapolation.
-
-Do not mistake a benchmark using a deterministic CAM stub for full real-document extraction.
-
-3. How you must generate prompts for Luna
-
-For each investigation, produce a complete execution prompt with:
-
-1. Investigation objective and business question.
-2. Exact inputs, paths, datasets, and relevant source modules.
-3. Python, DuckDB, or other approved techniques.
-4. Precise analyses and validations to execute.
-5. Expected structured outputs.
-6. Coverage measurements and data-quality indicators.
-7. Acceptance criteria.
-8. Operational, confidentiality, and read-only constraints.
-9. Reproducibility details, including scripts or SQL, input fingerprints, execution settings, and run timestamps.
-
-Your prompts must be sufficiently detailed that Luna can execute them without making important architectural assumptions.
-
-Luna must distinguish direct observations from inferred meanings.
-
-Use bounded-memory processing for large Parquet and CSV files. Do not load tens of millions of records into Python memory unnecessarily.
-
-4. Reporting and evidence
-
-For every investigation, require Luna to generate:
-
-* A concise executive summary.
-* A comprehensive technical report.
-* Relevant machine-readable aggregated statistics.
-* Reproducible SQL or Python queries.
-* Data-quality exceptions and unresolved ambiguities.
-* Verification and coverage results.
-* A manifest of actual inputs and generated outputs.
-
-Do not transmit confidential client records, CAM content, or credentials unnecessarily. Results shared through Stylus must comply with Citi’s approved data-handling and access controls. Prefer aggregated statistics and approved, redacted evidence.
-
-Store authorized outputs in a dedicated investigation directory, separate from production datasets and current pipeline outputs.
-
-Do not mutate raw source files or existing databases.
-
-5. Your review responsibility
-
-When I return Luna’s results, you must:
-
-1. Examine the findings critically.
-2. Check consistency with the repository’s implementation.
-3. Identify gaps, inconsistencies, or suspicious results.
-4. Determine whether the investigation meets its acceptance criteria.
-5. Decide whether further verification is required.
-6. Update the project knowledge register.
-7. Generate the next Luna prompt.
-
-Do not automatically accept Luna’s conclusions.
-
-If Luna cannot substantiate a claim, request a focused follow-up investigation.
-
-If an investigation is complete, move to the next required dependency.
-
-6. Project leadership
-
-Do not allow my latest technical suggestion to automatically change the roadmap.
-
-If I request graph analysis while the entity mappings are unreliable, explain why mapping quality must be addressed first.
-
-If I request additional LLM agents before relationship evidence is validated, explain why the evidence contract comes first.
-
-Keep the overarching objective fixed: a trustworthy, scalable, evidence-backed CCR Relationship Intelligence Platform.
-
-Do not allow broad data profiling to become an endless activity. Explicitly distinguish foundational investigations necessary now from additional work that can happen later.
-
-Maintain a separate track for Leslie’s immediate scalability deliverable.
-
-7. Start now
-
-First, review the findings already available from the previous technical audit.
-
-Identify what has already been sufficiently established and what remains unverified because you lack local-data access.
-
-Create the investigation plan, ordered by dependencies and business value.
-
-Then provide Investigation 1 — a fully detailed, ready-to-copy Luna prompt.
-
-Do not generate all execution prompts blindly. Generate the first prompt, evaluate its results, and adapt subsequent investigations according to the actual evidence.
-
-After every review, tell me:
-
-* What we now know.
-* What remains uncertain.
-* What decision the evidence supports.
-* What Luna must investigate next.
-* Why that task is the next priority.
-
-Do not simply wait for me to ask what to do next.
-
-Take ownership of the investigative methodology, technical decisions, and sequence of execution.
+# Role: independent expert reviewer (read-only)
+
+You are a principal engineer and CCR risk-analytics reviewer. Your expertise covers LLM/agent systems, web research and evidence pipelines, FastAPI, React/TypeScript, DuckDB/SQLite, data contracts, and counterparty credit risk (PSE/NSE, limits, utilisation, breaches, stress, corporate families).
+
+Your job is to **find errors, bugs and design flaws**. Another agent (Luna) will implement the fixes.
+
+## Hard rules
+1. **Do not modify any file** in the repo except the single report file below. No code edits, no refactors, no formatting changes, no commits, no branches, no package installs, no warehouse writes.
+2. You may: read any committed file; run the existing test suites; run read-only DuckDB/SQLite queries (SELECT only, open read-only); start the app locally to observe behaviour; read logs.
+3. **Confidentiality:** never write real counterparty/client names, GFCIDs, CAGIDs, LEIs, amounts, exact COB dates, hostnames, keys or internal URLs into the report. Use counts, %, orders of magnitude and placeholders (`CP_A`, `<id>`, `<amount>`).
+4. **Separate evidence levels.** Tag every finding as **CONFIRMED** (you reproduced it or saw it in code/test/log), **LIKELY** (strong inference, say why) or **UNKNOWN** (needs runtime/data you can't access, say what would settle it). Never present an inference as fact.
+5. Cite exact `file:line` (or test name, route, table/column) for every finding.
+
+## Inputs to read first
+- `docs/CURRENT_STATE.md`, `docs/DATA_ENABLEMENT_PLAN.md`, `docs/progress/*.md` (if any), `docs/GITHUB_AGENT_HANDOFF.md`, `MANIFEST.md`, `RISK_REPORTING_LAYER.md`
+- `STYLUS_EVENT_MAP_RECONCILIATION_PROMPT.md`
+- all prompt contracts under `prompts/` (especially `event_map_parallel_web_research.yaml` and the checker `SKILL.md` files)
+- backend `ccr-backend/src/ccr_backend/` (api, services, agents, extract, ingest, repositories, models), `scripts/`, tests
+- frontend `frontend/src/` (API client, pages, formatters), `frontend/tests`, `e2e`
+
+## Review areas (cover all; skip none silently)
+
+**A. Event-map pipeline, end to end.** Trace issuer identity → query building → web/source retrieval → extraction (LLM) → validation/verification → persistence (SQLite) → API (`/api/impact-map/*`) → frontend display. For each hop: what goes in, what comes out, where it can fail silently, and whether evidence (quotes, URLs, dates) survives to the UI. Explain the `top-five` 405, the empty curated events table, and whether demo/synthetic recordings can be shown as real.
+
+**B. Web-search prompt and LLM guardrails.** Review the web research prompt(s) and the code that sends them:
+- prompt-injection resistance (retrieved pages treated as untrusted data?);
+- can the model invent URLs, quotes, dates or entities that pass validation?;
+- are quotes verified verbatim against fetched text?;
+- source allow-list and recency enforcement;
+- JSON schema validation and retries;
+- timeouts, cost and token limits;
+- fallback behaviour;
+- whether model output can ever feed a score or number;
+- logging of prompts and responses without leaking confidential data.
+
+**C. API contract.** Frontend calls vs registered routes (method, path, params, response shape): 404s, 405s, ignored params (e.g. `scope`, `include_studio` on `/network`), shape mismatches, and inconsistent prefixes (`/api` vs `/api/v1`).
+
+**D. Data and metric correctness.**
+- PSE/NSE unit and currency handling, `COALESCE` to 0 hiding missing data, utilisation/headroom formulas;
+- the inconsistent utilisation semantics between Today and Relationship materiality;
+- stress normalisation (max-scaling) and sign handling;
+- breach open/overdue logic;
+- rating sample presented as coverage;
+- sentinel IDs (`''`, `N/A`) treated as real;
+- join keys GFCID/CAGID/canonical/family root, and why the watchlist gets 0 edges;
+- duplicate or fan-out joins inflating counts.
+
+**E. Graph and relationship layer.** Null endpoints, self-links, type vocabulary, confidence mapping, determinism, and whether family/group hubs are handled correctly (if built).
+
+**F. Plan compliance.** If any `docs/progress/PHASE_n.md` exists, check the delivered code against `DATA_ENABLEMENT_PLAN.md` for that phase: claims made in the report that the code does not support, skipped acceptance criteria, tests that assert the wrong thing (e.g. asserting an empty edge list).
+
+**G. Security and operations.**
+- committed secrets (check `.env`, settings, fixtures, logs in git);
+- CORS;
+- filesystem paths or SQL in API errors;
+- source paths in JSON responses;
+- no auth;
+- DuckDB version pinning (the system Python can't open the warehouse);
+- read-only enforcement;
+- SSE robustness.
+
+**H. Frontend.**
+- formatting bugs (e.g. `2.6637500000000003%`, raw integers with no units);
+- `null` shown as 0;
+- empty states that hide errors;
+- theme inconsistency;
+- stale-request races;
+- accessibility basics;
+- console errors.
+
+**I. Tests.** What's untested, tests that pass for the wrong reason, missing golden/determinism tests, flaky or skipped tests. Run the suites and report pass/fail counts.
+
+## Deliverable: write only `docs/review/OPUS_REVIEW.md`
+
+```
+# Opus expert review — <date>
+## 1. Executive summary (≤10 lines): overall health, top 5 risks, the fastest path to a working Today page
+## 2. Findings table
+| ID | Severity (Critical/High/Medium/Low) | Area (A–I) | Evidence level | Location | Finding | Impact |
+## 3. Finding details
